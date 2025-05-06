@@ -1,4 +1,4 @@
-module github.com/golang-templates/seed
+module github.com/rasa/compat
 
 go 1.24.0
 
