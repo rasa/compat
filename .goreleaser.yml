@@ -6,6 +6,7 @@ before:
 builds:
   - env:
       - CGO_ENABLED=0
+    main: ./cmd/main.go
     goos:
       - darwin
       - linux
@@ -15,7 +16,7 @@ builds:
 archives:
   - format_overrides:
       - goos: windows
-        format: zip
+        formats: ['zip']
 dockers:
   - image_templates:
     - "ghcr.io/rasa/compat:latest"

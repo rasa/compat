@@ -1,0 +1,151 @@
+// SPDX-FileCopyrightText: Copyright © 2025 Ross Smith II <ross@smithii.com>
+// SPDX-License-Identifier: MIT
+
+package compat
+
+import (
+	"os"
+	"time"
+)
+
+// SupportsType defines a bitmask that identifies if the OS supports specific
+// fields, or not.
+type SupportsType uint
+
+const (
+	// SupportsLinks defines if the OS supports the Links() field.
+	SupportsLinks SupportsType = 1 << iota
+	// SupportsATime defines if the OS supports the ATime() (last accessed
+	// time) field.
+	SupportsATime
+	// SupportsBTime defines if the OS supports the BTime() (birth/created
+	// time) field.
+	SupportsBTime
+	// SupportsCTime defines if the OS supports the CTime() (last changed
+	// time) field.
+	SupportsCTime
+	// SupportsUID defines if the OS supports the DeviceUID() field.
+	SupportsUID
+	// SupportsGID defines if the OS supports the DeviceGID() field.
+	SupportsGID
+)
+
+// A FileInfo describes a file and is returned by [Stat].
+// See https://github.com/golang/go/blob/ad7a6f81/src/io/fs/fs.go#L158
+type FileInfo interface {
+	Name() string       // base name of the file
+	Size() int64        // length in bytes for regular files; system-dependent for others
+	Mode() os.FileMode  // file mode bits
+	ModTime() time.Time // last modified time
+	IsDir() bool        // abbreviation for Mode().IsDir()
+	Sys() any           // underlying data source (can return nil)
+	DeviceID() uint64   // device ID
+	FileID() uint64     // file ID
+	Links() uint64      // number of hard links
+	ATime() time.Time   // last accessed time
+	BTime() time.Time   // birth (created) time
+	CTime() time.Time   // last changed time
+	MTime() time.Time   // last modified time (alias)
+	UID() uint64        // user ID
+	GID() uint64        // group ID
+}
+
+func (fs *fileStat) Name() string       { return fs.name }
+func (fs *fileStat) Size() int64        { return fs.size }
+func (fs *fileStat) Mode() os.FileMode  { return fs.mode }
+func (fs *fileStat) ModTime() time.Time { return fs.mtime }
+func (fs *fileStat) IsDir() bool        { return fs.mode.IsDir() }
+func (fs *fileStat) Sys() any           { return &fs.sys }
+func (fs *fileStat) DeviceID() uint64   { return fs.deviceID }
+func (fs *fileStat) FileID() uint64     { return fs.fileID }
+func (fs *fileStat) Links() uint64      { return fs.links }
+func (fs *fileStat) ATime() time.Time   { return fs.atime }
+func (fs *fileStat) BTime() time.Time   { return fs.btime }
+func (fs *fileStat) CTime() time.Time   { return fs.ctime }
+func (fs *fileStat) MTime() time.Time   { return fs.mtime } // duplicates ModTime
+func (fs *fileStat) UID() uint64        { return fs.uid }
+func (fs *fileStat) GID() uint64        { return fs.gid }
+
+func Supports(probe SupportsType) bool {
+	return supports&probe == probe
+}
+
+func Stat(name string) (FileInfo, error) {
+	fi, err := os.Stat(name)
+	if err != nil {
+		return &fileStat{}, err
+	}
+
+	return loadInfo(fi, name)
+}
+
+func Lstat(name string) (FileInfo, error) {
+	fi, err := os.Lstat(name)
+	if err != nil {
+		return &fileStat{}, err
+	}
+
+	return loadInfo(fi, name)
+}
+
+// SameDevice reports whether fi1 and fi2 describe files on the same device.
+// For example, on Unix this means that the device fields
+// of the two underlying structures are identical; on other systems
+// the decision may be based on the path names.
+// SameDevice only applies to results returned by this package's [Stat].
+// It returns false in other cases.
+func SameDevice(fi1, fi2 FileInfo) bool {
+	fs1, ok1 := fi1.(*fileStat)
+	fs2, ok2 := fi2.(*fileStat)
+	if !ok1 || !ok2 {
+		return false
+	}
+
+	return fs1.deviceID == fs2.deviceID
+}
+
+// SameDevices reports whether name1 and name2 are files on the same device.
+// The function follow symlinks.
+func SameDevices(name1, name2 string) bool {
+	fi1, err := Stat(name1)
+	if err != nil {
+		return false
+	}
+	fi2, err := Stat(name2)
+	if err != nil {
+		return false
+	}
+
+	return SameDevice(fi1, fi2)
+}
+
+// SameFile reports whether fi1 and fi2 describe the same file. For example,
+// on Unix this means that the device and inode fields of the two underlying
+// structures are identical; on other systems the decision may be based on the
+// path names.
+// SameDevice only applies to results returned by this package's [Stat].
+// It returns false in other cases.
+func SameFile(fi1, fi2 FileInfo) bool {
+	fs1, ok1 := fi1.(*fileStat)
+	fs2, ok2 := fi2.(*fileStat)
+	if !ok1 || !ok2 {
+		return false
+	}
+
+	return fs1.deviceID == fs2.deviceID && fs1.fileID == fs2.fileID
+}
+
+// SameFiles reports whether name1 and name2 are the same file.
+// The function follow symlinks.
+func SameFiles(name1, name2 string) bool {
+	fi1, err := Stat(name1)
+	if err != nil {
+		return false
+	}
+	fi2, err := Stat(name2)
+	if err != nil {
+		return false
+	}
+
+	return SameFile(fi1, fi2)
+}

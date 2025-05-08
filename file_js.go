@@ -1,0 +1,18 @@
+// SPDX-FileCopyrightText: Copyright © 2025 Ross Smith II <ross@smithii.com>
+// SPDX-License-Identifier: MIT
+
+//go:build js
+
+package compat
+
+import (
+	"time"
+)
+
+// not supported: SupportsBTime
+const supports SupportsType = SupportsLinks | SupportsUID | SupportsGID | SupportsATime | SupportsCTime
+
+func (fs *fileStat) times() {
+	fs.atime = time.Unix(fs.sys.Atime, int64(fs.sys.AtimeNsec))
+	fs.ctime = time.Unix(fs.sys.Ctime, int64(fs.sys.CtimeNsec))
+}
