@@ -57,4 +57,4 @@ test: ## go test
 .PHONY: diff
 diff: ## git diff
 	git diff --exit-code
-	RES=$$(git status --porcelain) ; if [ -n "$$RES" ]; then echo $$RES && exit 1 ; fi
+	@RES=$$(git status --porcelain) ; if [ -n "$$RES" ]; then echo $$RES && exit 1 ; fi
