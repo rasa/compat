@@ -39,15 +39,15 @@ func main() {
 	fmt.Printf("ModTime() =%v\n", fi.ModTime())
 	fmt.Printf("IsDir()   =%v\n", fi.IsDir())
 	fmt.Printf("Sys()     =%+v\n", fi.Sys())
-	fmt.Printf("DeviceID()=%v\n", fi.DeviceID())
-	fmt.Printf("FileID()  =%v\n", fi.FileID())
-	fmt.Printf("Links()   =%v\n", fi.Links())
-	fmt.Printf("ATime()   =%v\n", fi.ATime())
-	fmt.Printf("BTime()   =%v\n", fi.BTime())
-	fmt.Printf("CTime()   =%v\n", fi.CTime())
-	fmt.Printf("MTime()   =%v\n", fi.MTime())
-	fmt.Printf("UID()     =%v\n", fi.UID())
-	fmt.Printf("GID()     =%v\n", fi.GID())
+	fmt.Printf("DeviceID()=%v\n", fi.DeviceID()) // Device/Volume ID
+	fmt.Printf("FileID()  =%v\n", fi.FileID())   // File/I-Node ID
+	fmt.Printf("Links()   =%v\n", fi.Links())    // Number of hard links
+	fmt.Printf("ATime()   =%v\n", fi.ATime())    // Last access time
+	fmt.Printf("BTime()   =%v\n", fi.BTime())    // Birth / created time
+	fmt.Printf("CTime()   =%v\n", fi.CTime())    // Last changed time
+	fmt.Printf("MTime()   =%v\n", fi.MTime())    // Alias for ModTime
+	fmt.Printf("UID()     =%v\n", fi.UID())      // User ID
+	fmt.Printf("GID()     =%v\n", fi.GID())      // Group ID
 }
 ```
 
@@ -76,6 +76,38 @@ GID()     =1000
 To install compat, use `go get`:
 
    go get github.com/rasa/compat
+
+# FileInfo Functions
+
+The `Stat()` and `Lstat()` functions return a `FileInfo` object.
+The table below lists the operating system support for each of the `FileInfo` functions:
+
+| OS      | DeviceID()    | FileID() | Links() | ATime() | BTime() | CTime() | UID() | GID() |
+|---------|---------------|----------|---------|---------|---------|---------|-------|-------|
+| AIX     | ✅	          | ✅	     | ✅	     | ✅	     | ❌      | ✅      | ✅    |  ✅  |
+| Android | ✅	          | ✅	     | ✅	     | ✅	     | ❌      | ✅      | ✅    |  ✅  |
+| Darwin<br/>(macOS) | ✅ | ✅	     | ✅	     | ✅	     | ✅      | ✅      | ✅    |  ✅  |
+| Dragonfly | ✅	       | ✅	     | ✅	     | ✅	     | ❌      | ✅      | ✅    |  ✅  |
+| FreeBSD | ✅	          | ✅	     | ✅	     | ✅	     | ❌      | ✅      | ✅    |  ✅  |
+| Illumos | ✅	          | ✅	     | ✅	     | ✅	     | ❌      | ✅      | ✅    |  ✅  |
+| iOS     | ✅	          | ✅	     | ✅	     | ✅	     | ✅	     | ✅      | ✅    |  ✅  |
+| JS<br/>(Wasm) | ✅	    | ✅	     | ✅	     | ✅	     | ❌      | ✅      | ✅    |  ✅  |
+| Linux   | ✅	          | ✅	     | ✅	     | ✅	     | ❌      | ✅      | ✅    |  ✅  |
+| NetBSD  | ✅	          | ✅	     | ✅	     | ✅	     | ❌      | ✅      | ✅    |  ✅  |
+| OpenBSD | ✅	          | ✅	     | ✅	     | ✅	     | ❌      | ✅      | ✅    |  ✅  |
+| Plan9   | ✅	          | ✅	     | ❌	     | ✅	     | ❌      | ❌      | 🟠    |  🟠  |
+| Solaris | ✅	          | ✅	     | ✅	     | ✅	     | ❌      | ✅      | ✅    |  ✅  |
+| Waspi1<br/>(Wasm) | ✅	 | ✅	     | ✅	     | ✅	     | ❌      | ✅      | ✅    |  ✅  |
+| Windows | ✅	          | ✅	     | ✅	     | ✅	     | ❌      | ❌      | 🚧    |  🚧  |
+
+✅ indicates this function is fully supported.<br/>
+❌ indicates the operating system doesn't provide this information.<br/>
+🟠 indicates the UserID and GroupID are 64-bit hashes generated from the user and group names.<br/>
+🚧 indicates this feature is planned to be implemented.
+
+# Other Functions
+
+All other functions provided by this library are fully supported by all the above operating systems.
 
 # Contributing
 
