@@ -9,7 +9,7 @@
 
 # Overview
 
-compat is a cross-platform Go library for filesystem and system compatibility, providing unified access to file metadata, volume attributes, timestamps, device types, and process priority across all major operating systems, include Windows, Linux, macOS, Android, IOS, and many others.
+compat is a pure-Go library providing unified access to file and device metadata, atomic file operations, process priority, etc. on all major operating systems, include Windows, Linux, macOS, Android, iOS, and many others.
 
 # Usage
 
@@ -17,7 +17,7 @@ The documentation is available at https://pkg.go.dev/github.com/rasa/compat
 
 ## Stat
 
-Here's an example of calling `compat.Stat`:
+Here's an example of calling `compat.Stat()`:
 
 ```go
 package main
@@ -33,25 +33,27 @@ func main() {
 		fmt.Println(err)
 		return
 	}
-	fmt.Printf("Name()    =%v\n", fi.Name())
-	fmt.Printf("Size()    =%v\n", fi.Size())
-	fmt.Printf("Mode()    =0o%o\n", fi.Mode())
-	fmt.Printf("ModTime() =%v\n", fi.ModTime())
-	fmt.Printf("IsDir()   =%v\n", fi.IsDir())
-	fmt.Printf("Sys()     =%+v\n", fi.Sys())
-	fmt.Printf("DeviceID()=%v\n", fi.DeviceID()) // Device/Volume ID
-	fmt.Printf("FileID()  =%v\n", fi.FileID())   // File/I-Node ID
-	fmt.Printf("Links()   =%v\n", fi.Links())    // Number of hard links
-	fmt.Printf("ATime()   =%v\n", fi.ATime())    // Last access time
-	fmt.Printf("BTime()   =%v\n", fi.BTime())    // Birth / created time
-	fmt.Printf("CTime()   =%v\n", fi.CTime())    // Last changed time
-	fmt.Printf("MTime()   =%v\n", fi.MTime())    // Alias for ModTime
-	fmt.Printf("UID()     =%v\n", fi.UID())      // User ID
-	fmt.Printf("GID()     =%v\n", fi.GID())      // Group ID
+        // Same functions as os.Stat() and os.Lstat():
+	fmt.Printf("Name()    =%v\n", fi.Name())     // base name of the file
+	fmt.Printf("Size()    =%v\n", fi.Size())     // length in bytes
+	fmt.Printf("Mode()    =0o%o\n", fi.Mode())   // file mode bits
+	fmt.Printf("ModTime() =%v\n", fi.ModTime())  // last modified time
+	fmt.Printf("IsDir()   =%v\n", fi.IsDir())    // is a directory
+	fmt.Printf("Sys()     =%+v\n", fi.Sys())     // underlying data source
+        // New functions provided by this compat library:
+	fmt.Printf("DeviceID()=%v\n", fi.DeviceID()) // device ID
+	fmt.Printf("FileID()  =%v\n", fi.FileID())   // inode/file ID
+	fmt.Printf("Links()   =%v\n", fi.Links())    // number of hard links
+	fmt.Printf("ATime()   =%v\n", fi.ATime())    // last access time
+	fmt.Printf("BTime()   =%v\n", fi.BTime())    // birth/created time
+	fmt.Printf("CTime()   =%v\n", fi.CTime())    // metadata changed time
+	fmt.Printf("MTime()   =%v\n", fi.MTime())    // alias for ModTime
+	fmt.Printf("UID()     =%v\n", fi.UID())      // user ID
+	fmt.Printf("GID()     =%v\n", fi.GID())      // group ID
 }
 ```
 
-which outputed this on a Linux system:
+which outputed on Linux:
 
 ```text
 Name()    =cmd
@@ -75,7 +77,7 @@ GID()     =1000
 
 To install compat, use `go get`:
 
-   go get github.com/rasa/compat
+   `go get github.com/rasa/compat`
 
 # FileInfo Functions
 
@@ -91,21 +93,21 @@ The table below lists the operating system support for each of the `FileInfo` fu
 | FreeBSD | ✅	          | ✅	     | ✅	     | ✅	     | ❌      | ✅      | ✅    |  ✅  |
 | Illumos | ✅	          | ✅	     | ✅	     | ✅	     | ❌      | ✅      | ✅    |  ✅  |
 | iOS     | ✅	          | ✅	     | ✅	     | ✅	     | ✅	     | ✅      | ✅    |  ✅  |
-| JS<br/>(Wasm) | ✅	    | ✅	     | ✅	     | ✅	     | ❌      | ✅      | ✅    |  ✅  |
 | Linux   | ✅	          | ✅	     | ✅	     | ✅	     | ❌      | ✅      | ✅    |  ✅  |
 | NetBSD  | ✅	          | ✅	     | ✅	     | ✅	     | ❌      | ✅      | ✅    |  ✅  |
 | OpenBSD | ✅	          | ✅	     | ✅	     | ✅	     | ❌      | ✅      | ✅    |  ✅  |
 | Plan9   | ✅	          | ✅	     | ❌	     | ✅	     | ❌      | ❌      | 🟠    |  🟠  |
 | Solaris | ✅	          | ✅	     | ✅	     | ✅	     | ❌      | ✅      | ✅    |  ✅  |
-| Waspi1<br/>(Wasm) | ✅	 | ✅	     | ✅	     | ✅	     | ❌      | ✅      | ✅    |  ✅  |
+| WebAssembly<br/>(Js) | ✅	    | ✅	     | ✅	     | ✅	     | ❌      | ✅      | ✅    |  ✅  |
+| WebAssembly<br/>(WAPI) | ✅	 | ✅	     | ✅	     | ✅	     | ❌      | ✅      | ✅    |  ✅  |
 | Windows | ✅	          | ✅	     | ✅      | ✅ 	  | ✅      | ❌      | 🚧    |  🚧  |
 
 * May not be supported on older filesystems, such as FAT32.
 
-✅ indicates this function is fully supported.<br/>
-❌ indicates that function is not implemented (though the OS may provide support for it).<br/>
-🟠 indicates the UID() and GID() values are 64-bit hashes of the user and group names.<br/>
-🚧 indicates this feature is planned to be implemented.
+✅ fully supported.<br/>
+❌ not implemented (though support could be added if the OS provides the information).<br/>
+🟠 the UID() and GID() values are 64-bit hashes of the user and group names.<br/>
+🚧 planned to be implemented.
 
 # Other Functions
 
