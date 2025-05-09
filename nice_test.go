@@ -1,0 +1,49 @@
+// SPDX-FileCopyrightText: Copyright © 2025 Ross Smith II <ross@smithii.com>
+// SPDX-License-Identifier: MIT
+
+package compat_test
+
+import (
+	"runtime"
+	"testing"
+
+	"github.com/rasa/compat"
+)
+
+func Test_Nice(t *testing.T) {
+	_, err := compat.Nice()
+	if err != nil {
+		t.Error(err)
+	}
+}
+
+func Test_Renice(t *testing.T) {
+	nice, err := compat.Nice()
+	if err != nil {
+		t.Error(err)
+	}
+	err = compat.Renice(nice)
+	if err != nil {
+		t.Error(err)
+	}
+}
+
+func Test_ReniceWindows(t *testing.T) {
+	if runtime.GOOS != "windows" {
+		t.Skip("Skipping Windows-only test on " + runtime.GOOS)
+	}
+	nice, err := compat.Nice()
+	if err != nil {
+		t.Error(err)
+	}
+	for n := compat.MinNice; n <= compat.MaxNice; n++ {
+		err = compat.Renice(n)
+		if err != nil {
+			t.Error(err)
+		}
+	}
+	err = compat.Renice(nice)
+	if err != nil {
+		t.Error(err)
+	}
+}
