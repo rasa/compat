@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-const supports SupportsType = SupportsLinks | SupportsUID | SupportsGID | SupportsATime | SupportsBTime | SupportsCTime
+const supports SupportsType = SupportsLinks | SupportsATime | SupportsBTime | SupportsCTime | SupportsUID | SupportsGID
 
 func (fs *fileStat) times() {
 	fs.atime = time.Unix(int64(fs.sys.Atimespec.Sec), int64(fs.sys.Atimespec.Nsec))         //nolint:unconvert // needed conversion
