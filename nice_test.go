@@ -29,7 +29,7 @@ func TestRenice(t *testing.T) {
 }
 
 func TestReniceWindows(t *testing.T) {
-	if runtime.GOOS != "windows" { //nolint:goconst // quiet linter
+	if compat.IsWindows {
 		t.Skip("Skipping Windows-only test on " + runtime.GOOS)
 	}
 	nice, err := compat.Nice()
