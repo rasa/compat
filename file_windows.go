@@ -74,7 +74,7 @@ func loadInfo(fi os.FileInfo, name string) (FileInfo, error) {
 	fs.mode = fi.Mode()
 	fs.mtime = fi.ModTime()
 	fs.sys = *sys
-	fs.deviceID = uint64(i.VolumeSerialNumber) // uint32
+	fs.deviceID = uint64(i.VolumeSerialNumber)                           // uint32
 	fs.fileID = (uint64(i.FileIndexHigh) << 32) + uint64(i.FileIndexLow) //nolint:mnd // quiet linter
 	fs.links = uint64(i.NumberOfLinks)
 	fs.atime = time.Unix(0, fs.sys.LastAccessTime.Nanoseconds())
