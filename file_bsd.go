@@ -9,8 +9,8 @@ import (
 	"time"
 )
 
-// Not supported: SupportsBTime.
-const supports SupportsType = SupportsLinks | SupportsATime | SupportsCTime | SupportsUID | SupportsGID
+// Not supported: BTime.
+const supported SupportedType = Links | ATime | CTime | UID | GID
 
 func (fs *fileStat) times() {
 	fs.atime = time.Unix(int64(fs.sys.Atimespec.Sec), int64(fs.sys.Atimespec.Nsec))

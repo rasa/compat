@@ -14,8 +14,8 @@ import (
 	"github.com/cespare/xxhash"
 )
 
-// Not supported: SupportsLinks | SupportsBTime | SupportsCTime.
-const supports SupportsType = SupportsATime | SupportsUID | SupportsGID
+// Not supported: Links | BTime | CTime.
+const supports SupportedType = ATime | UID | GID
 
 // A fileStat is the implementation of FileInfo returned by Stat and Lstat.
 // See https://github.com/golang/go/blob/8cd6d68a/src/os/types_plan9.go#L13
