@@ -85,24 +85,23 @@ The `Stat()` and `Lstat()` functions return a `FileInfo` object.
 The table below lists the operating system support for each of the `FileInfo` functions:
 
 | OS      | DeviceID()    | FileID()* | Links()* | ATime()* | BTime()* | CTime()* | UID()* | GID()* |
-|---------|---------------|----------|----------|----------|----------|----------|--------|--------|
-| AIX     | ✅	          | ✅	     | ✅	     | ✅	     | ✖️      | ✅      | ✅    |  ✅  |
-| Android | ✅	          | ✅	     | ✅	     | ✅	     | ✖️      | ✅      | ✅    |  ✅  |
-| Darwin<br/>(macOS) | ✅ | ✅	     | ✅	     | ✅	     | ✅      | ✅      | ✅    |  ✅  |
-| Dragonfly | ✅	       | ✅	     | ✅	     | ✅	     | ✖️      | ✅      | ✅    |  ✅  |
-| FreeBSD | ✅	          | ✅	     | ✅	     | ✅	     | ✖️      | ✅      | ✅    |  ✅  |
-| Illumos | ✅	          | ✅	     | ✅	     | ✅	     | ✖️      | ✅      | ✅    |  ✅  |
-| iOS     | ✅	          | ✅	     | ✅	     | ✅	     | ✅	     | ✅      | ✅    |  ✅  |
-| Linux   | ✅	          | ✅	     | ✅	     | ✅	     | ✖️      | ✅      | ✅    |  ✅  |
-| NetBSD  | ✅	          | ✅	     | ✅	     | ✅	     | ✖️      | ✅      | ✅    |  ✅  |
-| OpenBSD | ✅	          | ✅	     | ✅	     | ✅	     | ✖️      | ✅      | ✅    |  ✅  |
-| Plan9   | ✅	          | ✅	     | ❌	     | ✅	     | ✖️      | ❌      | ☑️    |  ☑️  |
-| Solaris | ✅	          | ✅	     | ✅	     | ✅	     | ✖️      | ✅      | ✅    |  ✅  |
-| WebAssembly<br/>(Js) | ✅	    | ✅	     | ✅	     | ✅	     | ✖️      | ✅      | ✅    |  ✅  |
-| WebAssembly<br/>(WAPI) | ✅	 | ✅	     | ✅	     | ✅	     | ✖️      | ✅      | ✅    |  ✅  |
-| Windows | ✅	          | ✅	     | ✅      | ✅ 	  | ✅      | ✖️      | 🚧    |  🚧  |
+|---------|---------------|----------|-----------|----------|----------|----------|--------|--------|
+| AIX     | ✅	          | ✅	     | ✅        | ✅	    | ✖️       | ✅       | ✅     |  ✅   |
+| Android | ✅	          | ✅	     | ✅        | ✅	    | ✖️       | ✅       | ✅     |  ✅   |
+| Dragonfly | ✅	  | ✅	     | ✅        | ✅	    | ✖️       | ✅       | ✅     |  ✅   |
+| FreeBSD | ✅	          | ✅	     | ✅        | ✅	    | ✖️       | ✅       | ✅     |  ✅   |
+| Illumos | ✅	          | ✅	     | ✅        | ✅	    | ✖️       | ✅       | ✅     |  ✅   |
+| iOS     | ✅	          | ✅	     | ✅        | ✅	    | ✅       | ✅       | ✅     |  ✅   |
+| Linux   | ✅	          | ✅	     | ✅        | ✅	    | ✖️       | ✅       | ✅     |  ✅   |
+| macOS   | ✅            | ✅	     | ✅        | ✅	    | ✅       | ✅       | ✅     |  ✅   |
+| NetBSD  | ✅	          | ✅	     | ✅        | ✅	    | ✖️       | ✅       | ✅     |  ✅   |
+| OpenBSD | ✅	          | ✅	     | ✅        | ✅	    | ✖️       | ✅       | ✅     |  ✅   |
+| Plan9   | ✅	          | ✅	     | ❌        | ✅	    | ✖️       | ❌       | ☑️     |  ☑️   |
+| Solaris | ✅	          | ✅	     | ✅        | ✅	    | ✖️       | ✅       | ✅     |  ✅   |
+| WebAssembly | ✅	  | ✅	     | ✅        | ✅	    | ✖️       | ✅       | ✅     |  ✅   |
+| Windows | ✅	          | ✅	     | ✅        | ✅ 	    | ✅       | ✖️       | 🚧     |  🚧   |
 
-* May not be supported on older filesystems, such as FAT32.
+\* Support will depend on the underlying file system. See [Comparison of file systems](https://wikipedia.org/wiki/Comparison_of_file_systems#Metadata) for details.
 
 ✅ fully supported.<br/>
 ☑️ the UID() and GID() values are 64-bit hashes of the user and group names.<br/>
