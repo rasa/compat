@@ -17,7 +17,7 @@ import (
 	"golang.org/x/sys/windows"
 )
 
-// not supported: SupportsUID | SupportsGID | SupportsCTime
+// not supported: SupportsCTime | SupportsUID | SupportsGID
 const supports SupportsType = SupportsLinks | SupportsATime | SupportsBTime
 
 // A fileStat is the implementation of FileInfo returned by Stat and Lstat.
@@ -87,7 +87,7 @@ func loadInfo(fi os.FileInfo, name string) (FileInfo, error) {
 	return &fs, nil
 }
 
-// https://github.com/golang/go/blob/cad1fc52076f1368d79aa833c1810ae050df57e6/src/os/path_windows.go#L100
+// https://github.com/golang/go/blob/cad1fc52/src/os/path_windows.go#L100
 func fixLongPath(path string) string {
 	if canUseLongPaths {
 		return path
@@ -95,9 +95,9 @@ func fixLongPath(path string) string {
 	return addExtendedPrefix(path)
 }
 
-// https://github.com/golang/go/blob/cad1fc52076f1368d79aa833c1810ae050df57e6/src/os/path_windows.go#L107
+// https://github.com/golang/go/blob/cad1fc52/src/os/path_windows.go#L107
 // addExtendedPrefix adds the extended path prefix (\\?\) to path.
-func addExtendedPrefix(path string) string { //nolint:gocyclo
+func addExtendedPrefix(path string) string { //nolint:gocyclo // quiet linter
 	if len(path) >= 4 { //nolint:mnd // quiet linter
 		if path[:4] == `\??\` {
 			// Already extended with \??\
@@ -181,7 +181,7 @@ func addExtendedPrefix(path string) string { //nolint:gocyclo
 			return path
 		}
 		if n <= uint32(len(buf)-len(prefix)) { //nolint:gosec // quiet linter
-			buf = buf[:n+uint32(len(prefix))]
+			buf = buf[:n+uint32(len(prefix))] //nolint:gosec // quiet linter
 			break
 		}
 	}
@@ -193,13 +193,13 @@ func addExtendedPrefix(path string) string { //nolint:gocyclo
 	return syscall.UTF16ToString(buf)
 }
 
-// https://github.com/golang/go/blob/cad1fc52076f1368d79aa833c1810ae050df57e6/src/os/getwd.go#L13
+// https://github.com/golang/go/blob/cad1fc52/src/os/getwd.go#L13
 var getwdCache struct {
 	sync.Mutex
 	dir string
 }
 
-// https://github.com/golang/go/blob/cad1fc52076f1368d79aa833c1810ae050df57e6/src/runtime/os_windows.go#L448
+// https://github.com/golang/go/blob/cad1fc52/src/runtime/os_windows.go#L448
 var canUseLongPaths bool
 
 func init() {

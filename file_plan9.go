@@ -15,7 +15,7 @@ import (
 )
 
 // Not supported: SupportsLinks | SupportsBTime | SupportsCTime
-const supports SupportsType = SupportsUID | SupportsGID | SupportsATime
+const supports SupportsType = SupportsATime | SupportsUID | SupportsGID
 
 // A fileStat is the implementation of FileInfo returned by Stat and Lstat.
 // See https://github.com/golang/go/blob/8cd6d68a/src/os/types_plan9.go#L13
@@ -79,4 +79,4 @@ func loadInfo(fi os.FileInfo, _ string) (FileInfo, error) {
 	return &fs, nil
 }
 
-// https://github.com/golang/go/blob/d13da63929df73ab506314f35524ebb9b0f8a216/src/os/types_plan9.go#L26
+// https://github.com/golang/go/blob/d13da639/src/os/types_plan9.go#L26
