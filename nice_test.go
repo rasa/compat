@@ -10,14 +10,14 @@ import (
 	"github.com/rasa/compat"
 )
 
-func Test_Nice(t *testing.T) {
+func TestNice(t *testing.T) {
 	_, err := compat.Nice()
 	if err != nil {
 		t.Error(err)
 	}
 }
 
-func Test_Renice(t *testing.T) {
+func TestRenice(t *testing.T) {
 	nice, err := compat.Nice()
 	if err != nil {
 		t.Error(err)
@@ -28,7 +28,7 @@ func Test_Renice(t *testing.T) {
 	}
 }
 
-func Test_ReniceWindows(t *testing.T) {
+func TestReniceWindows(t *testing.T) {
 	if runtime.GOOS != "windows" {
 		t.Skip("Skipping Windows-only test on " + runtime.GOOS)
 	}
