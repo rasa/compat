@@ -51,7 +51,7 @@ func main() {
 }
 ```
 
-which outputs:
+which outputed this on a Linux system:
 
 ```text
 Name()    =cmd
@@ -100,7 +100,7 @@ The table below lists the operating system support for each of the `FileInfo` fu
 | Waspi1<br/>(Wasm) | ✅	 | ✅	     | ✅	     | ✅	     | ❌      | ✅      | ✅    |  ✅  |
 | Windows | ✅	          | ✅	     | ✅      | ✅ 	  | ✅      | ❌      | 🚧    |  🚧  |
 
-* May not be supported on non-standard filesystems, such as FAT32.
+* May not be supported on older filesystems, such as FAT32.
 
 ✅ indicates this function is fully supported.<br/>
 ❌ indicates that function is not implemented (though the OS may provide support for it).<br/>
