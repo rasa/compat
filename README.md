@@ -82,7 +82,7 @@ To install compat, use `go get`:
 The `Stat()` and `Lstat()` functions return a `FileInfo` object.
 The table below lists the operating system support for each of the `FileInfo` functions:
 
-| OS      | DeviceID()    | FileID() | Links()* | ATime()* | BTime()* | CTime()* | UID()* | GID()* |
+| OS      | DeviceID()    | FileID()* | Links()* | ATime()* | BTime()* | CTime()* | UID()* | GID()* |
 |---------|---------------|----------|----------|----------|----------|----------|--------|--------|
 | AIX     | ✅	          | ✅	     | ✅	     | ✅	     | ❌      | ✅      | ✅    |  ✅  |
 | Android | ✅	          | ✅	     | ✅	     | ✅	     | ❌      | ✅      | ✅    |  ✅  |
