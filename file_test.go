@@ -63,7 +63,7 @@ func Test_Stat(t *testing.T) {
 }
 
 func Test_Links(t *testing.T) {
-	if !compat.Supports(compat.SupportsLinks) {
+	if !compat.Supported(compat.Links) {
 		t.Skip("Links() not supported on " + runtime.GOOS)
 	}
 
@@ -116,7 +116,7 @@ func Test_Links(t *testing.T) {
 }
 
 func Test_ATime(t *testing.T) {
-	if !compat.Supports(compat.SupportsATime) {
+	if !compat.Supported(compat.ATime) {
 		t.Skip("ATime() not supported on " + runtime.GOOS)
 	}
 
@@ -152,7 +152,7 @@ func Test_ATime(t *testing.T) {
 }
 
 func Test_BTime(t *testing.T) {
-	if !compat.Supports(compat.SupportsBTime) {
+	if !compat.Supported(compat.BTime) {
 		t.Skip("BTime() not supported on " + runtime.GOOS)
 	}
 
@@ -173,7 +173,7 @@ func Test_BTime(t *testing.T) {
 }
 
 func Test_CTime(t *testing.T) {
-	if !compat.Supports(compat.SupportsCTime) {
+	if !compat.Supported(compat.CTime) {
 		t.Skip("CTime() not supported on " + runtime.GOOS)
 	}
 
@@ -226,7 +226,7 @@ func Test_MTime(t *testing.T) {
 }
 
 func Test_UID(t *testing.T) {
-	if !compat.Supports(compat.SupportsUID) {
+	if !compat.Supported(compat.UID) {
 		t.Skip("UID() not supported on " + runtime.GOOS)
 	}
 
@@ -247,7 +247,7 @@ func Test_UID(t *testing.T) {
 }
 
 func Test_GID(t *testing.T) {
-	if !compat.Supports(compat.SupportsGID) {
+	if !compat.Supported(compat.GID) {
 		t.Skip("GID() not supported on " + runtime.GOOS)
 	}
 

@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: Copyright © 2025 Ross Smith II <ross@smithii.com>
 // SPDX-License-Identifier: MIT
 
-//go:build !aix && !darwin && !dragonfly && !freebsd && !js && !linux && !netbsd && !openbsd && !plan9 && !solaris && !wasip1 && !windows
+//go:build !aix && !darwin && !dragonfly && !freebsd && !illumos && !js && !linux && !netbsd && !openbsd && !plan9 && !solaris && !wasip1 && !windows
 
 package compat
 
@@ -10,8 +10,8 @@ import (
 	"time"
 )
 
-// Not supported: SupportsLinks | SupportsATime | SupportsBTime | SupportsCTime | SupportsUID | SupportsGID.
-const supports SupportsType = 0
+// Not supported: Links | ATime | BTime | CTime | UID | GID.
+const supports SupportedType = 0
 
 // A fileStat is the implementation of FileInfo returned by Stat and Lstat.
 type fileStat struct {

@@ -8,26 +8,23 @@ import (
 	"time"
 )
 
-// SupportsType defines a bitmask that identifies if the OS supports specific
+// SupportedType defines a bitmask that identifies if the OS supports specific
 // fields, or not.
-type SupportsType uint
+type SupportedType uint
 
 const (
-	// SupportsLinks defines if the OS supports the Links() field.
-	SupportsLinks SupportsType = 1 << iota
-	// SupportsATime defines if the OS supports the ATime() (last accessed
-	// time) field.
-	SupportsATime
-	// SupportsBTime defines if the OS supports the BTime() (birth/created
-	// time) field.
-	SupportsBTime
-	// SupportsCTime defines if the OS supports the CTime() (last changed
-	// time) field.
-	SupportsCTime
-	// SupportsUID defines if the OS supports the DeviceUID() field.
-	SupportsUID
-	// SupportsGID defines if the OS supports the DeviceGID() field.
-	SupportsGID
+	// Links defines if the OS supports the Links() field.
+	Links SupportedType = 1 << iota
+	// ATime defines if the OS supports the ATime() (last accessed time) field.
+	ATime
+	// BTime defines if the OS supports the BTime() (birth/created time) field.
+	BTime
+	// CTime defines if the OS supports the CTime() (last changed time) field.
+	CTime
+	// UID defines if the OS supports the UID() (userID) field.
+	UID
+	// GID defines if the OS supports the GID() (groupID) field.
+	GID
 )
 
 // A FileInfo describes a file and is returned by [Stat].
@@ -66,9 +63,9 @@ func (fs *fileStat) MTime() time.Time   { return fs.mtime } // duplicates ModTim
 func (fs *fileStat) UID() uint64        { return fs.uid }
 func (fs *fileStat) GID() uint64        { return fs.gid }
 
-// Supports returns whether probe is supported by the operating system.
-func Supports(probe SupportsType) bool {
-	return supports&probe == probe
+// Supported returns whether probe is supported by the operating system.
+func Supported(function SupportedType) bool {
+	return supported&function == function
 }
 
 // Stat returns a [FileInfo] describing the named file.

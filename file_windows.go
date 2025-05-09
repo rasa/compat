@@ -17,8 +17,8 @@ import (
 	"golang.org/x/sys/windows"
 )
 
-// Not supported: SupportsCTime | SupportsUID | SupportsGID.
-const supports SupportsType = SupportsLinks | SupportsATime | SupportsBTime
+// Not supported: CTime | UID | GID.
+const supports SupportedType = Links | ATime | BTime
 
 // A fileStat is the implementation of FileInfo returned by Stat and Lstat.
 // See https://github.com/golang/go/blob/8cd6d68a/src/os/types_windows.go#L18
