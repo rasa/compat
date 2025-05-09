@@ -17,4 +17,4 @@ func (fs *fileStat) times() {
 	fs.ctime = time.Unix(int64(fs.sys.Ctim.Sec), int64(fs.sys.Ctim.Nsec)) //nolint:unconvert // needed conversion
 }
 
-// https://github.com/golang/go/blob/d000963d/src/os/types_unix.go#L28
+// See https://github.com/golang/go/blob/d000963d/src/os/types_unix.go#L28

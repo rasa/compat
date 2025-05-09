@@ -23,11 +23,12 @@ const supports SupportsType = SupportsLinks | SupportsATime | SupportsBTime
 // A fileStat is the implementation of FileInfo returned by Stat and Lstat.
 // See https://github.com/golang/go/blob/8cd6d68a/src/os/types_windows.go#L18
 type fileStat struct {
-	name     string
-	size     int64
-	mode     os.FileMode
-	mtime    time.Time
-	sys      windows.Win32FileAttributeData
+	name  string
+	size  int64
+	mode  os.FileMode
+	mtime time.Time
+	// See https://github.com/golang/go/blob/cad1fc52/src/os/types_windows.go#L276
+	sys      syscall.Win32FileAttributeData
 	deviceID uint64
 	fileID   uint64
 	links    uint64
@@ -39,10 +40,11 @@ type fileStat struct {
 	sync.Mutex
 }
 
+// Copied from https://github.com/golang/go/blob/d65c209b/src/os/types_windows.go#L287
 func loadInfo(fi os.FileInfo, name string) (FileInfo, error) {
 	var fs fileStat
 
-	sys, ok := fi.Sys().(*windows.Win32FileAttributeData)
+	sys, ok := fi.Sys().(*syscall.Win32FileAttributeData)
 	if !ok {
 		return &fs, errors.New("failed to cast fi.Sys()")
 	}
@@ -87,7 +89,7 @@ func loadInfo(fi os.FileInfo, name string) (FileInfo, error) {
 	return &fs, nil
 }
 
-// https://github.com/golang/go/blob/cad1fc52/src/os/path_windows.go#L100
+// Copied from https://github.com/golang/go/blob/cad1fc52/src/os/path_windows.go#L100
 func fixLongPath(path string) string {
 	if canUseLongPaths {
 		return path
@@ -95,7 +97,7 @@ func fixLongPath(path string) string {
 	return addExtendedPrefix(path)
 }
 
-// https://github.com/golang/go/blob/cad1fc52/src/os/path_windows.go#L107
+// Copied from https://github.com/golang/go/blob/cad1fc52/src/os/path_windows.go#L107
 // addExtendedPrefix adds the extended path prefix (\\?\) to path.
 func addExtendedPrefix(path string) string { //nolint:gocyclo // quiet linter
 	if len(path) >= 4 { //nolint:mnd // quiet linter
@@ -193,13 +195,13 @@ func addExtendedPrefix(path string) string { //nolint:gocyclo // quiet linter
 	return syscall.UTF16ToString(buf)
 }
 
-// https://github.com/golang/go/blob/cad1fc52/src/os/getwd.go#L13
+// Copied from https://github.com/golang/go/blob/cad1fc52/src/os/getwd.go#L13
 var getwdCache struct {
 	sync.Mutex
 	dir string
 }
 
-// https://github.com/golang/go/blob/cad1fc52/src/runtime/os_windows.go#L448
+// See https://github.com/golang/go/blob/cad1fc52/src/runtime/os_windows.go#L448
 var canUseLongPaths bool
 
 func init() {

@@ -14,8 +14,9 @@ import (
 )
 
 var (
-	hello             = []byte("hello")
-	mode  os.FileMode = 0o644
+	hello = []byte("hello")
+	// Windows only supports 0o666
+	mode os.FileMode = 0o666
 )
 
 func Test_Stat(t *testing.T) {
@@ -396,6 +397,9 @@ func write(t *testing.T, dir, base string) (string, error) {
 	t.Helper()
 
 	name := path.Join(dir, base)
+
+	// oldUmask := syscall.Umask(0)
+	// defer syscall.Umask(oldUmask)
 
 	err := os.WriteFile(name, hello, mode)
 	if err != nil {
