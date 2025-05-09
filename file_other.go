@@ -11,7 +11,7 @@ import (
 )
 
 // Not supported: Links | ATime | BTime | CTime | UID | GID.
-const supports SupportedType = 0
+const supported SupportedType = 0
 
 // A fileStat is the implementation of FileInfo returned by Stat and Lstat.
 type fileStat struct {
