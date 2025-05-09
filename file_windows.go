@@ -62,7 +62,7 @@ func loadInfo(fi os.FileInfo, name string) (FileInfo, error) {
 	if err != nil {
 		return &fs, err
 	}
-	defer windows.CloseHandle(h)
+	defer windows.CloseHandle(h) // nolint:errcheck // quiet linter
 	var i windows.ByHandleFileInformation
 	err = windows.GetFileInformationByHandle(h, &i)
 	if err != nil {
@@ -75,7 +75,7 @@ func loadInfo(fi os.FileInfo, name string) (FileInfo, error) {
 	fs.mtime = fi.ModTime()
 	fs.sys = *sys
 	fs.deviceID = uint64(i.VolumeSerialNumber) // uint32
-	fs.fileID = (uint64(i.FileIndexHigh) << 32) + uint64(i.FileIndexLow)
+	fs.fileID = (uint64(i.FileIndexHigh) << 32) + uint64(i.FileIndexLow) //nolint:mnd // quiet linter
 	fs.links = uint64(i.NumberOfLinks)
 	fs.atime = time.Unix(0, fs.sys.LastAccessTime.Nanoseconds())
 	fs.btime = time.Unix(0, fs.sys.CreationTime.Nanoseconds())
@@ -97,8 +97,8 @@ func fixLongPath(path string) string {
 
 // https://github.com/golang/go/blob/cad1fc52076f1368d79aa833c1810ae050df57e6/src/os/path_windows.go#L107
 // addExtendedPrefix adds the extended path prefix (\\?\) to path.
-func addExtendedPrefix(path string) string {
-	if len(path) >= 4 {
+func addExtendedPrefix(path string) string { //nolint:gocyclo
+	if len(path) >= 4 { //nolint:mnd // quiet linter
 		if path[:4] == `\??\` {
 			// Already extended with \??\
 			return path
@@ -138,7 +138,7 @@ func addExtendedPrefix(path string) string {
 		getwdCache.Unlock()
 	}
 
-	if pathLength < 248 {
+	if pathLength < 248 { //nolint:mnd // quiet linter
 		// Don't fix. (This is how Go 1.7 and earlier worked,
 		// not automatically generating the \\?\ form)
 		return path
@@ -155,10 +155,10 @@ func addExtendedPrefix(path string) string {
 		}
 	}
 	var prefix []uint16
-	if isUNC {
+	if isUNC { //nolint:gocritic // quiet linter
 		// UNC path, prepend the \\?\UNC\ prefix.
 		prefix = []uint16{'\\', '\\', '?', '\\', 'U', 'N', 'C', '\\'}
-	} else if isDevice {
+	} else if isDevice { //nolint:revive // quiet linter
 		// Don't add the extended prefix to device paths, as it would
 		// change its meaning.
 	} else {
@@ -172,15 +172,15 @@ func addExtendedPrefix(path string) string {
 	// Estimate the required buffer size using the path length plus the null terminator.
 	// pathLength includes the working directory. This should be accurate unless
 	// the working directory has changed without using os.Chdir.
-	n := uint32(pathLength) + 1
+	n := uint32(pathLength) + 1 //nolint:gosec // quiet linter
 	var buf []uint16
 	for {
-		buf = make([]uint16, n+uint32(len(prefix)))
+		buf = make([]uint16, n+uint32(len(prefix))) //nolint:gosec // quiet linter
 		n, err = syscall.GetFullPathName(&p[0], n, &buf[len(prefix)], nil)
 		if err != nil {
 			return path
 		}
-		if n <= uint32(len(buf)-len(prefix)) {
+		if n <= uint32(len(buf)-len(prefix)) { //nolint:gosec // quiet linter
 			buf = buf[:n+uint32(len(prefix))]
 			break
 		}
@@ -203,20 +203,20 @@ var getwdCache struct {
 var canUseLongPaths bool
 
 func init() {
-	canUseLongPaths, _ = isWindowsAtLeast(10, 0, 15063)
+	canUseLongPaths = isWindowsAtLeast(10, 0, 15063) //nolint:mnd // quiet linter
 }
 
-func isWindowsAtLeast(major, minor, build uint32) (bool, error) {
+func isWindowsAtLeast(major, minor, build uint32) bool {
 	v := w32.RtlGetVersion()
 	if v.MajorVersion < major {
-		return false, nil
+		return false
 	}
 	if v.MinorVersion < minor {
-		return false, nil
+		return false
 	}
 	if v.BuildNumber < build {
-		return false, nil
+		return false
 	}
 
-	return true, nil
+	return true
 }
