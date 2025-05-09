@@ -13,17 +13,23 @@ import (
 type SupportedType uint
 
 const (
-	// Links defines if the OS supports the Links() field.
+	// Links defines if FileInfo's Links() function is supported by the OS.
+	// Links() returns the number of hard links to the file.
 	Links SupportedType = 1 << iota
-	// ATime defines if the OS supports the ATime() (last accessed time) field.
+	// ATime defines if FileInfo's ATime() function is supported by the OS.
+	// ATime() returns the time the file was last accessed.
 	ATime
-	// BTime defines if the OS supports the BTime() (birth/created time) field.
+	// BTime defines if FileInfo's BTime() function is supported by the OS.
+	// BTime() returns the time the file was created (or "birthed").
 	BTime
-	// CTime defines if the OS supports the CTime() (last changed time) field.
+	// CTime defines if FileInfo's CTime() function is supported by the OS.
+	// CTime() returns the time the file's metadata was last changed.
 	CTime
-	// UID defines if the OS supports the UID() (userID) field.
+	// UID defines if FileInfo's UID() function is supported by the OS.
+	// UID() returns the user ID of the file's owner.
 	UID
-	// GID defines if the OS supports the GID() (groupID) field.
+	// GID defines if FileInfo's GID() function is supported by the OS.
+	// GID() returns the group ID of the file's group.
 	GID
 )
 
