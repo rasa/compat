@@ -63,8 +63,8 @@ func (fs *fileStat) MTime() time.Time   { return fs.mtime } // duplicates ModTim
 func (fs *fileStat) UID() uint64        { return fs.uid }
 func (fs *fileStat) GID() uint64        { return fs.gid }
 
-// Supported returns whether probe is supported by the operating system.
-func Supported(function SupportedType) bool {
+// Supports returns whether function is supported by the operating system.
+func Supports(function SupportedType) bool {
 	return supported&function == function
 }
 

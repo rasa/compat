@@ -15,7 +15,7 @@ import (
 )
 
 // Not supported: Links | BTime | CTime.
-const supports SupportedType = ATime | UID | GID
+const supported SupportedType = ATime | UID | GID
 
 // A fileStat is the implementation of FileInfo returned by Stat and Lstat.
 // See https://github.com/golang/go/blob/8cd6d68a/src/os/types_plan9.go#L13
