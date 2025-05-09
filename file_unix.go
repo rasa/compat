@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: Copyright © 2025 Ross Smith II <ross@smithii.com>
 // SPDX-License-Identifier: MIT
 
-//go:build aix || android || dragonfly || linux || openbsd || solaris
+//go:build aix || android || dragonfly || illumos || linux || openbsd || solaris
 
 package compat
 
