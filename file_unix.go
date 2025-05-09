@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-// not supported: SupportsBTime.
+// Not supported: SupportsBTime.
 const supports SupportsType = SupportsLinks | SupportsATime | SupportsCTime | SupportsUID | SupportsGID
 
 func (fs *fileStat) times() {

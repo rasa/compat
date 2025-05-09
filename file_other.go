@@ -10,7 +10,7 @@ import (
 	"time"
 )
 
-// not supported: SupportsLinks | SupportsATime | SupportsBTime | SupportsCTime | SupportsUID | SupportsGID
+// Not supported: SupportsLinks | SupportsATime | SupportsBTime | SupportsCTime | SupportsUID | SupportsGID.
 const supports SupportsType = 0
 
 // A fileStat is the implementation of FileInfo returned by Stat and Lstat.

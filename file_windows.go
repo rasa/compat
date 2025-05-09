@@ -17,7 +17,7 @@ import (
 	"golang.org/x/sys/windows"
 )
 
-// not supported: SupportsCTime | SupportsUID | SupportsGID
+// Not supported: SupportsCTime | SupportsUID | SupportsGID.
 const supports SupportsType = SupportsLinks | SupportsATime | SupportsBTime
 
 // A fileStat is the implementation of FileInfo returned by Stat and Lstat.
@@ -64,7 +64,7 @@ func loadInfo(fi os.FileInfo, name string) (FileInfo, error) {
 	if err != nil {
 		return &fs, err
 	}
-	defer windows.CloseHandle(h) // nolint:errcheck // quiet linter
+	defer windows.CloseHandle(h) //nolint:errcheck // quiet linter
 	var i windows.ByHandleFileInformation
 	err = windows.GetFileInformationByHandle(h, &i)
 	if err != nil {

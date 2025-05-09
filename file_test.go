@@ -5,7 +5,7 @@ package compat_test
 
 import (
 	"os"
-	"path"
+	"path/filepath"
 	"runtime"
 	"testing"
 	"time"
@@ -22,15 +22,13 @@ func init() {
 	if runtime.GOOS == "windows" {
 		mode = 0o666
 	} else {
-		mode = 0o644
+		mode = 0o600
 	}
 }
 
 func Test_Stat(t *testing.T) {
-	dir := t.TempDir()
-	base := "stat.txt"
 	now := time.Now()
-	name, err := write(t, dir, base)
+	name, err := createTemp(t)
 	if err != nil {
 		t.Error(err)
 	}
@@ -39,6 +37,8 @@ func Test_Stat(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
+
+	_, base := filepath.Split(name)
 
 	if got := fi.Name(); got != base {
 		t.Errorf("Name(): got %v, want %v", got, base)
@@ -67,9 +67,7 @@ func Test_Links(t *testing.T) {
 		t.Skip("Links() not supported on " + runtime.GOOS)
 	}
 
-	dir := t.TempDir()
-	base := "links.txt"
-	name, err := write(t, dir, base)
+	name, err := createTemp(t)
 	if err != nil {
 		t.Error(err)
 	}
@@ -84,7 +82,8 @@ func Test_Links(t *testing.T) {
 		t.Errorf("Links(): got %v, want %v", got, want)
 	}
 
-	link := path.Join(dir, "link.txt")
+	dir, _ := filepath.Split(name)
+	link := filepath.Join(dir, "link.txt")
 	err = os.Link(name, link)
 	if err != nil {
 		t.Error(err)
@@ -121,10 +120,8 @@ func Test_ATime(t *testing.T) {
 		t.Skip("ATime() not supported on " + runtime.GOOS)
 	}
 
-	dir := t.TempDir()
-	base := "atime.txt"
 	now := time.Now()
-	name, err := write(t, dir, base)
+	name, err := createTemp(t)
 	if err != nil {
 		t.Error(err)
 	}
@@ -159,10 +156,8 @@ func Test_BTime(t *testing.T) {
 		t.Skip("BTime() not supported on " + runtime.GOOS)
 	}
 
-	dir := t.TempDir()
-	base := "btime.txt"
 	now := time.Now()
-	name, err := write(t, dir, base)
+	name, err := createTemp(t)
 	if err != nil {
 		t.Error(err)
 	}
@@ -182,10 +177,8 @@ func Test_CTime(t *testing.T) {
 		t.Skip("CTime() not supported on " + runtime.GOOS)
 	}
 
-	dir := t.TempDir()
-	base := "ctime.txt"
 	now := time.Now()
-	name, err := write(t, dir, base)
+	name, err := createTemp(t)
 	if err != nil {
 		t.Error(err)
 	}
@@ -201,10 +194,8 @@ func Test_CTime(t *testing.T) {
 }
 
 func Test_MTime(t *testing.T) {
-	dir := t.TempDir()
-	base := "mtime.txt"
 	now := time.Now()
-	name, err := write(t, dir, base)
+	name, err := createTemp(t)
 	if err != nil {
 		t.Error(err)
 	}
@@ -239,9 +230,7 @@ func Test_UID(t *testing.T) {
 		t.Skip("UID() not supported on " + runtime.GOOS)
 	}
 
-	dir := t.TempDir()
-	base := "uid.txt"
-	name, err := write(t, dir, base)
+	name, err := createTemp(t)
 	if err != nil {
 		t.Error(err)
 	}
@@ -262,9 +251,7 @@ func Test_GID(t *testing.T) {
 		t.Skip("GID() not supported on " + runtime.GOOS)
 	}
 
-	dir := t.TempDir()
-	base := "gid.txt"
-	name, err := write(t, dir, base)
+	name, err := createTemp(t)
 	if err != nil {
 		t.Error(err)
 	}
@@ -281,9 +268,7 @@ func Test_GID(t *testing.T) {
 }
 
 func Test_SameDevice(t *testing.T) {
-	dir := t.TempDir()
-	base := "samedevice.txt"
-	name, err := write(t, dir, base)
+	name, err := createTemp(t)
 	if err != nil {
 		t.Error(err)
 	}
@@ -304,9 +289,7 @@ func Test_SameDevice(t *testing.T) {
 }
 
 func Test_SameDevices(t *testing.T) {
-	dir := t.TempDir()
-	base := "samedevices.txt"
-	name, err := write(t, dir, base)
+	name, err := createTemp(t)
 	if err != nil {
 		t.Error(err)
 	}
@@ -317,9 +300,7 @@ func Test_SameDevices(t *testing.T) {
 }
 
 func Test_SameFile(t *testing.T) {
-	dir := t.TempDir()
-	base := "samefile.txt"
-	name, err := write(t, dir, base)
+	name, err := createTemp(t)
 	if err != nil {
 		t.Error(err)
 	}
@@ -340,9 +321,7 @@ func Test_SameFile(t *testing.T) {
 }
 
 func Test_SameFiles(t *testing.T) {
-	dir := t.TempDir()
-	base := "samefiles.txt"
-	name, err := write(t, dir, base)
+	name, err := createTemp(t)
 	if err != nil {
 		t.Error(err)
 	}
@@ -353,15 +332,12 @@ func Test_SameFiles(t *testing.T) {
 }
 
 func Test_DiffFile(t *testing.T) {
-	dir := t.TempDir()
-	base1 := "difffimes1.txt"
-	name1, err := write(t, dir, base1)
+	name1, err := createTemp(t)
 	if err != nil {
 		t.Error(err)
 	}
 
-	base2 := "difffimes2.txt"
-	name2, err := write(t, dir, base2)
+	name2, err := createTemp(t)
 	if err != nil {
 		t.Error(err)
 	}
@@ -382,15 +358,12 @@ func Test_DiffFile(t *testing.T) {
 }
 
 func Test_DiffFiles(t *testing.T) {
-	dir := t.TempDir()
-	base1 := "difffimes1.txt"
-	name1, err := write(t, dir, base1)
+	name1, err := createTemp(t)
 	if err != nil {
 		t.Error(err)
 	}
 
-	base2 := "difffimes2.txt"
-	name2, err := write(t, dir, base2)
+	name2, err := createTemp(t)
 	if err != nil {
 		t.Error(err)
 	}
@@ -400,15 +373,24 @@ func Test_DiffFiles(t *testing.T) {
 	}
 }
 
-func write(t *testing.T, dir, base string) (string, error) {
+func createTemp(t *testing.T) (string, error) {
 	t.Helper()
 
-	name := path.Join(dir, base)
+	f, err := os.CreateTemp(t.TempDir(), "*")
+	if err != nil {
+		return "", err
+	}
+	name := f.Name()
 
 	// oldUmask := syscall.Umask(0)
 	// defer syscall.Umask(oldUmask)
 
-	err := os.WriteFile(name, hello, mode)
+	_, err = f.Write(hello)
+	if err != nil {
+		return "", err
+	}
+
+	err = f.Close()
 	if err != nil {
 		return "", err
 	}
