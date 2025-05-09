@@ -44,9 +44,9 @@ func loadInfo(fi os.FileInfo, _ string) (FileInfo, error) {
 	fs.mtime = fi.ModTime()
 	fs.sys = *sys
 
-	fs.deviceID = uint64(fs.sys.Dev) //nolint:unconvert // needed conversion
+	fs.deviceID = uint64(fs.sys.Dev) //nolint:gosec,unconvert,G115,nolintlint // intentional int32 → uint64 conversion
 	fs.fileID = fs.sys.Ino
-	fs.links = uint64(fs.sys.Nlink) //nolint:unconvert // needed conversion
+	fs.links = uint64(fs.sys.Nlink) //nolint:gosec,unconvert,G115,nolintlint // intentional int32 → uint64 conversion
 	fs.uid = uint64(fs.sys.Uid)
 	fs.gid = uint64(fs.sys.Gid)
 	fs.times()
