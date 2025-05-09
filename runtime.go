@@ -6,7 +6,7 @@ package compat
 import "runtime"
 
 const (
-	aIX       = "aix"
+	aix       = "aix"
 	android   = "android"
 	darwin    = "darwin"
 	dragonfly = "dragonfly"
@@ -24,7 +24,7 @@ const (
 )
 
 const (
-	IsAIX       = runtime.GOOS == aIX
+	IsAIX       = runtime.GOOS == aix
 	IsAndroid   = runtime.GOOS == android
 	IsDarwin    = runtime.GOOS == darwin
 	IsDragonfly = runtime.GOOS == dragonfly
