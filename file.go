@@ -38,16 +38,16 @@ type FileInfo interface {
 	Mode() os.FileMode  // file mode bits
 	ModTime() time.Time // last modified time
 	IsDir() bool        // abbreviation for Mode().IsDir()
-	Sys() any           // underlying data source (can return nil)
+	Sys() any           // underlying data source
 	DeviceID() uint64   // device ID
 	FileID() uint64     // file ID
-	Links() uint64      // number of hard links
-	ATime() time.Time   // last accessed time
-	BTime() time.Time   // birth (created) time
-	CTime() time.Time   // last changed time
+	Links() uint64      // number of hard links, or 0 if unsupported
+	ATime() time.Time   // last accessed time, or 0 if unsupported
+	BTime() time.Time   // birth (created) time, or 0 if unsupported
+	CTime() time.Time   // last changed time, or 0 if unsupported
 	MTime() time.Time   // last modified time (alias)
-	UID() uint64        // user ID
-	GID() uint64        // group ID
+	UID() uint64        // user ID, or 0 if unsupported
+	GID() uint64        // group ID, or 0 if unsupported
 }
 
 func (fs *fileStat) Name() string       { return fs.name }

@@ -15,9 +15,16 @@ import (
 
 var (
 	hello = []byte("hello")
-	// Windows only supports 0o666
-	mode os.FileMode = 0o666
+	mode  os.FileMode
 )
+
+func init() {
+	if runtime.GOOS == "windows" {
+		mode = 0o666
+	} else {
+		mode = 0o644
+	}
+}
 
 func Test_Stat(t *testing.T) {
 	dir := t.TempDir()
@@ -43,7 +50,7 @@ func Test_Stat(t *testing.T) {
 	}
 
 	if got := fi.Mode(); got != mode {
-		t.Errorf("Mode(): got %o, want %o", got, mode)
+		t.Errorf("Mode(): got 0o%o, want 0o%o", got, mode)
 	}
 
 	if got := fi.IsDir(); got != false {
