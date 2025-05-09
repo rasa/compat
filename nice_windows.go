@@ -16,18 +16,15 @@ var niceMap = map[uint32]int{
 	windows.HIGH_PRIORITY_CLASS:         -15,
 	windows.ABOVE_NORMAL_PRIORITY_CLASS: -5,
 	windows.NORMAL_PRIORITY_CLASS:       0,
-	windows.BELOW_NORMAL_PRIORITY_CLASS: 5,
-	windows.IDLE_PRIORITY_CLASS:         19,
+	windows.BELOW_NORMAL_PRIORITY_CLASS: 5,  //nolint:mnd // quiet linter
+	windows.IDLE_PRIORITY_CLASS:         19, //nolint:mnd // quiet linter
 }
 
 // Nice gets the CPU process priority. The return value is in a range from
 // -20 (least nice), to 19 (most nice), even on non-Unix systems such as
 // Windows, plan9, etc. If not supported by the operating system, -1 is returned.
 func Nice() (int, error) {
-	handle, err := windows.GetCurrentProcess()
-	if err != nil {
-		return -1, &NiceError{err}
-	}
+	handle := windows.CurrentProcess()
 
 	priorityClass, err := windows.GetPriorityClass(handle)
 	if err != nil {
@@ -106,12 +103,9 @@ func Renice(nice int) error {
 		return &InvalidNiceError{nice}
 	}
 
-	handle, err := windows.GetCurrentProcess()
-	if err != nil {
-		return &ReniceError{nice, err}
-	}
+	handle := windows.CurrentProcess()
 
-	err = windows.SetPriorityClass(handle, priorityClass)
+	err := windows.SetPriorityClass(handle, priorityClass)
 	if err != nil {
 		return &ReniceError{nice, err}
 	}
