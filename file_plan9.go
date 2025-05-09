@@ -79,4 +79,4 @@ func loadInfo(fi os.FileInfo, _ string) (FileInfo, error) {
 	return &fs, nil
 }
 
-// https://github.com/golang/go/blob/d13da639/src/os/types_plan9.go#L26
+// See https://github.com/golang/go/blob/d13da639/src/os/types_plan9.go#L26
