@@ -82,8 +82,8 @@ To install compat, use `go get`:
 The `Stat()` and `Lstat()` functions return a `FileInfo` object.
 The table below lists the operating system support for each of the `FileInfo` functions:
 
-| OS      | DeviceID()    | FileID() | Links() | ATime() | BTime() | CTime() | UID() | GID() |
-|---------|---------------|----------|---------|---------|---------|---------|-------|-------|
+| OS      | DeviceID()    | FileID() | Links()* | ATime()* | BTime()* | CTime()* | UID()* | GID()* |
+|---------|---------------|----------|----------|----------|----------|----------|--------|--------|
 | AIX     | ✅	          | ✅	     | ✅	     | ✅	     | ❌      | ✅      | ✅    |  ✅  |
 | Android | ✅	          | ✅	     | ✅	     | ✅	     | ❌      | ✅      | ✅    |  ✅  |
 | Darwin<br/>(macOS) | ✅ | ✅	     | ✅	     | ✅	     | ✅      | ✅      | ✅    |  ✅  |
@@ -98,11 +98,13 @@ The table below lists the operating system support for each of the `FileInfo` fu
 | Plan9   | ✅	          | ✅	     | ❌	     | ✅	     | ❌      | ❌      | 🟠    |  🟠  |
 | Solaris | ✅	          | ✅	     | ✅	     | ✅	     | ❌      | ✅      | ✅    |  ✅  |
 | Waspi1<br/>(Wasm) | ✅	 | ✅	     | ✅	     | ✅	     | ❌      | ✅      | ✅    |  ✅  |
-| Windows | ✅	          | ✅	     | ✅	     | ✅	     | ✅      | ❌      | 🚧    |  🚧  |
+| Windows | ✅	          | ✅	     | ✅      | ✅ 	  | ✅      | ❌      | 🚧    |  🚧  |
+
+* May not be supported on non-standard filesystems, such as FAT32.
 
 ✅ indicates this function is fully supported.<br/>
-❌ indicates the operating system doesn't provide this information.<br/>
-🟠 indicates the UserID and GroupID are 64-bit hashes generated from the user and group names.<br/>
+❌ indicates that function is not implemented (though the OS may provide support for it).<br/>
+🟠 indicates the UID() and GID() values are 64-bit hashes of the user and group names.<br/>
 🚧 indicates this feature is planned to be implemented.
 
 # Other Functions
