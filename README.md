@@ -98,7 +98,7 @@ The table below lists the operating system support for each of the `FileInfo` fu
 | Plan9   | ✅	          | ✅	     | ❌	     | ✅	     | ❌      | ❌      | 🟠    |  🟠  |
 | Solaris | ✅	          | ✅	     | ✅	     | ✅	     | ❌      | ✅      | ✅    |  ✅  |
 | Waspi1<br/>(Wasm) | ✅	 | ✅	     | ✅	     | ✅	     | ❌      | ✅      | ✅    |  ✅  |
-| Windows | ✅	          | ✅	     | ✅	     | ✅	     | ❌      | ❌      | 🚧    |  🚧  |
+| Windows | ✅	          | ✅	     | ✅	     | ✅	     | ✅      | ❌      | 🚧    |  🚧  |
 
 ✅ indicates this function is fully supported.<br/>
 ❌ indicates the operating system doesn't provide this information.<br/>
