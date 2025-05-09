@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: Copyright © 2025 Ross Smith II <ross@smithii.com>
 // SPDX-License-Identifier: MIT
 
-//go:build aix || darwin || dragonfly || freebsd || js || linux || netbsd || openbsd || solaris || wasip1
+//go:build aix || darwin || dragonfly || freebsd || linux || netbsd || openbsd || solaris || wasm
 
 package compat
 
