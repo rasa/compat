@@ -86,28 +86,29 @@ The table below lists the operating system support for each of the `FileInfo` fu
 
 | OS      | DeviceID()    | FileID()* | Links()* | ATime()* | BTime()* | CTime()* | UID()* | GID()* |
 |---------|---------------|----------|----------|----------|----------|----------|--------|--------|
-| AIX     | ✅	          | ✅	     | ✅	     | ✅	     | ❌      | ✅      | ✅    |  ✅  |
-| Android | ✅	          | ✅	     | ✅	     | ✅	     | ❌      | ✅      | ✅    |  ✅  |
+| AIX     | ✅	          | ✅	     | ✅	     | ✅	     | ✖️      | ✅      | ✅    |  ✅  |
+| Android | ✅	          | ✅	     | ✅	     | ✅	     | ✖️      | ✅      | ✅    |  ✅  |
 | Darwin<br/>(macOS) | ✅ | ✅	     | ✅	     | ✅	     | ✅      | ✅      | ✅    |  ✅  |
-| Dragonfly | ✅	       | ✅	     | ✅	     | ✅	     | ❌      | ✅      | ✅    |  ✅  |
-| FreeBSD | ✅	          | ✅	     | ✅	     | ✅	     | ❌      | ✅      | ✅    |  ✅  |
-| Illumos | ✅	          | ✅	     | ✅	     | ✅	     | ❌      | ✅      | ✅    |  ✅  |
+| Dragonfly | ✅	       | ✅	     | ✅	     | ✅	     | ✖️      | ✅      | ✅    |  ✅  |
+| FreeBSD | ✅	          | ✅	     | ✅	     | ✅	     | ✖️      | ✅      | ✅    |  ✅  |
+| Illumos | ✅	          | ✅	     | ✅	     | ✅	     | ✖️      | ✅      | ✅    |  ✅  |
 | iOS     | ✅	          | ✅	     | ✅	     | ✅	     | ✅	     | ✅      | ✅    |  ✅  |
-| Linux   | ✅	          | ✅	     | ✅	     | ✅	     | ❌      | ✅      | ✅    |  ✅  |
-| NetBSD  | ✅	          | ✅	     | ✅	     | ✅	     | ❌      | ✅      | ✅    |  ✅  |
-| OpenBSD | ✅	          | ✅	     | ✅	     | ✅	     | ❌      | ✅      | ✅    |  ✅  |
-| Plan9   | ✅	          | ✅	     | ❌	     | ✅	     | ❌      | ❌      | 🟠    |  🟠  |
-| Solaris | ✅	          | ✅	     | ✅	     | ✅	     | ❌      | ✅      | ✅    |  ✅  |
-| WebAssembly<br/>(Js) | ✅	    | ✅	     | ✅	     | ✅	     | ❌      | ✅      | ✅    |  ✅  |
-| WebAssembly<br/>(WAPI) | ✅	 | ✅	     | ✅	     | ✅	     | ❌      | ✅      | ✅    |  ✅  |
-| Windows | ✅	          | ✅	     | ✅      | ✅ 	  | ✅      | ❌      | 🚧    |  🚧  |
+| Linux   | ✅	          | ✅	     | ✅	     | ✅	     | ✖️      | ✅      | ✅    |  ✅  |
+| NetBSD  | ✅	          | ✅	     | ✅	     | ✅	     | ✖️      | ✅      | ✅    |  ✅  |
+| OpenBSD | ✅	          | ✅	     | ✅	     | ✅	     | ✖️      | ✅      | ✅    |  ✅  |
+| Plan9   | ✅	          | ✅	     | ❌	     | ✅	     | ✖️      | ❌      | ☑️    |  ☑️  |
+| Solaris | ✅	          | ✅	     | ✅	     | ✅	     | ✖️      | ✅      | ✅    |  ✅  |
+| WebAssembly<br/>(Js) | ✅	    | ✅	     | ✅	     | ✅	     | ✖️      | ✅      | ✅    |  ✅  |
+| WebAssembly<br/>(WAPI) | ✅	 | ✅	     | ✅	     | ✅	     | ✖️      | ✅      | ✅    |  ✅  |
+| Windows | ✅	          | ✅	     | ✅      | ✅ 	  | ✅      | ✖️      | 🚧    |  🚧  |
 
 * May not be supported on older filesystems, such as FAT32.
 
 ✅ fully supported.<br/>
-❌ not implemented (though support could be added if the OS provides the information).<br/>
-🟠 the UID() and GID() values are 64-bit hashes of the user and group names.<br/>
+☑️ the UID() and GID() values are 64-bit hashes of the user and group names.<br/>
 🚧 planned to be implemented.
+✖️ not implemented (but potentially could be if supported by the operating/file system.).<br/>
+❌ not implemented (as it is not supported by the operating system).<br/>
 
 # Other Functions
 
@@ -119,4 +120,4 @@ Please feel free to submit issues, fork the repository and send pull requests!
 
 # License
 
-This project is licensed under the terms of the [CC0](https://creativecommons.org/public-domain/cc0/) license.
+This project is MIT licensed.
