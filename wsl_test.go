@@ -5,7 +5,6 @@ package compat_test
 
 import (
 	"os"
-	"runtime"
 	"testing"
 
 	"github.com/rasa/compat"
@@ -15,7 +14,7 @@ func TestIsWSL(t *testing.T) {
 	// IsWSL() always returns false in Windows builds, even if the executable
 	// is run inside a WSL environment.
 	isWSL := false
-	if runtime.GOOS != "windows" {
+	if !compat.IsWindows {
 		isWSL = os.Getenv("WSL_DISTRO_NAME") != ""
 	}
 	got := compat.IsWSL()

@@ -13,7 +13,7 @@ const (
 	// MinNice is the minimum value returned by Nice().
 	MinNice = -20
 
-	myPID = 0
+	myPID = 0 //nolint:unused // quiet linter
 )
 
 // NiceError is returned when system call failed.

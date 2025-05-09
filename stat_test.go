@@ -19,7 +19,7 @@ var (
 )
 
 func init() {
-	if runtime.GOOS == "windows" {
+	if compat.IsWindows {
 		mode = 0o666
 	} else {
 		mode = 0o600
