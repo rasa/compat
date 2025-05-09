@@ -53,7 +53,7 @@ func main() {
 }
 ```
 
-which outputed on Linux:
+which, on Linux, produced:
 
 ```text
 Name()    =cmd
