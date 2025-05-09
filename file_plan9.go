@@ -14,7 +14,7 @@ import (
 	"github.com/cespare/xxhash"
 )
 
-// Not supported: SupportsLinks | SupportsBTime | SupportsCTime
+// Not supported: SupportsLinks | SupportsBTime | SupportsCTime.
 const supports SupportsType = SupportsATime | SupportsUID | SupportsGID
 
 // A fileStat is the implementation of FileInfo returned by Stat and Lstat.
