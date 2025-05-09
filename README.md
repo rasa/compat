@@ -106,8 +106,8 @@ The table below lists the operating system support for each of the `FileInfo` fu
 
 ✅ fully supported.<br/>
 ☑️ the UID() and GID() values are 64-bit hashes of the user and group names.<br/>
-🚧 planned to be implemented.
-✖️ not implemented (but potentially could be if supported by the operating/file system.).<br/>
+🚧 planned to be implemented.<br/>
+✖️ not implemented (but potentially could be if supported by the operating/file system).<br/>
 ❌ not implemented (as it is not supported by the operating system).<br/>
 
 # Other Functions
