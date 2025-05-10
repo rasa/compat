@@ -29,8 +29,10 @@ func TestRenice(t *testing.T) {
 }
 
 func TestReniceWindows(t *testing.T) {
-	if compat.IsWindows {
-		t.Skip("Skipping Windows-only test on " + runtime.GOOS)
+	isAdmin, _ := compat.IsAdmin()
+
+	if !compat.IsWindows && !isAdmin {
+		t.Skip("Skipping admin-only test on " + runtime.GOOS)
 	}
 	nice, err := compat.Nice()
 	if err != nil {
