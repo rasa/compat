@@ -5,7 +5,7 @@
 [![go.mod](https://img.shields.io/github/go-mod/go-version/rasa/compat)](go.mod)
 [![LICENSE](https://img.shields.io/github/license/rasa/compat)](LICENSE)
 [![Go Report Card](https://goreportcard.com/badge/github.com/rasa/compat)](https://goreportcard.com/report/github.com/rasa/compat)
-<!-- [![Codecov](https://codecov.io/gh/rasa/compat/branch/main/graph/badge.svg)](https://codecov.io/gh/rasa/compat) -->
+[![Codecov](https://codecov.io/gh/rasa/compat/branch/main/graph/badge.svg)](https://codecov.io/gh/rasa/compat)
 
 # Overview
 
@@ -106,8 +106,8 @@ The table below lists the operating system support for each of the `FileInfo` fu
 ✅ fully supported.<br/>
 ☑️ the UID() and GID() values are 64-bit hashes of the user and group names.<br/>
 🚧 planned to be implemented.<br/>
-✖️ not implemented (but potentially could be if supported by the operating/file system).<br/>
-❌ not implemented (as it is not supported by the operating system).<br/>
+✖️ not implemented (but if the OS supports it, we could add support).<br/>
+❌ not implemented (as the OS doesn't support it).<br/>
 
 # Other Functions
 
@@ -119,4 +119,4 @@ Please feel free to submit issues, fork the repository and send pull requests!
 
 # License
 
-This project is MIT licensed.
+This project is [MIT licensed](LICENSE).
