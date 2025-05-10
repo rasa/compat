@@ -13,12 +13,13 @@ import (
 	"testing"
 	"time"
 
-	"github.com/rasa/compat"
 	"golang.org/x/sys/windows"
+
+	"github.com/rasa/compat"
 )
 
 func TestIsAdmin(t *testing.T) {
-	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
+	ctx, cancel := context.WithTimeout(t.Context(), 1*time.Second)
 	defer cancel()
 
 	exe := "whoami.exe"
