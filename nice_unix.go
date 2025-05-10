@@ -13,7 +13,7 @@ import (
 // -20 (least nice), to 19 (most nice), even on non-Unix systems such as
 // Windows, plan9, etc. If not supported by the operating system, -1 is returned.
 func Nice() (int, error) {
-	nice, err := unix.Getpriority(unix.PRIO_PROCESS, myPID)
+	nice, err := unix.Getpriority(unix.PRIO_PROCESS, 0)
 	if err != nil {
 		return -1, &NiceError{err}
 	}
@@ -25,7 +25,7 @@ func Nice() (int, error) {
 // -20 (least nice), to 19 (most nice), even on non-Unix systems such as
 // Windows, plan9, etc.
 func Renice(nice int) error {
-	err := unix.Setpriority(unix.PRIO_PROCESS, myPID, nice)
+	err := unix.Setpriority(unix.PRIO_PROCESS, 0, nice)
 	if err != nil {
 		return &ReniceError{nice, err}
 	}
