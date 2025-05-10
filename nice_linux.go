@@ -16,7 +16,7 @@ import (
 // -20 (least nice), to 19 (most nice), even on non-Unix systems such as
 // Windows, plan9, etc. If not supported by the operating system, -1 is returned.
 func Nice() (int, error) {
-	nice, err := unix.Getpriority(unix.PRIO_PROCESS, myPID)
+	nice, err := unix.Getpriority(unix.PRIO_PROCESS, 0)
 	if err != nil {
 		return -1, &NiceError{err}
 	}
@@ -37,20 +37,20 @@ func Renice(nice int) error {
 	// where setting the niceness of the process would actually set the
 	// niceness of the process, instead it just affects the current thread
 	// so we need this workaround...
-	pgid, err := unix.Getpgid(myPID)
+	pgid, err := unix.Getpgid(0)
 	if err != nil {
 		// This error really shouldn't happen
 		return fmt.Errorf("nice: get process group: %w", err)
 	}
 	if pgid != os.Getpid() {
 		// We are not process group leader. Elevate!
-		err = unix.Setpgid(myPID, 0)
+		err = unix.Setpgid(0, 0)
 		if err != nil {
 			return fmt.Errorf("nice: set process group: %w", err)
 		}
 	}
 
-	err = unix.Setpriority(unix.PRIO_PROCESS, myPID, nice)
+	err = unix.Setpriority(unix.PRIO_PROCESS, 0, nice)
 	if err != nil {
 		return &ReniceError{nice, err}
 	}

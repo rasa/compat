@@ -26,7 +26,7 @@ func init() {
 	}
 }
 
-func TestStat(t *testing.T) {
+func TestStatStat(t *testing.T) {
 	now := time.Now()
 	name, err := createTemp(t)
 	if err != nil {
@@ -62,7 +62,7 @@ func TestStat(t *testing.T) {
 	}
 }
 
-func TestLinks(t *testing.T) {
+func TestStatLinks(t *testing.T) {
 	if !compat.Supports(compat.Links) {
 		t.Skip("Links() not supported on " + runtime.GOOS)
 	}
@@ -115,7 +115,7 @@ func TestLinks(t *testing.T) {
 	}
 }
 
-func TestATime(t *testing.T) {
+func TestStatATime(t *testing.T) {
 	if !compat.Supports(compat.ATime) {
 		t.Skip("ATime() not supported on " + runtime.GOOS)
 	}
@@ -151,7 +151,7 @@ func TestATime(t *testing.T) {
 	}
 }
 
-func TestBTime(t *testing.T) {
+func TestStatBTime(t *testing.T) {
 	if !compat.Supports(compat.BTime) {
 		t.Skip("BTime() not supported on " + runtime.GOOS)
 	}
@@ -172,7 +172,7 @@ func TestBTime(t *testing.T) {
 	}
 }
 
-func TestCTime(t *testing.T) {
+func TestStatCTime(t *testing.T) {
 	if !compat.Supports(compat.CTime) {
 		t.Skip("CTime() not supported on " + runtime.GOOS)
 	}
@@ -193,7 +193,7 @@ func TestCTime(t *testing.T) {
 	}
 }
 
-func TestMTime(t *testing.T) {
+func TestStatMTime(t *testing.T) {
 	now := time.Now()
 	name, err := createTemp(t)
 	if err != nil {
@@ -225,7 +225,7 @@ func TestMTime(t *testing.T) {
 	}
 }
 
-func TestUID(t *testing.T) {
+func TestStatUID(t *testing.T) {
 	if !compat.Supports(compat.UID) {
 		t.Skip("UID() not supported on " + runtime.GOOS)
 	}
@@ -246,7 +246,7 @@ func TestUID(t *testing.T) {
 	}
 }
 
-func TestGID(t *testing.T) {
+func TestStatGID(t *testing.T) {
 	if !compat.Supports(compat.GID) {
 		t.Skip("GID() not supported on " + runtime.GOOS)
 	}
@@ -267,7 +267,7 @@ func TestGID(t *testing.T) {
 	}
 }
 
-func TestSameDevice(t *testing.T) {
+func TestStatSameDevice(t *testing.T) {
 	name, err := createTemp(t)
 	if err != nil {
 		t.Error(err)
@@ -288,7 +288,7 @@ func TestSameDevice(t *testing.T) {
 	}
 }
 
-func TestSameDevices(t *testing.T) {
+func TestStatSameDevices(t *testing.T) {
 	name, err := createTemp(t)
 	if err != nil {
 		t.Error(err)
@@ -299,7 +299,7 @@ func TestSameDevices(t *testing.T) {
 	}
 }
 
-func TestSameFile(t *testing.T) {
+func TestStatSameFile(t *testing.T) {
 	name, err := createTemp(t)
 	if err != nil {
 		t.Error(err)
@@ -320,7 +320,7 @@ func TestSameFile(t *testing.T) {
 	}
 }
 
-func TestSameFiles(t *testing.T) {
+func TestStatSameFiles(t *testing.T) {
 	name, err := createTemp(t)
 	if err != nil {
 		t.Error(err)
@@ -331,7 +331,7 @@ func TestSameFiles(t *testing.T) {
 	}
 }
 
-func TestDiffFile(t *testing.T) {
+func TestStatDiffFile(t *testing.T) {
 	name1, err := createTemp(t)
 	if err != nil {
 		t.Error(err)
@@ -357,7 +357,7 @@ func TestDiffFile(t *testing.T) {
 	}
 }
 
-func TestDiffFiles(t *testing.T) {
+func TestStatDiffFiles(t *testing.T) {
 	name1, err := createTemp(t)
 	if err != nil {
 		t.Error(err)

@@ -12,7 +12,7 @@ import (
 	"github.com/rasa/compat"
 )
 
-func TestIsAdmin(t *testing.T) {
+func TestAdminIsAdmin(t *testing.T) {
 	isAdmin := os.Getuid() == 0
 	got, err := compat.IsAdmin()
 	if err != nil {

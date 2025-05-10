@@ -12,8 +12,6 @@ const (
 	MaxNice = 19
 	// MinNice is the minimum value returned by Nice().
 	MinNice = -20
-
-	myPID = 0
 )
 
 // NiceError is returned when system call failed.

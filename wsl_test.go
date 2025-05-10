@@ -10,15 +10,12 @@ import (
 	"github.com/rasa/compat"
 )
 
-func TestIsWSL(t *testing.T) {
+func TestWSLIsWSL(t *testing.T) {
 	// IsWSL() always returns false in Windows builds, even if the executable
 	// is run inside a WSL environment.
-	isWSL := false
-	if !compat.IsWindows {
-		isWSL = os.Getenv("WSL_DISTRO_NAME") != ""
-	}
+	want := !compat.IsWindows && os.Getenv("WSL_DISTRO_NAME") != ""
 	got := compat.IsWSL()
-	if got != isWSL {
-		t.Errorf("IsWSL(): got %v, expected %v", got, isWSL)
+	if got != want {
+		t.Errorf("IsWSL(): got %v, want %v", got, want)
 	}
 }

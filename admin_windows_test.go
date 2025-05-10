@@ -18,7 +18,7 @@ import (
 	"github.com/rasa/compat"
 )
 
-func TestIsAdmin(t *testing.T) {
+func TestAdminIsAdmin(t *testing.T) {
 	ctx, cancel := context.WithTimeout(t.Context(), 1*time.Second)
 	defer cancel()
 

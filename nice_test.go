@@ -17,7 +17,7 @@ func TestNice(t *testing.T) {
 	}
 }
 
-func TestRenice(t *testing.T) {
+func TestNiceRenice(t *testing.T) {
 	nice, err := compat.Nice()
 	if err != nil {
 		t.Error(err)
@@ -28,7 +28,7 @@ func TestRenice(t *testing.T) {
 	}
 }
 
-func TestReniceWindows(t *testing.T) {
+func TestNiceReniceIfAdmin(t *testing.T) {
 	isAdmin, _ := compat.IsAdmin()
 
 	if !compat.IsWindows && !isAdmin {
