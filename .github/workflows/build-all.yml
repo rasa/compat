@@ -1,0 +1,52 @@
+---
+# yaml-language-server: $schema https://json.schemastore.org/github-workflow.json
+
+name: build-all (except Android and iOS)
+
+on: # yamllint disable-line rule:truthy
+  workflow_call:
+  workflow_dispatch:
+
+env:
+  CGO_ENABLED: 0
+
+jobs:
+  build-all:
+    name: build-all
+    runs-on: ubuntu-24.04
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - uses: actions/setup-go@v5
+      with:
+        go-version: '1.24'
+
+    - name: go build (all targets but android and ios)
+      run: |
+        # go build (all targets but android and ios)
+        set -vx
+
+        mapfile -t targets < <(go tool dist list | grep -E -v '(android|ios)')
+        set +e
+        fails=0
+        builds=0
+        declare -A seen
+        for target in "${targets[@]}"; do
+          ((builds++))
+          export GOOS="${target%%/*}"
+          if [[ -v seen[${GOOS}] ]]; then
+            continue
+          fi
+          export _GOARCH="${target#*/}"
+          echo "Building for ${GOOS} (${_GOARCH})"
+          if ! go build .; then
+            echo "::warning ::Failed to build ${target}"
+            ((fails++))
+          fi
+          seen[${GOOS}]=1
+        done
+        echo "::warning ::${fails} of ${builds} builds failed"
+        exit "${fails}"
+
+    - run: go test -v .
