@@ -35,16 +35,16 @@ jobs:
         for target in "${targets[@]}"; do
           ((builds++))
           export GOOS="${target%%/*}"
-          if [[ -v seen[${GOOS}] ]]; then
+          if [[ -v seen["${GOOS}"] ]]; then
             continue
           fi
-          export _GOARCH="${target#*/}"
-          echo "Building for ${GOOS} (${_GOARCH})"
+          export GOARCH="${target#*/}"
+          echo "Building for ${GOOS}/${GOARCH}"
           if ! go build .; then
             echo "::warning ::Failed to build ${target}"
             ((fails++))
           fi
-          seen[${GOOS}]=1
+          seen["${GOOS}"]=1
         done
         echo "::warning ::${fails} of ${builds} builds failed"
         exit "${fails}"
