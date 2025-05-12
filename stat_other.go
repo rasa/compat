@@ -16,19 +16,19 @@ const supported SupportedType = 0
 
 // A fileStat is the implementation of FileInfo returned by Stat and Lstat.
 type fileStat struct {
-	name     string
-	size     int64
-	mode     os.FileMode
-	mtime    time.Time
-	sys      any
-	deviceID uint64
-	fileID   uint64
-	links    uint64
-	atime    time.Time
-	btime    time.Time
-	ctime    time.Time
-	uid      uint32
-	gid      uint32
+	name   string
+	size   int64
+	mode   os.FileMode
+	mtime  time.Time
+	sys    any
+	partID uint64
+	fileID uint64
+	links  uint64
+	atime  time.Time
+	btime  time.Time
+	ctime  time.Time
+	uid    uint32
+	gid    uint32
 }
 
 func loadInfo(fi os.FileInfo) (FileInfo, error) {

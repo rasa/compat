@@ -15,19 +15,19 @@ import (
 // A fileStat is the implementation of FileInfo returned by Stat and Lstat.
 // See https://github.com/golang/go/blob/8cd6d68a/src/os/types_unix.go#L15
 type fileStat struct {
-	name     string
-	size     int64
-	mode     os.FileMode
-	mtime    time.Time
-	sys      syscall.Stat_t
-	deviceID uint64
-	fileID   uint64
-	links    uint64
-	atime    time.Time
-	btime    time.Time
-	ctime    time.Time
-	uid      uint64
-	gid      uint64
+	name   string
+	size   int64
+	mode   os.FileMode
+	mtime  time.Time
+	sys    syscall.Stat_t
+	partID uint64
+	fileID uint64
+	links  uint64
+	atime  time.Time
+	btime  time.Time
+	ctime  time.Time
+	uid    uint64
+	gid    uint64
 }
 
 func loadInfo(fi os.FileInfo, _ string) (FileInfo, error) {
@@ -44,7 +44,7 @@ func loadInfo(fi os.FileInfo, _ string) (FileInfo, error) {
 	fs.mtime = fi.ModTime()
 	fs.sys = *sys
 
-	fs.deviceID = uint64(fs.sys.Dev) //nolint:gosec,unconvert,G115,nolintlint // intentional int32 → uint64 conversion
+	fs.partID = uint64(fs.sys.Dev) //nolint:gosec,unconvert,G115,nolintlint // intentional int32 → uint64 conversion
 	fs.fileID = fs.sys.Ino
 	fs.links = uint64(fs.sys.Nlink) //nolint:gosec,unconvert,G115,nolintlint // intentional int32 → uint64 conversion
 	fs.uid = uint64(fs.sys.Uid)
