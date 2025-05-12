@@ -89,6 +89,33 @@ func loadInfo(fi os.FileInfo, name string) (FileInfo, error) {
 	return &fs, nil
 }
 
+// See https://github.com/golang/go/blob/cad1fc52/src/runtime/os_windows.go#L448
+var canUseLongPaths bool
+
+func init() {
+	canUseLongPaths = isWindowsAtLeast(10, 0, 15063) //nolint:mnd // quiet linter
+}
+
+func isWindowsAtLeast(major, minor, build uint32) bool {
+	v := w32.RtlGetVersion()
+	if v.MajorVersion < major {
+		return false
+	}
+	if v.MinorVersion < minor {
+		return false
+	}
+	if v.BuildNumber < build {
+		return false
+	}
+
+	return true
+}
+
+// The following code is:
+// Copyright 2011 The Go Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file.
+
 // Copied from https://github.com/golang/go/blob/cad1fc52/src/os/path_windows.go#L100
 func fixLongPath(path string) string {
 	if canUseLongPaths {
@@ -195,30 +222,12 @@ func addExtendedPrefix(path string) string { //nolint:gocyclo // quiet linter
 	return syscall.UTF16ToString(buf)
 }
 
+// Copyright 2009 The Go Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file.
+
 // Copied from https://github.com/golang/go/blob/cad1fc52/src/os/getwd.go#L13
 var getwdCache struct {
 	sync.Mutex
 	dir string
-}
-
-// See https://github.com/golang/go/blob/cad1fc52/src/runtime/os_windows.go#L448
-var canUseLongPaths bool
-
-func init() {
-	canUseLongPaths = isWindowsAtLeast(10, 0, 15063) //nolint:mnd // quiet linter
-}
-
-func isWindowsAtLeast(major, minor, build uint32) bool {
-	v := w32.RtlGetVersion()
-	if v.MajorVersion < major {
-		return false
-	}
-	if v.MinorVersion < minor {
-		return false
-	}
-	if v.BuildNumber < build {
-		return false
-	}
-
-	return true
 }
