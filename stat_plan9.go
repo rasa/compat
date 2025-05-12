@@ -20,19 +20,19 @@ const supported SupportedType = ATime | UID | GID
 // A fileStat is the implementation of FileInfo returned by Stat and Lstat.
 // See https://github.com/golang/go/blob/8cd6d68a/src/os/types_plan9.go#L13
 type fileStat struct {
-	name     string
-	size     int64
-	mode     os.FileMode
-	mtime    time.Time
-	sys      syscall.Dir
-	deviceID uint64
-	fileID   uint64
-	links    uint64
-	atime    time.Time
-	btime    time.Time
-	ctime    time.Time
-	uid      uint64
-	gid      uint64
+	name   string
+	size   int64
+	mode   os.FileMode
+	mtime  time.Time
+	sys    syscall.Dir
+	partID uint64
+	fileID uint64
+	links  uint64
+	atime  time.Time
+	btime  time.Time
+	ctime  time.Time
+	uid    uint64
+	gid    uint64
 }
 
 func stat(name string) (FileInfo, error) {
@@ -67,7 +67,7 @@ func loadInfo(fi os.FileInfo, _ string) (FileInfo, error) {
 	fs.mtime = fi.ModTime()
 	fs.sys = *sys
 
-	fs.deviceID = uint64(fs.sys.Type)<<32 + uint64(fs.sys.Dev)
+	fs.partID = uint64(fs.sys.Type)<<32 + uint64(fs.sys.Dev)
 	fs.fileID = uint64(fs.sys.Qid.Path)
 	// fs.links not supported
 	fs.atime = time.Unix(int64(fs.sys.Atime), 0)

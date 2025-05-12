@@ -28,15 +28,15 @@ type fileStat struct {
 	mode  os.FileMode
 	mtime time.Time
 	// See https://github.com/golang/go/blob/cad1fc52/src/os/types_windows.go#L276
-	sys      syscall.Win32FileAttributeData
-	deviceID uint64
-	fileID   uint64
-	links    uint64
-	atime    time.Time
-	btime    time.Time
-	ctime    time.Time
-	uid      uint64
-	gid      uint64
+	sys    syscall.Win32FileAttributeData
+	partID uint64
+	fileID uint64
+	links  uint64
+	atime  time.Time
+	btime  time.Time
+	ctime  time.Time
+	uid    uint64
+	gid    uint64
 	sync.Mutex
 }
 
@@ -76,7 +76,7 @@ func loadInfo(fi os.FileInfo, name string) (FileInfo, error) {
 	fs.mode = fi.Mode()
 	fs.mtime = fi.ModTime()
 	fs.sys = *sys
-	fs.deviceID = uint64(i.VolumeSerialNumber)                           // uint32
+	fs.partID = uint64(i.VolumeSerialNumber)                             // uint32
 	fs.fileID = (uint64(i.FileIndexHigh) << 32) + uint64(i.FileIndexLow) //nolint:mnd // quiet linter
 	fs.links = uint64(i.NumberOfLinks)
 	fs.atime = time.Unix(0, fs.sys.LastAccessTime.Nanoseconds())

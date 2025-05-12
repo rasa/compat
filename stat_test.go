@@ -267,7 +267,7 @@ func TestStatGID(t *testing.T) {
 	}
 }
 
-func TestStatSameDevice(t *testing.T) {
+func TestStatSamePartition(t *testing.T) {
 	name, err := createTemp(t)
 	if err != nil {
 		t.Error(err)
@@ -283,19 +283,19 @@ func TestStatSameDevice(t *testing.T) {
 		t.Error(err)
 	}
 
-	if got := compat.SameDevice(fi1, fi2); !got {
-		t.Errorf("SameDevice(): got %v, want true", got)
+	if got := compat.SamePartition(fi1, fi2); !got {
+		t.Errorf("SamePartition(): got %v, want true", got)
 	}
 }
 
-func TestStatSameDevices(t *testing.T) {
+func TestStatSamePartitions(t *testing.T) {
 	name, err := createTemp(t)
 	if err != nil {
 		t.Error(err)
 	}
 
-	if got := compat.SameDevices(name, name); !got {
-		t.Errorf("SameDevices(): got %v, want true", got)
+	if got := compat.SamePartitions(name, name); !got {
+		t.Errorf("SamePartitions(): got %v, want true", got)
 	}
 }
 

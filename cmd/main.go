@@ -21,31 +21,31 @@ func main() {
 		log.Print(err)
 		return
 	}
-	fmt.Printf("Name()    =%v\n", fi.Name())
-	fmt.Printf("Size()    =%v\n", fi.Size())
-	fmt.Printf("Mode()    =0o%o\n", fi.Mode())
-	fmt.Printf("ModTime() =%v\n", fi.ModTime())
-	fmt.Printf("IsDir()   =%v\n", fi.IsDir())
-	fmt.Printf("Sys()     =%+v\n", fi.Sys())
-	fmt.Printf("DeviceID()=%v\n", fi.DeviceID())
-	fmt.Printf("FileID()  =%v\n", fi.FileID())
-	fmt.Printf("Links()   =%v\n", fi.Links())
-	fmt.Printf("ATime()   =%v\n", fi.ATime())
-	fmt.Printf("BTime()   =%v\n", fi.BTime())
-	fmt.Printf("CTime()   =%v\n", fi.CTime())
-	fmt.Printf("MTime()   =%v\n", fi.MTime())
-	fmt.Printf("UID()     =%v\n", fi.UID())
-	fmt.Printf("GID()     =%v\n", fi.GID())
+	fmt.Printf("Name()   =%v\n", fi.Name())
+	fmt.Printf("Size()   =%v\n", fi.Size())
+	fmt.Printf("Mode()   =0o%o\n", fi.Mode())
+	fmt.Printf("ModTime()=%v\n", fi.ModTime())
+	fmt.Printf("IsDir()  =%v\n", fi.IsDir())
+	fmt.Printf("Sys()    =%+v\n", fi.Sys())
+	fmt.Printf("PartID() =%v\n", fi.PartitionID())
+	fmt.Printf("FileID() =%v\n", fi.FileID())
+	fmt.Printf("Links()  =%v\n", fi.Links())
+	fmt.Printf("ATime()  =%v\n", fi.ATime())
+	fmt.Printf("BTime()  =%v\n", fi.BTime())
+	fmt.Printf("CTime()  =%v\n", fi.CTime())
+	fmt.Printf("MTime()  =%v\n", fi.MTime())
+	fmt.Printf("UID()    =%v\n", fi.UID())
+	fmt.Printf("GID()    =%v\n", fi.GID())
 
-	sameDevice()
-	sameDevicel()
-	sameDevices()
+	samePartition()
+	samePartitionl()
+	samePartitions()
 	sameFile()
 	sameFilel()
 	sameFiles()
 }
 
-func sameDevice() {
+func samePartition() {
 	exe, _ := os.Executable()
 	fi1, err := compat.Stat(exe)
 	if err != nil {
@@ -56,10 +56,10 @@ func sameDevice() {
 		log.Fatal(err)
 	}
 
-	fmt.Printf("SameDevice(): %v\n", compat.SameDevice(fi1, fi2))
+	fmt.Printf("SamePartition(): %v\n", compat.SamePartition(fi1, fi2))
 }
 
-func sameDevicel() {
+func samePartitionl() {
 	exe, _ := os.Executable()
 	link := "link" + filepath.Ext(exe)
 	_ = os.Link(exe, link)
@@ -73,13 +73,13 @@ func sameDevicel() {
 		log.Fatal(err)
 	}
 
-	fmt.Printf("SameDevicel(): %v\n", compat.SameDevice(fi1, fi2))
+	fmt.Printf("SamePartition() (link): %v\n", compat.SamePartition(fi1, fi2))
 }
 
-func sameDevices() {
+func samePartitions() {
 	exe, _ := os.Executable()
 
-	fmt.Printf("SameDevices(): %v\n", compat.SameDevices(exe, exe))
+	fmt.Printf("SamePartitions(): %v\n", compat.SamePartitions(exe, exe))
 }
 
 func sameFile() {
@@ -110,7 +110,7 @@ func sameFilel() {
 		log.Fatal(err)
 	}
 
-	fmt.Printf("SameFilel(): %v\n", compat.SameFile(fi1, fi2))
+	fmt.Printf("SameFile() (link): %v\n", compat.SameFile(fi1, fi2))
 }
 
 func sameFiles() {
