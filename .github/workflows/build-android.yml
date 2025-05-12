@@ -1,0 +1,146 @@
+---
+# yaml-language-server: $schema https://json.schemastore.org/github-workflow.json
+
+name: build-android
+
+on: # yamllint disable-line rule:truthy
+  workflow_call:
+  workflow_dispatch:
+    inputs:
+      # See https://developer.android.com/studio#command-tools
+      ANDROID_SDK_URL:
+        default: "https://dl.google.com/android/repository/commandlinetools-linux-13114758_latest.zip"
+        description: "Android SDK URL"
+        required: false
+        type: string
+      # See https://developer.android.com/ndk/downloads
+      ANDROID_NDK_URL:
+        default: "https://dl.google.com/android/repository/android-ndk-r28b-linux.zip"
+        description: "Android NDK URL"
+        required: false
+        type: string
+      # See https://apilevels.com/
+      ABI_VERSION:
+        default: "21"
+        description: "ABI Version (21-36)"
+        required: false
+        type: string
+      NDK_VERSION:
+        default: "28.1.13356709"
+        description: "Android NDK Version"
+        required: false
+        type: string
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  ANDROID_SDK_URL: ${{
+    inputs.ANDROID_SDK_URL ||
+    'https://dl.google.com/android/repository/commandlinetools-linux-13114758_latest.zip'
+    }}
+  ANDROID_NDK_URL: ${{
+    inputs.ANDROID_NDK_URL ||
+    'https://dl.google.com/android/repository/android-ndk-r28b-linux.zip'
+    }}
+  ABI_VERSION: ${{ inputs.ABI_VERSION || '21' }}
+  NDK_VERSION: ${{ inputs.NDK_VERSION || '28.1.13356709' }}
+  ANDROID_SDK_ROOT: '/usr/local/android-sdk'
+  CGO_ENABLED: '1'
+  GOOS: 'android'
+
+jobs:
+  build-android:
+    name: build-android
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        shell: bash --noprofile --norc -o pipefail -v -x {0}
+    strategy:
+      fail-fast: true
+      max-parallel: 1
+      matrix:
+        goarch: [arm64, arm, amd64, '386']
+        include:
+          - goarch: arm64
+            android_arch: aarch64
+            abi_prefix: ''
+          - goarch: arm
+            android_arch: armv7a
+            abi_prefix: 'eabi'
+          - goarch: amd64
+            android_arch: x86_64
+            abi_prefix: ''
+          - goarch: '386'
+            android_arch: i686
+            abi_prefix: ''
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '>=1.24'
+
+      - run: go mod download
+
+      - name: Install Android SDK via download
+        run: |
+          # Install Android SDK via download
+          wget -q -O cmdline-tools.zip "${ANDROID_SDK_URL}"
+          # printf 'ANDROID_SDK_ROOT=%s\n' "${ANDROID_SDK_ROOT}" >>"${GITHUB_ENV}"
+          sudo unzip -q cmdline-tools.zip -d "${ANDROID_SDK_ROOT}"
+          rm -f cmdline-tools.zip
+          sudo mv "${ANDROID_SDK_ROOT}/cmdline-tools" "${ANDROID_SDK_ROOT}/latest"
+          sudo mkdir "${ANDROID_SDK_ROOT}/cmdline-tools"
+          sudo mv "${ANDROID_SDK_ROOT}/latest" "${ANDROID_SDK_ROOT}/cmdline-tools/"
+          echo "PATH=${PATH}:${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin" >>"${GITHUB_ENV}"
+
+      - name: Install Android NDK via sdkmanager
+        run: |
+          # Install Android NDK via sdkmanager
+          yes | sdkmanager --sdk_root="${ANDROID_SDK_ROOT}" --install "ndk;${NDK_VERSION}" || true
+          export NDK_PATH="${ANDROID_SDK_ROOT}/ndk/${NDK_VERSION}"
+          printf 'NDK_PATH=%s\n' "${NDK_PATH}" >>"${GITHUB_ENV}"
+          echo "${NDK_PATH}/toolchains/llvm/prebuilt/linux-x86_64/bin" >>"${GITHUB_PATH}"
+
+      - name: Install Android NDK via download
+        run: |
+          # Install Android NDK via download
+          test -d "${NDK_PATH}" && exit 0
+          wget -q -O android-ndk.zip "${ANDROID_NDK_URL}"
+          export NDK_ROOT="${ANDROID_SDK_ROOT}/ndk"
+          sudo unzip -q android-ndk.zip -d "${NDK_ROOT}"
+          rm -f android-ndk.zip
+          ANDROID_NDK_VERSION=$(cut -d/ -f 6 <<<"${ANDROID_NDK_URL}" | cut -d '-' -f 3)
+          export ANDROID_NDK_VERSION
+          export NDK_PATH="${NDK_ROOT}/android-ndk-${ANDROID_NDK_VERSION}"
+          printf 'NDK_PATH=%s\n' "${NDK_PATH}" >>"${GITHUB_ENV}"
+          echo "${NDK_PATH}/toolchains/llvm/prebuilt/linux-x86_64/bin" >>"${GITHUB_PATH}"
+
+      - name: go build (GOARCH=${{ matrix.goarch }})
+        run: |
+          # go build (GOARCH=${{ matrix.goarch }})
+          export GOARCH=${{ matrix.goarch }}
+          export ABI_PREFIX=${{ matrix.abi_prefix }}
+          # yamllint disable-line
+          export CC="${NDK_PATH}/toolchains/llvm/prebuilt/linux-x86_64/bin/${{ matrix.android_arch }}-linux-android${ABI_PREFIX}${ABI_VERSION}-clang"
+          go env
+          export APK=uvk-${{ matrix.android_arch }}.apk
+          go build -o "${APK}" main.go
+          if [[ -f "${APK}" ]]; then
+            go version -m "${APK}"
+            ls -l "${APK}"
+            file "${APK}"
+          fi
+
+      # Needs to run on emulator:
+      # - name: go test (GOARCH=${{ matrix.goarch }})
+      #   run: |
+      #     export GOARCH=${{ matrix.goarch }}
+      #     export ABI_PREFIX=${{ matrix.abi_prefix }}
+      # yamllint disable-line
+      #     export CC="${NDK_PATH}/toolchains/llvm/prebuilt/linux-x86_64/bin/${{ matrix.android_arch }}-linux-android${ABI_PREFIX}${ABI_VERSION}-clang"
+      #     go env
+      #     go test -v ./...
