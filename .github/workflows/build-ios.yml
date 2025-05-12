@@ -1,0 +1,41 @@
+---
+# yaml-language-server: $schema https://json.schemastore.org/github-workflow.json
+
+name: build-ios
+
+on: # yamllint disable-line rule:truthy
+  # push:
+  #  branches:
+  #    - main
+  # pull_request:
+  workflow_call:
+  workflow_dispatch:
+
+env:
+  CGO_ENABLED: 1
+  GOOS: ios
+  GOARCH: arm64
+
+jobs:
+  build-ios:
+    name: build-ios
+    runs-on: macos-15
+
+    steps:
+      - uses: actions/checkout@v4.2.2
+
+      - uses: actions/setup-go@v5.4.0
+        with:
+          go-version: '>=1.24.0'
+
+      - run: go mod download
+
+      - run: go build -trimpath ./...
+
+
+      - run: go test -v ./...
+
+      # - uses: actions/upload-artifact@v3
+      #  with:
+      #     name: ios-build
+      #     path: build/
