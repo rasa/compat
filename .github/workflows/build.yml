@@ -29,19 +29,22 @@ jobs:
           # trying to diagnose why caching isn't working on windows
           # check-latest: true
 
-      # doesn't seem to help:
-      # - name: run go version
-      #   run: |
-      #     go version
-      #     echo "GO_VERSION=$(go version | sed 's#^.*go##;s# .*##')" >>"${GITHUB_ENV}"
+      - name: run go version
+        run: |
+          go env
+          go version
+          echo "GO_VERSION=$(go version | sed 's#^.*go##;s# .*##')" >>"${GITHUB_ENV}"
 
-      # - uses: actions/cache@v4
-      #   with:
-      #     path: |
-      #       ${{ env.GOCACHE }}
-      #       ${{ env.GOMODCACHE }}
-      #       ~/.cache/go-build
-      #     key: ${{ runner.os }}-go-${{ env.GO_VERSION }}-package-${{ hashFiles('**/go.sum') }}
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/go-build
+            ~/go/pkg/mod'            
+            C:/Users/runneradmin/AppData/Local/go-build
+            C:/Users/runneradmin/go/pkg/mod
+            C:\\Users\\runneradmin\\AppData\\Local\\go-build
+            C:\\Users\\runneradmin\\go\\pkg\\mod
+          key: ${{ runner.os }}-go-${{ env.GO_VERSION }}-package-${{ hashFiles('**/go.sum') }}
 
       - name: Build
         run: make ci
