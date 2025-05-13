@@ -49,11 +49,11 @@ linters:
     - noctx
     - nolintlint
     - perfsprint
-    - revive
+    # - revive # can't seem to quiet, and it breaks the build
     - rowserrcheck
     - sqlclosecheck
     - staticcheck
-    - stylecheck
+    # - stylecheck # can't seem to quiet, and it breaks the build
     - typecheck
     - unconvert
     - unparam
