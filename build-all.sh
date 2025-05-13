@@ -14,7 +14,7 @@ for target in "${targets[@]}"; do
   seen[${GOOS}]=1
   export GOARCH="${target#*/}"
   echo "Building for ${GOOS}/${GOARCH}"
-  go build -v ./...
+  go build -v .
   ((rv |= $?))
 done
 exit "${rv}"
