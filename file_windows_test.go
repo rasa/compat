@@ -284,11 +284,12 @@ func checkPerm(t *testing.T, name string, perm os.FileMode, isDir bool) { //noli
 	write := uint32(windows.FILE_WRITE_DATA | windows.FILE_APPEND_DATA | windows.FILE_WRITE_ATTRIBUTES | windows.FILE_WRITE_EA)
 	execute := uint32(windows.FILE_READ_DATA | windows.FILE_EXECUTE)
 
-	// Walk ACEs
-	raw := uintptr(unsafe.Pointer(dacl)) + unsafe.Sizeof(*dacl)
-	for i := uint16(0); i < dacl.AceCount; i++ {
-		ace := (*windows.ACCESS_ALLOWED_ACE)(unsafe.Pointer(raw))
+	aces, err := getEntriesFromACL(dacl)
+	if err != nil {
+		t.Fatalf("getEntriesFromACL() failed: %v", err)
+	}
 
+	for i, ace := range aces {
 		if ace.Header.AceType != windows.ACCESS_ALLOWED_ACE_TYPE {
 			t.Fatalf("ACE %d is not ACCESS_ALLOWED_ACE", i)
 		}
@@ -353,8 +354,6 @@ func checkPerm(t *testing.T, name string, perm os.FileMode, isDir bool) { //noli
 			}
 			t.Logf("%04o: %v: %-6v: %-20v: SID: %v\n", mode, ftype, label, mask, aceSID)
 		}
-
-		raw += uintptr(ace.Header.AceSize)
 	}
 
 	got := os.FileMode(mode)
@@ -460,4 +459,27 @@ func (a aceMask) String() string {
 		rv += "," + fmt.Sprintf("0x%x", mask)
 	}
 	return rv
+}
+
+// The following code is:
+// Copyright 2012 The Go Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file.
+
+////////////////////////////////////////////////////////////////////////////////
+// Copied from https://github.com/golang/sys/blob/3d9a6b80/windows/syscall_windows_test.go#L362C1-L374C2
+////////////////////////////////////////////////////////////////////////////////
+
+// getEntriesFromACL returns a list of explicit access control entries associated with the given ACL.
+func getEntriesFromACL(acl *windows.ACL) (aces []*windows.ACCESS_ALLOWED_ACE, err error) {
+	aces = make([]*windows.ACCESS_ALLOWED_ACE, acl.AceCount)
+
+	for i := uint16(0); i < acl.AceCount; i++ {
+		err = windows.GetAce(acl, uint32(i), &aces[i])
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	return aces, nil
 }
