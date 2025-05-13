@@ -9,6 +9,7 @@ import (
 	"os"
 	"os/exec"
 	"os/user"
+	"path/filepath"
 	"slices"
 	"strings"
 	"syscall"
@@ -98,12 +99,6 @@ func TestFileWindowsCreateEx(t *testing.T) {
 }
 
 func TestFileWindowsCreateTemp(t *testing.T) {
-	// if !testing.Verbose() {
-	// 	if compat.IsWindows {
-	// 		t.Skip("Skipping on Windows (for now)")
-	// 	}
-	// }
-
 	perm := compat.CreateTempPerm
 
 	dir := t.TempDir()
@@ -121,11 +116,6 @@ func TestFileWindowsCreateTemp(t *testing.T) {
 }
 
 func TestFileWindowsMkdir(t *testing.T) {
-	// if !testing.Verbose() {
-	// 	if compat.IsWindows {
-	// 		t.Skip("Skipping on Windows (for now)")
-	// 	}
-	// }
 	name, err := tmpname(t)
 	if err != nil {
 		t.Fatal(err)
@@ -143,11 +133,6 @@ func TestFileWindowsMkdir(t *testing.T) {
 }
 
 func TestFileWindowsMkdirAll(t *testing.T) {
-	// if !testing.Verbose() {
-	// 	if compat.IsWindows {
-	// 		t.Skip("Skipping on Windows (for now)")
-	// 	}
-	// }
 	name, err := tmpname(t)
 	if err != nil {
 		t.Fatal(err)
@@ -165,11 +150,6 @@ func TestFileWindowsMkdirAll(t *testing.T) {
 }
 
 func TestFileWindowsMkdirTemp(t *testing.T) {
-	// if !testing.Verbose() {
-	// 	if compat.IsWindows {
-	// 		t.Skip("Skipping on Windows (for now)")
-	// 	}
-	// }
 	dir := t.TempDir()
 	perm := compat.MkdirTempPerm
 	name, err := compat.MkdirTemp(dir, "")
@@ -252,9 +232,10 @@ func checkPerm(t *testing.T, name string, perm os.FileMode, isDir bool) { //noli
 		t.Fatalf("userSID.String() failed: %v", err)
 	}
 
-	token, err := windows.OpenCurrentProcessToken()
+	token := windows.Token(0)
+	err = windows.OpenProcessToken(windows.CurrentProcess(), windows.TOKEN_QUERY, &token)
 	if err != nil {
-		panic(err)
+		t.Fatalf("failed to get process token for %s: %v", usr.Username, err)
 	}
 	defer token.Close()
 
@@ -265,7 +246,7 @@ func checkPerm(t *testing.T, name string, perm os.FileMode, isDir bool) { //noli
 	buf := make([]byte, size)
 	err = windows.GetTokenInformation(token, windows.TokenPrimaryGroup, &buf[0], size, &size)
 	if err != nil {
-		panic(err)
+		t.Fatalf("failed to get token information for %s: %v", usr.Username, err)
 	}
 
 	// Interpret buffer as TOKEN_PRIMARY_GROUP struct
@@ -377,10 +358,8 @@ func checkPerm(t *testing.T, name string, perm os.FileMode, isDir bool) { //noli
 	}
 
 	got := os.FileMode(mode)
-	if testing.Verbose() {
-		dumpACLs(t, name, true)
-	}
 	if got != perm {
+		dumpACLs(t, name, true)
 		t.Fatalf("got %04o, want %04o", got, perm)
 	}
 }
@@ -394,6 +373,11 @@ func dumpACLs(t *testing.T, name string, doDir bool) {
 		t.Logf("Error running icacls: %v\n", err)
 	}
 	t.Log(string(out))
+
+	if doDir {
+		dir, _ := filepath.Split(name)
+		dumpACLs(t, dir, false)
+	}
 }
 
 // https://learn.microsoft.com/en-us/windows/win32/fileio/file-access-rights-constants

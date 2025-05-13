@@ -16,7 +16,7 @@ var (
 	// Default umask on *nix: remove write for group and others.
 	startingUmask uint32 = 0o022
 	currentUmask  atomic.Uint32
-	// these are all the bits we care about on Windows
+	// These are all the bits we care about on Windows (for now?).
 	permMask uint32 = 0o777
 )
 
@@ -37,9 +37,10 @@ func init() {
 }
 
 // Umask sets the umask to umask, and returns the previous value.
-// On Windows, the intial umask value is 022 octal, and can be changed by
-// setting environmental variable UMASK, to an octal value. For example:
-// `set UMASK=022` . Leading zeros and 'o's are allowed, and ignored.
+// On Windows, the initial umask value is 022 octal, and can be changed by
+// setting the environmental variable UMASK, to an octal value. For example:
+// `set UMASK=022` . Leading '0's and 'o's are allowed, so `22`, `022`,
+// and `0o22` are all accepted.
 // On Plan9, the function does nothing, and always returns zero.
 func Umask(newMask int) int {
 	old := currentUmask.Swap(uint32(newMask) & permMask) //nolint:gosec // quiet linter
