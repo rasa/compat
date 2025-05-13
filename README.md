@@ -41,8 +41,8 @@ func main() {
 	fmt.Printf("IsDir()   =%v\n", fi.IsDir())    // is a directory
 	fmt.Printf("Sys()     =%+v\n", fi.Sys())     // underlying data source
         // New functions provided by this compat library:
-	fmt.Printf("DeviceID()=%v\n", fi.DeviceID()) // device ID
-	fmt.Printf("FileID()  =%v\n", fi.FileID())   // inode/file ID
+	fmt.Printf("PartID()  =%v\n", fi.PartitionID()) // partition (device) ID
+	fmt.Printf("FileID()  =%v\n", fi.FileID())   // file (inode) ID
 	fmt.Printf("Links()   =%v\n", fi.Links())    // number of hard links
 	fmt.Printf("ATime()   =%v\n", fi.ATime())    // last access time
 	fmt.Printf("BTime()   =%v\n", fi.BTime())    // birth/created time
@@ -62,7 +62,7 @@ Mode()    =0o775
 ModTime() =2025-05-08 22:11:01.353744514 -0700 PDT
 IsDir()   =false
 Sys()     =&{Dev:64512 Ino:56893266 Nlink:1 Mode:33277 Uid:1000 Gid:1000 X__pad0:0 Rdev:0 Size:1597624 Blksize:4096 Blocks:3128 Atim:{Sec:1746767461 Nsec:354744521} Mtim:{Sec:1746767461 Nsec:353744514} Ctim:{Sec:1746767461 Nsec:353744514} X__unused:[0 0 0]}
-DeviceID()=64512
+PartID()  =64512
 FileID()  =56893266
 Links()   =1
 ATime()   =2025-05-08 22:11:01.354744521 -0700 PDT
@@ -84,7 +84,7 @@ To install compat, use `go get`:
 The `Stat()` and `Lstat()` functions return a `FileInfo` object.
 The table below lists the operating system support for each of the `FileInfo` functions:
 
-| OS      | DeviceID()    | FileID()* | Links()* | ATime()* | BTime()* | CTime()* | UID()* | GID()* |
+| OS      | PartitionID() | FileID()* | Links()* | ATime()* | BTime()* | CTime()* | UID()* | GID()* |
 |---------|---------------|----------|-----------|----------|----------|----------|--------|--------|
 | AIX     | ✅	          | ✅	     | ✅        | ✅	    | ✖️       | ✅       | ✅     |  ✅   |
 | Android | ✅	          | ✅	     | ✅        | ✅	    | ✖️       | ✅       | ✅     |  ✅   |
