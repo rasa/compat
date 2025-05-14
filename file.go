@@ -41,7 +41,7 @@ func Chmod(name string, mode os.FileMode) error {
 // The directory containing the file must already exist.
 // If there is an error, it will be of type [*PathError].
 func Create(name string) (*os.File, error) {
-	return create(name, CreatePerm, os.O_CREATE)
+	return create(name, CreatePerm, O_RDWR|O_CREATE|O_TRUNC)
 	// https://github.com/golang/go/blob/master/src/os/file.go#L393
 	// return OpenFile(name, O_RDWR|O_CREATE|O_TRUNC, 0666)
 }
@@ -53,7 +53,7 @@ func Create(name string) (*os.File, error) {
 // The directory containing the file must already exist.
 // If there is an error, it will be of type [*PathError].
 func CreateEx(name string, perm os.FileMode, flag int) (*os.File, error) {
-	return create(name, perm, flag|os.O_CREATE)
+	return create(name, perm, flag|O_CREATE)
 	// https://github.com/golang/go/blob/master/src/os/file.go#L393
 	// return OpenFile(name, O_RDWR|O_CREATE|O_TRUNC, 0666)
 }
@@ -130,7 +130,7 @@ func OpenFile(name string, flag int, perm os.FileMode) (*os.File, error) {
 // Since WriteFile requires multiple system calls to complete, a failure mid-operation
 // can leave the file in a partially written state.
 func WriteFile(name string, data []byte, perm os.FileMode) error {
-	return writeFile(name, data, perm, 0)
+	return writeFile(name, data, perm, O_WRONLY|O_CREATE|O_TRUNC)
 }
 
 // https://github.com/golang/go/blob/e282cbb1/src/os/file.go#L930C1-L934C52
@@ -141,5 +141,5 @@ func WriteFile(name string, data []byte, perm os.FileMode) error {
 // Since WriteFile requires multiple system calls to complete, a failure mid-operation
 // can leave the file in a partially written state.
 func WriteFileEx(name string, data []byte, perm os.FileMode, flag int) error {
-	return writeFile(name, data, perm, flag)
+	return writeFile(name, data, perm, flag|O_WRONLY|O_CREATE)
 }
