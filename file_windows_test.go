@@ -59,7 +59,7 @@ func TestFileWindowsChmod(t *testing.T) {
 			t.Fatalf("Chmod(%04o): %v", perm, err)
 		}
 
-		checkPerm(t, name, perm, false)
+		checkPerm(t, name, perm)
 	}
 }
 
@@ -73,7 +73,7 @@ func TestFileWindowsCreate(t *testing.T) {
 		t.Fatal(err)
 	}
 	_ = fh.Close()
-	checkPerm(t, name, compat.CreatePerm, false)
+	checkPerm(t, name, compat.CreatePerm)
 	err = os.Remove(name)
 	if err != nil {
 		t.Fatal(err)
@@ -91,7 +91,7 @@ func TestFileWindowsCreateEx(t *testing.T) {
 		t.Fatal(err)
 	}
 	_ = fh.Close()
-	checkPerm(t, name, perm, false)
+	checkPerm(t, name, perm)
 	err = os.Remove(name)
 	if err != nil {
 		t.Fatal(err)
@@ -108,7 +108,7 @@ func TestFileWindowsCreateTemp(t *testing.T) {
 	}
 	name := fh.Name()
 	_ = fh.Close()
-	checkPerm(t, name, perm, true)
+	checkPerm(t, name, perm)
 	err = os.Remove(name)
 	if err != nil {
 		t.Fatal(err)
@@ -125,7 +125,7 @@ func TestFileWindowsMkdir(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	checkPerm(t, name, perm, true)
+	checkPerm(t, name, perm)
 	err = os.Remove(name)
 	if err != nil {
 		t.Fatal(err)
@@ -142,7 +142,7 @@ func TestFileWindowsMkdirAll(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	checkPerm(t, name, perm, true)
+	checkPerm(t, name, perm)
 	err = os.Remove(name)
 	if err != nil {
 		t.Fatal(err)
@@ -156,7 +156,7 @@ func TestFileWindowsMkdirTemp(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	checkPerm(t, name, perm, true)
+	checkPerm(t, name, perm)
 	err = os.Remove(name)
 	if err != nil {
 		t.Fatal(err)
@@ -174,7 +174,7 @@ func TestFileWindowsOpenFile(t *testing.T) {
 		t.Fatal(err)
 	}
 	_ = fh.Close()
-	checkPerm(t, name, perm, false)
+	checkPerm(t, name, perm)
 	err = os.Remove(name)
 	if err != nil {
 		t.Fatal(err)
@@ -191,7 +191,7 @@ func TestFileWindowsWriteFile(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	checkPerm(t, name, perm, false)
+	checkPerm(t, name, perm)
 	err = os.Remove(name)
 	if err != nil {
 		t.Fatal(err)
@@ -208,14 +208,14 @@ func TestFileWindowsWriteFileEx(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	checkPerm(t, name, perm, false)
+	checkPerm(t, name, perm)
 	err = os.Remove(name)
 	if err != nil {
 		t.Fatal(err)
 	}
 }
 
-func checkPerm(t *testing.T, name string, perm os.FileMode, isDir bool) { //nolint:funlen,gocyclo // quiet linter
+func checkPerm(t *testing.T, name string, perm os.FileMode) { //nolint:funlen,gocyclo // quiet linter
 	t.Helper()
 
 	// Get current user's SID
@@ -349,7 +349,8 @@ func checkPerm(t *testing.T, name string, perm os.FileMode, isDir bool) { //noli
 
 			mask := aceMask(uint32(ace.Mask))
 			ftype := "file"
-			if isDir {
+			fi, err2 := os.Stat(name)
+			if err2 == nil && fi.IsDir() {
 				ftype = "dir "
 			}
 			t.Logf("%04o: %v: %-6v: %-20v: SID: %v\n", mode, ftype, label, mask, aceSID)
