@@ -31,7 +31,7 @@ type fileStat struct {
 	gid    uint32
 }
 
-func loadInfo(fi os.FileInfo) (FileInfo, error) {
+func loadInfo(_ os.FileInfo) (FileInfo, error) {
 	return fileStat{}, errors.New("not implemented")
 }
 
