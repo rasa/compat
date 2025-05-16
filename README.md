@@ -1,11 +1,15 @@
 # compat
 
-[![Keep a Changelog](https://img.shields.io/badge/changelog-Keep%20a%20Changelog-%23E05735)](CHANGELOG.md)
-[![Go Reference](https://pkg.go.dev/badge/github.com/rasa/compat.svg)](https://pkg.go.dev/github.com/rasa/compat)
-[![go.mod](https://img.shields.io/github/go-mod/go-version/rasa/compat)](go.mod)
-[![LICENSE](https://img.shields.io/github/license/rasa/compat)](LICENSE)
-[![Go Report Card](https://goreportcard.com/badge/github.com/rasa/compat)](https://goreportcard.com/report/github.com/rasa/compat)
+[![Build](https://github.com/rasa/compat/actions/workflows/build.yml/badge.svg)](https://github.com/rasa/compat/actions/workflows/build.yml)
+[![Last Commit](https://img.shields.io/github/last-commit/rasa/compat.svg)](https://github.com/rasa/compat/commits)
 [![Codecov](https://codecov.io/gh/rasa/compat/branch/main/graph/badge.svg)](https://codecov.io/gh/rasa/compat)
+[![Release](https://img.shields.io/github/v/release/rasa/compat.svg?style=flat)](https://github.com/rasa/compat/releases)
+[![go.mod](https://img.shields.io/github/go-mod/go-version/rasa/compat)](go.mod)
+[![Go Report Card](https://goreportcard.com/badge/github.com/rasa/compat)](https://goreportcard.com/report/github.com/rasa/compat)
+[![Go Reference](https://pkg.go.dev/badge/github.com/rasa/compat.svg)](https://pkg.go.dev/github.com/rasa/compat)
+[![Known Vulnerabilities](https://snyk.io/test/github/rasa/compat/badge.svg)](https://snyk.io/test/github/rasa/compat)
+[![Keep a Changelog](https://img.shields.io/badge/changelog-Keep%20a%20Changelog-%23E05735)](CHANGELOG.md)
+[![LICENSE](https://img.shields.io/github/license/rasa/compat)](LICENSE)
 
 # Overview
 
