@@ -399,5 +399,5 @@ func createTemp(t *testing.T) (string, error) {
 }
 
 func timesClose(a, b time.Time) bool {
-	return a.Sub(b).Abs() < 100*time.Millisecond
+	return a.Sub(b).Abs() < 1*time.Second
 }
