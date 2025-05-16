@@ -11,6 +11,9 @@
 [![Keep a Changelog](https://img.shields.io/badge/changelog-Keep%20a%20Changelog-%23E05735)](CHANGELOG.md)
 [![LICENSE](https://img.shields.io/github/license/rasa/compat)](LICENSE)
 
+<!--ts-->
+<!--te-->
+
 # Overview
 
 compat is a pure-Go library providing unified access to file and device metadata, atomic file operations, process priority, etc. on all major operating systems, include Windows, Linux, macOS, Android, iOS, and many others.
