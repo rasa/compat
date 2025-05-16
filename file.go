@@ -41,7 +41,7 @@ func Chmod(name string, mode os.FileMode) error {
 // The directory containing the file must already exist.
 // If there is an error, it will be of type [*PathError].
 func Create(name string) (*os.File, error) {
-	return create(name, CreatePerm, O_RDWR|O_CREATE|O_TRUNC)
+	return create(name, CreatePerm, O_CREATE) // O_RDWR|O_CREATE|O_TRUNC)
 	// https://github.com/golang/go/blob/master/src/os/file.go#L393
 	// return OpenFile(name, O_RDWR|O_CREATE|O_TRUNC, 0666)
 }
