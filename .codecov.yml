@@ -1,3 +1,2 @@
-coverage:
-  exclude:
-    - "cmd/*.go"
+ignore:
+  - "cmd/*.go"
