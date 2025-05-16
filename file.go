@@ -130,7 +130,7 @@ func OpenFile(name string, flag int, perm os.FileMode) (*os.File, error) {
 // Since WriteFile requires multiple system calls to complete, a failure mid-operation
 // can leave the file in a partially written state.
 func WriteFile(name string, data []byte, perm os.FileMode) error {
-	return writeFile(name, data, perm, O_WRONLY|O_CREATE|O_TRUNC)
+	return writeFile(name, data, perm, 0) // O_WRONLY|O_CREATE|O_TRUNC)
 }
 
 // https://github.com/golang/go/blob/e282cbb1/src/os/file.go#L930C1-L934C52
@@ -141,5 +141,5 @@ func WriteFile(name string, data []byte, perm os.FileMode) error {
 // Since WriteFile requires multiple system calls to complete, a failure mid-operation
 // can leave the file in a partially written state.
 func WriteFileEx(name string, data []byte, perm os.FileMode, flag int) error {
-	return writeFile(name, data, perm, flag|O_WRONLY|O_CREATE)
+	return writeFile(name, data, perm, flag) // O_WRONLY|O_CREATE)
 }
