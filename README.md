@@ -12,6 +12,14 @@
 [![LICENSE](https://img.shields.io/github/license/rasa/compat)](LICENSE)
 
 <!--ts-->
+* [Overview](#overview)
+* [Usage](#usage)
+* [Stat](#stat)
+* [Installing](#installing)
+* [FileInfo Functions](#fileinfo-functions)
+* [Other Functions](#other-functions)
+* [Contributing](#contributing)
+* [License](#license)
 <!--te-->
 
 # Overview
