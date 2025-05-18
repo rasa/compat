@@ -24,7 +24,7 @@
 
 # Overview
 
-compat is a pure-Go library providing unified access to file and device metadata, atomic file operations, process priority, etc. on all major operating systems, include Windows, Linux, macOS, Android, iOS, and many others.
+compat is a pure-Go library providing unified access to file and device metadata, atomic file operations, process priority, etc. on all major operating systems, include Andoid, iOS, Linux, macOS, Windows, and many others.
 
 # Usage
 
