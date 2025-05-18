@@ -13,7 +13,6 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/gonutz/w32/v2"
 	"golang.org/x/sys/windows"
 )
 
@@ -97,18 +96,14 @@ func init() {
 }
 
 func isWindowsAtLeast(major, minor, build uint32) bool {
-	v := w32.RtlGetVersion()
-	if v.MajorVersion < major {
+	mg, mn, bl := windows.RtlGetNtVersionNumbers()
+	if mg < major {
 		return false
 	}
-	if v.MinorVersion < minor {
+	if mn < minor {
 		return false
 	}
-	if v.BuildNumber < build {
-		return false
-	}
-
-	return true
+	return bl >= build
 }
 
 // The following code is:
