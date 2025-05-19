@@ -25,7 +25,6 @@ jobs:
     - name: go build (all targets but android and ios)
       run: |
         # go build (all targets but android and ios)
-        set -vx
 
         mapfile -t targets < <(go tool dist list | grep -E -v '(android|ios)')
         set +e
@@ -33,20 +32,21 @@ jobs:
         builds=0
         declare -A seen
         for target in "${targets[@]}"; do
-          ((builds++))
           export GOOS="${target%%/*}"
           if [[ -v seen["${GOOS}"] ]]; then
             continue
           fi
-          export GOARCH="${target#*/}"
-          echo "Building for ${GOOS}/${GOARCH}"
+          seen["${GOOS}"]=1
+          ((builds++))
+          echo "Build ${builds}: ${target}"
           if ! go build .; then
             echo "::warning ::Failed to build ${target}"
             ((fails++))
           fi
-          seen["${GOOS}"]=1
         done
-        echo "::warning ::${fails} of ${builds} builds failed"
+        if ((fails>0)); then
+          echo "::warning ::${fails} of ${builds} builds failed"
+        fi
         exit "${fails}"
 
     - run: go test -v .
