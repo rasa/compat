@@ -47,7 +47,7 @@ func Create(name string) (*os.File, error) {
 }
 
 // CreateEx creates or truncates the named file. If the file already exists,
-// it is truncated. If the file does not exist, it is created with mode 0o666
+// it is truncated. If the file does not exist, it is create using the perm's permission bits
 // (before umask). If successful, methods on the returned File can
 // be used for I/O; the associated file descriptor has mode [O_RDWR].
 // The directory containing the file must already exist.
@@ -75,7 +75,7 @@ func CreateTemp(dir, pattern string, flag int) (*os.File, error) {
 
 // https://github.com/golang/go/blob/e282cbb1/src/os/file.go#L324
 
-// Mkdir creates a new directory with the specified name and permission
+// Mkdir creates a new directory with the specified name and perm's permission
 // bits (before umask).
 // If there is an error, it will be of type [*PathError].
 func Mkdir(name string, perm os.FileMode) error {
@@ -87,7 +87,7 @@ func Mkdir(name string, perm os.FileMode) error {
 // MkdirAll creates a directory named path,
 // along with any necessary parents, and returns nil,
 // or else returns an error.
-// The permission bits perm (before umask) are used for all
+// The perm's permission bits (before umask) are used for all
 // directories that MkdirAll creates.
 // If path is already a directory, MkdirAll does nothing
 // and returns nil.
@@ -114,7 +114,7 @@ func MkdirTemp(dir, pattern string) (string, error) {
 // OpenFile is the generalized open call; most users will use Open
 // or Create instead. It opens the named file with specified flag
 // ([O_RDONLY] etc.). If the file does not exist, and the [O_CREATE] flag
-// is passed, it is created with mode perm (before umask);
+// is passed, it is created with perm's permission bits (before umask);
 // the containing directory must exist. If successful,
 // methods on the returned File can be used for I/O.
 // If there is an error, it will be of type [*PathError].
@@ -125,7 +125,7 @@ func OpenFile(name string, flag int, perm os.FileMode) (*os.File, error) {
 // https://github.com/golang/go/blob/e282cbb1/src/os/file.go#L930C1-L934C52
 
 // WriteFile writes data to the named file, creating it if necessary.
-// If the file does not exist, WriteFile creates it with permissions perm (before umask);
+// If the file does not exist, WriteFile creates it using perm's permissions bits (before umask);
 // otherwise WriteFile truncates it before writing, without changing permissions.
 // Since WriteFile requires multiple system calls to complete, a failure mid-operation
 // can leave the file in a partially written state.
@@ -136,7 +136,7 @@ func WriteFile(name string, data []byte, perm os.FileMode) error {
 // https://github.com/golang/go/blob/e282cbb1/src/os/file.go#L930C1-L934C52
 
 // WriteFileEx writes data to the named file, creating it if necessary.
-// If the file does not exist, WriteFileEx creates it with permissions perm (before umask);
+// If the file does not exist, WriteFileEx creates it with perm's permissions bits (before umask);
 // otherwise WriteFile truncates or appends, without changing permissions.
 // Since WriteFile requires multiple system calls to complete, a failure mid-operation
 // can leave the file in a partially written state.
