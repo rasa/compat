@@ -57,12 +57,17 @@ func TestRuntime(t *testing.T) {
 
 	lines := bytes.Split(out, []byte{'\n'})
 	for _, line := range lines {
-		before, after, found := strings.Cut(string(line), "/")
+		trimmed := strings.TrimSpace(string(line))
+		before, after, found := strings.Cut(trimmed, "/")
 		if !found {
 			continue
 		}
 		gooses[before] = struct{}{}
 		goarches[after] = struct{}{}
+	}
+
+	if len(gooses) == 0 {
+		t.Fatal("failed to parse output of: go tool dist list")
 	}
 
 	for goos := range gooses {
