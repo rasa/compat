@@ -13,7 +13,7 @@ import (
 	"github.com/rasa/compat"
 )
 
-const allowedTimeVariance = 1*time.Second
+const allowedTimeVariance = 1 * time.Second
 
 var (
 	hello = []byte("hello")
