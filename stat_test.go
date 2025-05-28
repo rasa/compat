@@ -13,6 +13,8 @@ import (
 	"github.com/rasa/compat"
 )
 
+const allowedTimeVariance = 1*time.Second
+
 var (
 	hello = []byte("hello")
 	mode  os.FileMode
@@ -399,5 +401,5 @@ func createTemp(t *testing.T) (string, error) {
 }
 
 func timesClose(a, b time.Time) bool {
-	return a.Sub(b).Abs() < 1*time.Second
+	return a.Sub(b).Abs() < allowedTimeVariance
 }
