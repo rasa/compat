@@ -52,16 +52,16 @@ func main() {
 	fmt.Printf("Name()    =%v\n", fi.Name())     // base name of the file
 	fmt.Printf("Size()    =%v\n", fi.Size())     // length in bytes
 	fmt.Printf("Mode()    =0o%o\n", fi.Mode())   // file mode bits
-	fmt.Printf("ModTime() =%v\n", fi.ModTime())  // last modified time
+	fmt.Printf("ModTime() =%v\n", fi.ModTime())  // last modified
 	fmt.Printf("IsDir()   =%v\n", fi.IsDir())    // is a directory
 	fmt.Printf("Sys()     =%+v\n", fi.Sys())     // underlying data source
         // New functions provided by this compat library:
 	fmt.Printf("PartID()  =%v\n", fi.PartitionID()) // partition (device) ID
 	fmt.Printf("FileID()  =%v\n", fi.FileID())   // file (inode) ID
 	fmt.Printf("Links()   =%v\n", fi.Links())    // number of hard links
-	fmt.Printf("ATime()   =%v\n", fi.ATime())    // last access time
-	fmt.Printf("BTime()   =%v\n", fi.BTime())    // birth/created time
-	fmt.Printf("CTime()   =%v\n", fi.CTime())    // metadata changed time
+	fmt.Printf("ATime()   =%v\n", fi.ATime())    // last accessed
+	fmt.Printf("BTime()   =%v\n", fi.BTime())    // created (birthed)
+	fmt.Printf("CTime()   =%v\n", fi.CTime())    // status/metadata changed
 	fmt.Printf("MTime()   =%v\n", fi.MTime())    // alias for ModTime
 	fmt.Printf("UID()     =%v\n", fi.UID())      // user ID
 	fmt.Printf("GID()     =%v\n", fi.GID())      // group ID
