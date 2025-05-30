@@ -23,7 +23,7 @@ const (
 	// BTime() returns the time the file was created (or "birthed").
 	BTime
 	// CTime defines if FileInfo's CTime() function is supported by the OS.
-	// CTime() returns the time the file's metadata was last changed.
+	// CTime() returns the time the file's status/metadata was last changed.
 	CTime
 	// UID defines if FileInfo's UID() function is supported by the OS.
 	// UID() returns the user ID of the file's owner.
@@ -46,8 +46,8 @@ type FileInfo interface {
 	FileID() uint64      // unique file ID (on a specific partition)
 	Links() uint64       // number of hard links, or 0 if unsupported
 	ATime() time.Time    // last accessed time, or 0 if unsupported
-	BTime() time.Time    // birth (created) time, or 0 if unsupported
-	CTime() time.Time    // last changed time, or 0 if unsupported
+	BTime() time.Time    // created (birthed) time, or 0 if unsupported
+	CTime() time.Time    // status/metadata changed time, or 0 if unsupported
 	MTime() time.Time    // last modified time (alias)
 	UID() uint64         // user ID, or 0 if unsupported
 	GID() uint64         // group ID, or 0 if unsupported
