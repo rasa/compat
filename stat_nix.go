@@ -50,7 +50,6 @@ func loadInfo(fi os.FileInfo, _ string) (FileInfo, error) {
 	fs.uid = uint64(fs.sys.Uid)
 	fs.gid = uint64(fs.sys.Gid)
 	fs.times()
-	// fs.btime not supported
 
 	return &fs, nil
 }
