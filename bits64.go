@@ -5,12 +5,6 @@
 
 package compat
 
-// Is32bit reports whether the build target is 32bit.
-func Is32bit() bool {
-	return false
-}
-
-// Is64bit reports whether the build target is 64bit.
-func Is64bit() bool {
-	return true
-}
+// CPUBits returns the number of bits in an integer on the build target.
+// For 386, arm, mips, and mipsle, it's 32. For all other targets, it's 64.
+const CPUBits = 64

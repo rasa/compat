@@ -10,18 +10,10 @@ import (
 	"github.com/rasa/compat"
 )
 
-func TestIs32bit(t *testing.T) {
-	want := bits.UintSize == 32
-	got := compat.Is32bit()
+func TestCPUBits(t *testing.T) {
+	want := bits.UintSize
+	got := compat.CPUBits
 	if got != want {
-		t.Fatalf("Is32Bit(): got %v, want %v", got, want)
-	}
-}
-
-func TestIs64bit(t *testing.T) {
-	want := bits.UintSize == 64
-	got := compat.Is64bit()
-	if got != want {
-		t.Fatalf("Is64Bit(): got %v, want %v", got, want)
+		t.Fatalf("CPUBits: got %v, want %v", got, want)
 	}
 }
