@@ -12,12 +12,13 @@ import (
 	"sync"
 	"syscall"
 	"time"
+	"unsafe"
 
 	"golang.org/x/sys/windows"
 )
 
-// Not supported: CTime | UID | GID.
-const supported SupportedType = Links | ATime | BTime
+// Not supported: UID | GID.
+const supported SupportedType = Links | ATime | BTime | CTime
 
 // A fileStat is the implementation of FileInfo returned by Stat and Lstat.
 // See https://github.com/golang/go/blob/8cd6d68a/src/os/types_windows.go#L18
@@ -39,55 +40,6 @@ type fileStat struct {
 	sync.Mutex
 }
 
-// Copied from https://github.com/golang/go/blob/d65c209b/src/os/types_windows.go#L287
-func loadInfo(fi os.FileInfo, name string) (FileInfo, error) {
-	var fs fileStat
-
-	sys, ok := fi.Sys().(*syscall.Win32FileAttributeData)
-	if !ok {
-		return &fs, errors.New("failed to cast fi.Sys()")
-	}
-
-	name = fixLongPath(name)
-	pathp, err := windows.UTF16PtrFromString(name)
-	if err != nil {
-		return &fs, err
-	}
-
-	fs.Lock()
-	defer fs.Unlock()
-
-	attrs := uint32(syscall.FILE_FLAG_BACKUP_SEMANTICS | syscall.FILE_FLAG_OPEN_REPARSE_POINT)
-
-	h, err := windows.CreateFile(pathp, 0, 0, nil, windows.OPEN_EXISTING, attrs, 0)
-	if err != nil {
-		return &fs, err
-	}
-	defer windows.CloseHandle(h) //nolint:errcheck // quiet linter
-	var i windows.ByHandleFileInformation
-	err = windows.GetFileInformationByHandle(h, &i)
-	if err != nil {
-		return &fs, err
-	}
-
-	fs.name = fi.Name()
-	fs.size = fi.Size()
-	fs.mode = fi.Mode()
-	fs.mtime = fi.ModTime()
-	fs.sys = *sys
-	fs.partID = uint64(i.VolumeSerialNumber)                             // uint32
-	fs.fileID = (uint64(i.FileIndexHigh) << 32) + uint64(i.FileIndexLow) //nolint:mnd // quiet linter
-	fs.links = uint64(i.NumberOfLinks)
-	fs.atime = time.Unix(0, fs.sys.LastAccessTime.Nanoseconds())
-	fs.btime = time.Unix(0, fs.sys.CreationTime.Nanoseconds())
-	// fs.ctime not supported
-	// @TODO(rasa): https://cygwin.com/cygwin-ug-net/ntsec.html
-	fs.uid = 0
-	fs.gid = 0
-
-	return &fs, nil
-}
-
 // See https://github.com/golang/go/blob/cad1fc52/src/runtime/os_windows.go#L448
 var canUseLongPaths bool
 
@@ -106,12 +58,120 @@ func isWindowsAtLeast(major, minor, build uint32) bool {
 	return bl >= build
 }
 
-// The following code is:
-// Copyright 2011 The Go Authors. All rights reserved.
+// Portions of the following code is:
+// Copyright 2009 The Go Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
+////////////////////////////////////////////////////////////////////////////////
+// Originally copied from https://github.com/golang/go/blob/d65c209b/src/os/types_windows.go#L287
+////////////////////////////////////////////////////////////////////////////////
+
+func loadInfo(fi os.FileInfo, name string) (FileInfo, error) {
+	var fs fileStat
+
+	sys, ok := fi.Sys().(*syscall.Win32FileAttributeData)
+	if !ok {
+		return &fs, &os.PathError{Op: "stat", Path: name, Err: errors.New("failed to cast fi.Sys()")}
+	}
+
+	name = fixLongPath(name)
+	pathp, err := windows.UTF16PtrFromString(name)
+	if err != nil {
+		return &fs, &os.PathError{Op: "stat", Path: name, Err: err}
+	}
+
+	fs.Lock()
+	defer fs.Unlock()
+
+	attrs := uint32(syscall.FILE_FLAG_BACKUP_SEMANTICS | syscall.FILE_FLAG_OPEN_REPARSE_POINT)
+
+	h, err := windows.CreateFile(pathp, 0, 0, nil, windows.OPEN_EXISTING, attrs, 0)
+	if err != nil {
+		return &fs, &os.PathError{Op: "stat", Path: name, Err: err}
+	}
+	defer windows.CloseHandle(h) //nolint:errcheck // quiet linter
+
+	var i windows.ByHandleFileInformation
+	err = windows.GetFileInformationByHandle(h, &i)
+	if err != nil {
+		return &fs, &os.PathError{Op: "stat", Path: name, Err: err}
+	}
+
+	fs.name = fi.Name()
+	fs.size = fi.Size()
+	fs.mode = fi.Mode()
+	fs.mtime = fi.ModTime()
+	fs.sys = *sys
+	fs.partID = uint64(i.VolumeSerialNumber)                             // uint32
+	fs.fileID = (uint64(i.FileIndexHigh) << 32) + uint64(i.FileIndexLow) //nolint:mnd // quiet linter
+	fs.links = uint64(i.NumberOfLinks)
+	fs.atime = time.Unix(0, fs.sys.LastAccessTime.Nanoseconds())
+	fs.btime = time.Unix(0, fs.sys.CreationTime.Nanoseconds())
+	// @TODO(rasa): https://cygwin.com/cygwin-ug-net/ntsec.html
+	fs.uid = 0
+	fs.gid = 0
+
+	// @TODO(rasa)
+	// perm, err := _stat(fi.Name())
+	// if err != nil {
+	// 	// We want to intentionally return a filled in FileInfo, so the user
+	// 	// can access all the fields except for the Windows perm bits.
+	// 	return &fs, &os.PathError{Op: "stat", Path: name, Err: err}
+	// }
+	// fs.mode &= ModePerm
+	// fs.mode |= perm
+
+	var bi FILE_BASIC_INFO
+	err = windows.GetFileInformationByHandleEx(h, windows.FileBasicInfo, (*byte)(unsafe.Pointer(&bi)), uint32(unsafe.Sizeof(bi)))
+	// ignore failures on changetime.
+	if err == nil {
+		// ChangedTime is 100-nanosecond intervals since January 1, 1601
+		nsec := bi.ChangedTime
+		// change starting time to the Epoch (00:00:00 UTC, January 1, 1970)
+		nsec -= 116444736000000000
+		// convert into nanoseconds
+		nsec *= 100
+		fs.ctime = time.Unix(0, nsec)
+	}
+
+	return &fs, nil
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// The following code is:
+// Copyright 2012 The Go Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file.
+///////////////////////////////////////////////////////////////////////////////
+
+////////////////////////////////////////////////////////////////////////////////
+// Copied from https://github.com/golang/go/blob/dbaa2d3e/src/internal/syscall/windows/syscall_windows.go#L162
+////////////////////////////////////////////////////////////////////////////////
+
+type FILE_BASIC_INFO struct {
+	CreationTime   int64
+	LastAccessTime int64
+	LastWriteTime  int64
+	ChangedTime    int64
+	FileAttributes uint32
+
+	// Pad out to 8-byte alignment.
+	//
+	// Without this padding, TestChmod fails due to an argument validation error
+	// in SetFileInformationByHandle on windows/386.
+	//
+	// https://learn.microsoft.com/en-us/cpp/build/reference/zp-struct-member-alignment?view=msvc-170
+	// says that “The C/C++ headers in the Windows SDK assume the platform's
+	// default alignment is used.” What we see here is padding rather than
+	// alignment, but maybe it is related.
+	_ uint32
+}
+
+////////////////////////////////////////////////////////////////////////////////
 // Copied from https://github.com/golang/go/blob/cad1fc52/src/os/path_windows.go#L100
+////////////////////////////////////////////////////////////////////////////////
+
 func fixLongPath(path string) string {
 	if canUseLongPaths {
 		return path
@@ -119,7 +179,10 @@ func fixLongPath(path string) string {
 	return addExtendedPrefix(path)
 }
 
+////////////////////////////////////////////////////////////////////////////////
 // Copied from https://github.com/golang/go/blob/cad1fc52/src/os/path_windows.go#L107
+////////////////////////////////////////////////////////////////////////////////
+
 // addExtendedPrefix adds the extended path prefix (\\?\) to path.
 func addExtendedPrefix(path string) string { //nolint:gocyclo // quiet linter
 	if len(path) >= 4 { //nolint:mnd // quiet linter
@@ -217,11 +280,10 @@ func addExtendedPrefix(path string) string { //nolint:gocyclo // quiet linter
 	return syscall.UTF16ToString(buf)
 }
 
-// Copyright 2009 The Go Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file.
-
+////////////////////////////////////////////////////////////////////////////////
 // Copied from https://github.com/golang/go/blob/cad1fc52/src/os/getwd.go#L13
+////////////////////////////////////////////////////////////////////////////////
+
 var getwdCache struct {
 	sync.Mutex
 	dir string
