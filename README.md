@@ -107,14 +107,14 @@ The table below lists the operating system support for each of the `FileInfo` fu
 | FreeBSD | ✅	          | ✅	     | ✅        | ✅	    | ✖️       | ✅       | ✅     |  ✅   |
 | Illumos | ✅	          | ✅	     | ✅        | ✅	    | ✖️       | ✅       | ✅     |  ✅   |
 | iOS     | ✅	          | ✅	     | ✅        | ✅	    | ✅       | ✅       | ✅     |  ✅   |
-| Linux   | ✅	          | ✅	     | ✅        | ✅	    | ✖️       | ✅       | ✅     |  ✅   |
+| Linux   | ✅	          | ✅	     | ✅        | ✅	    | ✅       | ✅       | ✅     |  ✅   |
 | macOS   | ✅            | ✅	     | ✅        | ✅	    | ✅       | ✅       | ✅     |  ✅   |
 | NetBSD  | ✅	          | ✅	     | ✅        | ✅	    | ✖️       | ✅       | ✅     |  ✅   |
 | OpenBSD | ✅	          | ✅	     | ✅        | ✅	    | ✖️       | ✅       | ✅     |  ✅   |
 | Plan9   | ✅	          | ✅	     | ❌        | ✅	    | ✖️       | ❌       | ☑️     |  ☑️   |
 | Solaris | ✅	          | ✅	     | ✅        | ✅	    | ✖️       | ✅       | ✅     |  ✅   |
 | WebAssembly | ✅	  | ✅	     | ✅        | ✅	    | ✖️       | ✅       | ✅     |  ✅   |
-| Windows | ✅	          | ✅	     | ✅        | ✅ 	    | ✅       | ✖️       | 🚧     |  🚧   |
+| Windows | ✅	          | ✅	     | ✅        | ✅ 	    | ✅       | ✅       | 🚧     |  🚧   |
 
 \* Support will depend on the underlying file system. See [Comparison of file systems](https://wikipedia.org/wiki/Comparison_of_file_systems#Metadata) for details.
 
