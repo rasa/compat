@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased](https://github.com/rasa/compat/compare/v0.4.0...HEAD)
 
+- Add `Is$GOOS` and `Is$GOARCH` constants (`IsAIX`, `Is386`, etc.).
+- Add `CPUBits` constant.
+- Add `CTime()` support for `Stat()`/`Lstat()` on Windows.
+- Add `BTime()` support for `Stat()`/`Lstat()` on Linux.
+
 ## Added
 
 - Add `Chmod()`, `Create()`, `CreateTemp()`, `OpenFile()` and `WriteFile()` functions.
