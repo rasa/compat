@@ -107,7 +107,7 @@ The table below lists the operating system support for each of the `FileInfo` fu
 | FreeBSD | ✅	          | ✅        | ✅	    | ✖️       | ✅       | ✅     |
 | Illumos | ✅	          | ✅        | ✅	    | ✖️       | ✅       | ✅     |
 | iOS     | ✅	          | ✅        | ✅	    | ✅       | ✅       | ✅     |
-| Linux   | ✅	          | ✅        | ✅	    | ✅       | ✅       | ✅     |
+| Linux   | ✅	          | ✅        | ✅	    | 🚧      | ✅       | ✅     |
 | macOS   | ✅            | ✅        | ✅	    | ✅       | ✅       | ✅     |
 | NetBSD  | ✅	          | ✅        | ✅	    | ✖️       | ✅       | ✅     |
 | OpenBSD | ✅	          | ✅        | ✅	    | ✖️       | ✅       | ✅     |
