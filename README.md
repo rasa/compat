@@ -99,22 +99,22 @@ To install compat, use `go get`:
 The `Stat()` and `Lstat()` functions return a `FileInfo` object.
 The table below lists the operating system support for each of the `FileInfo` functions:
 
-| OS      | PartitionID() | FileID()* | Links()* | ATime()* | BTime()* | CTime()* | UID()* | GID()* |
-|---------|---------------|----------|-----------|----------|----------|----------|--------|--------|
-| AIX     | ✅	          | ✅	     | ✅        | ✅	    | ✖️       | ✅       | ✅     |  ✅   |
-| Android | ✅	          | ✅	     | ✅        | ✅	    | ✖️       | ✅       | ✅     |  ✅   |
-| Dragonfly | ✅	  | ✅	     | ✅        | ✅	    | ✖️       | ✅       | ✅     |  ✅   |
-| FreeBSD | ✅	          | ✅	     | ✅        | ✅	    | ✖️       | ✅       | ✅     |  ✅   |
-| Illumos | ✅	          | ✅	     | ✅        | ✅	    | ✖️       | ✅       | ✅     |  ✅   |
-| iOS     | ✅	          | ✅	     | ✅        | ✅	    | ✅       | ✅       | ✅     |  ✅   |
-| Linux   | ✅	          | ✅	     | ✅        | ✅	    | ✅       | ✅       | ✅     |  ✅   |
-| macOS   | ✅            | ✅	     | ✅        | ✅	    | ✅       | ✅       | ✅     |  ✅   |
-| NetBSD  | ✅	          | ✅	     | ✅        | ✅	    | ✖️       | ✅       | ✅     |  ✅   |
-| OpenBSD | ✅	          | ✅	     | ✅        | ✅	    | ✖️       | ✅       | ✅     |  ✅   |
-| Plan9   | ✅	          | ✅	     | ❌        | ✅	    | ✖️       | ❌       | ☑️     |  ☑️   |
-| Solaris | ✅	          | ✅	     | ✅        | ✅	    | ✖️       | ✅       | ✅     |  ✅   |
-| WebAssembly | ✅	  | ✅	     | ✅        | ✅	    | ✖️       | ✅       | ✅     |  ✅   |
-| Windows | ✅	          | ✅	     | ✅        | ✅ 	    | ✅       | ✅       | 🚧     |  🚧   |
+| OS      | PartitionID()<br/>FileID()* | Links()* | ATime()* | BTime()* | CTime()* | UID()* <br/>GID()* |
+|---------|----------|-----------|----------|----------|----------|--------|
+| AIX     | ✅	          | ✅        | ✅	    | ✖️       | ✅       | ✅     |
+| Android | ✅	          | ✅        | ✅	    | ✖️       | ✅       | ✅     |
+| Dragonfly | ✅	  | ✅        | ✅	    | ✖️       | ✅       | ✅     |
+| FreeBSD | ✅	          | ✅        | ✅	    | ✖️       | ✅       | ✅     |
+| Illumos | ✅	          | ✅        | ✅	    | ✖️       | ✅       | ✅     |
+| iOS     | ✅	          | ✅        | ✅	    | ✅       | ✅       | ✅     |
+| Linux   | ✅	          | ✅        | ✅	    | ✅       | ✅       | ✅     |
+| macOS   | ✅            | ✅        | ✅	    | ✅       | ✅       | ✅     |
+| NetBSD  | ✅	          | ✅        | ✅	    | ✖️       | ✅       | ✅     |
+| OpenBSD | ✅	          | ✅        | ✅	    | ✖️       | ✅       | ✅     |
+| Plan9   | ✅	          | ❌        | ✅	    | ✖️       | ❌       | ☑️     |
+| Solaris | ✅	          | ✅        | ✅	    | ✖️       | ✅       | ✅     |
+| WebAssembly | ✅	  | ✅        | ✅	    | ✖️       | ✅       | ✅     |
+| Windows | ✅	          | ✅        | ✅ 	    | ✅       | ✅       | 🚧     |
 
 \* Support will depend on the underlying file system. See [Comparison of file systems](https://wikipedia.org/wiki/Comparison_of_file_systems#Metadata) for details.
 
