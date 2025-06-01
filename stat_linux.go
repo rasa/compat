@@ -11,7 +11,8 @@ import (
 	"golang.org/x/sys/unix"
 )
 
-const supported SupportedType = Links | ATime | BTime | CTime | UID | GID
+// @TODO(rasa): determine why BTime is not working.
+const supported SupportedType = Links | ATime | CTime | UID | GID
 
 func (fs *fileStat) times() {
 	fs.atime = time.Unix(int64(fs.sys.Atim.Sec), int64(fs.sys.Atim.Nsec)) //nolint:unconvert // needed conversion
