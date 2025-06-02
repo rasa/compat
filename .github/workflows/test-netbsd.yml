@@ -22,7 +22,8 @@ jobs:
         # envs: 'GITHUB_TOKEN'
         usesh: true
         prepare: |
-          /usr/sbin/pkg_add lang/go
+          pkgin update
+          pkgin install go
         run: |
           go version
           go env
