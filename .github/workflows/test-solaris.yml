@@ -1,5 +1,5 @@
 
-name: test-freebsd
+name: test-solaris
 
 on:
   workflow_call:
@@ -11,19 +11,18 @@ permissions:
 jobs:
   test:
     runs-on: ubuntu-latest
-    name: test-freebsd
+    name: test-solaris
     # env:
     #  GITHUB_TOKEN : ${{ secrets.GITHUB_TOKEN }}
     steps:
     - uses: actions/checkout@v4
 
-    - uses: vmactions/freebsd-vm@v1
+    - uses: vmactions/solaris-vm@v1
       with:
         # envs: 'GITHUB_TOKEN'
         usesh: true
         prepare: |
-          pkg update -f
-          pkg install -y go
+          pkgutil -y -i socat
         run: |
           go version
           go env

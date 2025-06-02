@@ -1,0 +1,39 @@
+name: pre-release
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    uses: ./.github/workflows/build.yml
+    secrets: inherit
+  # mega-linter:
+  #   uses: ./.github/workflows/mega-linter.yml
+  #  secrets: inherit
+  build-all:
+    uses: ./.github/workflows/build-all.yml
+    secrets: inherit
+  build-android:
+    uses: ./.github/workflows/build-android.yml
+    secrets: inherit
+  build-ios:
+    uses: ./.github/workflows/build-ios.yml
+    secrets: inherit
+  test-freebsd:
+    uses: ./.github/workflows/test-freebsd.yml
+    secrets: inherit
+  test-netbsd:
+    uses: ./.github/workflows/test-netbsd.yml
+    secrets: inherit
+  test-openbsd:
+    uses: ./.github/workflows/test-openbsd.yml
+    secrets: inherit
+  test-dragonflybsd:
+    uses: ./.github/workflows/test-dragonflybsd.yml
+    secrets: inherit
+  test-solaris:
+    uses: ./.github/workflows/test-solaris.yml
+    secrets: inherit
