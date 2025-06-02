@@ -7,22 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased](https://github.com/rasa/compat/compare/v0.4.0...HEAD)
 
+### Added
+
 - Add `Is$GOOS` and `Is$GOARCH` constants (`IsAIX`, `Is386`, etc.).
 - Add `CPUBits` constant.
-- Add `CTime()` support for `Stat()`/`Lstat()` on Windows.
 - Add `BTime()` support for `Stat()`/`Lstat()` on Linux.
-
-## Added
-
-- Add `Chmod()`, `Create()`, `CreateTemp()`, `OpenFile()` and `WriteFile()` functions.
+- Add `CTime()` support for `Stat()`/`Lstat()` on Windows.
+- Add `Chmod()` function.
+- Add `Create()`, `CreateEx()`, and `CreateTemp()` functions.
 - Add `Mkdir()`, `MkdirAll()` and `MkdirTemp()` functions.
-- Add `CreateEx(name string, perm os.FileMode, flags int)` function.
-- Add `WriteFileEx(name string, data []byte, perm os.FileMode, flags int)` function.
-- Add `Umask()` function.
+- Add `OpenFile()`, `WriteFile()` and `WriteFileEx()` functions.
+- Add `Umask()` and `GetUmask()` functions.
 
 ## [0.4.0](https://github.com/rasa/compat/releases/tag/v0.4.0)
 
-## Changed
+### Changed
 
 - Rename Device* functions to Partition* to be more user friendly.
 
