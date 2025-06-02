@@ -23,6 +23,11 @@ jobs:
         usesh: true
         # See https://go.dev/doc/install
         prepare: |
+          PATH="/usr/sbin:${PATH}"
+          which curl
+          which wget
+          pkg_add curl
+          which curl
           rm -rf /usr/local/go
           curl -fsSL https://go.dev/dl/go1.24.3.netbsd-amd64.tar.gz -o go1.24.3.netbsd-amd64.tar.gz
           tar -C /usr/local -xzf go1.24.3.netbsd-amd64.tar.gz
