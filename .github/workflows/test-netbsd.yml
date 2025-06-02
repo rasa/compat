@@ -21,16 +21,17 @@ jobs:
       with:
         # envs: 'GITHUB_TOKEN'
         usesh: true
+        # https://www.netbsd.org/docs/pkgsrc/pkgsrc.html#installing-binary-packages
         prepare: |
-          cd /tmp
-          export PKG_PATH_ROOT=https://cdn.NetBSD.org/pub/pkgsrc/packages/NetBSD/amd64/10.1/
-          ftp "${PKG_PATH_ROOT}/bootstrap.tar.gz"
-          tar -xvzf bootstrap.tar.gz -C /
-          export PATH="/usr/pkg/sbin:/usr/pkg/bin:/usr/pkg/sbin:${PATH}"
-          export PKG_PATH="${PKG_PATH_ROOT}/All"
+          set +e
+          PATH="/usr/pkg/sbin:/usr/pkg/bin:${PATH}"
+          PKG_PATH="https://cdn.NetBSD.org/pub/pkgsrc/packages"
+          PKG_PATH="${PKG_PATH}/NetBSD/amd64/10.1/All"
+          export PATH PKG_PATH
           pkg_add pkgin
-          pkgin update
+          pkg_add go
           pkgin install go
+
         run: |
           go version
           go env
