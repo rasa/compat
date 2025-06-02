@@ -21,20 +21,10 @@ jobs:
       with:
         # envs: 'GITHUB_TOKEN'
         usesh: true
-        # See https://go.dev/doc/install
+        # See https://github.com/fsnotify/fsnotify/blob/main/.github/workflows/test.yml
         prepare: |
-          PATH="/usr/sbin:${PATH}"
-          which curl
-          which wget
-          pkg_add curl
-          which curl
-          rm -rf /usr/local/go
-          curl -fsSL https://go.dev/dl/go1.24.3.netbsd-amd64.tar.gz -o go1.24.3.netbsd-amd64.tar.gz
-          tar -C /usr/local -xzf go1.24.3.netbsd-amd64.tar.gz
-          rm go1.24.3.netbsd-amd64.tar.gz
-
+          pkg_add go
         run: |
-          export PATH="${PATH}:/usr/local/go/bin"
           go version
           go env
           go build ./...
