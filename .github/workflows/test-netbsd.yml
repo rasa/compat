@@ -22,6 +22,8 @@ jobs:
         # envs: 'GITHUB_TOKEN'
         usesh: true
         prepare: |
+          export PKG_PATH=https://cdn.NetBSD.org/pub/pkgsrc/packages/NetBSD/amd64/10.1/All
+          pkg_add pkgin
           pkgin update
           pkgin install go
         run: |
