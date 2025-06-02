@@ -43,28 +43,28 @@ import (
 )
 
 func main() {
-	fi, err := compat.Stat(os.Executable())
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
+  fi, err := compat.Stat(os.Executable())
+  if err != nil {
+    fmt.Println(err)
+    return
+  }
         // Same functions as os.Stat() and os.Lstat():
-	fmt.Printf("Name()    =%v\n", fi.Name())     // base name of the file
-	fmt.Printf("Size()    =%v\n", fi.Size())     // length in bytes
-	fmt.Printf("Mode()    =0o%o\n", fi.Mode())   // file mode bits
-	fmt.Printf("ModTime() =%v\n", fi.ModTime())  // last modified
-	fmt.Printf("IsDir()   =%v\n", fi.IsDir())    // is a directory
-	fmt.Printf("Sys()     =%+v\n", fi.Sys())     // underlying data source
+  fmt.Printf("Name()    =%v\n", fi.Name())     // base name of the file
+  fmt.Printf("Size()    =%v\n", fi.Size())     // length in bytes
+  fmt.Printf("Mode()    =0o%o\n", fi.Mode())   // file mode bits
+  fmt.Printf("ModTime() =%v\n", fi.ModTime())  // last modified
+  fmt.Printf("IsDir()   =%v\n", fi.IsDir())    // is a directory
+  fmt.Printf("Sys()     =%+v\n", fi.Sys())     // underlying data source
         // New functions provided by this compat library:
-	fmt.Printf("PartID()  =%v\n", fi.PartitionID()) // partition (device) ID
-	fmt.Printf("FileID()  =%v\n", fi.FileID())   // file (inode) ID
-	fmt.Printf("Links()   =%v\n", fi.Links())    // number of hard links
-	fmt.Printf("ATime()   =%v\n", fi.ATime())    // last accessed
-	fmt.Printf("BTime()   =%v\n", fi.BTime())    // created (birthed)
-	fmt.Printf("CTime()   =%v\n", fi.CTime())    // status/metadata changed
-	fmt.Printf("MTime()   =%v\n", fi.MTime())    // alias for ModTime
-	fmt.Printf("UID()     =%v\n", fi.UID())      // user ID
-	fmt.Printf("GID()     =%v\n", fi.GID())      // group ID
+  fmt.Printf("PartID()  =%v\n", fi.PartitionID()) // partition (device) ID
+  fmt.Printf("FileID()  =%v\n", fi.FileID())   // file (inode) ID
+  fmt.Printf("Links()   =%v\n", fi.Links())    // number of hard links
+  fmt.Printf("ATime()   =%v\n", fi.ATime())    // last accessed
+  fmt.Printf("BTime()   =%v\n", fi.BTime())    // created (birthed)
+  fmt.Printf("CTime()   =%v\n", fi.CTime())    // status/metadata changed
+  fmt.Printf("MTime()   =%v\n", fi.MTime())    // alias for ModTime
+  fmt.Printf("UID()     =%v\n", fi.UID())      // user ID
+  fmt.Printf("GID()     =%v\n", fi.GID())      // group ID
 }
 ```
 
@@ -99,22 +99,23 @@ To install compat, use `go get`:
 The `Stat()` and `Lstat()` functions return a `FileInfo` object.
 The table below lists the operating system support for each of the `FileInfo` functions:
 
-| OS      | PartitionID()<br/>FileID()* | Links()* | ATime()* | BTime()* | CTime()* | UID()* <br/>GID()* |
-|---------|----------|-----------|----------|----------|----------|--------|
-| AIX     | ✅	          | ✅        | ✅	    | ✖️       | ✅       | ✅     |
-| Android | ✅	          | ✅        | ✅	    | ✖️       | ✅       | ✅     |
-| Dragonfly | ✅	  | ✅        | ✅	    | ✖️       | ✅       | ✅     |
-| FreeBSD | ✅	          | ✅        | ✅	    | ✖️       | ✅       | ✅     |
-| Illumos | ✅	          | ✅        | ✅	    | ✖️       | ✅       | ✅     |
-| iOS     | ✅	          | ✅        | ✅	    | ✅       | ✅       | ✅     |
-| Linux   | ✅	          | ✅        | ✅	    | 🚧      | ✅       | ✅     |
-| macOS   | ✅            | ✅        | ✅	    | ✅       | ✅       | ✅     |
-| NetBSD  | ✅	          | ✅        | ✅	    | ✖️       | ✅       | ✅     |
-| OpenBSD | ✅	          | ✅        | ✅	    | ✖️       | ✅       | ✅     |
-| Plan9   | ✅	          | ❌        | ✅	    | ✖️       | ❌       | ☑️     |
-| Solaris | ✅	          | ✅        | ✅	    | ✖️       | ✅       | ✅     |
-| WebAssembly | ✅	  | ✅        | ✅	    | ✖️       | ✅       | ✅     |
-| Windows | ✅	          | ✅        | ✅ 	    | ✅       | ✅       | 🚧     |
+| OS      | PartitionID()/ <br/>FileID()* | Links()* | ATime()* | BTime()* | CTime()* | UID()* / <br/>GID()* |
+|---------|--------|--------|------|--------|------|-------|
+| AIX     | ✅     | ✅    | ✅   | ✖️    | ✅   | ✅   |
+| Android | ✅     | ✅    | ✅   | ✅    | ✅   | ✅   |
+| Dragonfly | ✅   | ✅    | ✅   | ✖️    | ✅   | ✅   |
+| FreeBSD | ✅     | ✅    | ✅   | ✅    | ✅   | ✅   |
+| Illumos | ✅     | ✅    | ✅   | ✖️    | ✅   | ✅   |
+| iOS     | ✅     | ✅    | ✅   | ✅    | ✅   | ✅   |
+| Linux   | ✅     | ✅    | ✅   | ✅    | ✅   | ✅   |
+| macOS   | ✅     | ✅    | ✅   | ✅    | ✅   | ✅   |
+| NetBSD  | ✅     | ✅    | ✅   | ✅    | ✅   | ✅   |
+| OpenBSD | ✅     | ✅    | ✅   | ✖️    | ✅   | ✅   |
+| Plan9   | ✅     | ❌    | ✅   | ✖️    | ❌   | ☑️   |
+| Solaris | ✅     | ✅    | ✅   | ✖️    | ✅   | ✅   |
+| WebAssembly | ✅ | ✅    | ✅   | ✖️    | ✅   | ✅   |
+| Windows | ✅     | ✅    | ✅   | ✅    | ✅   | 🚧   |
+<!--      | PartID+ | Links | ATime | BTime | CTime | UID+ | -->
 
 \* Support will depend on the underlying file system. See [Comparison of file systems](https://wikipedia.org/wiki/Comparison_of_file_systems#Metadata) for details.
 

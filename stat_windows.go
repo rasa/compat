@@ -98,6 +98,7 @@ func loadInfo(fi os.FileInfo, name string) (FileInfo, error) {
 		return &fs, &os.PathError{Op: "stat", Path: name, Err: err}
 	}
 
+	fs.path = name
 	fs.name = fi.Name()
 	fs.size = fi.Size()
 	fs.mode = fi.Mode()
@@ -126,11 +127,11 @@ func loadInfo(fi os.FileInfo, name string) (FileInfo, error) {
 	err = windows.GetFileInformationByHandleEx(h, windows.FileBasicInfo, (*byte)(unsafe.Pointer(&bi)), uint32(unsafe.Sizeof(bi)))
 	// ignore failures on changetime.
 	if err == nil {
-		// ChangedTime is 100-nanosecond intervals since January 1, 1601
+		// ChangedTime is 100-nanosecond intervals since January 1, 1601.
 		nsec := bi.ChangedTime
-		// change starting time to the Epoch (00:00:00 UTC, January 1, 1970)
+		// Change starting time to the Epoch (00:00:00 UTC, January 1, 1970).
 		nsec -= 116444736000000000
-		// convert into nanoseconds
+		// Convert into nanoseconds.
 		nsec *= 100
 		fs.ctime = time.Unix(0, nsec)
 	}

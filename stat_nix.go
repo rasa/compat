@@ -28,9 +28,10 @@ type fileStat struct {
 	ctime  time.Time
 	uid    uint64
 	gid    uint64
+	path   string
 }
 
-func loadInfo(fi os.FileInfo, _ string) (FileInfo, error) {
+func loadInfo(fi os.FileInfo, name string) (FileInfo, error) {
 	var fs fileStat
 
 	sys, ok := fi.Sys().(*syscall.Stat_t)
@@ -38,6 +39,7 @@ func loadInfo(fi os.FileInfo, _ string) (FileInfo, error) {
 		return &fs, errors.New("failed to cast fi.Sys()")
 	}
 
+	fs.path = name
 	fs.name = fi.Name()
 	fs.size = fi.Size()
 	fs.mode = fi.Mode()
