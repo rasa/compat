@@ -23,9 +23,9 @@ jobs:
         usesh: true
         prepare: |
           pkg refresh --full
-          pkg list -a | grep go
-          pkg search golang
-          pkg install --accept --licenses pkg://solaris/developer/golang
+          # pkg list -a | grep go
+          # gpkg search go
+          pkg install --accept --licenses developer/go
         run: |
           go version
           go env
