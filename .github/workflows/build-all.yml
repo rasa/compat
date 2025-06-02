@@ -36,6 +36,7 @@ jobs:
           if [[ -v seen["${GOOS}"] ]]; then
             continue
           fi
+          export GOARCH="${target#*/}"
           seen["${GOOS}"]=1
           ((builds++))
           echo "Build ${builds}: ${target}"

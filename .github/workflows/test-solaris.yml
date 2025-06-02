@@ -22,7 +22,7 @@ jobs:
         # envs: 'GITHUB_TOKEN'
         usesh: true
         prepare: |
-          pkgutil -y -i socat
+          pkg install --accept --licenses golang || gpkgutil -y -i golang
         run: |
           go version
           go env
