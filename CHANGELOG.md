@@ -11,7 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Add `Is$GOOS` and `Is$GOARCH` constants (`IsAIX`, `Is386`, etc.).
 - Add `CPUBits` constant.
-- Add `BTime()` support for `Stat()`/`Lstat()` on Linux.
+- Add `BTime()` support for `Stat()`/`Lstat()` on Linux/Android.
+- Add `BTime()` support for `Stat()`/`Lstat()` on FreeBSD/NetBSD.
 - Add `CTime()` support for `Stat()`/`Lstat()` on Windows.
 - Add `Chmod()` function.
 - Add `Create()`, `CreateEx()`, and `CreateTemp()` functions.
