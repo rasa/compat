@@ -21,9 +21,12 @@ jobs:
       with:
         # envs: 'GITHUB_TOKEN'
         usesh: true
-        # https://www.netbsd.org/docs/pkgsrc/pkgsrc.html#installing-binary-packages
+        # See https://www.netbsd.org/docs/pkgsrc/pkgsrc.html#getting-first
         prepare: |
           set +e
+          ftp ftp://ftp.NetBSD.org/pub/pkgsrc/current/pkgsrc.tar.gz
+          tar -xvzf pkgsrc.tar.gz -C /usr
+          rm pkgsrc.tar.gz
           PATH="/usr/pkg/sbin:/usr/pkg/bin:${PATH}"
           PKG_PATH="https://cdn.NetBSD.org/pub/pkgsrc/packages"
           PKG_PATH="${PKG_PATH}/NetBSD/amd64/10.1/All"
