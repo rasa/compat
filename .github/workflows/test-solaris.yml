@@ -22,7 +22,7 @@ jobs:
         # envs: 'GITHUB_TOKEN'
         usesh: true
         prepare: |
-          pkg install --accept --licenses golang || gpkgutil -y -i golang
+          pkg install --accept --licenses pkg://solaris/developer/golang
         run: |
           go version
           go env
