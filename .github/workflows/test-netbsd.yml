@@ -22,7 +22,7 @@ jobs:
         # envs: 'GITHUB_TOKEN'
         usesh: true
         prepare: |
-          /usr/sbin/pkg_add go
+          /usr/sbin/pkg_add lang/go
         run: |
           go version
           go env
