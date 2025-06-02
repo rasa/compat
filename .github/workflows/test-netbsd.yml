@@ -25,7 +25,7 @@ jobs:
         prepare: |
           set +e
           ftp ftp://ftp.NetBSD.org/pub/pkgsrc/current/pkgsrc.tar.gz
-          tar -xvzf pkgsrc.tar.gz -C /usr
+          tar -xzf pkgsrc.tar.gz -C /usr
           rm pkgsrc.tar.gz
           PATH="/usr/pkg/sbin:/usr/pkg/bin:${PATH}"
           PKG_PATH="https://cdn.NetBSD.org/pub/pkgsrc/packages"
