@@ -38,6 +38,7 @@ type fileStat struct {
 	uid    uint64
 	gid    uint64
 	sync.Mutex
+	path string
 }
 
 // See https://github.com/golang/go/blob/cad1fc52/src/runtime/os_windows.go#L448
