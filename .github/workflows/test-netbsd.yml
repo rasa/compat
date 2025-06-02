@@ -22,10 +22,13 @@ jobs:
         # envs: 'GITHUB_TOKEN'
         usesh: true
         prepare: |
-          export PKG_PATH=https://cdn.NetBSD.org/pub/pkgsrc/packages/NetBSD/amd64/10.1/All
-          export PATH="/usr/pkg/sbin:${PATH}"
+          cd /tmp
+          export PKG_PATH_ROOT=https://cdn.NetBSD.org/pub/pkgsrc/packages/NetBSD/amd64/10.1/
+          ftp "${PKG_PATH_ROOT}/bootstrap.tar.gz"
+          tar -xvzf bootstrap.tar.gz -C /
+          export PATH="/usr/pkg/sbin:/usr/pkg/bin:/usr/pkg/sbin:${PATH}"
+          export PKG_PATH="${PKG_PATH_ROOT}/All"
           pkg_add pkgin
-          export PATH="/usr/pkg/sbin:${PATH}"
           pkgin update
           pkgin install go
         run: |
