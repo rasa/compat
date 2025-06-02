@@ -5,6 +5,7 @@ on:
     branches: [ main ]
   pull_request:
     branches: [ main ]
+  workflow_call:
   workflow_dispatch:
 
 permissions:
@@ -39,7 +40,7 @@ jobs:
         with:
           path: |
             ~/.cache/go-build
-            ~/go/pkg/mod'            
+            ~/go/pkg/mod'
             C:/Users/runneradmin/AppData/Local/go-build
             C:/Users/runneradmin/go/pkg/mod
             C:\\Users\\runneradmin\\AppData\\Local\\go-build

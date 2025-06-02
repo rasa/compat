@@ -1,5 +1,5 @@
 
-name: test-freebsd
+name: test-netbsd
 
 on:
   workflow_call:
@@ -11,19 +11,18 @@ permissions:
 jobs:
   test:
     runs-on: ubuntu-latest
-    name: test-freebsd
+    name: test-netbsd
     # env:
     #  GITHUB_TOKEN : ${{ secrets.GITHUB_TOKEN }}
     steps:
     - uses: actions/checkout@v4
 
-    - uses: vmactions/freebsd-vm@v1
+    - uses: vmactions/netbsd-vm@v1
       with:
         # envs: 'GITHUB_TOKEN'
         usesh: true
         prepare: |
-          pkg update -f
-          pkg install -y go
+          /usr/sbin/pkg_add go
         run: |
           go version
           go env
