@@ -10,8 +10,8 @@ tool (
 )
 
 require (
+	github.com/capnspacehook/go-acl v0.0.0-20191017210724-28a28d1b4c77
 	github.com/cespare/xxhash v1.1.0
-	github.com/hectane/go-acl v0.0.0-20230122075934-ca0b05cb1adb
 	golang.org/x/sys v0.33.0
 )
 
@@ -128,7 +128,6 @@ require (
 	github.com/caarlos0/go-shellwords v1.0.12 // indirect
 	github.com/caarlos0/go-version v0.2.0 // indirect
 	github.com/caarlos0/log v0.4.8 // indirect
-	github.com/capnspacehook/go-acl v0.0.0-20191017210724-28a28d1b4c77 // indirect
 	github.com/carlmjohnson/versioninfo v0.22.5 // indirect
 	github.com/catenacyber/perfsprint v0.8.2 // indirect
 	github.com/cavaliergopher/cpio v1.0.1 // indirect
@@ -259,6 +258,7 @@ require (
 	github.com/hashicorp/golang-lru v1.0.2 // indirect
 	github.com/hashicorp/golang-lru/v2 v2.0.7 // indirect
 	github.com/hashicorp/hcl v1.0.1-vault-5 // indirect
+	github.com/hectane/go-acl v0.0.0-20230122075934-ca0b05cb1adb // indirect
 	github.com/hexops/gotextdiff v1.0.3 // indirect
 	github.com/huandu/xstrings v1.5.0 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
