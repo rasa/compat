@@ -10,8 +10,9 @@ permissions:
 
 jobs:
   test:
-    runs-on: ubuntu-latest
     name: test-freebsd
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
     # env:
     #  GITHUB_TOKEN : ${{ secrets.GITHUB_TOKEN }}
     steps:
@@ -20,7 +21,7 @@ jobs:
     - uses: vmactions/freebsd-vm@v1
       with:
         # envs: 'GITHUB_TOKEN'
-        usesh: true
+        # usesh: true
         prepare: |
           pkg update -f
           pkg install -y go
