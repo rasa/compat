@@ -1,0 +1,33 @@
+
+name: test-illumos
+
+on:
+  workflow_call:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: test-illumos
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    # env:
+    #  GITHUB_TOKEN : ${{ secrets.GITHUB_TOKEN }}
+    steps:
+    - uses: actions/checkout@v4
+
+    - uses: vmactions/omnios-vm@v1
+      with:
+        # envs: 'GITHUB_TOKEN'
+        # usesh: true
+        prepare: |
+          pkg install go-122
+        run: |
+          PATH="/opt/ooce/go-1.22/bin:${PATH}"
+          export PATH
+          go version
+          go env
+          go build ./...
+          go test -v
