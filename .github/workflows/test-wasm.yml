@@ -1,0 +1,33 @@
+name: test-wasm
+
+on:
+  workflow_call:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: test-wasm
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      GOARCH: wasm
+    steps:
+    - uses: actions/checkout@v4
+
+    - uses: actions/setup-go@v5
+
+    - run: |
+        # Install wasmtime
+        curl -s https://wasmtime.dev/install.sh | bash
+        echo "${HOME}/.wasmtime/bin" >>"${GITHUB_PATH}"
+
+    - run: |
+        go test -c -o main.test.wasm ./...
+      env:
+        GOOS: js
+
+    - run: |
+        wasmtime run main.test.wasm --invoke=run
