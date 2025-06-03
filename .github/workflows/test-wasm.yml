@@ -12,8 +12,6 @@ jobs:
     name: test-wasm
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    env:
-      GOARCH: wasm
     steps:
     - uses: actions/checkout@v4
 
@@ -28,6 +26,7 @@ jobs:
         go test -c -o main.test.wasm ./...
       env:
         GOOS: js
+        GOARCH: wasm
 
     - run: |
         wasmtime run main.test.wasm --invoke=run
