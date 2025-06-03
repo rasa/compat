@@ -38,8 +38,8 @@ Here's an example of calling `compat.Stat()`:
 package main
 
 import (
-   "fmt"
-   "github.com/rasa/compat"
+  "fmt"
+  "github.com/rasa/compat"
 )
 
 func main() {
@@ -92,7 +92,7 @@ GID()     =1000
 
 To install compat, use `go get`:
 
-   `go get github.com/rasa/compat`
+  `go get github.com/rasa/compat`
 
 # FileInfo Functions
 
