@@ -114,7 +114,7 @@ func TestFilePosixCreateExDelete(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	fh, err := compat.CreateEx(name, compat.CreatePerm, os.O_CREATE|compat.O_DELETE)
+	fh, err := compat.CreateEx(name, compat.CreatePerm, compat.O_CREATE|compat.O_DELETE)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -135,7 +135,7 @@ func TestFilePosixCreateTemp(t *testing.T) {
 	}
 
 	dir := t.TempDir()
-	fh, err := compat.CreateTemp(dir, "", 0)
+	fh, err := compat.CreateTemp(dir, "")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -158,32 +158,43 @@ func TestFilePosixCreateTemp(t *testing.T) {
 	}
 }
 
-func TestFilePosixCreateTempDelete(t *testing.T) {
-	if !testing.Verbose() {
-		if compat.IsWindows {
-			t.Skip("Skipping on Windows (for now)")
-		}
+func TestFilePosixCreateTempEx(t *testing.T) {
+	want := compat.CreateTempPerm
+	if compat.IsWindows {
+		want = os.FileMode(0o666)
 	}
 
 	dir := t.TempDir()
-	fh, err := compat.CreateTemp(dir, "", compat.O_DELETE)
+	fh, err := compat.CreateTempEx(dir, "", 0)
 	if err != nil {
 		t.Fatal(err)
 	}
 	name := fh.Name()
-	// want := compat.CreateTempPerm
-	// if compat.IsWindows {
-	// 	want = os.FileMode(0o666)
-	// }
-	// File is already deleted, so we can't stat it:
-	// fs, err := os.Stat(name)
-	// if err != nil {
-	// 	t.Fatal(err)
-	// }
-	// got := fs.Mode().Perm()
-	// if got != want {
-	// 	t.Fatalf("got 0%03o, want 0%03o", got, want)
-	// }
+	err = fh.Close()
+	if err != nil {
+		t.Fatal(err)
+	}
+	fs, err := os.Stat(name)
+	if err != nil {
+		t.Fatal(err)
+	}
+	got := fs.Mode().Perm()
+	if got != want {
+		t.Fatalf("got 0%03o, want 0%03o", got, want)
+	}
+	err = os.Remove(name)
+	if err != nil {
+		t.Fatal(err)
+	}
+}
+
+func TestFilePosixCreateTempExDelete(t *testing.T) {
+	dir := t.TempDir()
+	fh, err := compat.CreateTempEx(dir, "", compat.O_DELETE)
+	if err != nil {
+		t.Fatal(err)
+	}
+	name := fh.Name()
 	err = fh.Close()
 	if err != nil {
 		t.Fatal(err)
@@ -250,12 +261,6 @@ func TestFilePosixMkdirTemp(t *testing.T) {
 		want = os.FileMode(0o777)
 	}
 
-	if !testing.Verbose() {
-		if compat.IsWindows {
-			t.Skip("Skipping on Windows (for now)")
-		}
-	}
-
 	dir := t.TempDir()
 	pattern := ""
 	name, err := compat.MkdirTemp(dir, pattern)
@@ -283,7 +288,7 @@ func TestFilePosixOpenFile(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	fh, err := os.OpenFile(name, os.O_CREATE, want)
+	fh, err := os.OpenFile(name, compat.O_CREATE, want)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -306,19 +311,13 @@ func TestFilePosixOpenFile(t *testing.T) {
 }
 
 func TestFilePosixOpenFileDelete(t *testing.T) {
-	if !testing.Verbose() {
-		if compat.IsWindows {
-			t.Skip("Skipping on Windows (for now)")
-		}
-	}
-
 	want := o666
 
 	name, err := tmpname(t)
 	if err != nil {
 		t.Fatal(err)
 	}
-	fh, err := compat.OpenFile(name, os.O_CREATE|compat.O_DELETE, want)
+	fh, err := compat.OpenFile(name, compat.O_CREATE|compat.O_DELETE, want)
 	if err != nil {
 		t.Fatal(err)
 	}

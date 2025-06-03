@@ -8,21 +8,16 @@ package compat
 import (
 	"errors"
 	"fmt"
-	"maps"
 	"os"
 	"os/user"
 	"path/filepath"
-	"slices"
-	"strings"
 	"syscall"
-	"testing"
 	"unsafe"
 
-	"github.com/hectane/go-acl"
+	"github.com/capnspacehook/go-acl"
+
 	"golang.org/x/sys/windows"
 )
-
-const supportsCreateWithStickyBit = true
 
 type securityInfo struct {
 	ownerSid *windows.SID
@@ -32,9 +27,6 @@ type securityInfo struct {
 }
 
 func chmod(name string, perm os.FileMode) error {
-	if testing.Verbose() {
-		fmt.Printf("chmod(%v, %04o)\n", name, perm) // @TODO(rasa): remove meGO
-	}
 	// set/reset syscall.FILE_ATTRIBUTE_READONLY/syscall.FILE_ATTRIBUTE_NORMAL
 	err := os.Chmod(name, perm)
 	if err != nil {
@@ -46,7 +38,7 @@ func chmod(name string, perm os.FileMode) error {
 }
 
 func create(name string, perm os.FileMode, flag int) (*os.File, error) {
-	flag |= os.O_CREATE
+	flag |= O_CREATE
 	sa, err := securityAttributes(perm, true)
 	if err != nil {
 		return nil, err
@@ -94,7 +86,7 @@ func mkdirTemp(dir, pattern string) (string, error) {
 }
 
 func openFile(name string, flag int, perm os.FileMode) (*os.File, error) {
-	sa, err := securityAttributes(perm, flag|os.O_CREATE == os.O_CREATE)
+	sa, err := securityAttributes(perm, flag|O_CREATE == O_CREATE)
 	if err != nil {
 		return nil, err
 	}
@@ -149,8 +141,6 @@ func _securityInfo(perm os.FileMode) (*securityInfo, error) {
 }
 
 func securityDescriptor(perm os.FileMode) (*windows.SECURITY_DESCRIPTOR, *securityInfo, error) {
-	var ea [3]windows.EXPLICIT_ACCESS
-
 	// Get current user's SID
 	usr, err := user.Current()
 	if err != nil {
@@ -178,10 +168,6 @@ func securityDescriptor(perm os.FileMode) (*windows.SECURITY_DESCRIPTOR, *securi
 		return nil, nil, fmt.Errorf("failed to get token information for %s: %w", usr.Username, err)
 	}
 
-	// Interpret buffer as TOKEN_PRIMARY_GROUP struct
-	type tokenPrimaryGroup struct {
-		PrimaryGroup *windows.SID
-	}
 	group := (*tokenPrimaryGroup)(unsafe.Pointer(&buf[0]))
 	groupSid := group.PrimaryGroup
 
@@ -189,6 +175,8 @@ func securityDescriptor(perm os.FileMode) (*windows.SECURITY_DESCRIPTOR, *securi
 	if err != nil {
 		return nil, nil, fmt.Errorf("failed to create world SID: %w", err)
 	}
+
+	var ea [3]windows.EXPLICIT_ACCESS
 
 	ownerMask := accessMask(perm, 6) //nolint:mnd // quiet linter
 	setExplicitAccess(&ea[0], ownerSid, ownerMask, windows.TRUSTEE_IS_USER)
@@ -199,9 +187,7 @@ func securityDescriptor(perm os.FileMode) (*windows.SECURITY_DESCRIPTOR, *securi
 	worldMask := accessMask(perm, 0)
 	setExplicitAccess(&ea[2], worldSid, worldMask, windows.TRUSTEE_IS_WELL_KNOWN_GROUP)
 
-	if testing.Verbose() {
-		dumpInfo(perm, ownerMask, groupMask, worldMask)
-	}
+	dumpMasks(perm, ownerMask, groupMask, worldMask)
 
 	acl, err := windows.ACLFromEntries(ea[:], nil)
 	if err != nil {
@@ -253,7 +239,7 @@ func accessMask(mode os.FileMode, shift int) uint32 {
 func setExplicitAccess(ea *windows.EXPLICIT_ACCESS, sid *windows.SID, mask uint32, tt windows.TRUSTEE_TYPE) {
 	ea.AccessPermissions = windows.ACCESS_MASK(mask)
 	ea.AccessMode = windows.SET_ACCESS
-	ea.Inheritance = windows.SUB_CONTAINERS_AND_OBJECTS_INHERIT // windows.NO_INHERITANCE
+	ea.Inheritance = windows.NO_INHERITANCE // was windows.SUB_CONTAINERS_AND_OBJECTS_INHERIT
 	ea.Trustee.TrusteeForm = windows.TRUSTEE_IS_SID
 	ea.Trustee.TrusteeType = tt
 	ea.Trustee.TrusteeValue = windows.TrusteeValueFromSID(sid)
@@ -273,51 +259,11 @@ func setNamedSecurityInfo(name string, si *securityInfo) error {
 	)
 }
 
-func dumpInfo(perm os.FileMode, ownerMask uint32, groupMask uint32, worldMask uint32) {
-	if !testing.Verbose() {
-		return
-	}
-	omask := aMask(ownerMask)
-	gmask := aMask(groupMask)
-	wmask := aMask(worldMask)
-
-	fmt.Printf("perm=%04o ownerMask=%v groupMask=%v worldMask=%v\n", perm, omask, gmask, wmask)
+type tokenPrimaryGroup struct {
+	PrimaryGroup *windows.SID
 }
 
-// https://github.com/golang/sys/blob/3d9a6b80/windows/security_windows.go#L992
-var maskMap = map[uint32]string{
-	windows.GENERIC_READ:    "GR", // 0x80000000
-	windows.GENERIC_WRITE:   "GW", // 0x40000000
-	windows.GENERIC_EXECUTE: "GE", // 0x20000000
-	windows.GENERIC_ALL:     "GA", // 0x10000000
-	windows.DELETE:          "D",  // 0x00010000
-}
-
-type aMask uint32
-
-func (a aMask) String() string {
-	mask := uint32(a)
-	rv := ""
-	rights := map[string]uint32{}
-	for k, v := range maskMap {
-		if mask&k == k {
-			rights[v] = k
-			mask &^= k
-		}
-	}
-	if len(rights) == 0 {
-		return "N"
-	}
-	keys := slices.Collect(maps.Keys(rights))
-	slices.Sort(keys)
-	rv += strings.Join(keys, ",")
-
-	if mask != 0 {
-		rv += "," + fmt.Sprintf("0x%x", mask)
-	}
-
-	return rv
-}
+const supportsCreateWithStickyBit = true
 
 // The following code is:
 // Copyright 2014 The Go Authors. All rights reserved.

@@ -15,6 +15,8 @@ import (
 	"unsafe"
 
 	"golang.org/x/sys/windows"
+
+	"github.com/capnspacehook/go-acl"
 )
 
 // Not supported: UID | GID.
@@ -114,16 +116,6 @@ func loadInfo(fi os.FileInfo, name string) (FileInfo, error) {
 	fs.uid = 0
 	fs.gid = 0
 
-	// @TODO(rasa)
-	// perm, err := _stat(fi.Name())
-	// if err != nil {
-	// 	// We want to intentionally return a filled in FileInfo, so the user
-	// 	// can access all the fields except for the Windows perm bits.
-	// 	return &fs, &os.PathError{Op: "stat", Path: name, Err: err}
-	// }
-	// fs.mode &= ModePerm
-	// fs.mode |= perm
-
 	var bi FILE_BASIC_INFO
 	err = windows.GetFileInformationByHandleEx(h, windows.FileBasicInfo, (*byte)(unsafe.Pointer(&bi)), uint32(unsafe.Sizeof(bi)))
 	// ignore failures on changetime.
@@ -136,6 +128,18 @@ func loadInfo(fi os.FileInfo, name string) (FileInfo, error) {
 		nsec *= 100
 		fs.ctime = time.Unix(0, nsec)
 	}
+
+	perm, err := acl.GetExplicitFileAccessMode(name)
+	if err != nil {
+		return nil, &os.PathError{Op: "stat", Path: name, Err: err}
+	}
+	// @TODO(rasa): remove.
+	// fmt.Printf("perm   =%04o\n", perm)
+	// fmt.Printf("fs.mode=%04o\n", fs.mode)
+	fs.mode &= os.FileMode(^uint32(0o777)) //nolint:mnd // quiet
+	// fmt.Printf("fs.mode=%04o\n", fs.mode)
+	fs.mode |= perm.Perm()
+	// fmt.Printf("fs.mode=%04o\n", fs.mode)
 
 	return &fs, nil
 }
