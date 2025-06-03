@@ -10,10 +10,10 @@ import (
 	"github.com/rasa/compat"
 )
 
-func TestCPUBits(t *testing.T) {
+func TestBuildBits(t *testing.T) {
 	want := bits.UintSize
-	got := compat.CPUBits
+	got := compat.BuildBits()
 	if got != want {
-		t.Fatalf("CPUBits: got %v, want %v", got, want)
+		t.Fatalf("BuildBits: got %v, want %v", got, want)
 	}
 }

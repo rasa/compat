@@ -10,9 +10,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Add `Is$GOOS` and `Is$GOARCH` constants (`IsAIX`, `Is386`, etc.).
-- Add `CPUBits` constant.
-- Add `BTime()` support for `Stat()`/`Lstat()` on Linux/Android.
-- Add `BTime()` support for `Stat()`/`Lstat()` on FreeBSD/NetBSD.
+- Add `BuildBits()` function.
+- Add `CPUBits()` function.
+- Add `BTime()` support for `Stat()`/`Lstat()` on Linux and Android.
+- Add `BTime()` support for `Stat()`/`Lstat()` on FreeBSD and NetBSD.
 - Add `CTime()` support for `Stat()`/`Lstat()` on Windows.
 - Add `Chmod()` function.
 - Add `Create()`, `CreateEx()`, and `CreateTemp()` functions.

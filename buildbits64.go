@@ -5,6 +5,8 @@
 
 package compat
 
-// CPUBits returns the number of bits in an integer on the build target.
+// BuildBits returns the number of bits in an integer on the build target.
 // For 386, arm, mips, and mipsle, it's 32. For all other targets, it's 64.
-const CPUBits = 64
+func BuildBits() int {
+	return 64
+}
