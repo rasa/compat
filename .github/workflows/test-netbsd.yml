@@ -26,8 +26,19 @@ jobs:
         prepare: |
           pkg_add go
         run: |
-            useradd -mG wheel action
-            su action -c '/usr/pkg/bin/go??? version'
-            su action -c '/usr/pkg/bin/go??? env'
-            su action -c '/usr/pkg/bin/go??? build ./...'
-            su action -c '/usr/pkg/bin/go??? test -v ./...'
+            PATH="/usr/pkg/bin:${PATH}"
+            export PATH
+            CWD=$(pwd)
+            cd /usr/pkg/bin
+            ln -sf go??? go
+            cd "${CWD}"
+            which go
+            go env
+            go build ./...
+            go test -v ./...
+
+            # useradd -mG wheel action
+            # su action -c '/usr/pkg/bin/go??? version'
+            # su action -c '/usr/pkg/bin/go??? env'
+            # su action -c '/usr/pkg/bin/go??? build ./...'
+            # su action -c '/usr/pkg/bin/go??? test -v ./...'
