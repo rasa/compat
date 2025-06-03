@@ -21,11 +21,10 @@ var (
 )
 
 func init() {
-	if compat.IsWindows {
-		mode = 0o666
-	} else {
-		mode = 0o600
-	}
+	mode = compat.CreateTempPerm
+	// if compat.IsWindows {
+	// 	mode = 0o666
+	// }
 }
 
 func TestStatStat(t *testing.T) {
@@ -378,7 +377,7 @@ func TestStatDiffFiles(t *testing.T) {
 func createTemp(t *testing.T) (string, error) {
 	t.Helper()
 
-	f, err := os.CreateTemp(t.TempDir(), "*")
+	f, err := compat.CreateTemp(t.TempDir(), "*")
 	if err != nil {
 		return "", err
 	}

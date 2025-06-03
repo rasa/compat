@@ -16,7 +16,12 @@ func chmod(name string, perm os.FileMode) error {
 func create(name string, perm os.FileMode, flag int) (*os.File, error) {
 	f, err := os.Create(name)
 	if perm != 0 {
-		_ = os.Chmod(name, perm)
+		err = os.Chmod(name, perm)
+		if err != nil {
+			_ = f.Close()
+			_ = os.Remove(name)
+			return nil, err
+		}
 	}
 	return wrap(name, flag, f, err)
 }
