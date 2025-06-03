@@ -24,14 +24,20 @@ jobs:
         # usesh: true
         # See https://github.com/fsnotify/fsnotify/blob/main/.github/workflows/test.yml
         prepare: |
-          pkg_add go
+          attempts=9
+          delay=1
+          i=1
+          while [ "${i}" -le "${attempts}" ]; do
+            pkg_add go && break
+            echo "Attempt ${i} failed. Retrying in ${delay} seconds..."
+            sleep "${delay}"
+            delay=$(expr "${delay}" \* 2)
+            i=$(expr "${i}" + 1)
+          done
+
         run: |
-            PATH="/usr/pkg/bin:${PATH}"
-            export PATH
-            CWD=$(pwd)
-            cd /usr/pkg/bin
-            ln -sf go??? go
-            cd "${CWD}"
+            export PATH="/usr/pkg/bin:${PATH}"
+            (cd /usr/pkg/bin ; ln -sf go??? go)
             go version
             go env
             go build ./...
