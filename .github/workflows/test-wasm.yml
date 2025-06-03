@@ -17,16 +17,14 @@ jobs:
 
     - uses: actions/setup-go@v5
 
-    - run: |
-        # Install wasmtime
-        curl -s https://wasmtime.dev/install.sh | bash
-        echo "${HOME}/.wasmtime/bin" >>"${GITHUB_PATH}"
+    - uses: actions/setup-node@v4
+      with:
+        node-version: 20
 
     - run: |
-        go test -c -o main.test.wasm .
-      env:
-        GOOS: js
-        GOARCH: wasm
-
-    - run: |
-        wasmtime run main.test.wasm --invoke=run
+        # Run Go WASM test in Node.js
+        go version
+        cp "$(go env GOROOT)/misc/wasm/wasm_exec.js" .
+        GOOS=js GOARCH=wasm go test -c -o main.test.wasm .
+        echo 'require("./wasm_exec.js"); const go = new Go(); WebAssembly.instantiate(fs.readFileSync("main.test.wasm"), go.importObject).then(r => go.run(r.instance));' > run-test.js
+        node run-test.js
