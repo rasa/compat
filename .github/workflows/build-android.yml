@@ -62,23 +62,23 @@ jobs:
       max-parallel: 1
       matrix:
         goarch:
-          # - '386'
-          # - amd64
-          # - arm
           - arm64
+          # - arm
+          # - amd64
+          # - '386'
         include:
           - goarch: arm64
             android_arch: aarch64
             abi_prefix: ''
-          - goarch: arm
-            android_arch: armv7a
-            abi_prefix: 'eabi'
-          - goarch: amd64
-            android_arch: x86_64
-            abi_prefix: ''
-          - goarch: '386'
-            android_arch: i686
-            abi_prefix: ''
+          # - goarch: arm
+          #   android_arch: armv7a
+          #   abi_prefix: 'eabi'
+          # - goarch: amd64
+          #   android_arch: x86_64
+          #   abi_prefix: ''
+          # - goarch: '386'
+          #   android_arch: i686
+          #   abi_prefix: ''
 
     steps:
       - uses: actions/checkout@v4
