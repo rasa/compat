@@ -21,15 +21,15 @@ func CPUBits() (int, error) {
 	r1, _, err := proc.Call(uintptr(handle), uintptr(unsafe.Pointer(&isWow64)))
 
 	if r1 == 0 {
-		if err != syscall.Errno(0) {
+		if !errors.Is(err, syscall.Errno(0)) {
 			return 0, err
 		}
 
 		return 0, errors.New("IsWow64Process call failed")
 	}
 	if isWow64 != 0 {
-		return 64, nil
+		return 64, nil //nolint:mnd // quiet linter
 	}
 
-	return 32, nil
+	return 32, nil //nolint:mnd // quiet linter
 }
