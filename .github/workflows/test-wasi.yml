@@ -1,0 +1,33 @@
+name: test-wasi
+
+on:
+  workflow_call:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: test-wasi
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+    - uses: actions/checkout@v4
+
+    - run: |
+        curl -LO https://github.com/tinygo-org/tinygo/releases/download/v0.37.0/tinygo_0.37.0_amd64.deb
+        sudo dpkg -i tinygo_0.37.0_amd64.deb
+
+    - run: |
+        curl -s https://wasmtime.dev/install.sh | bash
+        echo "${HOME}/.wasmtime/bin" >>"${GITHUB_PATH}"
+
+    - run: |
+        tinygo test -v -target=wasi -o main.test.wasm .
+      env:
+        GOOS: wasip1
+        GOARCH: wasm
+
+    - run: |
+        wasmtime run main.test.wasm
