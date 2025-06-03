@@ -27,7 +27,7 @@ jobs:
         run: |
           PATH="/opt/ooce/go-1.24/bin:${PATH}"
           export PATH
-          go version
+          printf "::notice ::%s\n" "$(go version)"
           go env
           go build ./...
           go test -v
