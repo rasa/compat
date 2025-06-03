@@ -26,7 +26,7 @@ jobs:
           pkg update -f
           pkg install -y go
         run: |
-          go version
+          printf "::notice ::%s\n" "$(go version)"
           go env
           go build ./...
           go test -v
