@@ -17,7 +17,7 @@
         "formatting.local": "github.com/rasa/compat",
         "formatting.gofumpt": true
     },
-    // golangci-lint  
+    // golangci-lint
     "go.lintTool": "golangci-lint",
     "go.lintFlags": [
         "--fast"
