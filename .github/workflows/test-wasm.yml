@@ -26,7 +26,7 @@ jobs:
         # Run Go WASM test in Node.js
         go version
         wget https://raw.githubusercontent.com/golang/go/refs/heads/master/lib/wasm/wasm_exec.js
-        GOOS=js GOARCH=wasm go test -c -o main.test.wasm .
+        GOOS=js GOARCH=wasm go test -v -c -o main.test.wasm .
         cat <<-'EOF' >run-test.js
         require("./wasm_exec.js");
         const fs = require("fs");
