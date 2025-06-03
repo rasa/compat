@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add `Mkdir()`, `MkdirAll()` and `MkdirTemp()` functions.
 - Add `OpenFile()`, `WriteFile()` and `WriteFileEx()` functions.
 - Add `Umask()` and `GetUmask()` functions.
+- Add running tests on DragonflyBSD, FreeBSD, NetBSD, OpenBSD, Illumos, & Solaris
 
 ## [0.4.0](https://github.com/rasa/compat/releases/tag/v0.4.0)
 
