@@ -16,7 +16,7 @@ import (
 	"golang.org/x/sys/windows"
 )
 
-func dumpMasks(perm os.FileMode, ownerMask uint32, groupMask uint32, worldMask uint32) { //nolint:unused // quiet linter
+func dumpMasks(perm os.FileMode, ownerMask uint32, groupMask uint32, worldMask uint32) {
 	if !testing.Verbose() {
 		return
 	}
@@ -31,7 +31,7 @@ func dumpMasks(perm os.FileMode, ownerMask uint32, groupMask uint32, worldMask u
 }
 
 // https://github.com/golang/sys/blob/3d9a6b80/windows/security_windows.go#L992
-var maskMap = map[uint32]string{ //nolint:unused // quiet linter
+var maskMap = map[uint32]string{
 	windows.GENERIC_READ:    "GR", // 0x80000000
 	windows.GENERIC_WRITE:   "GW", // 0x40000000
 	windows.GENERIC_EXECUTE: "GE", // 0x20000000
@@ -39,9 +39,9 @@ var maskMap = map[uint32]string{ //nolint:unused // quiet linter
 	windows.DELETE:          "D",  // 0x00010000
 }
 
-type aMask uint32 //nolint:unused // quiet linter
+type aMask uint32
 
-func (a aMask) String() string { //nolint:unused // quiet linter
+func (a aMask) String() string {
 	mask := uint32(a)
 	rv := ""
 	rights := map[string]uint32{}
