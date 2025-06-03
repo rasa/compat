@@ -34,6 +34,9 @@ jobs:
   test-dragonflybsd:
     uses: ./.github/workflows/test-dragonflybsd.yml
     secrets: inherit
+  test-illumos:
+    uses: ./.github/workflows/test-illumos.yml
+    secrets: inherit
   test-solaris:
     uses: ./.github/workflows/test-solaris.yml
     secrets: inherit

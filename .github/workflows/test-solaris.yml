@@ -10,8 +10,9 @@ permissions:
 
 jobs:
   test:
-    runs-on: ubuntu-latest
     name: test-solaris
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
     # env:
     #  GITHUB_TOKEN : ${{ secrets.GITHUB_TOKEN }}
     steps:
@@ -23,8 +24,6 @@ jobs:
         usesh: true
         prepare: |
           pkg refresh --full
-          # pkg list -a | grep go
-          # gpkg search go
           pkg install --accept --licenses developer/go
         run: |
           go version
