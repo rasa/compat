@@ -23,9 +23,9 @@ jobs:
         # envs: 'GITHUB_TOKEN'
         # usesh: true
         prepare: |
-          pkg install go-122
+          pkg install go-124
         run: |
-          PATH="/opt/ooce/go-1.22/bin:${PATH}"
+          PATH="/opt/ooce/go-1.24/bin:${PATH}"
           export PATH
           go version
           go env
