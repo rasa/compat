@@ -23,7 +23,7 @@ jobs:
         echo "${HOME}/.wasmtime/bin" >>"${GITHUB_PATH}"
 
     - run: |
-        go test -c -o main.test.wasm ./...
+        go test -c -o main.test.wasm .
       env:
         GOOS: js
         GOARCH: wasm
