@@ -6,8 +6,9 @@
 package compat
 
 import (
-	"golang.org/x/sys/unix"
 	"strings"
+
+	"golang.org/x/sys/unix"
 )
 
 func CPUBits() (int, error) {
@@ -23,13 +24,13 @@ func CPUBits() (int, error) {
 			machine = machine[:i]
 			break
 		}
-		machine[i] = byte(v)
+		machine[i] = v
 	}
 	arch := strings.TrimSpace(string(machine))
 
 	if strings.HasSuffix(arch, "64") {
-		return 64, nil
+		return 64, nil //nolint:mnd // quiet linter
 	}
 
-	return 32, nil
+	return 32, nil //nolint:mnd // quiet linter
 }
