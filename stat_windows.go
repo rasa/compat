@@ -251,7 +251,7 @@ func addExtendedPrefix(path string) string { //nolint:gocyclo // quiet linter
 	if isUNC { //nolint:gocritic // quiet linter
 		// UNC path, prepend the \\?\UNC\ prefix.
 		prefix = []uint16{'\\', '\\', '?', '\\', 'U', 'N', 'C', '\\'}
-	} else if isDevice { //nolint:revive // quiet linter
+	} else if isDevice { //nolint:revive // quiet linter //revive:disable-line
 		// Don't add the extended prefix to device paths, as it would
 		// change its meaning.
 	} else {
