@@ -3,7 +3,7 @@ name: pre-release
 on:
   workflow_dispatch:
 
-# mega-linter requies:
+# mega-linter needs:
 permissions:
   contents: write
   issues: write
