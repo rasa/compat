@@ -31,9 +31,9 @@ jobs:
 
       - name: run go version
         run: |
-          go env
-          go version
+          printf '::notice ::%s\n' "$(go version)"
           echo "GO_VERSION=$(go version | sed 's#^.*go##;s# .*##')" >>"${GITHUB_ENV}"
+          go env
 
       - uses: actions/cache@v4
         with:
