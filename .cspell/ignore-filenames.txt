@@ -9,3 +9,7 @@
 ecrc
 golangci
 goreleaser
+jsonlintrc
+pylintrc
+textlintrc
+wasi
