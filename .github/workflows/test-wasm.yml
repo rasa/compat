@@ -16,6 +16,9 @@ jobs:
     - uses: actions/checkout@v4
 
     - uses: actions/setup-go@v5
+      with:
+        go-version: '1.24'
+        check-latest: true
 
     - uses: actions/setup-node@v4
       with:
@@ -24,7 +27,7 @@ jobs:
     # cp "$(go env GOROOT)/lib/wasm/wasm_exec.js" . ||
     - run: |
         # Run Go WASM test in Node.js
-        go version
+        printf '::notice ::%s\n' "$(go version)"
         wget https://raw.githubusercontent.com/golang/go/refs/heads/master/lib/wasm/wasm_exec.js
         GOOS=js GOARCH=wasm go test -v -c -o main.test.wasm .
         cat <<-'EOF' >run-test.js

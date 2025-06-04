@@ -21,12 +21,12 @@ jobs:
     - uses: vmactions/freebsd-vm@v1
       with:
         # envs: 'GITHUB_TOKEN'
-        # usesh: true
+        usesh: true
         prepare: |
           pkg update -f
           pkg install -y go
         run: |
-          printf "::notice ::%s\n" "$(go version)"
+          printf '::notice ::%s\n' "$(go version)"
           go env
           go build ./...
           go test -v

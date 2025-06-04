@@ -21,7 +21,7 @@ jobs:
     - uses: vmactions/netbsd-vm@v1
       with:
         # envs: 'GITHUB_TOKEN'
-        # usesh: true
+        usesh: true
         # See https://github.com/fsnotify/fsnotify/blob/main/.github/workflows/test.yml
         prepare: |
           attempts=9
@@ -38,7 +38,7 @@ jobs:
         run: |
             export PATH="/usr/pkg/bin:${PATH}"
             (cd /usr/pkg/bin ; ln -sf go??? go)
-            go version
+            printf '::notice ::%s\n' "$(go version)"
             go env
             go build ./...
             go test -v ./...

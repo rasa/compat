@@ -26,7 +26,7 @@ jobs:
           pkg refresh --full
           pkg install --accept --licenses developer/go
         run: |
-          printf "::notice ::%s\n" "$(go version)"
+          printf '::notice ::%s\n' "$(go version)"
           go env
           go build ./...
           go test -v

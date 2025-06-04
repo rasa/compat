@@ -21,11 +21,11 @@ jobs:
     - uses: vmactions/openbsd-vm@v1
       with:
         # envs: 'GITHUB_TOKEN'
-        # usesh: true
+        usesh: true
         prepare: |
           pkg_add go
         run: |
-          printf "::notice ::%s\n" "$(go version)"
+          printf '::notice ::%s\n' "$(go version)"
           go env
           go build ./...
           go test -v
