@@ -5,7 +5,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased](https://github.com/rasa/compat/compare/v0.4.0...HEAD)
+## [Unreleased](https://github.com/rasa/compat/compare/v0.4.1...HEAD)
+
+## [0.4.1](https://github.com/rasa/compat/releases/tag/v0.4.1)
 
 ### Added
 
@@ -15,8 +17,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add `BTime()` support for `Stat()`/`Lstat()` on Linux and Android.
 - Add `BTime()` support for `Stat()`/`Lstat()` on FreeBSD and NetBSD.
 - Add `CTime()` support for `Stat()`/`Lstat()` on Windows.
+- Add `Mode()` support for `Stat()`/`Lstat()` on Windows.
 - Add `Chmod()` function.
-- Add `Create()`, `CreateEx()`, and `CreateTemp()` functions.
+- Add `Create()`, `CreateEx()`, `CreateTemp()` and `CreateTempEx()` functions.
 - Add `Mkdir()`, `MkdirAll()` and `MkdirTemp()` functions.
 - Add `OpenFile()`, `WriteFile()` and `WriteFileEx()` functions.
 - Add `Umask()` and `GetUmask()` functions.
