@@ -29,6 +29,8 @@ jobs:
           go-version: '1.24'
           check-latest: true
 
+      - run: printf '::notice ::%s\n' "$(go version)"
+
       - run: go mod download
 
       - run: go build -trimpath ./...
