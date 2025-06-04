@@ -1,6 +1,5 @@
+# checkov:skip=CKV_GHA_7: The build output cannot be affected by user parameters...
 ---
-# checkov:skip=CKV_GHA_7
-# CKV_GHA_7: The build output cannot be affected by user parameters...
 # yaml-language-server: $schema https://json.schemastore.org/github-workflow.json
 
 name: build-android
@@ -10,6 +9,7 @@ on: # yamllint disable-line rule:truthy
   workflow_dispatch:
     inputs:
       # See https://developer.android.com/studio#command-tools
+      # checkov:skip=CKV_GHA_7: The build output cannot be affected by user parameters...
       ANDROID_SDK_URL:
         default: "https://dl.google.com/android/repository/commandlinetools-linux-13114758_latest.zip"
         description: "Android SDK URL"
