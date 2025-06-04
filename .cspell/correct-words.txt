@@ -1,0 +1,24 @@
+# cSpell:disable
+# ~/.cspell/correct-words.txt
+# Manually curated cSpell dictionary of words (and filenames) to treat as correctly spelled
+
+armbe
+goamd
+GOAMD
+goarch
+goarm
+GOARM
+gomips
+GOMIPS
+gomod
+goppc
+GOPPC
+goriscv
+GORISCV
+illumos
+loong64
+mipsle
+riscv
+slsa
+slsaprovenance
+trimpath

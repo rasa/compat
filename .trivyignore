@@ -1,0 +1,5 @@
+AVD-DS-0002
+AVD-DS-0026
+
+# AVD-DS-0002 (HIGH): Specify at least 1 USER command in Dockerfile with non-root user as argument
+# AVD-DS-0026 (LOW):  Add HEALTHCHECK instruction in your Dockerfile

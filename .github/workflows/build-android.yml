@@ -1,4 +1,6 @@
 ---
+# checkov:skip=CKV_GHA_7
+# CKV_GHA_7: The build output cannot be affected by user parameters...
 # yaml-language-server: $schema https://json.schemastore.org/github-workflow.json
 
 name: build-android
@@ -128,7 +130,7 @@ jobs:
           # go build (GOARCH=${{ matrix.goarch }})
           export GOARCH=${{ matrix.goarch }}
           export ABI_PREFIX=${{ matrix.abi_prefix }}
-          # yamllint disable-line
+          # yamllint disable-line rule:line-length
           export CC="${NDK_PATH}/toolchains/llvm/prebuilt/linux-x86_64/bin/${{ matrix.android_arch }}-linux-android${ABI_PREFIX}${ABI_VERSION}-clang"
           go env
           export APK=uvk-${{ matrix.android_arch }}.apk
