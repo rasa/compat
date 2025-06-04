@@ -86,7 +86,7 @@ func TestWriteFileAtomicMode(t *testing.T) {
 	if got != want {
 		t.Errorf("got %04o, want %04o", got, want)
 	}
-	// ensure previous file mode is ingored
+	// ensure previous file mode is ignored
 	err = compat.Chmod(file, 0o600)
 	if err != nil {
 		t.Errorf("Failed to change file mode: %q: %v", file, err)
