@@ -7,12 +7,12 @@ permissions:
   contents: read
 
 jobs:
+  mega-linter:
+    uses: ./.github/workflows/mega-linter.yml
+    secrets: inherit
   build:
     uses: ./.github/workflows/build.yml
     secrets: inherit
-  # mega-linter:
-  #   uses: ./.github/workflows/mega-linter.yml
-  #  secrets: inherit
   build-all:
     uses: ./.github/workflows/build-all.yml
     secrets: inherit
