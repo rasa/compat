@@ -13,6 +13,8 @@ import (
 	"golang.org/x/sys/windows"
 )
 
+// CPUBits returns the number of bits in an integer on the CPU. Currently, on
+// plan9, and wasm, zero is returned.
 func CPUBits() (int, error) {
 	mod := syscall.NewLazyDLL("kernel32.dll")
 	proc := mod.NewProc("IsWow64Process")
