@@ -21,9 +21,10 @@ jobs:
     - uses: vmactions/netbsd-vm@v1
       with:
         # envs: 'GITHUB_TOKEN'
-        usesh: true
+        # usesh: true
         # See https://github.com/fsnotify/fsnotify/blob/main/.github/workflows/test.yml
         prepare: |
+          export PATH="/usr/pkg/bin:${PATH}"
           attempts=9
           delay=1
           i=1
