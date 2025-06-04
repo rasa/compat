@@ -9,8 +9,8 @@ import (
 	"golang.org/x/sys/windows"
 )
 
-// IsAdmin returns true if the user is root, or has Windows Administrator rights.
-func IsAdmin() (bool, error) {
+// IsRoot returns true if the user is root, or has Windows administrator rights.
+func IsRoot() (bool, error) {
 	// Source: https://github.com/golang/go/issues/28804#issuecomment-505326268
 	var sid *windows.SID
 

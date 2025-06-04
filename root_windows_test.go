@@ -18,7 +18,7 @@ import (
 	"github.com/rasa/compat"
 )
 
-func TestAdminIsAdmin(t *testing.T) {
+func TestRootIsRoot(t *testing.T) {
 	ctx, cancel := context.WithTimeout(t.Context(), 1*time.Second)
 	defer cancel()
 
@@ -39,13 +39,13 @@ func TestAdminIsAdmin(t *testing.T) {
 	if err != nil {
 		t.Errorf("Unable to create well known sid for administrators: %v", err)
 	}
-	isAdmin := strings.Contains(string(stdoutStderr), sid.String()) // "S-1-5-32-544"
-	got, err := compat.IsAdmin()
+	isRoot := strings.Contains(string(stdoutStderr), sid.String()) // "S-1-5-32-544"
+	got, err := compat.IsRoot()
 	if err != nil {
-		t.Errorf("IsAdmin() returned: %v", err)
+		t.Errorf("IsRoot() returned: %v", err)
 	}
-	if got != isAdmin {
-		// Report result, but don't fail, as the user may not be an admin.
-		t.Skipf("IsAdmin(): got %v, want %v", got, isAdmin)
+	if got != isRoot {
+		// Report result, but don't fail, as the user may not be an Root.
+		t.Skipf("IsRoot(): got %v, want %v", got, isRoot)
 	}
 }
