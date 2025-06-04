@@ -13,3 +13,142 @@
 ## You can also remove it below, but your edit will be undone whenever this file
 ## is regenerated.
 ##
+
+asasalint        #  2 hits in  1 file: .golangci.yml
+capnspacehook    #  6 hits in  3 files
+cespare          #  2 hits in  1 file: stat_plan9.go
+Ctim             # 10 hits in  3 files
+DACL             #  4 hits in  1 file: file_windows.go
+DEVSKIM          #  2 hits in  1 file: .mega-linter.yml
+dupl             #  2 hits in  1 file: .golangci.yml
+envrc            #  2 hits in  1 file: .gitignore
+errorlint        #  4 hits in  2 files
+Filel            #  4 hits in  1 file: cmd/main.go
+fuzzcache        #  2 hits in  1 file: Makefile
+goarches         #  8 hits in  1 file: runtime_test.go
+goconst          #  2 hits in  1 file: .golangci.yml
+gocritic         #  8 hits in  3 files
+gocyclo          #  8 hits in  3 files
+gofumpt          #  2 hits in  1 file: .golangci.yml
+goprintffuncname #  2 hits in  1 file: .golangci.yml
+gosec            # 30 hits in  7 files
+gosimple         #  2 hits in  1 file: .golangci.yml
+govet            #  6 hits in  2 files
+govulncheck      #  4 hits in  1 file: Makefile
+ineffassign      #  2 hits in  1 file: .golangci.yml
+KICS             #  2 hits in  1 file: .mega-linter.yml
+nakedret         #  2 hits in  1 file: .golangci.yml
+nolint           # 92 hits in 19 files
+nolintlint       #  8 hits in  2 files
+Partitionl       #  4 hits in  1 file: cmd/main.go
+perfsprint       #  2 hits in  1 file: .golangci.yml
+Renice           # 50 hits in  8 files
+renice           #  6 hits in  1 file: nice_windows.go
+rowserrcheck     #  2 hits in  1 file: .golangci.yml
+WSLIs            #  2 hits in  1 file: wsl_test.go
+# asasalint       :  2 hits in  1 file
+#   .golangci.yml: 2 hits
+# capnspacehook   :  6 hits in  3 files
+#   file_windows.go: 2 hits
+#   file_windows_test.go: 2 hits
+#   stat_windows.go: 2 hits
+# cespare         :  2 hits in  1 file
+#   stat_plan9.go: 2 hits
+# Ctim            : 10 hits in  3 files
+#   README.md: 2 hits
+#   stat_linux.go: 4 hits
+#   stat_unix.go: 4 hits
+# DACL            :  4 hits in  1 file
+#   file_windows.go: 4 hits
+# DEVSKIM         :  2 hits in  1 file
+#   .mega-linter.yml: 2 hits
+# dupl            :  2 hits in  1 file
+#   .golangci.yml: 2 hits
+# envrc           :  2 hits in  1 file
+#   .gitignore: 2 hits
+# errorlint       :  4 hits in  2 files
+#   .golangci.yml: 2 hits
+#   file_windows.go: 2 hits
+# Filel           :  4 hits in  1 file
+#   cmd/main.go: 4 hits
+# fuzzcache       :  2 hits in  1 file
+#   Makefile: 2 hits
+# goarches        :  8 hits in  1 file
+#   runtime_test.go: 8 hits
+# goconst         :  2 hits in  1 file
+#   .golangci.yml: 2 hits
+# gocritic        :  8 hits in  3 files
+#   .golangci.yml: 2 hits
+#   cmd/main.go: 4 hits
+#   stat_windows.go: 2 hits
+# gocyclo         :  8 hits in  3 files
+#   .golangci.yml: 4 hits
+#   file_windows.go: 2 hits
+#   stat_windows.go: 2 hits
+# gofumpt         :  2 hits in  1 file
+#   .golangci.yml: 2 hits
+# goprintffuncname:  2 hits in  1 file
+#   .golangci.yml: 2 hits
+# gosec           : 30 hits in  7 files
+#   .golangci.yml: 2 hits
+#   file_windows.go: 6 hits
+#   file_windows_test.go: 2 hits
+#   stat_nix.go: 4 hits
+#   stat_test.go: 4 hits
+#   stat_windows.go: 8 hits
+#   umask_windows.go: 4 hits
+# gosimple        :  2 hits in  1 file
+#   .golangci.yml: 2 hits
+# govet           :  6 hits in  2 files
+#   .golangci.yml: 4 hits
+#   file_windows.go: 2 hits
+# govulncheck     :  4 hits in  1 file
+#   Makefile: 4 hits
+# ineffassign     :  2 hits in  1 file
+#   .golangci.yml: 2 hits
+# KICS            :  2 hits in  1 file
+#   .mega-linter.yml: 2 hits
+# nakedret        :  2 hits in  1 file
+#   .golangci.yml: 2 hits
+# nolint          : 92 hits in 19 files
+#   .golangci.yml: 8 hits
+#   admin_windows.go: 4 hits
+#   buildbits32.go: 2 hits
+#   buildbits64.go: 2 hits
+#   cmd/main.go: 4 hits
+#   cpubits_unix.go: 4 hits
+#   cpubits_windows.go: 4 hits
+#   file_debug.go: 2 hits
+#   file_debug_windows.go: 8 hits
+#   file_windows.go: 10 hits
+#   file_windows_test.go: 2 hits
+#   nice_windows.go: 4 hits
+#   stat_darwin.go: 6 hits
+#   stat_linux.go: 6 hits
+#   stat_nix.go: 4 hits
+#   stat_test.go: 4 hits
+#   stat_unix.go: 4 hits
+#   stat_windows.go: 10 hits
+#   umask_windows.go: 4 hits
+# nolintlint      :  8 hits in  2 files
+#   .golangci.yml: 4 hits
+#   stat_nix.go: 4 hits
+# Partitionl      :  4 hits in  1 file
+#   cmd/main.go: 4 hits
+# perfsprint      :  2 hits in  1 file
+#   .golangci.yml: 2 hits
+# Renice          : 50 hits in  8 files
+#   CHANGELOG.md: 2 hits
+#   nice.go: 6 hits
+#   nice_linux.go: 6 hits
+#   nice_noop.go: 4 hits
+#   nice_plan9.go: 10 hits
+#   nice_test.go: 10 hits
+#   nice_unix.go: 6 hits
+#   nice_windows.go: 6 hits
+# renice          :  6 hits in  1 file
+#   nice_windows.go: 6 hits
+# rowserrcheck    :  2 hits in  1 file
+#   .golangci.yml: 2 hits
+# WSLIs           :  2 hits in  1 file
+#   wsl_test.go: 2 hits

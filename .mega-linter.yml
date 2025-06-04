@@ -22,6 +22,10 @@ YAML_V8R_FILTER_REGEX_EXCLUDE: '\.mega-?linter\.ya?ml'
 
 ## CONVERT ERRORS TO WARNINGS ##
 
+# quiet: Error: can't load config: unsupported version of the configuration: ""
+GO_GOLANGCI_LINT_DISABLE_ERRORS: true
+# quiet: stat_windows.go:254:21: this block is empty, you can remove it
+GO_REVIVE_DISABLE_ERRORS: true
 PYTHON_BANDIT_DISABLE_ERRORS: true
 REPOSITORY_DEVSKIM_DISABLE_ERRORS: true
 REPOSITORY_KICS_DISABLE_ERRORS: true

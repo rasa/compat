@@ -6,7 +6,7 @@
 package compat
 
 // Umask sets the umask to umask, and returns the previous value.
-// On Windows, the intial umask value is 022 octal, and can be changed by
+// On Windows, the initial umask value is 022 octal, and can be changed by
 // setting environmental variable UMASK, to an octal value. For example:
 // `set UMASK=022` . Leading zeros and 'o's are allowed, and ignored.
 // On Plan9, the function does nothing, and always returns zero.
