@@ -75,13 +75,13 @@ func loadInfo(fi os.FileInfo, name string) (FileInfo, error) {
 
 	sys, ok := fi.Sys().(*syscall.Win32FileAttributeData)
 	if !ok {
-		return &fs, &os.PathError{Op: "stat", Path: name, Err: errors.New("failed to cast fi.Sys()")}
+		return nil, &os.PathError{Op: "stat", Path: name, Err: errors.New("failed to cast fi.Sys()")}
 	}
 
 	name = fixLongPath(name)
 	pathp, err := windows.UTF16PtrFromString(name)
 	if err != nil {
-		return &fs, &os.PathError{Op: "stat", Path: name, Err: err}
+		return nil, &os.PathError{Op: "stat", Path: name, Err: err}
 	}
 
 	fs.Lock()
@@ -91,14 +91,14 @@ func loadInfo(fi os.FileInfo, name string) (FileInfo, error) {
 
 	h, err := windows.CreateFile(pathp, 0, 0, nil, windows.OPEN_EXISTING, attrs, 0)
 	if err != nil {
-		return &fs, &os.PathError{Op: "stat", Path: name, Err: err}
+		return nil, &os.PathError{Op: "stat", Path: name, Err: err}
 	}
 	defer windows.CloseHandle(h) //nolint:errcheck // quiet linter
 
 	var i windows.ByHandleFileInformation
 	err = windows.GetFileInformationByHandle(h, &i)
 	if err != nil {
-		return &fs, &os.PathError{Op: "stat", Path: name, Err: err}
+		return nil, &os.PathError{Op: "stat", Path: name, Err: err}
 	}
 
 	fs.path = name

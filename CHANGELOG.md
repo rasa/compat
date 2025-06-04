@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased](https://github.com/rasa/compat/compare/v0.4.1...HEAD)
 
+### Added
+
+- Add `Rename()` function.
+- Add `WriteReaderAtomic()` and `WriteFileAtomic()` functions.
+- Add `ReplaceFile()` to mimic github.com/natefinch/atomiC.
+
+### Changed
+
+- Change `IsAdmin()` to `IsRoot()` to be more unix-centric.
+- Deprecate `IsAdmin()`.
+- Deprecate `ReplaceFile()`.
+
 ## [0.4.1](https://github.com/rasa/compat/releases/tag/v0.4.1)
 
 ### Added
