@@ -48,21 +48,21 @@ jobs:
           echo "GO_VERSION=$(go version | sed 's#^.*go##;s# .*##')" >>"${GITHUB_ENV}"
           go env
 
-      - uses: actions/cache/restore@v4
+      - name: Cache Go modcache
+        uses: actions/cache@v4
         with:
-          enableCrossOsArchive: true
           path: |
-            ~/go/pkg/mod/cache
             ~/.cache/go-build
-          key: go-${{ hashFiles('go.mod') }}
+            ~/go/pkg/mod
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
           restore-keys: |
-            go-
-            
+            ${{ runner.os }}-go-
+
       # - uses: actions/cache@v4
       #  with:
       #    path: |
       #      ~/.cache/go-build
-      #      ~/go/pkg/mod'
+      #      ~/go/pkg/mod
       #      C:/Users/runneradmin/AppData/Local/go-build
       #      C:/Users/runneradmin/go/pkg/mod
       #      C:\\Users\\runneradmin\\AppData\\Local\\go-build
