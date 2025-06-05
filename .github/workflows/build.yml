@@ -46,14 +46,15 @@ jobs:
         run: |
           printf '::notice ::%s\n' "$(go version)"
           echo "GO_VERSION=$(go version | sed 's#^.*go##;s# .*##')" >>"${GITHUB_ENV}"
-          go env
+          printf 'GOCACHE=%s\n' "$(go env GOCACHE | tr '\\' '/')" >>"${GITHUB_ENV}"
+          printf 'GOMODCACHE=%s\n' "$(go env GOMODCACHE | tr '\\' '/')" >>"${GITHUB_ENV}"
 
       - name: Cache Go modcache
         uses: actions/cache@v4
         with:
           path: |
-            ~/.cache/go-build
-            ~/go/pkg/mod
+            ${{ env.GOCACHE }}
+            ${{ env.GOMODCACHE }}
           key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
           restore-keys: |
             ${{ runner.os }}-go-
