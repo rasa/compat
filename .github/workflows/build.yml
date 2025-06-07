@@ -90,6 +90,8 @@ jobs:
         with:
           name: coverage-${{ matrix.os }}
           path: coverage.*
+        env:
+          CGO_ENABLED: ${{ contains(matrix.os, 'windows') && '0' || '1' }}
 
       - run: go tool goreleaser release --clean --snapshot
         if: ${{ runner.os == 'Linux' }}
