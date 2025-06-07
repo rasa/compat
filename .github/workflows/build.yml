@@ -18,7 +18,22 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ ubuntu-latest, macos-latest, windows-latest ]
+        os:
+          - ubuntu-24.04 # ubuntu-latest
+          - macos-15 # arm64
+          # tests pass running on windows 11 locally, so test on all Windows
+          # builders, for now:
+          - windows-2025
+          - windows-11-arm
+          - windows-2022 # windows-latest
+          - windows-2019
+          # - ubuntu-22.04
+          # - macos-15-large # amd64
+          # - macos-14 # arm64 # macos-latest
+          # - macos-14-large # amd64
+          # - macos-13 # amd64
+          # - macos-13-xlarge # arm64
+
     runs-on: ${{ matrix.os }}
     defaults:
       run:
