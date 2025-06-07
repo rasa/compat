@@ -187,7 +187,7 @@ func securityDescriptor(perm os.FileMode) (*windows.SECURITY_DESCRIPTOR, *securi
 	worldMask := accessMask(perm, 0)
 	setExplicitAccess(&ea[2], worldSid, worldMask, windows.TRUSTEE_IS_WELL_KNOWN_GROUP)
 
-	// dumpMasks(perm, ownerMask, groupMask, worldMask).
+	dumpMasks(perm, ownerMask, groupMask, worldMask)
 
 	acl, err := windows.ACLFromEntries(ea[:], nil)
 	if err != nil {
