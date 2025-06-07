@@ -8,6 +8,7 @@ on:
       - 'go.mod'
       - '.github/workflows/*'
       - '.goreleaser.yml'
+      - 'Makefile'
   pull_request:
     branches: [ main ]
     paths:
