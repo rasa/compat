@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: Copyright © 2025 Ross Smith II <ross@smithii.com>
 // SPDX-License-Identifier: MIT
 
-// main is a sample application that runs functions provided by this library.
+// demo is a sample application that runs functions provided by this library.
 // This also helps with our code coverage report.
 package main
 
