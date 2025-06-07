@@ -57,7 +57,7 @@ endif
 
 .PHONY: test
 test: ## go test
-	go test -tags debug $(RACE_OPT) -covermode=atomic -coverprofile=coverage.out -coverpkg=./... ./...
+	go test -v -tags debug $(RACE_OPT) -covermode=atomic -coverprofile=coverage.out -coverpkg=./... ./...
 	go tool cover -html=coverage.out -o coverage.html
 
 .PHONY: diff
