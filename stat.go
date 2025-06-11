@@ -79,7 +79,7 @@ func Supports(function SupportedType) bool {
 func Stat(name string) (FileInfo, error) {
 	fi, err := os.Stat(name)
 	if err != nil {
-		return &fileStat{}, err
+		return nil, err
 	}
 
 	return loadInfo(fi, name)
@@ -96,7 +96,7 @@ func Stat(name string) (FileInfo, error) {
 func Lstat(name string) (FileInfo, error) {
 	fi, err := os.Lstat(name)
 	if err != nil {
-		return &fileStat{}, err
+		return nil, err
 	}
 
 	return loadInfo(fi, name)

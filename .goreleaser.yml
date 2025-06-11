@@ -1,3 +1,5 @@
+# yaml-language-server: $schema=https://goreleaser.com/static/schema.json
+
 version: 2
 
 before:
@@ -6,7 +8,7 @@ before:
 builds:
   - env:
       - CGO_ENABLED=0
-    main: ./cmd/main.go
+    main: ./cmd/demo/main.go
     goos:
       - darwin
       - linux
