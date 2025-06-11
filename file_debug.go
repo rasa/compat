@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: Copyright © 2025 Ross Smith II <ross@smithii.com>
 // SPDX-License-Identifier: MIT
 
-//go:build !windows || (!debug && ignore)
+//go:build !debug || !windows
 
 package compat
 
@@ -9,5 +9,5 @@ import (
 	"os"
 )
 
-func dumpMasks(perm os.FileMode, ownerMask uint32, groupMask uint32, worldMask uint32) { //nolint:unused // quiet linter //revive:disable-line
+func dumpMasks(perm os.FileMode, ownerMask uint32, groupMask uint32, worldMask uint32) { //nolint:nolintlint,unused // quiet linter
 }

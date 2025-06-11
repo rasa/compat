@@ -9,7 +9,7 @@ import (
 	"os"
 )
 
-// IsAdmin returns true if the user is root, or has Windows Administrator rights.
-func IsAdmin() (bool, error) {
+// IsRoot returns true if the user is root, or has Windows administrator rights.
+func IsRoot() (bool, error) {
 	return os.Getuid() == 0, nil
 }

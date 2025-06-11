@@ -49,15 +49,29 @@ lint: ## golangci-lint
 vuln: ## govulncheck
 	go tool govulncheck ./...
 
-ifeq ($(strip $(CGO_ENABLED)),0)
+RACE_OPT := -race
+
+# go: -race requires cgo
+ifneq ($(strip $(CGO_ENABLED)),1)
 RACE_OPT =
-else
-RACE_OPT = -race
+endif
+
+GO_VERSION := $(shell go version)
+# go: -race is not supported on windows/arm64
+ifeq ($(findstring windows/arm64,$(GO_VERSION)),windows/arm64)
+RACE_OPT =
+endif
+
+# cgo: C compiler "gcc" not found: exec: "gcc": executable file not found in $PATH
+CC := $(shell go env CC)
+HAS_CC := $(shell command -v $(CC) >/dev/null || echo no)
+ifeq ($(HAS_CC),no)
+RACE_OPT =
 endif
 
 .PHONY: test
 test: ## go test
-	go test $(RACE_OPT) -covermode=atomic -coverprofile=coverage.out -coverpkg=./... ./...
+	go test -v -tags debug $(RACE_OPT) -covermode=atomic -coverprofile=coverage.out -coverpkg=./... ./...
 	go tool cover -html=coverage.out -o coverage.html
 
 .PHONY: diff
