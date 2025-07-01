@@ -56,7 +56,7 @@ func getFileOwnerAndGroupSIDs(name string) (*windows.SID, *windows.SID, error) {
 	if err != nil {
 		return nil, nil, fmt.Errorf("invalid file path: %w", err)
 	}
-	r0, _, err := procGetNamedSecurityInfoW.Call(
+	r0, _, _ := procGetNamedSecurityInfoW.Call(
 		uintptr(unsafe.Pointer(pPath)),
 		1, // SE_FILE_OBJECT
 		OWNER_SECURITY_INFORMATION|GROUP_SECURITY_INFORMATION,
@@ -91,7 +91,7 @@ func getPrimaryDomainSID() (*windows.SID, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer procLsaClose.Call(handle)
+	defer procLsaClose.Call(handle) //nolint:errcheck // quiet linter
 
 	var buffer uintptr
 	r0, _, _ := procLsaQueryInformationPolicy.Call(
@@ -102,7 +102,7 @@ func getPrimaryDomainSID() (*windows.SID, error) {
 	if r0 != 0 {
 		return nil, fmt.Errorf("LsaQueryInformationPolicy failed: %w", syscall.Errno(r0))
 	}
-	defer procLsaFreeMemory.Call(buffer)
+	defer procLsaFreeMemory.Call(buffer) //nolint:errcheck // quiet linter
 
 	info := (*LSA_POLICY_ACCOUNT_DOMAIN_INFO)(unsafe.Pointer(buffer))
 
@@ -136,23 +136,23 @@ func sidToPOSIXID(sid *windows.SID, primaryDomainSid *windows.SID) (int, error) 
 
 	switch {
 	case strings.HasPrefix(sidStr, "S-1-5-5-"):
-		return 0xFFF, nil
+		return 0xFFF, nil //nolint:mnd // quiet linter
 	case strings.HasPrefix(sidStr, "S-1-5-32-"):
 		rid, err := getRID(sid)
 		if err != nil {
 			return -1, err
 		}
-		return 0x20000 + rid, nil
+		return 0x20000 + rid, nil //nolint:mnd // quiet linter
 	case strings.HasPrefix(sidStr, "S-1-5-21-"):
 		rid, err := getRID(sid)
 		if err != nil {
 			return -1, err
 		}
 		if isSameDomainSID(sid, primaryDomainSid) {
-			return 0x40000 + rid, nil
+			return 0x40000 + rid, nil //nolint:mnd // quiet linter
 		}
 
-		return 0x30000 + rid, nil
+		return 0x30000 + rid, nil //nolint:mnd // quiet linter
 	default:
 
 		return -1, fmt.Errorf("unsupported SID: %s", sidStr)
@@ -180,5 +180,5 @@ func getUserGroupIDs(path string) (uint64, uint64, error) {
 		return UnknownID, UnknownID, err
 	}
 
-	return uint64(uid), uint64(gid), nil
+	return uint64(uid), uint64(gid), nil //nolint:gosec // quiet linter
 }
