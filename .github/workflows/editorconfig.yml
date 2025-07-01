@@ -1,0 +1,41 @@
+---
+# yaml-language-server: $schema https://json.schemastore.org/github-workflow.json
+
+name: editorconfig
+
+on: # yamllint disable-line rule:truthy
+  # push:
+  #  branches:
+  #    - main
+  # pull_request:
+  workflow_call:
+  workflow_dispatch:
+
+jobs:
+  debug-editorconfig:
+    name: editorconfig
+
+    steps:
+      - uses: actions/checkout@v4.2.2
+
+      - uses: actions/setup-go@v5.4.0
+        with:
+          go-version: '1.24'
+          check-latest: true
+
+      - run: printf '::notice ::%s\n' "$(go version)"
+
+      - run: go install github.com/editorconfig-checker/editorconfig-checker/v2@latest
+
+      - run: printf '::notice ::%s\n' "$(ec --version)"
+
+      - run:
+          tmp1=$(mktemp)
+          ec --no-color >"${tmp1}" || true
+          mapfile -t < <(sed -En "s/^(.*):$/\1/p" "${tmp1}")
+          ((${MAPFILE[#]})) || exit 0
+          for file in "${MAPFILE[@]}"; do
+            printf "*** %s ***\n" "${file}"
+            od -a -t x1 "${file}"
+          done
+          rm -f "${tmp1}"

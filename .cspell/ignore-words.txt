@@ -14,14 +14,18 @@
 ## is regenerated.
 ##
 
-natefinch
-Dassow
-sdassow
-destinationp
 
+antontroshin
+armv
+Dassow
+destinationp
 eabi
+modadvapi
+natefinch
 ooce
+ramdisk
 runneradmin
+sdassow
 sdkmanager
 tinygo
 usesh

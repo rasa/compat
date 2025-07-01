@@ -1,5 +1,5 @@
-# checkov:skip=CKV_GHA_7: The build output cannot be affected by user parameters...
 ---
+# checkov:skip=CKV_GHA_7: The build output cannot be affected by user parameters...
 # yaml-language-server: $schema https://json.schemastore.org/github-workflow.json
 
 name: build-android
