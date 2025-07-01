@@ -1,0 +1,36 @@
+name: pre-release
+
+on:
+  workflow_dispatch:
+
+# mega-linter needs:
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+
+jobs:
+  test-dragonflybsd:
+    uses: ./.github/workflows/test-dragonflybsd.yml
+    secrets: inherit
+  test-freebsd:
+    uses: ./.github/workflows/test-freebsd.yml
+    secrets: inherit
+  test-illumos:
+    uses: ./.github/workflows/test-illumos.yml
+    secrets: inherit
+  test-netbsd:
+    uses: ./.github/workflows/test-netbsd.yml
+    secrets: inherit
+  test-openbsd:
+    uses: ./.github/workflows/test-openbsd.yml
+    secrets: inherit
+  test-solaris:
+    uses: ./.github/workflows/test-solaris.yml
+    secrets: inherit
+  test-wasi:
+    uses: ./.github/workflows/test-wasi.yml
+    secrets: inherit
+  test-wasm:
+    uses: ./.github/workflows/test-wasm.yml
+    secrets: inherit
