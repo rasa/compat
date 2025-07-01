@@ -4,8 +4,20 @@
 name: build-most (all except Android and iOS)
 
 on: # yamllint disable-line rule:truthy
-  workflow_call:
-  workflow_dispatch:
+  workflow_call: # Required so this workflow can be called from another workflow
+    inputs:
+      verbose_testing:
+        type: string
+        default: "false"
+  workflow_dispatch: # Allows you to run this workflow manually from the Actions tab
+    inputs:
+      verbose_testing:
+        description: "Test with -v options."
+        type: choice
+        options:
+          - "false"
+          - "true"
+        default: "false"
 
 env:
   CGO_ENABLED: 0
@@ -53,4 +65,10 @@ jobs:
         fi
         exit "${fails}"
 
-    - run: go test -v .
+    - run: |
+      TEST_OPTS=()
+      if [[ "${{ inputs.verbose_testing }}" == "true" ]]; then
+        TEST_OPTS+=(-v)
+      fi
+
+      go test "${TEST_OPTS[@]}" .

@@ -16,8 +16,20 @@ on:
       - 'go.mod'
       - '.github/workflows/*'
       - '.goreleaser.yml'
-  workflow_call:
-  workflow_dispatch:
+  workflow_call: # Required so this workflow can be called from another workflow
+    inputs:
+      verbose_testing:
+        type: string
+        default: "false"
+  workflow_dispatch: # Allows you to run this workflow manually from the Actions tab
+    inputs:
+      verbose_testing:
+        description: "Test with -v options."
+        type: choice
+        options:
+          - "false"
+          - "true"
+        default: "false"
 
 permissions:
   contents: read
@@ -85,7 +97,12 @@ jobs:
             ${{ runner.os }}-go-
 
       - name: Build
-        run: make ci
+        run: |
+          TEST_OPTS=()
+          if [[ "${{ inputs.verbose_testing }}" == "true" ]]; then
+            TEST_OPTS+=(-v)
+          fi
+          make ci TEST_OPTS="${TEST_OPTS[*]}"
         env:
           COMPAT_DEBUG: 1
 

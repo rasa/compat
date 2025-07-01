@@ -6,6 +6,7 @@
 package compat
 
 import (
+	"errors"
 	"fmt"
 	"strings"
 	"syscall"
@@ -112,7 +113,7 @@ func getPrimaryDomainSID() (*windows.SID, error) {
 func getRID(sid *windows.SID) (int, error) {
 	count := uint32(sid.SubAuthorityCount())
 	if count == 0 {
-		return -1, fmt.Errorf("no subauthorities found")
+		return -1, errors.New("no subauthorities found")
 	}
 
 	return int(sid.SubAuthority(count - 1)), nil
