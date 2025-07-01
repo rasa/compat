@@ -72,7 +72,6 @@ jobs:
           # Deprecated:
           # - macos-12
           # - ubuntu-20.04
-          - windows-2019
           # https://github.blog/changelog/2024-05-20-actions-upcoming-changes-to-github-hosted-macos-runners/
           # Gone on 28-Jun-24:
           # - macos-11

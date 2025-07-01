@@ -35,7 +35,6 @@ jobs:
           - windows-2025
           - windows-11-arm
           - windows-2022 # windows-latest
-          - windows-2019
           # - ubuntu-22.04
           # - macos-15-large # amd64
           # - macos-14 # arm64 # macos-latest
