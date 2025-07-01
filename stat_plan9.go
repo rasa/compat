@@ -35,25 +35,7 @@ type fileStat struct {
 	gid    uint64
 }
 
-func stat(name string) (FileInfo, error) {
-	fi, err := os.Stat(name)
-	if err != nil {
-		return &fileStat{}, err
-	}
-
-	return loadInfo(fi, name)
-}
-
-func lstat(name string) (FileInfo, error) {
-	fi, err := os.Lstat(name)
-	if err != nil {
-		return &fileStat{}, err
-	}
-
-	return loadInfo(fi, name)
-}
-
-func loadInfo(fi os.FileInfo, _ string) (FileInfo, error) {
+func stat(fi os.FileInfo, _ string) (FileInfo, error) {
 	var fs fileStat
 
 	sys, ok := fi.Sys().(*syscall.Dir)

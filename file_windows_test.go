@@ -11,8 +11,6 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/capnspacehook/go-acl"
-
 	"github.com/rasa/compat"
 )
 
@@ -33,7 +31,6 @@ func init() {
 }
 
 func TestFileWindowsChmod(t *testing.T) {
-	// t.Skip("Skipping until we diagnose why this test is failing")
 	name, err := tmpfile(t)
 	if err != nil {
 		t.Fatal(err)
@@ -204,7 +201,7 @@ func TestFileWindowsWriteFileEx(t *testing.T) {
 func checkPerm(t *testing.T, name string, perm os.FileMode) {
 	t.Helper()
 
-	got, err := acl.GetExplicitFileAccessMode(name)
+	got, err := compat.ExportStat(name) // acl.GetExplicitFileAccessMode(name)
 	if err != nil {
 		t.Fatalf("GetExplicitFileAccessMode(%v) returned %v", name, err)
 	}

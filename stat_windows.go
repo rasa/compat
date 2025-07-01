@@ -70,7 +70,7 @@ func isWindowsAtLeast(major, minor, build uint32) bool {
 // Originally copied from https://github.com/golang/go/blob/d65c209b/src/os/types_windows.go#L287
 ////////////////////////////////////////////////////////////////////////////////
 
-func loadInfo(fi os.FileInfo, name string) (FileInfo, error) {
+func stat(fi os.FileInfo, name string) (FileInfo, error) {
 	var fs fileStat
 
 	sys, ok := fi.Sys().(*syscall.Win32FileAttributeData)
@@ -129,19 +129,18 @@ func loadInfo(fi os.FileInfo, name string) (FileInfo, error) {
 		fs.ctime = time.Unix(0, nsec)
 	}
 
-	perm, err := acl.GetExplicitFileAccessMode(name)
+	perm, err := _stat(name)
 	if err != nil {
 		return nil, &os.PathError{Op: "stat", Path: name, Err: err}
 	}
-	// @TODO(rasa): remove.
-	// fmt.Printf("perm   =%04o\n", perm)
-	// fmt.Printf("fs.mode=%04o\n", fs.mode)
 	fs.mode &= os.FileMode(^uint32(0o777)) //nolint:mnd // quiet
-	// fmt.Printf("fs.mode=%04o\n", fs.mode)
 	fs.mode |= perm.Perm()
-	// fmt.Printf("fs.mode=%04o\n", fs.mode)
 
 	return &fs, nil
+}
+
+func _stat(name string) (os.FileMode, error) {
+	return acl.GetExplicitFileAccessMode(name)
 }
 
 ///////////////////////////////////////////////////////////////////////////////

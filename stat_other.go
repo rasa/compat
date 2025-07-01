@@ -27,11 +27,11 @@ type fileStat struct {
 	atime  time.Time
 	btime  time.Time
 	ctime  time.Time
-	uid    uint32
-	gid    uint32
+	uid    uint64
+	gid    uint64
 }
 
-func loadInfo(_ os.FileInfo) (FileInfo, error) {
+func stat(_ os.FileInfo) (FileInfo, error) {
 	return fileStat{}, errors.New("not implemented")
 }
 

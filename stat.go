@@ -82,7 +82,7 @@ func Stat(name string) (FileInfo, error) {
 		return nil, err
 	}
 
-	return loadInfo(fi, name)
+	return stat(fi, name)
 }
 
 // Lstat returns a [FileInfo] describing the named file.
@@ -99,7 +99,7 @@ func Lstat(name string) (FileInfo, error) {
 		return nil, err
 	}
 
-	return loadInfo(fi, name)
+	return stat(fi, name)
 }
 
 // SamePartition reports whether fi1 and fi2 describe files on the same Partition.

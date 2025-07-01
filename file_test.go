@@ -382,7 +382,7 @@ func TestFilePosixWriteFileEx(t *testing.T) {
 }
 
 func tmpfile(t *testing.T) (string, error) {
-	f, err := os.CreateTemp(t.TempDir(), "")
+	f, err := compat.CreateTemp(t.TempDir(), "")
 	if err != nil {
 		return "", err
 	}

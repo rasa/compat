@@ -31,7 +31,7 @@ type fileStat struct {
 	path   string
 }
 
-func loadInfo(fi os.FileInfo, name string) (FileInfo, error) {
+func stat(fi os.FileInfo, name string) (FileInfo, error) {
 	var fs fileStat
 
 	sys, ok := fi.Sys().(*syscall.Stat_t)
@@ -54,4 +54,13 @@ func loadInfo(fi os.FileInfo, name string) (FileInfo, error) {
 	fs.times()
 
 	return &fs, nil
+}
+
+func _stat(name string) (os.FileMode, error) {
+	fi, err := os.Stat(name)
+	if err != nil {
+		return 0, err
+	}
+
+	return fi.Mode(), nil
 }
