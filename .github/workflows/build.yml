@@ -1,5 +1,4 @@
 ---
-# checkov:skip=CKV_GHA_7: The build output cannot be affected by user parameters...
 # yaml-language-server: $schema https://json.schemastore.org/github-workflow.json
 
 name: build
@@ -27,6 +26,7 @@ on:
         default: "false"
   workflow_dispatch: # Allows you to run this workflow manually from the Actions tab
     inputs:
+      # checkov:skip=CKV_GHA_7: The build output cannot be affected by user parameters...
       verbose_testing:
         description: "Test with -v options."
         type: choice

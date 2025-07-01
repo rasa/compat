@@ -29,6 +29,8 @@ ACTION_ACTIONLINT_DISABLE_ERRORS: true
 # quiet: Not all lines have the correct end of line character
 EDITORCONFIG_EDITORCONFIG_CHECKER_DISABLE_ERRORS: true
 
+REPOSITORY_CHECKOV_DISABLE_ERRORS: true
+
 # quiet: Error: can't load config: unsupported version of the configuration: ""
 GO_GOLANGCI_LINT_DISABLE_ERRORS: true
 # quiet: stat_windows.go:254:21: this block is empty, you can remove it
