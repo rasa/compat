@@ -25,7 +25,7 @@ jobs:
 
       - run: printf '::notice ::%s\n' "$(go version)"
 
-      - run: go install github.com/editorconfig-checker/editorconfig-checker/v2@latest
+      - run: go install github.com/editorconfig-checker/editorconfig-checker/v3/cmd/editorconfig-checker@latest
 
       - run: printf '::notice ::%s\n' "$(ec --version)"
 
