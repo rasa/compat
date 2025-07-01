@@ -241,6 +241,13 @@ func TestStatUID(t *testing.T) {
 		t.Error(err)
 	}
 
+	if compat.IsWindows {
+		if got := fi.UID(); got == compat.UnknownID {
+			t.Errorf("UID(): got %v", got)
+		}
+		return
+	}
+
 	want := uint64(os.Getuid()) //nolint:gosec // G115: conversion int -> uint64
 	if got := fi.UID(); got != want {
 		t.Errorf("UID(): got %v, want %v", got, want)
@@ -260,6 +267,13 @@ func TestStatGID(t *testing.T) {
 	fi, err := compat.Stat(name)
 	if err != nil {
 		t.Error(err)
+	}
+
+	if compat.IsWindows {
+		if got := fi.GID(); got == compat.UnknownID {
+			t.Errorf("GID(): got %v", got)
+		}
+		return
 	}
 
 	want := uint64(os.Getgid()) //nolint:gosec // G115: conversion int -> uint64

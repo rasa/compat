@@ -19,8 +19,7 @@ import (
 	"github.com/capnspacehook/go-acl"
 )
 
-// Not supported: UID | GID.
-const supported SupportedType = Links | ATime | BTime | CTime
+const supported SupportedType = Links | ATime | BTime | CTime | UID | GID
 
 // A fileStat is the implementation of FileInfo returned by Stat and Lstat.
 // See https://github.com/golang/go/blob/8cd6d68a/src/os/types_windows.go#L18
@@ -113,8 +112,7 @@ func stat(fi os.FileInfo, name string) (FileInfo, error) {
 	fs.atime = time.Unix(0, fs.sys.LastAccessTime.Nanoseconds())
 	fs.btime = time.Unix(0, fs.sys.CreationTime.Nanoseconds())
 	// @TODO(rasa): https://cygwin.com/cygwin-ug-net/ntsec.html
-	fs.uid = 0
-	fs.gid = 0
+	fs.uid, fs.gid, _ = getUserGroupIDs(name)
 
 	var bi FILE_BASIC_INFO
 	err = windows.GetFileInformationByHandleEx(h, windows.FileBasicInfo, (*byte)(unsafe.Pointer(&bi)), uint32(unsafe.Sizeof(bi)))

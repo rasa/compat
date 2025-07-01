@@ -31,6 +31,8 @@ const (
 	// GID defines if FileInfo's GID() function is supported by the OS.
 	// GID() returns the group ID of the file's group.
 	GID
+	// UnknownID is returned when the UID or GID could not be determined.
+	UnknownID = ^uint64(0)
 )
 
 // A FileInfo describes a file and is returned by [Stat].
