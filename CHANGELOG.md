@@ -9,15 +9,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Add `Rename()` function.
-- Add `WriteReaderAtomic()` and `WriteFileAtomic()` functions.
-- Add `ReplaceFile()` to mimic github.com/natefinch/atomiC.
+- Change `UID()` and `GID()` to return POSIX values on Windows.
+- Add `Rename()` function (works atomically on Windows).
+- Add `WriteFileAtomic()` function.
+- Add `WriteReaderAtomic()` function.
+- Add deprecated `ReplaceFile()` (to mimic github.com/natefinch/atomic).
+
+### Fixed
+
+- Fix `Stat()` to always return nil, err with err != nil on Windows.
 
 ### Changed
 
+- Change `Chmod()` to set correct ACLs on Windows.
 - Change `IsAdmin()` to `IsRoot()` to be more unix-centric.
 - Deprecate `IsAdmin()`.
-- Deprecate `ReplaceFile()`.
+- Move `cmd/main.go` to `cmd/demo/main.go`.
+- Move debug logic to only run with `debug` tag is set.
+- Various code refactorings.
+- Improve code comments.
 
 ## [0.4.1](https://github.com/rasa/compat/releases/tag/v0.4.1)
 

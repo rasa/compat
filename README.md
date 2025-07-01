@@ -101,7 +101,7 @@ The table below lists the operating system support for each of the `FileInfo` fu
 
 | OS      | PartitionID()/ <br/>FileID()* | Links()* | ATime()* | BTime()* | CTime()* | UID()* / <br/>GID()* |
 |---------|--------|--------|------|--------|------|-------|
-| AIX     | ✅     | ✅    | ✅   | ✖️    | ✅   | ✅   |
+| AIX     | ✅     | ✅    | ✅   | ❌    | ✅   | ✅   |
 | Android | ✅     | ✅    | ✅   | ✅    | ✅   | ✅   |
 | Dragonfly | ✅   | ✅    | ✅   | ✖️    | ✅   | ✅   |
 | FreeBSD | ✅     | ✅    | ✅   | ✅    | ✅   | ✅   |
@@ -111,19 +111,20 @@ The table below lists the operating system support for each of the `FileInfo` fu
 | macOS   | ✅     | ✅    | ✅   | ✅    | ✅   | ✅   |
 | NetBSD  | ✅     | ✅    | ✅   | ✅    | ✅   | ✅   |
 | OpenBSD | ✅     | ✅    | ✅   | ✖️    | ✅   | ✅   |
-| Plan9   | ✅     | ❌    | ✅   | ✖️    | ❌   | ☑️   |
+| Plan9   | ✅     | ❌    | ✅   | ❌    | ❌   | ☑️   |
 | Solaris | ✅     | ✅    | ✅   | ✖️    | ✅   | ✅   |
-| WebAssembly | ✅ | ✅    | ✅   | ✖️    | ✅   | ✅   |
-| Windows | ✅     | ✅    | ✅   | ✅    | ✅   | 🚧   |
+| WebAssembly | ✅ | ✅    | ✅   | ❌    | ✅   | ✅   |
+| Windows | ✅     | ✅    | ✅   | ✅    | ✅   | ✅†  |
 <!--      | PartID+ | Links | ATime | BTime | CTime | UID+ | -->
 
 \* Support will depend on the underlying file system. See [Comparison of file systems](https://wikipedia.org/wiki/Comparison_of_file_systems#Metadata) for details.
+† Uses the same logic as in Cygwin/MSYS2 to map Windows SIDs to UIDs/GIDs.
 
 ✅ fully supported.<br/>
 ☑️ the UID() and GID() values are 64-bit hashes of the user and group names.<br/>
-🚧 planned to be implemented.<br/>
-✖️ not implemented (but if the OS supports it, we could add support).<br/>
-❌ not implemented (as the OS doesn't support it).<br/>
+✖️ not implemented (but it appears the OS supports it, so we could add support).<br/>
+❌ not implemented (as it appears the OS doesn't support it).<br/>
+<!-- 🚧 planned to be implemented.<br/> -->
 
 # Other Functions
 
