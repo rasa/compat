@@ -30,4 +30,4 @@ jobs:
         GOARCH: wasm
 
     - run: |
-        wasmtime run main.test.wasm || true
+        wasmtime run main.test.wasm
