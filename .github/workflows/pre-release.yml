@@ -1,6 +1,7 @@
 name: pre-release
 
 on:
+  workflow_call:
   workflow_dispatch:
 
 # mega-linter needs:
