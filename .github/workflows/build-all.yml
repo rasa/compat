@@ -1,4 +1,4 @@
-name: pre-release
+name: build-all
 
 on:
   workflow_dispatch:
