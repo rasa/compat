@@ -66,9 +66,9 @@ jobs:
         exit "${fails}"
 
     - run: |
-      TEST_OPTS=()
-      if [[ "${{ inputs.verbose_testing }}" == "true" ]]; then
-        TEST_OPTS+=(-v)
-      fi
+        TEST_OPTS=()
+        if [[ "${{ inputs.verbose_testing }}" == "true" ]]; then
+          TEST_OPTS+=(-v)
+        fi
 
-      go test "${TEST_OPTS[@]}" .
+        go test "${TEST_OPTS[@]}" .
