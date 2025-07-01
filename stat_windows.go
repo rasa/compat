@@ -6,7 +6,6 @@
 package compat
 
 import (
-	"errors"
 	"os"
 	"path/filepath"
 	"sync"
@@ -72,11 +71,6 @@ func isWindowsAtLeast(major, minor, build uint32) bool {
 func stat(fi os.FileInfo, name string) (FileInfo, error) {
 	var fs fileStat
 
-	sys, ok := fi.Sys().(*syscall.Win32FileAttributeData)
-	if !ok {
-		return nil, &os.PathError{Op: "stat", Path: name, Err: errors.New("failed to cast fi.Sys()")}
-	}
-
 	name = fixLongPath(name)
 	pathp, err := windows.UTF16PtrFromString(name)
 	if err != nil {
@@ -105,7 +99,8 @@ func stat(fi os.FileInfo, name string) (FileInfo, error) {
 	fs.size = fi.Size()
 	fs.mode = fi.Mode()
 	fs.mtime = fi.ModTime()
-	fs.sys = *sys
+	fs.sys = *fi.Sys().(*syscall.Win32FileAttributeData)
+
 	fs.partID = uint64(i.VolumeSerialNumber)                             // uint32
 	fs.fileID = (uint64(i.FileIndexHigh) << 32) + uint64(i.FileIndexLow) //nolint:mnd // quiet linter
 	fs.links = uint64(i.NumberOfLinks)

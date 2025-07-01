@@ -38,16 +38,16 @@ func init() {
 
 // Umask sets the umask to umask, and returns the previous value.
 // On Windows, the initial umask value is 022 octal, and can be changed by
-// setting the environmental variable UMASK, to an octal value. For example:
-// `set UMASK=022` . Leading '0's and 'o's are allowed, so `22`, `022`,
-// and `0o22` are all accepted.
-// On Plan9, the function does nothing, and always returns zero.
+// setting environmental variable UMASK, to an octal value. For example:
+// `set UMASK=022` . Leading zeros and 'o's are allowed, and ignored.
+// On Plan9 and Wasip1, the function does nothing, and always returns zero.
 func Umask(newMask int) int {
 	old := currentUmask.Swap(uint32(newMask) & permMask) //nolint:gosec // quiet linter
 	return int(old)
 }
 
 // GetUmask returns the current umask value.
+// On Plan9 and Wasip1, the function always returns zero.
 func GetUmask() int {
 	return int(currentUmask.Load())
 }

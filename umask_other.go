@@ -2,6 +2,6 @@
 // SPDX-License-Identifier: MIT
 
 // this excludes all known build targets, so it will only build on newly introduced systems:
-//go:build !(aix || darwin || dragonfly || freebsd || illumos || linux || netbsd || openbsd || plan9 || solaris || wasm || windows)
+//go:build !(aix || darwin || dragonfly || freebsd || illumos || js || linux || netbsd || openbsd || plan9 || solaris || wasip1 || windows)
 
 package compat

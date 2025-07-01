@@ -17,7 +17,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- Fix `Stat()` to always return nil, err with err != nil on Windows.
+- Fix `Stat()` to always return nil when err != nil on Windows.
+- Fix `Stat()` by removing `CTime()` support on wasip1.
 
 ### Changed
 

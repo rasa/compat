@@ -6,7 +6,6 @@
 package compat
 
 import (
-	"errors"
 	"os"
 	"syscall"
 	"time"
@@ -38,16 +37,11 @@ type fileStat struct {
 func stat(fi os.FileInfo, _ string) (FileInfo, error) {
 	var fs fileStat
 
-	sys, ok := fi.Sys().(*syscall.Dir)
-	if !ok {
-		return &fs, errors.New("failed to cast fi.Sys()")
-	}
-
 	fs.name = fi.Name()
 	fs.size = fi.Size()
 	fs.mode = fi.Mode()
 	fs.mtime = fi.ModTime()
-	fs.sys = *sys
+	fs.sys = *fi.Sys().(*syscall.Dir)
 
 	fs.partID = uint64(fs.sys.Type)<<32 + uint64(fs.sys.Dev)
 	fs.fileID = uint64(fs.sys.Qid.Path)

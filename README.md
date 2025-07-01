@@ -99,23 +99,24 @@ To install compat, use `go get`:
 The `Stat()` and `Lstat()` functions return a `FileInfo` object.
 The table below lists the operating system support for each of the `FileInfo` functions:
 
-| OS      | PartitionID()/ <br/>FileID()* | Links()* | ATime()* | BTime()* | CTime()* | UID()* / <br/>GID()* |
-|---------|--------|--------|------|--------|------|-------|
-| AIX     | ✅     | ✅    | ✅   | ❌    | ✅   | ✅   |
-| Android | ✅     | ✅    | ✅   | ✅    | ✅   | ✅   |
-| Dragonfly | ✅   | ✅    | ✅   | ✖️    | ✅   | ✅   |
-| FreeBSD | ✅     | ✅    | ✅   | ✅    | ✅   | ✅   |
-| Illumos | ✅     | ✅    | ✅   | ✖️    | ✅   | ✅   |
-| iOS     | ✅     | ✅    | ✅   | ✅    | ✅   | ✅   |
-| Linux   | ✅     | ✅    | ✅   | ✅    | ✅   | ✅   |
-| macOS   | ✅     | ✅    | ✅   | ✅    | ✅   | ✅   |
-| NetBSD  | ✅     | ✅    | ✅   | ✅    | ✅   | ✅   |
-| OpenBSD | ✅     | ✅    | ✅   | ✖️    | ✅   | ✅   |
-| Plan9   | ✅     | ❌    | ✅   | ❌    | ❌   | ☑️   |
-| Solaris | ✅     | ✅    | ✅   | ✖️    | ✅   | ✅   |
-| WebAssembly | ✅ | ✅    | ✅   | ❌    | ✅   | ✅   |
-| Windows | ✅     | ✅    | ✅   | ✅    | ✅   | ✅†  |
-<!--      | PartID+ | Links | ATime | BTime | CTime | UID+ | -->
+| OS           | PartitionID()/ <br/>FileID()* | Links()* | ATime()* | BTime()* | CTime()* | UID()* / <br/>GID()* |
+|--------------|--------|--------|------|--------|------|-------|
+| AIX          | ✅     | ✅    | ✅   | ❌    | ✅   | ✅   |
+| Android      | ✅     | ✅    | ✅   | ✅    | ✅   | ✅   |
+| Dragonfly    | ✅     | ✅    | ✅   | ✖️    | ✅   | ✅   |
+| FreeBSD      | ✅     | ✅    | ✅   | ✅    | ✅   | ✅   |
+| Illumos      | ✅     | ✅    | ✅   | ✖️    | ✅   | ✅   |
+| iOS          | ✅     | ✅    | ✅   | ✅    | ✅   | ✅   |
+| Js/<br/>WASM | ✅     | ✅    | ✅   | ❌    | ✅   | ✅   |
+| Linux        | ✅     | ✅    | ✅   | ✅    | ✅   | ✅   |
+| macOS        | ✅     | ✅    | ✅   | ✅    | ✅   | ✅   |
+| NetBSD       | ✅     | ✅    | ✅   | ✅    | ✅   | ✅   |
+| OpenBSD      | ✅     | ✅    | ✅   | ✖️    | ✅   | ✅   |
+| Plan9        | ✅     | ❌    | ✅   | ❌    | ❌   | ☑️   |
+| Solaris      | ✅     | ✅    | ✅   | ✖️    | ✅   | ✅   |
+| Wasip1/<br/>WASM | ✅ | ✅    | ✅   | ❌    | ❌   | ✅   |
+| Windows      | ✅     | ✅    | ✅   | ✅    | ✅   | ✅†  |
+<!--           | PartID+ | Links | ATime | BTime | CTime | UID+ | -->
 
 \* Support will depend on the underlying file system. See [Comparison of file systems](https://wikipedia.org/wiki/Comparison_of_file_systems#Metadata) for details.
 † Uses the same logic as in Cygwin/MSYS2 to map Windows SIDs to UIDs/GIDs.

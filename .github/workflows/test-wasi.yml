@@ -24,7 +24,7 @@ jobs:
         echo "${HOME}/.wasmtime/bin" >>"${GITHUB_PATH}"
 
     - run: |
-        tinygo test -v -target=wasi -o main.test.wasm .
+        tinygo test -v -tags tinygo -target=wasi -o main.test.wasm .
       env:
         GOOS: wasip1
         GOARCH: wasm
