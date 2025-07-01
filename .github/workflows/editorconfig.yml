@@ -29,7 +29,7 @@ jobs:
 
       - run: printf '::notice ::%s\n' "$(ec --version)"
 
-      - run:
+      - run: |
           tmp1=$(mktemp)
           ec --no-color >"${tmp1}" || true
           mapfile -t < <(sed -En "s/^(.*):$/\1/p" "${tmp1}")
