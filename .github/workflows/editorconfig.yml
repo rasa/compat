@@ -35,7 +35,7 @@ jobs:
           tmp1=$(mktemp)
           editorconfig-checker --no-color >"${tmp1}" || true
           mapfile -t < <(sed -En "s/^(.*):$/\1/p" "${tmp1}")
-          ((${MAPFILE[#]})) || exit 0
+          ((${#MAPFILE[@]})) || exit 0
           for file in "${MAPFILE[@]}"; do
             printf "*** %s ***\n" "${file}"
             od -a -t x1 "${file}"
