@@ -102,11 +102,14 @@ jobs:
 
       - name: Build
         run: |
+          printf 'inputs.verbose_testing="%s"\n' "${{ inputs.verbose_testing }}"
           TEST_OPTS=()
           if [[ "${{ inputs.verbose_testing }}" == "true" ]]; then
             TEST_OPTS+=(-v)
           fi
-          make ci TEST_OPTS="${TEST_OPTS[*]}"
+          export TEST_OPTS="${TEST_OPTS[*]}"
+          printf 'TEST_OPTS="%s"\n' "${TEST_OPTS}"
+          make ci 
         env:
           COMPAT_DEBUG: 1
 
