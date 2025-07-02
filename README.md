@@ -118,7 +118,7 @@ The table below lists the operating system support for each of the `FileInfo` fu
 | Windows      | ✅     | ✅    | ✅   | ✅    | ✅   | ✅†  |
 <!--           | PartID+ | Links | ATime | BTime | CTime | UID+ | -->
 
-\* Support will depend on the underlying file system. See [Comparison of file systems](https://wikipedia.org/wiki/Comparison_of_file_systems#Metadata) for details.
+\* Support will depend on the underlying file system. See [Comparison of file systems](https://wikipedia.org/wiki/Comparison_of_file_systems#Metadata) for details.<br/>
 † Uses the same logic as in Cygwin/MSYS2 to map Windows SIDs to UIDs/GIDs.
 
 ✅ fully supported.<br/>
