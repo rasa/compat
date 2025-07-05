@@ -45,7 +45,7 @@ func TestRootIsRoot(t *testing.T) {
 		t.Errorf("IsRoot() returned: %v", err)
 	}
 	if got != isRoot {
-		// Report result, but don't fail, as the user may not be an Root.
+		// Report result, but don't fail, as the user may not be an administrator.
 		t.Skipf("IsRoot(): got %v, want %v", got, isRoot)
 	}
 }
