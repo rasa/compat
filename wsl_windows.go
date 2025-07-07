@@ -15,7 +15,7 @@ package compat
 // Windows' whoami, in `C:/Windows/System32/whoami.exe`. But it doesn't
 // appear to me that executables built to run on Windows can't tell they were
 // started from inside a WSL environment. For example, the program doesn't see
-// the `WSL_DISTRO_NAME`` environment variable that other programs run inside
+// the `WSL_DISTRO_NAME“ environment variable that other programs run inside
 // WSL see. Hence, this function must return false.
 func IsWSL() bool {
 	return false
