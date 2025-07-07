@@ -14,7 +14,7 @@ const (
 	MinNice = -20
 )
 
-// NiceError is returned when system call failed.
+// NiceError is returned when the system call failed.
 type NiceError struct {
 	err error
 }

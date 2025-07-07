@@ -11,8 +11,8 @@ import (
 	"golang.org/x/sys/unix"
 )
 
-// CPUBits returns the number of bits in an integer on the CPU. Currently, on
-// plan9, and wasm, zero is returned.
+// CPUBits returns the number of bits on the CPU. Currently, on plan9, and wasm,
+// zero is returned.
 func CPUBits() (int, error) {
 	var uts unix.Utsname
 	err := unix.Uname(&uts)

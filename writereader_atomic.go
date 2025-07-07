@@ -13,12 +13,12 @@ import (
 	"path/filepath"
 )
 
-// WriteReaderAtomic atomically writes the contents of r to the specified filepath. If
-// an error occurs, the target file is guaranteed to be either fully written, or
-// not written at all. WriteReaderAtomic overwrites any file that exists at the
-// location (but only if the write fully succeeds, otherwise the existing file
-// is unmodified). Additional option arguments can be used to change the
-// default configuration for the target file.
+// WriteReaderAtomic atomically writes the contents of r to the specified filename.
+// The target file is guaranteed to be either fully written, or not written at all.
+// WriteFileAtomic overwrites any file that exists at the location (but only if
+// the write fully succeeds, otherwise the existing file is unmodified).
+// Additional option arguments can be used to change the default configuration
+// for the target file.
 func WriteReaderAtomic(filename string, r io.Reader, opts ...Option) (err error) { //nolint:gocyclo // quiet linter
 	// original behavior is to preserve the mode of an existing file.
 	fopts := &FileOptions{

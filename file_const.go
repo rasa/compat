@@ -27,8 +27,8 @@ const (
 	O_EXCL   = os.O_EXCL   // used with O_CREATE, file must not exist.
 	O_SYNC   = os.O_SYNC   // open for synchronous I/O.
 	O_TRUNC  = os.O_TRUNC  // truncate regular writable file when opened.
-	// O_DELETE added by this library.
-	O_DELETE = 0x40000000 // delete file on close
+	// O_DELETE deletes the file when closed.
+	O_DELETE = 0x40000000
 
 	ModeDir        = fs.ModeDir        // d: is a directory
 	ModeAppend     = fs.ModeAppend     // a: append-only
@@ -44,8 +44,9 @@ const (
 	ModeSticky     = fs.ModeSticky     // t: sticky
 	ModeIrregular  = fs.ModeIrregular  // ?: non-regular file; nothing else is known about this file
 
-	// Mask for the type bits. For regular files, none will be set.
+	// ModeType is a mask for the type bits. For regular files, none will be set.
 	ModeType = fs.ModeType
 
-	ModePerm = fs.ModePerm // Unix permission bits, 0o777
+	// ModePerm is a mask for the Unix permission bits, 0o777.
+	ModePerm = fs.ModePerm
 )

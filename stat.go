@@ -104,8 +104,8 @@ func Lstat(name string) (FileInfo, error) {
 	return stat(fi, name)
 }
 
-// SamePartition reports whether fi1 and fi2 describe files on the same Partition.
-// For example, on Unix this means that the Partition fields
+// SamePartition reports whether fi1 and fi2 describe files on the same disk
+// partition. For example, on Unix this means that the partition (device) fields
 // of the two underlying structures are identical; on other systems
 // the decision may be based on the path names.
 // SamePartition only applies to results returned by this package's [Stat].
@@ -120,7 +120,8 @@ func SamePartition(fi1, fi2 FileInfo) bool {
 	return fs1.partID == fs2.partID
 }
 
-// SamePartitions reports whether name1 and name2 are files on the same Partition.
+// SamePartitions reports whether name1 and name2 are files on the same disk
+// partition.
 // The function follow symlinks.
 func SamePartitions(name1, name2 string) bool {
 	fi1, err := Stat(name1)
@@ -136,9 +137,9 @@ func SamePartitions(name1, name2 string) bool {
 }
 
 // SameFile reports whether fi1 and fi2 describe the same file. For example,
-// on Unix this means that the Partition and inode fields of the two underlying
-// structures are identical; on other systems the decision may be based on the
-// path names.
+// on Unix this means that the partition (device) and inode fields of the two
+// underlying structures are identical; on other systems the decision may be
+// based on the path names.
 // SamePartition only applies to results returned by this package's [Stat].
 // It returns false in other cases.
 func SameFile(fi1, fi2 FileInfo) bool {
