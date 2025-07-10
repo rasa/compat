@@ -15,7 +15,7 @@ import (
 
 // WriteReaderAtomic atomically writes the contents of r to the specified filename.
 // The target file is guaranteed to be either fully written, or not written at all.
-// WriteFileAtomic overwrites any file that exists at the location (but only if
+// WriteReaderAtomic overwrites any file that exists at the location (but only if
 // the write fully succeeds, otherwise the existing file is unmodified).
 // Additional option arguments can be used to change the default configuration
 // for the target file.
