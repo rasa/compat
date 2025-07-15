@@ -7,7 +7,9 @@
 [![go.mod](https://img.shields.io/github/go-mod/go-version/rasa/compat)](go.mod)
 [![Go Report Card](https://goreportcard.com/badge/github.com/rasa/compat)](https://goreportcard.com/report/github.com/rasa/compat)
 [![Go Reference](https://pkg.go.dev/badge/github.com/rasa/compat.svg)](https://pkg.go.dev/github.com/rasa/compat)
+<!-- @synk: The badge feature is no longer actively being maintained or developed.
 [![Known Vulnerabilities](https://snyk.io/test/github/rasa/compat/badge.svg)](https://snyk.io/test/github/rasa/compat)
+-->
 [![Keep a Changelog](https://img.shields.io/badge/changelog-Keep%20a%20Changelog-%23E05735)](CHANGELOG.md)
 [![LICENSE](https://img.shields.io/github/license/rasa/compat)](LICENSE)
 
