@@ -1,7 +1,8 @@
 // SPDX-FileCopyrightText: Copyright © 2025 Ross Smith II <ross@smithii.com>
 // SPDX-License-Identifier: MIT
 
-//go:build darwin || ios
+//go:build darwin
+// The darwin build flag includes ios
 
 package compat
 
