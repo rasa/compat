@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 //go:build darwin
+
 // The darwin build flag includes ios
 
 package compat
