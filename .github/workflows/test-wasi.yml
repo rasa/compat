@@ -25,7 +25,7 @@ jobs:
       - uses: ludeeus/action-shellcheck@master
         continue-on-error: true
 
-      - run: ./install.sh
+      - run: . ./install.sh
 
       - run: |
           ls -lR ~/.wasmtime
