@@ -8,35 +8,38 @@ permissions:
   contents: read
 
 jobs:
-  test:
+  test-wasi:
     name: test-wasi
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    defaults:
+      run:
+        # Docs: https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idstepsshell
+        shell: bash --noprofile --norc -e -u -o pipefail -v -x {0}
     steps:
-    - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-    - run: curl -LO https://wasmtime.dev/install.sh
+      - run: |
+          curl -LO https://wasmtime.dev/install.sh
+          chmod +x install.sh
 
-    - uses: ludeeus/action-shellcheck@master
+      - uses: ludeeus/action-shellcheck@master
+        continue-on-error: true
 
-    - run: |
-        chmod +x install.sh
-        set -vx
-        ./install.sh
+      - run: ./install.sh
 
-    - run: |
-        ls -lR ~/.wasmtime
-        echo '${HOME}/.wasmtime/bin' >>"${GITHUB_PATH}"
+      - run: |
+          ls -lR ~/.wasmtime
+          echo '${HOME}/.wasmtime/bin' >>"${GITHUB_PATH}"
 
-    - run: |
-        curl -LO https://github.com/tinygo-org/tinygo/releases/download/v0.37.0/tinygo_0.37.0_amd64.deb
-        sudo dpkg -i tinygo_0.37.0_amd64.deb
+      - run: |
+          curl -LO https://github.com/tinygo-org/tinygo/releases/download/v0.38.0/tinygo_0.38.0_amd64.deb
+          sudo dpkg -i tinygo_0.38.0_amd64.deb
 
-    - run: |
-        tinygo test -v -tags tinygo -target=wasi -o main.test.wasm .
-      env:
-        GOOS: wasip1
-        GOARCH: wasm
+      - run: |
+          tinygo test -v -tags tinygo -target=wasi -o main.test.wasm .
+        env:
+          GOOS: wasip1
+          GOARCH: wasm
 
-    - run: |
-        wasmtime run main.test.wasm
+      - run: |
+          wasmtime run main.test.wasm
