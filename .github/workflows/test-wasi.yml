@@ -27,6 +27,8 @@ jobs:
 
       - run: . ./install.sh
 
+      - run: ./install.sh
+
       - run: |
           ls -lR ~/.wasmtime
           echo '${HOME}/.wasmtime/bin' >>"${GITHUB_PATH}"
