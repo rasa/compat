@@ -15,13 +15,22 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
+    - run: curl -LO https://wasmtime.dev/install.sh
+
+    - uses: ludeeus/action-shellcheck@master
+
+    - run: |
+        chmod +x install.sh
+        set -vx
+        ./install.sh
+
+    - run: |
+        ls -lR ~/.wasmtime
+        echo '${HOME}/.wasmtime/bin' >>"${GITHUB_PATH}"
+
     - run: |
         curl -LO https://github.com/tinygo-org/tinygo/releases/download/v0.37.0/tinygo_0.37.0_amd64.deb
         sudo dpkg -i tinygo_0.37.0_amd64.deb
-
-    - run: |
-        curl -s https://wasmtime.dev/install.sh | bash
-        echo "${HOME}/.wasmtime/bin" >>"${GITHUB_PATH}"
 
     - run: |
         tinygo test -v -tags tinygo -target=wasi -o main.test.wasm .
