@@ -26,7 +26,7 @@ jobs:
           # - big: "1.23"
           #  tiny: "0.36.0"
           - big: "1.24"
-            tiny: "0.37.0" # latest is 0.38.0
+            tiny: "0.37.0"
         # FIXME: TinyGo needs to be manually bumped; it doesn't immediately
         # release support for new major Go versions something should ping when a
         # new version is available.
@@ -64,7 +64,7 @@ jobs:
 
       - uses: bytecodealliance/actions/wasmtime/setup@v1.1.1
         with:
-          version: v32.0.0 # latest is v35.0.0
+          version: v35.0.0
 
       - run: tinygo test -bench -target=wasip1 -tags tinygo -v . ./
 
