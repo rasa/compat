@@ -1,4 +1,4 @@
-name: test-bsd
+name: test-all-bsds
 
 on:
   workflow_call:
