@@ -4,34 +4,16 @@ on:
   workflow_call:
   workflow_dispatch:
 
-# mega-linter needs:
 permissions:
-  contents: write
-  issues: write
-  pull-requests: write
+  contents: read
 
 jobs:
-  test-js:
-    uses: ./.github/workflows/test-js.yml
+  test-all-bsds:
+    uses: ./.github/workflows/test-all-bsds.yml
     secrets: inherit
-  test-wasip1:
-    uses: ./.github/workflows/test-wasip1.yml
+  test-all-solaris:
+    uses: ./.github/workflows/test-all-solaris.yml
     secrets: inherit
-  test-dragonflybsd:
-    uses: ./.github/workflows/test-dragonflybsd.yml
-    secrets: inherit
-  test-freebsd:
-    uses: ./.github/workflows/test-freebsd.yml
-    secrets: inherit
-  test-illumos:
-    uses: ./.github/workflows/test-illumos.yml
-    secrets: inherit
-  test-netbsd:
-    uses: ./.github/workflows/test-netbsd.yml
-    secrets: inherit
-  test-openbsd:
-    uses: ./.github/workflows/test-openbsd.yml
-    secrets: inherit
-  test-solaris:
-    uses: ./.github/workflows/test-solaris.yml
+  test-all-wasms:
+    uses: ./.github/workflows/test-all-wasms.yml
     secrets: inherit
