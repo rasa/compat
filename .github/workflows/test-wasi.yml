@@ -1,18 +1,18 @@
 name: test-wasi
 
+# Inspired by:
+# https://github.com/zonedb/zonedb/blob/main/.github/workflows/go.yaml
+# MIT Licensed
+
 on:
   workflow_call:
-  workflow_dispatch: # Enables the web UI manual trigger
+  workflow_dispatch:
 
 permissions:
   contents: read
 
-# concurrency:
-#  group: ci-${{ github.workflow }}-${{ github.ref }}
-#  cancel-in-progress: true
-
 jobs:
-  test-wasi:
+  test:
     name: test-wasi
     runs-on: ubuntu-latest
     timeout-minutes: 15
@@ -70,6 +70,6 @@ jobs:
 
       # https://go.dev/blog/wasi#running-go-tests-with-wasip1
       - run: GOOS=wasip1 GOARCH=wasm go test -tags tinygo -v ./...
-        continue-on-error: true
+        # continue-on-error: true
 
       - run: tinygo test -target=wasip1 -tags tinygo -v ./
