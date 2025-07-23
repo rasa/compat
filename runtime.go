@@ -45,8 +45,10 @@ const (
 	IsWindows   = runtime.GOOS == _windows
 )
 
-var IsWasip1Target = slices.Contains(os.Args, "-test.bench=-target=wasip1") || os.Args[0] == "main.wasmopt"
-var IsWasi = IsWasip1 || IsWasip1Target
+var (
+	IsWasip1Target = slices.Contains(os.Args, "-test.bench=-target=wasip1") || os.Args[0] == "main.wasmopt"
+	IsWasi         = IsWasip1 || IsWasip1Target
+)
 
 const (
 	_386      = "386"
