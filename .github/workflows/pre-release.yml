@@ -20,3 +20,7 @@ jobs:
   test-all:
     uses: ./.github/workflows/test-all.yml
     secrets: inherit
+  # test-all doesn't run:
+  test-wasip1:
+    uses: ./.github/workflows/test-wasip1.yml
+    secrets: inherit
