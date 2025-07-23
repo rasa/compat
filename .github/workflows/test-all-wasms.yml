@@ -1,4 +1,4 @@
-name: test-all-wasms.yml
+name: test-all-wasms
 
 on:
   workflow_call:
