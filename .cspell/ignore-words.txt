@@ -14,6 +14,11 @@
 ## is regenerated.
 ##
 
+toolchaintrace
+acifani
+binaryen
+bytecodealliance
+synk
 
 antontroshin
 armv
