@@ -4,9 +4,12 @@ on:
   workflow_call:
   workflow_dispatch: # Enables the web UI manual trigger
 
-concurrency:
-  group: ci-${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+permissions:
+  contents: read
+
+# concurrency:
+#  group: ci-${{ github.workflow }}-${{ github.ref }}
+#  cancel-in-progress: true
 
 jobs:
   test-wasi:
