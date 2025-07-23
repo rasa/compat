@@ -1,4 +1,4 @@
-name: test-wasi
+name: test-wasip1
 
 # Inspired by:
 # https://github.com/zonedb/zonedb/blob/main/.github/workflows/go.yaml
@@ -13,7 +13,7 @@ permissions:
 
 jobs:
   test:
-    name: test-wasi
+    name: test-wasip1
     runs-on: ubuntu-latest
     timeout-minutes: 15
 
