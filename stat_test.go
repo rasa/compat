@@ -28,6 +28,10 @@ func init() {
 }
 
 func TestStatStat(t *testing.T) {
+	if compat.IsWasip1Target {
+		t.Log("Skipping test on wasip1 target: operation not supported")
+		return
+	}
 	now := time.Now()
 	name, err := createTemp(t)
 	if err != nil {
@@ -117,10 +121,13 @@ func TestStatLinks(t *testing.T) {
 }
 
 func TestStatATime(t *testing.T) {
+	if compat.IsWasip1Target {
+		t.Log("Skipping test on wasip1 target: operation not supported")
+		return
+	}
 	if !compat.Supports(compat.ATime) {
 		t.Skip("ATime() not supported on " + runtime.GOOS)
 	}
-
 	now := time.Now()
 	name, err := createTemp(t)
 	if err != nil {
@@ -134,6 +141,11 @@ func TestStatATime(t *testing.T) {
 
 	if got := fi.ATime(); !timesClose(got, now) {
 		t.Errorf("ATime(): got %v, want %v", got, now)
+	}
+
+	if compat.IsWasi {
+		// os.Chtimes fails with "operation not implemented" on wasi
+		return
 	}
 
 	atime := time.Now().Add(-24 * time.Hour)
@@ -153,10 +165,13 @@ func TestStatATime(t *testing.T) {
 }
 
 func TestStatBTime(t *testing.T) {
+	if compat.IsWasip1Target {
+		t.Log("Skipping test on wasip1 target: operation not supported")
+		return
+	}
 	if !compat.Supports(compat.BTime) {
 		t.Skip("BTime() not supported on " + runtime.GOOS)
 	}
-
 	now := time.Now()
 	name, err := createTemp(t)
 	if err != nil {
@@ -174,10 +189,13 @@ func TestStatBTime(t *testing.T) {
 }
 
 func TestStatCTime(t *testing.T) {
+	if compat.IsWasip1Target {
+		t.Log("Skipping test on wasip1 target: operation not supported")
+		return
+	}
 	if !compat.Supports(compat.CTime) {
 		t.Skip("CTime() not supported on " + runtime.GOOS)
 	}
-
 	now := time.Now()
 	name, err := createTemp(t)
 	if err != nil {
@@ -210,6 +228,11 @@ func TestStatMTime(t *testing.T) {
 		t.Errorf("MTime(): got %v, want %v", got, now)
 	}
 
+	if compat.IsWasi {
+		// os.Chtimes fails with "operation not implemented" on wasi
+		return
+	}
+
 	mtime := time.Now().Add(-24 * time.Hour)
 	err = os.Chtimes(name, mtime, mtime)
 	if err != nil {
@@ -229,6 +252,10 @@ func TestStatMTime(t *testing.T) {
 func TestStatUID(t *testing.T) {
 	if !compat.Supports(compat.UID) {
 		t.Skip("UID() not supported on " + runtime.GOOS)
+	}
+	if compat.IsWasi {
+		t.Log("Skipping test on wasi: operation not supported")
+		return
 	}
 
 	name, err := createTemp(t)
@@ -258,7 +285,10 @@ func TestStatGID(t *testing.T) {
 	if !compat.Supports(compat.GID) {
 		t.Skip("GID() not supported on " + runtime.GOOS)
 	}
-
+	if compat.IsWasi {
+		t.Log("Skipping test on wasi: operation not supported")
+		return
+	}
 	name, err := createTemp(t)
 	if err != nil {
 		t.Error(err)

@@ -9,6 +9,8 @@ import (
 	"slices"
 	"strings"
 	"testing"
+
+	"github.com/rasa/compat"
 )
 
 var oses = []string{
@@ -47,8 +49,21 @@ var arches = []string{
 }
 
 func TestRuntime(t *testing.T) {
-	out, err := exec.Command("go", "tool", "dist", "list").Output()
+	goExe, err := exec.LookPath("go")
 	if err != nil {
+		if compat.IsWasi {
+			t.Logf("Skipping test on wasi; %v", err)
+			return
+		}
+		t.Fatal(err)
+	}
+
+	out, err := exec.Command(goExe, "tool", "dist", "list").Output()
+	if err != nil {
+		if compat.IsWasi {
+			t.Logf("Skipping test on wasi; %v", err)
+			return
+		}
 		t.Fatal(err)
 	}
 

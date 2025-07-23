@@ -3,7 +3,11 @@
 
 package compat
 
-import "runtime"
+import (
+	"os"
+	"runtime"
+	"slices"
+)
 
 const (
 	_aix       = "aix"
@@ -40,6 +44,9 @@ const (
 	IsWasip1    = runtime.GOOS == _wasip1
 	IsWindows   = runtime.GOOS == _windows
 )
+
+var IsWasip1Target = slices.Contains(os.Args, "-test.bench=-target=wasip1") || os.Args[0] == "main.wasmopt"
+var IsWasi = IsWasip1 || IsWasip1Target
 
 const (
 	_386      = "386"

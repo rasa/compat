@@ -29,9 +29,9 @@ jobs:
   test-solaris:
     uses: ./.github/workflows/test-solaris.yml
     secrets: inherit
-  # test-wasi:
-  #  uses: ./.github/workflows/test-wasi.yml
-  #  secrets: inherit
+  test-wasi:
+    uses: ./.github/workflows/test-wasi.yml
+    secrets: inherit
   test-wasm:
     uses: ./.github/workflows/test-wasm.yml
     secrets: inherit

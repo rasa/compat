@@ -28,11 +28,16 @@ func TestNiceRenice(t *testing.T) {
 	}
 }
 
-func TestNiceReniceIfAdmin(t *testing.T) {
-	isAdmin, _ := compat.IsAdmin()
+func TestNiceReniceIfRoot(t *testing.T) {
+	if compat.IsWasi {
+		t.Log("Skipping test on wasi: operation not supported")
+		return
+	}
 
-	if !compat.IsWindows && !isAdmin {
-		t.Skip("Skipping admin-only test on " + runtime.GOOS)
+	isRoot, _ := compat.IsRoot()
+
+	if !compat.IsWindows && !isRoot {
+		t.Skip("Skipping root-only test on " + runtime.GOOS)
 	}
 	nice, err := compat.Nice()
 	if err != nil {

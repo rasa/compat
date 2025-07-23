@@ -15,6 +15,10 @@ import (
 )
 
 func TestWriteReaderAtomic(t *testing.T) {
+	if compat.IsWasip1Target {
+		t.Log("Skipping test on wasip1 target: operation not supported")
+		return
+	}
 	file := "foo.txt"
 	content := bytes.NewBufferString("foo")
 	defer func() { _ = os.Remove(file) }()
@@ -33,6 +37,10 @@ func TestWriteReaderAtomic(t *testing.T) {
 }
 
 func TestWriteReaderAtomicDefaultFileMode(t *testing.T) {
+	if compat.IsWasip1Target {
+		t.Log("Skipping test on wasip1 target: operation not supported")
+		return
+	}
 	file := "bar.txt"
 	content := bytes.NewBufferString("bar")
 	defer func() { _ = os.Remove(file) }()
@@ -45,7 +53,7 @@ func TestWriteReaderAtomicDefaultFileMode(t *testing.T) {
 	if err != nil {
 		t.Errorf("Failed to stat file: %q: %v", file, err)
 	}
-	want := os.FileMode(0o644)
+	want := want644
 	got := fi.Mode().Perm()
 	if got != want {
 		t.Errorf("got %04o, want %04o", got, want)
@@ -71,6 +79,10 @@ func TestWriteReaderAtomicDefaultFileMode(t *testing.T) {
 }
 
 func TestWriteReaderAtomicMode(t *testing.T) {
+	if compat.IsWasip1Target {
+		t.Log("Skipping test on wasip1 target: operation not supported")
+		return
+	}
 	file := "baz.txt"
 	content := bytes.NewBufferString("baz")
 	defer func() { _ = os.Remove(file) }()
@@ -82,7 +94,7 @@ func TestWriteReaderAtomicMode(t *testing.T) {
 	if err != nil {
 		t.Errorf("Failed to stat file: %q: %v", file, err)
 	}
-	want := os.FileMode(0o644)
+	want := want644
 	got := fi.Mode().Perm()
 	if got != want {
 		t.Errorf("got %04o, want %04o", got, want)

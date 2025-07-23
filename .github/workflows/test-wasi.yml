@@ -1,53 +1,75 @@
 name: test-wasi
 
 on:
-  workflow_call:
-  workflow_dispatch:
+  push:
+    branches:
+      - main
+  pull_request:
+  workflow_dispatch: # Enables the web UI manual trigger
 
-permissions:
-  contents: read
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   test-wasi:
     name: test-wasi
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        # Docs: https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idstepsshell
-        shell: bash --noprofile --norc -e -u -o pipefail -v -x {0}
+    timeout-minutes: 15
+
+    strategy:
+      fail-fast: false
+      # This is a special matrix that tests against the listed version AND the
+      # Go version from go.mod. See usage in the actions/setup-go step.
+      matrix:
+        go-version:
+          # - big: "1.23"
+          #  tiny: "0.36.0"
+          - big: "1.24"
+            tiny: "0.37.0" # latest is 0.38.0
+        # FIXME: TinyGo needs to be manually bumped; it doesn't immediately
+        # release support for new major Go versions something should ping when a
+        # new version is available.
+        include:
+          - go-version:
+              file: "go.mod"
+              tiny: "0.37.0"
+
+    env:
+      GODEBUG: toolchaintrace=1
+      GOTOOLCHAIN: local
+
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4.2.2
+
+      - uses: actions/setup-go@v5.5.0
+        with:
+          go-version: ${{ matrix.go-version.big }} # overrides go-version-file when a value is present
+          go-version-file: ${{ matrix.go-version.file }}
 
       - run: |
-          curl -LO https://wasmtime.dev/install.sh
-          chmod +x install.sh
+          echo "$(go env GOROOT)/misc/wasm" >> $GITHUB_PATH
+          echo "$(go env GOROOT)/lib/wasm" >> $GITHUB_PATH
 
-      - uses: ludeeus/action-shellcheck@master
+      - run: which go_wasip1_wasm_exec
+
+      - run: go get -t ./...
+
+      - uses: acifani/setup-tinygo@v2.0.1
+        with:
+          tinygo-version: "${{ matrix.go-version.tiny }}"
+          binaryen-version: "123"
+
+      - run: wasm-opt --version
+
+      - uses: bytecodealliance/actions/wasmtime/setup@v1.1.1
+        with:
+          version: v32.0.0 # latest is v35.0.0
+
+      - run: tinygo test -bench -target=wasip1 -tags tinygo -v . ./
+
+      # https://go.dev/blog/wasi#running-go-tests-with-wasip1
+      - run: GOOS=wasip1 GOARCH=wasm go test -tags tinygo -v ./...
         continue-on-error: true
 
-      - run: . ./install.sh
-
-      - run: ./install.sh
-
-      - run: |
-          ls -lR ~/.wasmtime
-          echo "${HOME}/.wasmtime/bin" >>"${GITHUB_PATH}"
-
-      - run: |
-          printf "PATH=%s\n" "${PATH}"
-          command -v wasmtime
-
-      - run: |
-          curl -LO https://github.com/tinygo-org/tinygo/releases/download/v0.38.0/tinygo_0.38.0_amd64.deb
-          sudo dpkg -i tinygo_0.38.0_amd64.deb
-
-      - run: |
-          export PATH="${HOME}/.wasmtime/bin:${PATH}"
-          tinygo test -v -tags tinygo -target=wasi -o main.test.wasm .
-        env:
-          GOOS: wasip1
-          GOARCH: wasm
-
-      - run: |
-          export PATH="${HOME}/.wasmtime/bin:${PATH}"
-          wasmtime run main.test.wasm
+      - run: tinygo test -target=wasip1 -tags tinygo -v ./

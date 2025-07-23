@@ -13,7 +13,20 @@ import (
 	"github.com/rasa/compat"
 )
 
+var want644 os.FileMode
+
+func init() {
+	want644 = os.FileMode(0o644)
+	if compat.IsWasip1 {
+		want644 = 0o600
+	}
+}
+
 func TestWriteFileAtomic(t *testing.T) {
+	if compat.IsWasip1Target {
+		t.Log("Skipping test on wasip1 target: operation not supported")
+		return
+	}
 	file := "foo.txt"
 	content := []byte("foo")
 	defer func() { _ = os.Remove(file) }()
@@ -32,6 +45,10 @@ func TestWriteFileAtomic(t *testing.T) {
 }
 
 func TestWriteFileAtomicDefaultFileMode(t *testing.T) {
+	if compat.IsWasip1Target {
+		t.Log("Skipping test on wasip1 target: operation not supported")
+		return
+	}
 	file := "bar.txt"
 	content := []byte("bar")
 	defer func() { _ = os.Remove(file) }()
@@ -44,7 +61,7 @@ func TestWriteFileAtomicDefaultFileMode(t *testing.T) {
 	if err != nil {
 		t.Errorf("Failed to stat file: %q: %v", file, err)
 	}
-	want := os.FileMode(0o644)
+	want := want644
 	got := fi.Mode().Perm()
 	if got != want {
 		t.Errorf("got %04o, want %04o", got, want)
@@ -70,6 +87,10 @@ func TestWriteFileAtomicDefaultFileMode(t *testing.T) {
 }
 
 func TestWriteFileAtomicMode(t *testing.T) {
+	if compat.IsWasip1Target {
+		t.Log("Skipping test on wasip1 target: operation not supported")
+		return
+	}
 	file := "baz.txt"
 	content := []byte("baz")
 	defer func() { _ = os.Remove(file) }()
@@ -81,7 +102,7 @@ func TestWriteFileAtomicMode(t *testing.T) {
 	if err != nil {
 		t.Errorf("Failed to stat file: %q: %v", file, err)
 	}
-	want := os.FileMode(0o644)
+	want := want644
 	got := fi.Mode().Perm()
 	if got != want {
 		t.Errorf("got %04o, want %04o", got, want)
