@@ -11,8 +11,11 @@ permissions:
   pull-requests: write
 
 jobs:
-  test-wasi:
-    uses: ./.github/workflows/test-wasi.yml
+  test-js:
+    uses: ./.github/workflows/test-js.yml
+    secrets: inherit
+  test-wasip1:
+    uses: ./.github/workflows/test-wasip1.yml
     secrets: inherit
   test-dragonflybsd:
     uses: ./.github/workflows/test-dragonflybsd.yml
@@ -31,7 +34,4 @@ jobs:
     secrets: inherit
   test-solaris:
     uses: ./.github/workflows/test-solaris.yml
-    secrets: inherit
-  test-wasm:
-    uses: ./.github/workflows/test-wasm.yml
     secrets: inherit
