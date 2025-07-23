@@ -48,7 +48,7 @@ var arches = []string{
 	"wasm",
 }
 
-func TestRuntime(t *testing.T) {
+func TestRuntime(t *testing.T) { // nolint:gocyclo // quiet linter
 	goExe, err := exec.LookPath("go")
 	if err != nil {
 		if compat.IsWasi {
