@@ -1,0 +1,16 @@
+name: test-wasm.yml
+
+on:
+  workflow_call:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test-js:
+    uses: ./.github/workflows/test-js.yml
+    secrets: inherit
+  test-wasip1:
+    uses: ./.github/workflows/test-wasip1.yml
+    secrets: inherit
