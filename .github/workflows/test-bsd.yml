@@ -1,0 +1,22 @@
+name: test-bsd
+
+on:
+  workflow_call:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test-dragonflybsd:
+    uses: ./.github/workflows/test-dragonflybsd.yml
+    secrets: inherit
+  test-freebsd:
+    uses: ./.github/workflows/test-freebsd.yml
+    secrets: inherit
+  test-netbsd:
+    uses: ./.github/workflows/test-netbsd.yml
+    secrets: inherit
+  test-openbsd:
+    uses: ./.github/workflows/test-openbsd.yml
+    secrets: inherit
