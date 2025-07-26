@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: Copyright © 2025 Ross Smith II <ross@smithii.com>
 // SPDX-License-Identifier: MIT
 
-//go:build 386 || arm || mips || mipsle || tinygo
+//go:build 386 || arm || mips || mipsle || (wasip1 && tinygo)
 
 package compat
 

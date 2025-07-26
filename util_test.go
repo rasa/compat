@@ -14,12 +14,8 @@ import (
 func skip(t *testing.T, msg any) {
 	t.Helper()
 	s := fmt.Sprint(msg)
-	if compat.IsWasip1 {
-		goos := runtime.GOOS
-		if compat.IsTinygo {
-			goos += "/tinygo"
-		}
-		s += " (" + goos + ")"
+	if compat.IsTinygo {
+		s += " (" + runtime.GOOS + "/tinygo" + ")"
 		t.Log(s)
 		return
 	}
@@ -34,13 +30,9 @@ func skipf(t *testing.T, format string, a ...any) {
 func fatal(t *testing.T, msg any) { //nolint:unused // quiet linter
 	t.Helper()
 	s := fmt.Sprint(msg)
-	if compat.IsWasip1 {
+	if compat.IsTinygo {
 		s = "Skipping test: fatal error: " + s
-		goos := runtime.GOOS
-		if compat.IsTinygo {
-			goos += "/tinygo"
-		}
-		s += " (" + goos + ")"
+		s += " (" + runtime.GOOS + "/tinygo" + ")"
 		t.Log(s)
 		return
 	}

@@ -7,6 +7,8 @@ import (
 	"runtime"
 )
 
+const IsTinygo = runtime.Compiler == "tinygo"
+
 const (
 	_aix       = "aix"
 	_android   = "android"

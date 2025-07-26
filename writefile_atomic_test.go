@@ -49,7 +49,7 @@ func TestWriteFileAtomicDefaultFileMode(t *testing.T) {
 		t.Errorf("Failed to stat file: %q: %v", file, err)
 	}
 	want := want644
-	if compat.IsTinygo {
+	if compat.IsTinygo && compat.IsWasip1 {
 		want = 0o600
 	}
 	got := fi.Mode().Perm()
@@ -91,7 +91,7 @@ func TestWriteFileAtomicMode(t *testing.T) {
 		t.Errorf("Failed to stat file: %q: %v", file, err)
 	}
 	want := want644
-	if compat.IsTinygo {
+	if compat.IsTinygo && compat.IsWasip1 {
 		want = 0o600
 	}
 	got := fi.Mode().Perm()

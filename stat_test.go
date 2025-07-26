@@ -163,8 +163,8 @@ func TestStatATime(t *testing.T) {
 		t.Errorf("ATime(): got %v, want %v", got, now)
 	}
 
-	if compat.IsWasip1 {
-		// os.Chtimes fails with "operation not implemented" on wasi
+	if compat.IsTinygo {
+		// os.Chtimes fails with "operation not implemented" on tinygo
 		return
 	}
 
@@ -242,8 +242,8 @@ func TestStatMTime(t *testing.T) {
 		t.Errorf("MTime(): got %v, want %v", got, now)
 	}
 
-	if compat.IsWasip1 {
-		// os.Chtimes fails with "operation not implemented" on wasi
+	if compat.IsTinygo {
+		// os.Chtimes fails with "operation not implemented" on tinygo
 		return
 	}
 
