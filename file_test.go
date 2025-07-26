@@ -307,7 +307,13 @@ func TestFilePosixOpenFileDelete(t *testing.T) {
 	}
 	fh, err := compat.OpenFile(name, compat.O_RDWR|compat.O_CREATE|compat.O_DELETE, os.FileMode(0o666))
 	if err != nil {
-		t.Fatal(err)
+		// workaround:
+		// https://github.com/rasa/compat/actions/runs/16542086538/job/46784707170#step:6:48
+		if compat.IsDarwin {
+			fatal(t, err)
+		} else {
+			t.Fatal(err)
+		}
 		return
 	}
 	err = fh.Close()
