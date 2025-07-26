@@ -9,7 +9,7 @@ permissions:
   contents: read
 
 jobs:
-  test:
+  test-netbsd:
     name: test-netbsd
     runs-on: ubuntu-latest
     timeout-minutes: 10

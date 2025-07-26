@@ -9,7 +9,7 @@ permissions:
   contents: read
 
 jobs:
-  test:
+  test-solaris:
     name: test-solaris
     runs-on: ubuntu-latest
     timeout-minutes: 10

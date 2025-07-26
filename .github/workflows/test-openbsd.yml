@@ -9,7 +9,7 @@ permissions:
   contents: read
 
 jobs:
-  test:
+  test-openbsd:
     name: test-openbsd
     runs-on: ubuntu-latest
     timeout-minutes: 10

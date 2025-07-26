@@ -39,7 +39,7 @@ permissions:
   contents: read
 
 jobs:
-  ci:
+  build:
     strategy:
       fail-fast: false
       matrix:

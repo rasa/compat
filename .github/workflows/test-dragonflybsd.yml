@@ -9,7 +9,7 @@ permissions:
   contents: read
 
 jobs:
-  test:
+  test-dragonflybsd:
     name: test-dragonflybsd
     runs-on: ubuntu-latest
     timeout-minutes: 10
