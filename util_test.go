@@ -31,7 +31,7 @@ func skipf(t *testing.T, format string, a ...any) {
 	skip(t, fmt.Sprintf(format, a...))
 }
 
-func fatal(t *testing.T, msg any) {
+func fatal(t *testing.T, msg any) { //nolint:unused // quiet linter
 	t.Helper()
 	s := fmt.Sprint(msg)
 	if compat.IsWasip1 {

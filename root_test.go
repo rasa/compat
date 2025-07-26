@@ -18,9 +18,12 @@ func TestRootIsRoot(t *testing.T) {
 	if err != nil {
 		t.Errorf("IsRoot() returned: %v", err)
 	}
+	if !isRoot {
+		skipf(t, "Skipping test: we aren't the root/admin user")
+		return
+	}
 	if got != isRoot {
-		// Report result, but don't fail, as the user may not be root.
-		skipf(t, "IsRoot(): got %v, want %v", got, isRoot)
+		t.Fatalf("IsRoot(): got %v, want %v", got, isRoot)
 		return
 	}
 }
