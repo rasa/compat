@@ -20,3 +20,6 @@ jobs:
   test-all:
     uses: ./.github/workflows/test-all.yml
     secrets: inherit
+  build-all-releases:
+    uses: ./.github/workflows/build-all-releases.yml
+    secrets: inherit

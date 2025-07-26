@@ -1,24 +1,9 @@
 ---
 # yaml-language-server: $schema https://json.schemastore.org/github-workflow.json
 
-name: build
+name: build-all-releases
 
 on:
-  push:
-    branches: [ main ]
-    paths:
-      - '**.go'
-      - 'go.mod'
-      - '.github/workflows/*'
-      - '.goreleaser.yml'
-      - 'Makefile'
-  pull_request:
-    branches: [ main ]
-    paths:
-      - '**.go'
-      - 'go.mod'
-      - '.github/workflows/*'
-      - '.goreleaser.yml'
   workflow_call: # Required so this workflow can be called from another workflow
     inputs:
       verbose_testing:
@@ -39,15 +24,25 @@ permissions:
   contents: read
 
 jobs:
-  build:
-    name: build
+  build-all-releases:
+    name: build-all-releases
     strategy:
       fail-fast: true
       matrix:
         os:
           - ubuntu-24.04 # ubuntu-latest
-          - macos-15 # arm64
           - windows-2025
+          - macos-15 # arm64
+          - ubuntu-24.04-arm
+          - ubuntu-22.04
+          - ubuntu-22.04-arm
+          - windows-11-arm
+          - windows-2022 # windows-latest
+          - macos-15-large # amd64
+          - macos-14 # arm64 # macos-latest
+          - macos-14-large # amd64
+          - macos-13 # amd64
+          - macos-13-xlarge # arm64
 
     runs-on: ${{ matrix.os }}
     defaults:
