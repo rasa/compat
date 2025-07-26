@@ -68,7 +68,7 @@ func TestFileWindowsCreateEx(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	perm := o600
+	perm := want600
 	fh, err := compat.CreateEx(name, perm, 0)
 	if err != nil {
 		t.Fatal(err)
@@ -103,7 +103,7 @@ func TestFileWindowsMkdir(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	perm := o700
+	perm := want700
 	err = compat.Mkdir(name, perm)
 	if err != nil {
 		t.Fatal(err)
@@ -120,7 +120,7 @@ func TestFileWindowsMkdirAll(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	perm := o700
+	perm := want700
 	err = compat.MkdirAll(name, perm)
 	if err != nil {
 		t.Fatal(err)
@@ -151,7 +151,7 @@ func TestFileWindowsOpenFile(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	perm := o600
+	perm := want600
 	fh, err := compat.OpenFile(name, os.O_CREATE, perm)
 	if err != nil {
 		t.Fatal(err)
@@ -169,8 +169,8 @@ func TestFileWindowsWriteFile(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	perm := o600
-	err = compat.WriteFile(name, data, perm)
+	perm := want600
+	err = compat.WriteFile(name, helloBytes, perm)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -186,8 +186,8 @@ func TestFileWindowsWriteFileEx(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	perm := o600
-	err = compat.WriteFileEx(name, data, perm, 0)
+	perm := want600
+	err = compat.WriteFileEx(name, helloBytes, perm, 0)
 	if err != nil {
 		t.Fatal(err)
 	}
