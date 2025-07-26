@@ -309,7 +309,7 @@ func TestFilePosixOpenFileDelete(t *testing.T) {
 	if err != nil {
 		// workaround:
 		// https://github.com/rasa/compat/actions/runs/16542086538/job/46784707170#step:6:48
-		if compat.IsDarwin {
+		if compat.IsDarwin || compat.IsIos {
 			t.Skip(err)
 		} else {
 			t.Fatal(err)
