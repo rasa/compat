@@ -5,6 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased](https://github.com/rasa/compat/compare/v0.4.2...HEAD)
+
+### Added
+
+- Run tests for wasip1 on tinygo (and regular go).
+- Modularized Github actions.
+
+### Fixed
+
+- Fix all tests on wasip1.
+- Fix `CPUBits()` to return the value returned by `BuildBits()` if we can't determine the CPU's bits.
+
+### Changed
+
+- Bump tinygo to 0.38.0.
+
 ## [0.4.2](https://github.com/rasa/compat/compare/v0.4.2)
 
 ### Added
