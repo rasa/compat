@@ -277,7 +277,7 @@ func TestFilePosixOpenFile(t *testing.T) {
 		t.Fatal(err)
 		return
 	}
-	fh, err := compat.OpenFile(name, compat.O_RDWR|compat.O_CREATE, 0o666)
+	fh, err := compat.OpenFile(name, compat.O_RDWR|compat.O_CREATE, want)
 	if err != nil {
 		t.Fatal(err)
 		return
@@ -305,7 +305,7 @@ func TestFilePosixOpenFileDelete(t *testing.T) {
 		t.Fatal(err)
 		return
 	}
-	fh, err := compat.OpenFile(name, compat.O_RDWR|compat.O_CREATE|compat.O_DELETE, 0o666)
+	fh, err := compat.OpenFile(name, compat.O_RDWR|compat.O_CREATE|compat.O_DELETE, os.FileMode(0o666))
 	if err != nil {
 		t.Fatal(err)
 		return
