@@ -9,7 +9,7 @@ permissions:
   contents: read
 
 jobs:
-  test-freebsdh:
+  test-freebsd:
     name: test-freebsd
     runs-on: ubuntu-latest
     timeout-minutes: 10
