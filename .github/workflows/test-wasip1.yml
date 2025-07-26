@@ -38,7 +38,6 @@ jobs:
     env:
       GODEBUG: toolchaintrace=1
       GOTOOLCHAIN: local
-      # GOWASIRUNTIME: wasmtime
 
     steps:
       - uses: actions/checkout@v4.2.2
