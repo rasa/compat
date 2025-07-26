@@ -47,7 +47,7 @@ func fatal(t *testing.T, msg any) {
 	t.Fatal(s)
 }
 
-func fatalf(t *testing.T, format string, a ...any) {
+func fatalf(t *testing.T, format string, a ...any) { //nolint:unused // quiet linter
 	t.Helper()
 	fatal(t, fmt.Sprintf(format, a...))
 }
