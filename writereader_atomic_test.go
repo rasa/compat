@@ -15,13 +15,11 @@ import (
 )
 
 func TestWriteReaderAtomic(t *testing.T) {
-	if compat.IsWasip1Target {
-		t.Log("Skipping test on wasip1 target: operation not supported")
-		return
-	}
 	file := "foo.txt"
 	content := bytes.NewBufferString("foo")
-	defer func() { _ = os.Remove(file) }()
+	t.Cleanup(func() {
+		_ = os.Remove(file)
+	})
 	if err := compat.WriteReaderAtomic(file, content); err != nil {
 		t.Errorf("Failed to write file: %q: %v", file, err)
 	}
@@ -37,13 +35,11 @@ func TestWriteReaderAtomic(t *testing.T) {
 }
 
 func TestWriteReaderAtomicDefaultFileMode(t *testing.T) {
-	if compat.IsWasip1Target {
-		t.Log("Skipping test on wasip1 target: operation not supported")
-		return
-	}
 	file := "bar.txt"
 	content := bytes.NewBufferString("bar")
-	defer func() { _ = os.Remove(file) }()
+	t.Cleanup(func() {
+		_ = os.Remove(file)
+	})
 	err := compat.WriteReaderAtomic(file, content, compat.DefaultFileMode(0o644))
 	if err != nil {
 		t.Errorf("Failed to write file: %q: %v", file, err)
@@ -54,9 +50,12 @@ func TestWriteReaderAtomicDefaultFileMode(t *testing.T) {
 		t.Errorf("Failed to stat file: %q: %v", file, err)
 	}
 	want := want644
+	if compat.IsTinygo {
+		want = 0o600
+	}
 	got := fi.Mode().Perm()
 	if got != want {
-		t.Errorf("got %04o, want %04o", got, want)
+		t.Errorf("got %04o, want %04o (1)", got, want)
 	}
 	// check if file mode is preserved
 	err = compat.Chmod(file, 0o600)
@@ -74,18 +73,16 @@ func TestWriteReaderAtomicDefaultFileMode(t *testing.T) {
 	want = os.FileMode(0o600)
 	got = fi.Mode().Perm()
 	if got != want {
-		t.Errorf("got %04o, want %04o", got, want)
+		t.Errorf("got %04o, want %04o (2)", got, want)
 	}
 }
 
 func TestWriteReaderAtomicMode(t *testing.T) {
-	if compat.IsWasip1Target {
-		t.Log("Skipping test on wasip1 target: operation not supported")
-		return
-	}
 	file := "baz.txt"
 	content := bytes.NewBufferString("baz")
-	defer func() { _ = os.Remove(file) }()
+	t.Cleanup(func() {
+		_ = os.Remove(file)
+	})
 	err := compat.WriteReaderAtomic(file, content, compat.FileMode(0o644))
 	if err != nil {
 		t.Errorf("Failed to write file: %q: %v", file, err)
@@ -95,9 +92,12 @@ func TestWriteReaderAtomicMode(t *testing.T) {
 		t.Errorf("Failed to stat file: %q: %v", file, err)
 	}
 	want := want644
+	if compat.IsTinygo {
+		want = 0o600
+	}
 	got := fi.Mode().Perm()
 	if got != want {
-		t.Errorf("got %04o, want %04o", got, want)
+		t.Errorf("got %04o, want %04o (1)", got, want)
 	}
 	// ensure previous file mode is ignored
 	err = compat.Chmod(file, 0o600)
@@ -114,6 +114,6 @@ func TestWriteReaderAtomicMode(t *testing.T) {
 	}
 	got = fi.Mode().Perm()
 	if got != want {
-		t.Errorf("got %04o, want %04o", got, want)
+		t.Errorf("got %04o, want %04o (2)", got, want)
 	}
 }

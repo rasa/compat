@@ -14,7 +14,7 @@ import (
 )
 
 // CPUBits returns the number of bits on the CPU. Currently, on plan9, and wasm,
-// zero is returned.
+// BuildBits() is returned.
 func CPUBits() (int, error) {
 	mod := syscall.NewLazyDLL("kernel32.dll")
 	proc := mod.NewProc("IsWow64Process")

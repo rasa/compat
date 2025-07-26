@@ -1,8 +1,6 @@
 // SPDX-FileCopyrightText: Copyright © 2025 Ross Smith II <ross@smithii.com>
 // SPDX-License-Identifier: MIT
 
-//go:build !(wasip1 && tinygo)
-
 package compat_test
 
 import (
@@ -13,101 +11,93 @@ import (
 	"github.com/rasa/compat"
 )
 
-const (
-	o666 = os.FileMode(0o666)
-	o600 = os.FileMode(0o600)
-
-	o777 = os.FileMode(0o777)
-	o700 = os.FileMode(0o700)
-)
-
-var data = []byte("hello")
-
 func init() {
 	// @TODO(rasa): test different umask settings
 	compat.Umask(0)
 }
 
 func TestFilePosixChmod(t *testing.T) {
-	want := o666
+	want := want666
 
 	name, err := tmpfile(t)
 	if err != nil {
 		t.Fatal(err)
+		return
 	}
 	err = compat.Chmod(name, want)
 	if err != nil {
 		t.Fatal(err)
+		return
 	}
 	fs, err := os.Stat(name)
 	if err != nil {
 		t.Fatal(err)
+		return
 	}
 	got := fs.Mode().Perm()
 	if got != want {
 		t.Fatalf("got 0%03o, want 0%03o", got, want)
-	}
-	err = os.Remove(name)
-	if err != nil {
-		t.Fatal(err)
+		return
 	}
 }
 
 func TestFilePosixCreate(t *testing.T) {
-	want := compat.CreatePerm
+	want := wantCreatePerm
 
 	name, err := tmpname(t)
 	if err != nil {
 		t.Fatal(err)
+		return
 	}
 	fh, err := compat.Create(name)
 	if err != nil {
 		t.Fatal(err)
+		return
 	}
 	err = fh.Close()
 	if err != nil {
 		t.Fatal(err)
+		return
 	}
 	fs, err := os.Stat(name)
 	if err != nil {
 		t.Fatal(err)
+		return
 	}
 	got := fs.Mode().Perm()
 	if got != want {
 		t.Fatalf("got 0%03o, want 0%03o", got, want)
-	}
-	err = os.Remove(name)
-	if err != nil {
-		t.Fatal(err)
+		return
 	}
 }
 
 func TestFilePosixCreateEx(t *testing.T) {
-	want := compat.CreatePerm
+	want := wantCreatePerm
 
 	name, err := tmpname(t)
 	if err != nil {
 		t.Fatal(err)
+		return
 	}
 	fh, err := compat.CreateEx(name, want, 0)
 	if err != nil {
 		t.Fatal(err)
+		return
 	}
 	err = fh.Close()
 	if err != nil {
 		t.Fatal(err)
+		return
 	}
 	fs, err := os.Stat(name)
 	if err != nil {
 		t.Fatal(err)
+		return
 	}
 	got := fs.Mode().Perm()
 	if got != want {
 		t.Fatalf("got 0%03o, want 0%03o", got, want)
-	}
-	err = os.Remove(name)
-	if err != nil {
-		t.Fatal(err)
+		return
 	}
 }
 
@@ -115,78 +105,76 @@ func TestFilePosixCreateExDelete(t *testing.T) {
 	name, err := tmpname(t)
 	if err != nil {
 		t.Fatal(err)
+		return
 	}
 	fh, err := compat.CreateEx(name, compat.CreatePerm, compat.O_CREATE|compat.O_DELETE)
 	if err != nil {
 		t.Fatal(err)
+		return
 	}
 	err = fh.Close()
 	if err != nil {
 		t.Fatal(err)
+		return
 	}
 	_, err = os.Stat(name)
 	if !errors.Is(err, os.ErrNotExist) {
 		t.Fatal("File exists, should not")
+		return
 	}
 }
 
 func TestFilePosixCreateTemp(t *testing.T) {
-	want := compat.CreateTempPerm
-	if compat.IsWindows {
-		want = os.FileMode(0o666)
-	}
+	want := wantCreateTempPerm
 
 	dir := t.TempDir()
 	fh, err := compat.CreateTemp(dir, "")
 	if err != nil {
 		t.Fatal(err)
+		return
 	}
 	name := fh.Name()
 	err = fh.Close()
 	if err != nil {
 		t.Fatal(err)
+		return
 	}
 	fs, err := os.Stat(name)
 	if err != nil {
 		t.Fatal(err)
+		return
 	}
 	got := fs.Mode().Perm()
 	if got != want {
 		t.Fatalf("got 0%03o, want 0%03o", got, want)
-	}
-	err = os.Remove(name)
-	if err != nil {
-		t.Fatal(err)
+		return
 	}
 }
 
 func TestFilePosixCreateTempEx(t *testing.T) {
-	want := compat.CreateTempPerm
-	if compat.IsWindows {
-		want = os.FileMode(0o666)
-	}
+	want := wantCreateTempPerm
 
 	dir := t.TempDir()
 	fh, err := compat.CreateTempEx(dir, "", 0)
 	if err != nil {
 		t.Fatal(err)
+		return
 	}
 	name := fh.Name()
 	err = fh.Close()
 	if err != nil {
 		t.Fatal(err)
+		return
 	}
 	fs, err := os.Stat(name)
 	if err != nil {
 		t.Fatal(err)
+		return
 	}
 	got := fs.Mode().Perm()
 	if got != want {
 		t.Fatalf("got 0%03o, want 0%03o", got, want)
-	}
-	err = os.Remove(name)
-	if err != nil {
-		t.Fatal(err)
+		return
 	}
 }
 
@@ -195,191 +183,192 @@ func TestFilePosixCreateTempExDelete(t *testing.T) {
 	fh, err := compat.CreateTempEx(dir, "", compat.O_DELETE)
 	if err != nil {
 		t.Fatal(err)
+		return
 	}
 	name := fh.Name()
 	err = fh.Close()
 	if err != nil {
 		t.Fatal(err)
+		return
 	}
 	_, err = os.Stat(name)
 	if !errors.Is(err, os.ErrNotExist) {
 		t.Fatal("File exists, should not")
+		return
 	}
 }
 
 func TestFilePosixMkdir(t *testing.T) {
-	want := o777
+	want := want777
 
 	name, err := tmpname(t)
 	if err != nil {
 		t.Fatal(err)
+		return
 	}
 	err = compat.Mkdir(name, want)
 	if err != nil {
 		t.Fatal(err)
+		return
 	}
 	fs, err := os.Stat(name)
 	if err != nil {
 		t.Fatal(err)
+		return
 	}
 	got := fs.Mode().Perm()
 	if got != want {
 		t.Fatalf("got 0%03o, want 0%03o", got, want)
-	}
-	err = os.Remove(name)
-	if err != nil {
-		t.Fatal(err)
+		return
 	}
 }
 
 func TestFilePosixMkdirAll(t *testing.T) {
-	want := o777
+	want := want777
 
 	name, err := tmpname(t)
 	if err != nil {
 		t.Fatal(err)
+		return
 	}
 	err = compat.MkdirAll(name, want)
 	if err != nil {
 		t.Fatal(err)
+		return
 	}
 	fs, err := os.Stat(name)
 	if err != nil {
 		t.Fatal(err)
+		return
 	}
 	got := fs.Mode().Perm()
 	if got != want {
 		t.Fatalf("got 0%03o, want 0%03o", got, want)
-	}
-	err = os.RemoveAll(name)
-	if err != nil {
-		t.Fatal(err)
+		return
 	}
 }
 
 func TestFilePosixMkdirTemp(t *testing.T) {
-	want := compat.MkdirTempPerm
-	if compat.IsWindows {
-		want = os.FileMode(0o777)
-	}
-
+	want := wantMkdirTempPerm
 	dir := t.TempDir()
 	pattern := ""
 	name, err := compat.MkdirTemp(dir, pattern)
 	if err != nil {
 		t.Fatal(err)
+		return
 	}
 	fs, err := os.Stat(name)
 	if err != nil {
 		t.Fatal(err)
+		return
 	}
 	got := fs.Mode().Perm()
 	if got != want {
 		t.Fatalf("got 0%03o, want 0%03o", got, want)
-	}
-	err = os.Remove(name)
-	if err != nil {
-		t.Fatal(err)
+		return
 	}
 }
 
 func TestFilePosixOpenFile(t *testing.T) {
-	want := o666
+	want := want666
 
 	name, err := tmpname(t)
 	if err != nil {
 		t.Fatal(err)
+		return
 	}
-	fh, err := os.OpenFile(name, compat.O_CREATE, want)
+	fh, err := os.OpenFile(name, compat.O_CREATE, 0o666)
 	if err != nil {
-		t.Fatal(err)
+		fatal(t, err)
+		return
 	}
 	err = fh.Close()
 	if err != nil {
 		t.Fatal(err)
+		return
 	}
 	fs, err := os.Stat(name)
 	if err != nil {
 		t.Fatal(err)
+		return
 	}
 	got := fs.Mode().Perm()
 	if got != want {
 		t.Fatalf("got 0%03o, want 0%03o", got, want)
-	}
-	err = os.Remove(name)
-	if err != nil {
-		t.Fatal(err)
+		return
 	}
 }
 
 func TestFilePosixOpenFileDelete(t *testing.T) {
-	want := o666
-
 	name, err := tmpname(t)
 	if err != nil {
 		t.Fatal(err)
+		return
 	}
-	fh, err := compat.OpenFile(name, compat.O_CREATE|compat.O_DELETE, want)
+	fh, err := compat.OpenFile(name, compat.O_CREATE|compat.O_DELETE, 0o666)
 	if err != nil {
-		t.Fatal(err)
+		fatal(t, err)
+		return
 	}
 	err = fh.Close()
 	if err != nil {
 		t.Fatal(err)
+		return
 	}
 	_, err = os.Stat(name)
 	if !errors.Is(err, os.ErrNotExist) {
 		t.Fatal("File exists, should not")
+		return
 	}
 }
 
 func TestFilePosixWriteFile(t *testing.T) {
-	want := o666
+	want := want666
 
 	name, err := tmpname(t)
 	if err != nil {
 		t.Fatal(err)
+		return
 	}
-	err = compat.WriteFile(name, data, want)
+	err = compat.WriteFile(name, helloBytes, want)
 	if err != nil {
 		t.Fatal(err)
+		return
 	}
 	fs, err := os.Stat(name)
 	if err != nil {
 		t.Fatal(err)
+		return
 	}
 	got := fs.Mode().Perm()
 	if got != want {
 		t.Fatalf("got 0%03o, want 0%03o", got, want)
-	}
-	err = os.Remove(name)
-	if err != nil {
-		t.Fatal(err)
+		return
 	}
 }
 
 func TestFilePosixWriteFileEx(t *testing.T) {
-	want := o666
+	want := want666
 
 	name, err := tmpname(t)
 	if err != nil {
 		t.Fatal(err)
+		return
 	}
-	err = compat.WriteFileEx(name, data, want, 0)
+	err = compat.WriteFileEx(name, helloBytes, want, 0)
 	if err != nil {
 		t.Fatal(err)
+		return
 	}
 	fs, err := os.Stat(name)
 	if err != nil {
 		t.Fatal(err)
+		return
 	}
 	got := fs.Mode().Perm()
 	if got != want {
 		t.Fatalf("got 0%03o, want 0%03o", got, want)
-	}
-	err = os.Remove(name)
-	if err != nil {
-		t.Fatal(err)
+		return
 	}
 }
 

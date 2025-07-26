@@ -4,9 +4,7 @@
 package compat
 
 import (
-	"os"
 	"runtime"
-	"slices"
 )
 
 const (
@@ -43,11 +41,6 @@ const (
 	IsSolaris   = runtime.GOOS == _solaris
 	IsWasip1    = runtime.GOOS == _wasip1
 	IsWindows   = runtime.GOOS == _windows
-)
-
-var (
-	IsWasip1Target = slices.Contains(os.Args, "-test.bench=-target=wasip1") || os.Args[0] == "main.wasmopt"
-	IsWasi         = IsWasip1 || IsWasip1Target
 )
 
 const (

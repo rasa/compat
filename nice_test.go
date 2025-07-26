@@ -4,7 +4,6 @@
 package compat_test
 
 import (
-	"runtime"
 	"testing"
 
 	"github.com/rasa/compat"
@@ -29,15 +28,16 @@ func TestNiceRenice(t *testing.T) {
 }
 
 func TestNiceReniceIfRoot(t *testing.T) {
-	if compat.IsWasi {
-		t.Log("Skipping test on wasi: operation not supported")
+	if compat.IsWasip1 {
+		skip(t, "Skipping test: operation not supported")
 		return
 	}
 
 	isRoot, _ := compat.IsRoot()
 
 	if !compat.IsWindows && !isRoot {
-		t.Skip("Skipping root-only test on " + runtime.GOOS)
+		skip(t, "Skipping test: we aren't the root/admin user")
+		return
 	}
 	nice, err := compat.Nice()
 	if err != nil {

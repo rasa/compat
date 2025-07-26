@@ -1,20 +1,31 @@
 // SPDX-FileCopyrightText: Copyright © 2025 Ross Smith II <ross@smithii.com>
 // SPDX-License-Identifier: MIT
 
-//go:build aix || dragonfly || illumos || openbsd || solaris
+//go:build !(plan9 || windows)
 
 package compat
 
 import (
+	"os"
+	"syscall"
 	"time"
 )
 
-// Not supported: BTime.
-const supported SupportedType = Links | ATime | CTime | UID | GID
-
-func (fs *fileStat) times() {
-	fs.atime = time.Unix(int64(fs.sys.Atim.Sec), int64(fs.sys.Atim.Nsec)) //nolint:unconvert // needed conversion
-	fs.ctime = time.Unix(int64(fs.sys.Ctim.Sec), int64(fs.sys.Ctim.Nsec)) //nolint:unconvert // needed conversion
+// A fileStat is the implementation of FileInfo returned by Stat and Lstat.
+// See https://github.com/golang/go/blob/8cd6d68a/src/os/types_unix.go#L15
+type fileStat struct {
+	name   string
+	size   int64
+	mode   os.FileMode
+	mtime  time.Time
+	sys    syscall.Stat_t
+	partID uint64
+	fileID uint64
+	links  uint64
+	atime  time.Time
+	btime  time.Time
+	ctime  time.Time
+	uid    uint64
+	gid    uint64
+	path   string
 }
-
-// See https://github.com/golang/go/blob/d000963d/src/os/types_unix.go#L28

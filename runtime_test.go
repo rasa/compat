@@ -51,20 +51,22 @@ var arches = []string{
 func TestRuntime(t *testing.T) { //nolint:gocyclo // quiet linter
 	goExe, err := exec.LookPath("go")
 	if err != nil {
-		if compat.IsWasi {
-			t.Logf("Skipping test on wasi; %v", err)
+		if compat.IsWasip1 {
+			skipf(t, "Skipping test: %v", err)
 			return
 		}
 		t.Fatal(err)
+		return
 	}
 
 	out, err := exec.Command(goExe, "tool", "dist", "list").Output()
 	if err != nil {
-		if compat.IsWasi {
-			t.Logf("Skipping test on wasi; %v", err)
+		if compat.IsWasip1 {
+			skipf(t, "Skipping test: %v", err)
 			return
 		}
 		t.Fatal(err)
+		return
 	}
 
 	gooses := make(map[string]struct{})
@@ -83,6 +85,7 @@ func TestRuntime(t *testing.T) { //nolint:gocyclo // quiet linter
 
 	if len(gooses) == 0 {
 		t.Fatal("failed to parse output of: go tool dist list")
+		return
 	}
 
 	for goos := range gooses {

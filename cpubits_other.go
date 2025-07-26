@@ -5,13 +5,8 @@
 
 package compat
 
-import (
-	"errors"
-	"runtime"
-)
-
 // CPUBits returns the number of bits on the CPU. Currently, on plan9, and wasm,
-// zero is returned.
+// BuildBits() is returned.
 func CPUBits() (int, error) {
-	return 0, errors.New("Not supported on " + runtime.GOOS + "/" + runtime.GOARCH)
+	return BuildBits(), nil
 }

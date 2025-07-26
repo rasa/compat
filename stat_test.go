@@ -16,22 +16,44 @@ import (
 const allowedTimeVariance = 1 * time.Second
 
 var (
-	hello = []byte("hello")
-	mode  os.FileMode
+	want000 = os.FileMode(0o000)
+	want600 = os.FileMode(0o600)
+	want644 = os.FileMode(0o644)
+	want666 = os.FileMode(0o666)
+	want700 = os.FileMode(0o700)
+	want777 = os.FileMode(0o777)
+
+	wantCreatePerm     = compat.CreatePerm     // 0o666
+	wantCreateTempPerm = compat.CreateTempPerm // 0o600
+	wantMkdirTempPerm  = compat.MkdirTempPerm  // 0o700
+
+	helloBytes = []byte("hello")
 )
 
 func init() {
-	mode = compat.CreateTempPerm
-	// if compat.IsWindows {
-	// 	mode = 0o666
-	// }
+	if compat.IsWasip1 {
+		if compat.IsTinygo {
+			// Tinygo's os.Stat() returns mode 0o000
+			wantCreatePerm = want000
+			wantCreateTempPerm = want000
+			wantMkdirTempPerm = want000
+			want644 = want000
+			want666 = want000
+			want777 = want000
+		} else {
+			wantCreatePerm = want600
+			want644 = want600
+			want666 = want600
+			want777 = want700
+		}
+	}
+	if compat.IsWindows {
+		wantCreateTempPerm = os.FileMode(0o666)
+		wantMkdirTempPerm = os.FileMode(0o777)
+	}
 }
 
 func TestStatStat(t *testing.T) {
-	if compat.IsWasip1Target {
-		t.Log("Skipping test on wasip1 target: operation not supported")
-		return
-	}
 	now := time.Now()
 	name, err := createTemp(t)
 	if err != nil {
@@ -49,13 +71,13 @@ func TestStatStat(t *testing.T) {
 		t.Errorf("Name(): got %v, want %v", got, base)
 	}
 
-	want := int64(len(hello))
+	want := int64(len(helloBytes))
 	if got := fi.Size(); got != want {
 		t.Errorf("Size(): got %v, want %v", got, want)
 	}
 
-	if got := fi.Mode(); got != mode {
-		t.Errorf("Mode(): got 0o%o, want 0o%o", got, mode)
+	if got := fi.Mode(); got != compat.CreateTempPerm {
+		t.Errorf("Mode(): got 0o%o, want 0o%o", got, compat.CreateTempPerm)
 	}
 
 	if got := fi.IsDir(); got != false {
@@ -69,7 +91,8 @@ func TestStatStat(t *testing.T) {
 
 func TestStatLinks(t *testing.T) {
 	if !compat.Supports(compat.Links) {
-		t.Skip("Links() not supported on " + runtime.GOOS)
+		skip(t, "Skipping test: Links() not supported on "+runtime.GOOS)
+		return
 	}
 
 	name, err := createTemp(t)
@@ -121,12 +144,9 @@ func TestStatLinks(t *testing.T) {
 }
 
 func TestStatATime(t *testing.T) {
-	if compat.IsWasip1Target {
-		t.Log("Skipping test on wasip1 target: operation not supported")
-		return
-	}
 	if !compat.Supports(compat.ATime) {
-		t.Skip("ATime() not supported on " + runtime.GOOS)
+		skip(t, "Skipping test: ATime() not supported on "+runtime.GOOS)
+		return
 	}
 	now := time.Now()
 	name, err := createTemp(t)
@@ -143,7 +163,7 @@ func TestStatATime(t *testing.T) {
 		t.Errorf("ATime(): got %v, want %v", got, now)
 	}
 
-	if compat.IsWasi {
+	if compat.IsWasip1 {
 		// os.Chtimes fails with "operation not implemented" on wasi
 		return
 	}
@@ -165,12 +185,9 @@ func TestStatATime(t *testing.T) {
 }
 
 func TestStatBTime(t *testing.T) {
-	if compat.IsWasip1Target {
-		t.Log("Skipping test on wasip1 target: operation not supported")
-		return
-	}
 	if !compat.Supports(compat.BTime) {
-		t.Skip("BTime() not supported on " + runtime.GOOS)
+		skip(t, "Skipping test: BTime() not supported on "+runtime.GOOS)
+		return
 	}
 	now := time.Now()
 	name, err := createTemp(t)
@@ -189,12 +206,9 @@ func TestStatBTime(t *testing.T) {
 }
 
 func TestStatCTime(t *testing.T) {
-	if compat.IsWasip1Target {
-		t.Log("Skipping test on wasip1 target: operation not supported")
-		return
-	}
 	if !compat.Supports(compat.CTime) {
-		t.Skip("CTime() not supported on " + runtime.GOOS)
+		skip(t, "Skipping test: CTime() not supported on "+runtime.GOOS)
+		return
 	}
 	now := time.Now()
 	name, err := createTemp(t)
@@ -228,7 +242,7 @@ func TestStatMTime(t *testing.T) {
 		t.Errorf("MTime(): got %v, want %v", got, now)
 	}
 
-	if compat.IsWasi {
+	if compat.IsWasip1 {
 		// os.Chtimes fails with "operation not implemented" on wasi
 		return
 	}
@@ -251,10 +265,7 @@ func TestStatMTime(t *testing.T) {
 
 func TestStatUID(t *testing.T) {
 	if !compat.Supports(compat.UID) {
-		t.Skip("UID() not supported on " + runtime.GOOS)
-	}
-	if compat.IsWasi {
-		t.Log("Skipping test on wasi: operation not supported")
+		skip(t, "Skipping test: UID() not supported on "+runtime.GOOS)
 		return
 	}
 
@@ -268,27 +279,27 @@ func TestStatUID(t *testing.T) {
 		t.Error(err)
 	}
 
+	got := fi.UID()
+
 	if compat.IsWindows {
-		if got := fi.UID(); got == compat.UnknownID {
+		if got == compat.UnknownID {
 			t.Errorf("UID(): got %v", got)
 		}
 		return
 	}
 
 	want := uint64(os.Getuid()) //nolint:gosec // G115: conversion int -> uint64
-	if got := fi.UID(); got != want {
+	if got != want {
 		t.Errorf("UID(): got %v, want %v", got, want)
 	}
 }
 
 func TestStatGID(t *testing.T) {
 	if !compat.Supports(compat.GID) {
-		t.Skip("GID() not supported on " + runtime.GOOS)
-	}
-	if compat.IsWasi {
-		t.Log("Skipping test on wasi: operation not supported")
+		skip(t, "Skipping test: GID() not supported on "+runtime.GOOS)
 		return
 	}
+
 	name, err := createTemp(t)
 	if err != nil {
 		t.Error(err)
@@ -299,15 +310,17 @@ func TestStatGID(t *testing.T) {
 		t.Error(err)
 	}
 
+	got := fi.GID()
+
 	if compat.IsWindows {
-		if got := fi.GID(); got == compat.UnknownID {
+		if got == compat.UnknownID {
 			t.Errorf("GID(): got %v", got)
 		}
 		return
 	}
 
 	want := uint64(os.Getgid()) //nolint:gosec // G115: conversion int -> uint64
-	if got := fi.GID(); got != want {
+	if got != want {
 		t.Errorf("GID(): got %v, want %v", got, want)
 	}
 }
@@ -430,7 +443,7 @@ func createTemp(t *testing.T) (string, error) {
 	// oldUmask := syscall.Umask(0)
 	// defer syscall.Umask(oldUmask)
 
-	_, err = f.Write(hello)
+	_, err = f.Write(helloBytes)
 	if err != nil {
 		return "", err
 	}
