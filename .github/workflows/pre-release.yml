@@ -4,10 +4,6 @@ on:
   workflow_call:
   workflow_dispatch:
 
-concurrency:
-  group: ${{ github.workflow }}
-  cancel-in-progress: true
-
 # mega-linter needs:
 permissions:
   contents: write
@@ -27,9 +23,4 @@ jobs:
     uses: ./.github/workflows/test-all.yml
     if: success()
     needs: build-all
-    secrets: inherit
-  build-all-releases:
-    uses: ./.github/workflows/build-all-releases.yml
-    if: success()
-    needs: test-all
     secrets: inherit
