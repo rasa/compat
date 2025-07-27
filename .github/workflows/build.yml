@@ -9,16 +9,16 @@ on:
     paths:
       - '**.go'
       - 'go.mod'
-      - '.github/workflows/*'
-      - '.goreleaser.yml'
-      - 'Makefile'
+      # - '.github/workflows/*'
+      # - '.goreleaser.yml'
+      # - 'Makefile'
   pull_request:
     branches: [ main ]
     paths:
       - '**.go'
       - 'go.mod'
-      - '.github/workflows/*'
-      - '.goreleaser.yml'
+      # - '.github/workflows/*'
+      # - '.goreleaser.yml'
   workflow_call: # Required so this workflow can be called from another workflow
     inputs:
       verbose_testing:
