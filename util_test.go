@@ -21,6 +21,12 @@ func skip(t *testing.T, msg any) {
 
 		return
 	}
+	if compat.IsAct {
+		s += " (" + runtime.GOOS + "/act" + ")"
+		t.Log(s)
+
+		return
+	}
 
 	t.Skip(s)
 }

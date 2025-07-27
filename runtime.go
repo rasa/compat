@@ -4,10 +4,13 @@
 package compat
 
 import (
+	"os"
 	"runtime"
 )
 
 const IsTinygo = runtime.Compiler == "tinygo"
+
+var IsAct = os.Getenv("ACT") == "true"
 
 const (
 	_aix       = "aix"
@@ -43,6 +46,13 @@ const (
 	IsSolaris   = runtime.GOOS == _solaris
 	IsWasip1    = runtime.GOOS == _wasip1
 	IsWindows   = runtime.GOOS == _windows
+)
+
+const (
+	IsApple   = IsDarwin || IsIOS
+	IsBSD     = IsDragonfly || IsFreeBSD || IsNetBSD || IsOpenBSD
+	IsSolaria = IsIllumos || IsSolaris
+	// IsUnix = IsAIX || IsAndroid || IsApple || IsBSD || IsLinux || IsSolaria.
 )
 
 const (
