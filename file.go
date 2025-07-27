@@ -37,9 +37,9 @@ func Chmod(name string, mode os.FileMode) error {
 // The directory containing the file must already exist.
 // If there is an error, it will be of type [*PathError].
 func Create(name string) (*os.File, error) {
-	return create(name, CreatePerm, O_CREATE) // O_RDWR|O_CREATE|O_TRUNC)
 	// https://github.com/golang/go/blob/master/src/os/file.go#L393
 	// return OpenFile(name, O_RDWR|O_CREATE|O_TRUNC, 0666)
+	return create(name, CreatePerm, O_CREATE) // O_RDWR|O_CREATE|O_TRUNC)
 }
 
 // CreateEx creates or truncates the named file.
@@ -51,9 +51,9 @@ func Create(name string) (*os.File, error) {
 // The directory containing the file must already exist.
 // If there is an error, it will be of type [*PathError].
 func CreateEx(name string, perm os.FileMode, flag int) (*os.File, error) {
-	return create(name, perm, flag|O_CREATE)
 	// https://github.com/golang/go/blob/master/src/os/file.go#L393
 	// return OpenFile(name, O_RDWR|O_CREATE|O_TRUNC, 0666)
+	return create(name, perm, flag|O_CREATE)
 }
 
 // CreateTemp creates a new temporary file in the directory dir,

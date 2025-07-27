@@ -23,7 +23,7 @@ linters:
     - mnd
     - nakedret
     - noctx
-    - nolintlint
+    # - nolintlint
     - perfsprint
     # - revive # can't seem to quiet, and it breaks the build
     - rowserrcheck
