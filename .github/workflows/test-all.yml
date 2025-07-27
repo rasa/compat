@@ -25,3 +25,6 @@ jobs:
     needs: test-all-solaris
     if: success()
     secrets: inherit
+  test-tinygo:
+    uses: ./.github/workflows/test-tinygo.yml
+    secrets: inherit

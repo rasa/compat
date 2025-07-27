@@ -1,0 +1,33 @@
+name: build-ubuntu
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - '**.go'
+      - 'go.mod'
+      # - '.github/workflows/*'
+      # - '.goreleaser.yml'
+      # - 'Makefile'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - '**.go'
+      - 'go.mod'
+      # - '.github/workflows/*'
+      # - '.goreleaser.yml'
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  build-ubuntu:
+    uses: ./.github/workflows/build.yml
+    name: build-ubuntu
+    with:
+      runner: ubuntu-24.04
+    secrets: inherit

@@ -1,0 +1,43 @@
+name: test-tinygo
+
+on:
+  workflow_call:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test-tinygo:
+    name: test-tinygo
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    strategy:
+      fail-fast: false
+      matrix:
+        go-version:
+          - big: "1.24.5"
+            tiny: "0.38.0"
+
+    env:
+      GODEBUG: toolchaintrace=1
+      GOTOOLCHAIN: local
+
+    steps:
+      - uses: actions/checkout@v4.2.2
+
+      - uses: actions/setup-go@v5.5.0
+        with:
+          go-version: ${{ matrix.go-version.big }}
+
+      - run: echo "$(go env GOROOT)/lib/wasm" >>"${GITHUB_PATH}"
+
+      - run: go get -t ./...
+
+      - uses: acifani/setup-tinygo@v2.0.1
+        with:
+          tinygo-version: "${{ matrix.go-version.tiny }}"
+          binaryen-version: "123"
+
+      - run: tinygo test -tags tinygo -v . ./

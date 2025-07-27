@@ -6,11 +6,22 @@ name: build-most (all except Android and iOS)
 on: # yamllint disable-line rule:truthy
   workflow_call: # Required so this workflow can be called from another workflow
     inputs:
+      goarches:
+        type: string
+        default: default
       verbose_testing:
         type: string
         default: "false"
   workflow_dispatch: # Allows you to run this workflow manually from the Actions tab
     inputs:
+      # checkov:skip=CKV_GHA_7:The build output cannot be affected by user parameters...
+      goarches:
+        description: "Build on the default GOARCH, or all GOARCHes for the OS"
+        type: choice
+        options:
+          - default
+          - all
+        default: default
       # checkov:skip=CKV_GHA_7:The build output cannot be affected by user parameters...
       verbose_testing:
         description: "Test with -v options."
@@ -22,6 +33,8 @@ on: # yamllint disable-line rule:truthy
 
 env:
   CGO_ENABLED: 0
+  goarches: ${{ inputs.goarches }}
+  verbose_testing: ${{ inputs.verbose_testing }}
 
 jobs:
   build-most:
@@ -41,7 +54,7 @@ jobs:
     - name: go build (all targets but android and ios)
       run: |
         # go build (all targets but android and ios)
-
+        printf 'goarches=%s\n' "${{ inputs.goarches }}"
         mapfile -t targets < <(go tool dist list | grep -E -v '(android|ios)')
         set +e
         fails=0
@@ -50,7 +63,7 @@ jobs:
         for target in "${targets[@]}"; do
           export GOOS="${target%%/*}"
           if [[ -v seen["${GOOS}"] ]]; then
-            continue
+            test "${{ inputs.goarches }}" == "all" || continue
           fi
           export GOARCH="${target#*/}"
           seen["${GOOS}"]=1
@@ -67,6 +80,11 @@ jobs:
         exit "${fails}"
 
     - run: |
+        # go test .
+
+        printf "verbose_testing=%s\n" "${verbose_testing:-}"
+        printf "inputs.verbose_testing=%s\n" "${{ inputs.verbose_testing }}"
+
         TEST_OPTS=()
         if [[ "${{ inputs.verbose_testing }}" == "true" ]]; then
           TEST_OPTS+=(-v)
