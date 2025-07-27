@@ -21,6 +21,7 @@ func TestNiceRenice(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
+
 	err = compat.Renice(nice)
 	if err != nil {
 		t.Error(err)
@@ -30,6 +31,7 @@ func TestNiceRenice(t *testing.T) {
 func TestNiceReniceIfRoot(t *testing.T) {
 	if compat.IsWasip1 {
 		skip(t, "Skipping test: operation not supported")
+
 		return
 	}
 
@@ -37,18 +39,22 @@ func TestNiceReniceIfRoot(t *testing.T) {
 
 	if !compat.IsWindows && !isRoot {
 		skip(t, "Skipping test: we aren't the root/admin user")
+
 		return
 	}
+
 	nice, err := compat.Nice()
 	if err != nil {
 		t.Error(err)
 	}
+
 	for n := compat.MinNice; n <= compat.MaxNice; n++ {
 		err = compat.Renice(n)
 		if err != nil {
 			t.Error(err)
 		}
 	}
+
 	err = compat.Renice(nice)
 	if err != nil {
 		t.Error(err)

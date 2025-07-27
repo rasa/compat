@@ -16,11 +16,14 @@ import (
 
 func main() {
 	exe, _ := os.Executable()
+
 	fi, err := compat.Stat(exe)
 	if err != nil {
 		log.Print(err)
+
 		return
 	}
+
 	fmt.Printf("Name()   =%v\n", fi.Name())
 	fmt.Printf("Size()   =%v\n", fi.Size())
 	fmt.Printf("Mode()   =0o%o\n", fi.Mode())
@@ -47,10 +50,12 @@ func main() {
 
 func samePartition() {
 	exe, _ := os.Executable()
+
 	fi1, err := compat.Stat(exe)
 	if err != nil {
 		log.Fatal(err)
 	}
+
 	fi2, err := compat.Stat(exe)
 	if err != nil {
 		log.Fatal(err)
@@ -62,12 +67,16 @@ func samePartition() {
 func samePartitionl() {
 	exe, _ := os.Executable()
 	link := "link" + filepath.Ext(exe)
+
 	_ = os.Link(exe, link)
+
 	defer os.Remove(link)
+
 	fi1, err := compat.Lstat(link)
 	if err != nil {
 		log.Fatal(err) //nolint:gocritic // quiet linter
 	}
+
 	fi2, err := compat.Lstat(link)
 	if err != nil {
 		log.Fatal(err)
@@ -84,10 +93,12 @@ func samePartitions() {
 
 func sameFile() {
 	exe, _ := os.Executable()
+
 	fi1, err := compat.Stat(exe)
 	if err != nil {
 		log.Fatal(err)
 	}
+
 	fi2, err := compat.Stat(exe)
 	if err != nil {
 		log.Fatal(err)
@@ -99,12 +110,16 @@ func sameFile() {
 func sameFilel() {
 	exe, _ := os.Executable()
 	link := "link" + filepath.Ext(exe)
+
 	_ = os.Link(exe, link)
+
 	defer os.Remove(link)
+
 	fi1, err := compat.Lstat(link)
 	if err != nil {
 		log.Fatal(err) //nolint:gocritic // quiet linter
 	}
+
 	fi2, err := compat.Lstat(link)
 	if err != nil {
 		log.Fatal(err)

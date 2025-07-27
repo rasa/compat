@@ -14,7 +14,9 @@ func TestWSLIsWSL(t *testing.T) {
 	// IsWSL() always returns false in Windows builds, even if the executable
 	// is run inside a WSL environment.
 	want := !compat.IsWindows && os.Getenv("WSL_DISTRO_NAME") != ""
+
 	got := compat.IsWSL()
+
 	if got != want {
 		t.Errorf("IsWSL(): got %v, want %v", got, want)
 	}

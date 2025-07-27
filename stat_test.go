@@ -47,6 +47,7 @@ func init() {
 			want777 = want700
 		}
 	}
+
 	if compat.IsWindows {
 		wantCreateTempPerm = os.FileMode(0o666)
 		wantMkdirTempPerm = os.FileMode(0o777)
@@ -55,6 +56,7 @@ func init() {
 
 func TestStatStat(t *testing.T) {
 	now := time.Now()
+
 	name, err := createTemp(t)
 	if err != nil {
 		t.Error(err)
@@ -92,6 +94,7 @@ func TestStatStat(t *testing.T) {
 func TestStatLinks(t *testing.T) {
 	if !compat.Supports(compat.Links) {
 		skip(t, "Skipping test: Links() not supported on "+runtime.GOOS)
+
 		return
 	}
 
@@ -112,6 +115,7 @@ func TestStatLinks(t *testing.T) {
 
 	dir, _ := filepath.Split(name)
 	link := filepath.Join(dir, "link.txt")
+
 	err = os.Link(name, link)
 	if err != nil {
 		t.Error(err)
@@ -146,9 +150,12 @@ func TestStatLinks(t *testing.T) {
 func TestStatATime(t *testing.T) {
 	if !compat.Supports(compat.ATime) {
 		skip(t, "Skipping test: ATime() not supported on "+runtime.GOOS)
+
 		return
 	}
+
 	now := time.Now()
+
 	name, err := createTemp(t)
 	if err != nil {
 		t.Error(err)
@@ -169,6 +176,7 @@ func TestStatATime(t *testing.T) {
 	}
 
 	atime := time.Now().Add(-24 * time.Hour)
+
 	err = os.Chtimes(name, atime, atime)
 	if err != nil {
 		t.Error(err)
@@ -187,9 +195,12 @@ func TestStatATime(t *testing.T) {
 func TestStatBTime(t *testing.T) {
 	if !compat.Supports(compat.BTime) {
 		skip(t, "Skipping test: BTime() not supported on "+runtime.GOOS)
+
 		return
 	}
+
 	now := time.Now()
+
 	name, err := createTemp(t)
 	if err != nil {
 		t.Error(err)
@@ -208,9 +219,12 @@ func TestStatBTime(t *testing.T) {
 func TestStatCTime(t *testing.T) {
 	if !compat.Supports(compat.CTime) {
 		skip(t, "Skipping test: CTime() not supported on "+runtime.GOOS)
+
 		return
 	}
+
 	now := time.Now()
+
 	name, err := createTemp(t)
 	if err != nil {
 		t.Error(err)
@@ -228,6 +242,7 @@ func TestStatCTime(t *testing.T) {
 
 func TestStatMTime(t *testing.T) {
 	now := time.Now()
+
 	name, err := createTemp(t)
 	if err != nil {
 		t.Error(err)
@@ -248,6 +263,7 @@ func TestStatMTime(t *testing.T) {
 	}
 
 	mtime := time.Now().Add(-24 * time.Hour)
+
 	err = os.Chtimes(name, mtime, mtime)
 	if err != nil {
 		t.Error(err)
@@ -266,6 +282,7 @@ func TestStatMTime(t *testing.T) {
 func TestStatUID(t *testing.T) {
 	if !compat.Supports(compat.UID) {
 		skip(t, "Skipping test: UID() not supported on "+runtime.GOOS)
+
 		return
 	}
 
@@ -285,6 +302,7 @@ func TestStatUID(t *testing.T) {
 		if got == compat.UnknownID {
 			t.Errorf("UID(): got %v", got)
 		}
+
 		return
 	}
 
@@ -297,6 +315,7 @@ func TestStatUID(t *testing.T) {
 func TestStatGID(t *testing.T) {
 	if !compat.Supports(compat.GID) {
 		skip(t, "Skipping test: GID() not supported on "+runtime.GOOS)
+
 		return
 	}
 
@@ -316,6 +335,7 @@ func TestStatGID(t *testing.T) {
 		if got == compat.UnknownID {
 			t.Errorf("GID(): got %v", got)
 		}
+
 		return
 	}
 
@@ -438,6 +458,7 @@ func createTemp(t *testing.T) (string, error) {
 	if err != nil {
 		return "", err
 	}
+
 	name := f.Name()
 
 	// oldUmask := syscall.Umask(0)

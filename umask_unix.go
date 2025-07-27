@@ -29,6 +29,7 @@ func Umask(newMask int) int {
 	defer umaskMutex.Unlock()
 
 	currentUmask = newMask
+
 	return syscall.Umask(currentUmask)
 }
 

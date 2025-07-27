@@ -53,9 +53,12 @@ func TestRuntime(t *testing.T) { //nolint:funlen,gocyclo // quiet linter
 	if err != nil {
 		if compat.IsTinygo || compat.IsWasip1 {
 			skipf(t, "Skipping test: %v", err)
+
 			return
 		}
+
 		t.Fatal(err)
+
 		return
 	}
 
@@ -63,9 +66,12 @@ func TestRuntime(t *testing.T) { //nolint:funlen,gocyclo // quiet linter
 	if err != nil {
 		if compat.IsTinygo || compat.IsWasip1 {
 			skipf(t, "Skipping test: %v", err)
+
 			return
 		}
+
 		t.Fatal(err)
+
 		return
 	}
 
@@ -75,16 +81,19 @@ func TestRuntime(t *testing.T) { //nolint:funlen,gocyclo // quiet linter
 	lines := bytes.Split(out, []byte{'\n'})
 	for _, line := range lines {
 		trimmed := strings.TrimSpace(string(line))
+
 		before, after, found := strings.Cut(trimmed, "/")
 		if !found {
 			continue
 		}
+
 		gooses[before] = struct{}{}
 		goarches[after] = struct{}{}
 	}
 
 	if len(gooses) == 0 {
 		t.Fatal("failed to parse output of: go tool dist list")
+
 		return
 	}
 
@@ -93,6 +102,7 @@ func TestRuntime(t *testing.T) { //nolint:funlen,gocyclo // quiet linter
 			t.Errorf("found new GOOS: %q", goos)
 		}
 	}
+
 	for goarch := range goarches {
 		if !slices.Contains(arches, goarch) {
 			t.Errorf("found new GOARCH: %q", goarch)
@@ -105,6 +115,7 @@ func TestRuntime(t *testing.T) { //nolint:funlen,gocyclo // quiet linter
 			t.Logf("go no longer supports GOOS: %q", goos)
 		}
 	}
+
 	for _, goarch := range arches {
 		_, ok := goarches[goarch]
 		if !ok {

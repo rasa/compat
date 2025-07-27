@@ -113,7 +113,9 @@ func Lstat(name string) (FileInfo, error) {
 // It returns false in other cases.
 func SamePartition(fi1, fi2 FileInfo) bool {
 	fs1, ok1 := fi1.(*fileStat)
+
 	fs2, ok2 := fi2.(*fileStat)
+
 	if !ok1 || !ok2 {
 		return false
 	}
@@ -129,6 +131,7 @@ func SamePartitions(name1, name2 string) bool {
 	if err != nil {
 		return false
 	}
+
 	fi2, err := Stat(name2)
 	if err != nil {
 		return false
@@ -145,7 +148,9 @@ func SamePartitions(name1, name2 string) bool {
 // It returns false in other cases.
 func SameFile(fi1, fi2 FileInfo) bool {
 	fs1, ok1 := fi1.(*fileStat)
+
 	fs2, ok2 := fi2.(*fileStat)
+
 	if !ok1 || !ok2 {
 		return false
 	}
@@ -160,6 +165,7 @@ func SameFiles(name1, name2 string) bool {
 	if err != nil {
 		return false
 	}
+
 	fi2, err := Stat(name2)
 	if err != nil {
 		return false

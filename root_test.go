@@ -14,16 +14,21 @@ import (
 
 func TestRootIsRoot(t *testing.T) {
 	isRoot := os.Getuid() == 0
+
 	got, err := compat.IsRoot()
 	if err != nil {
 		t.Errorf("IsRoot() returned: %v", err)
 	}
+
 	if !isRoot {
 		skipf(t, "Skipping test: we aren't the root/admin user")
+
 		return
 	}
+
 	if got != isRoot {
 		t.Fatalf("IsRoot(): got %v, want %v", got, isRoot)
+
 		return
 	}
 }

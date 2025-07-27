@@ -13,6 +13,7 @@ func TestCPUBits(t *testing.T) {
 	_, err := compat.CPUBits()
 	if err != nil {
 		t.Fatalf("CPUBits: got %v, want nil", err)
+
 		return
 	}
 }

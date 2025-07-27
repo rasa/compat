@@ -39,7 +39,9 @@ func WriteReaderAtomic(filename string, r io.Reader, opts ...Option) (err error)
 	if err != nil {
 		return fmt.Errorf("cannot create temp file: %w", err)
 	}
+
 	name := f.Name()
+
 	defer func() {
 		if err != nil {
 			// Don't leave the temp file lying around on error.
@@ -49,6 +51,7 @@ func WriteReaderAtomic(filename string, r io.Reader, opts ...Option) (err error)
 	// ensure we always close f. Note that this does not conflict with the
 	// close below, as close is idempotent.
 	defer f.Close()
+
 	_, err = io.Copy(f, r)
 	if err != nil {
 		return fmt.Errorf("cannot write data to tempfile %q: %w", name, err)
@@ -58,10 +61,12 @@ func WriteReaderAtomic(filename string, r io.Reader, opts ...Option) (err error)
 	if err != nil {
 		return fmt.Errorf("cannot flush tempfile %q: %w", name, err)
 	}
+
 	err = f.Close()
 	if err != nil {
 		return fmt.Errorf("cannot close tempfile %q: %w", name, err)
 	}
+
 	sourceInfo, err := Stat(name)
 	if err != nil {
 		return err
@@ -76,10 +81,12 @@ func WriteReaderAtomic(filename string, r io.Reader, opts ...Option) (err error)
 	// file, too.
 	if fopts.keepFileMode {
 		var destInfo os.FileInfo
+
 		destInfo, err = Stat(filename)
 		if err != nil && !os.IsNotExist(err) {
 			return err
 		}
+
 		if destInfo != nil {
 			fileMode = destInfo.Mode()
 		}
@@ -95,6 +102,7 @@ func WriteReaderAtomic(filename string, r io.Reader, opts ...Option) (err error)
 			return fmt.Errorf("cannot set permissions on tempfile %q: %w", name, err)
 		}
 	}
+
 	err = Rename(name, filename)
 	if err != nil {
 		return fmt.Errorf("cannot replace %q with tempfile %q: %w", filename, name, err)

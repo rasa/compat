@@ -27,6 +27,7 @@ import (
 // WSL see. Hence, this function must return false.
 func IsWSL() bool {
 	var uts unix.Utsname
+
 	err := unix.Uname(&uts)
 	if err == nil {
 		release := byteToString(uts.Release[:])
@@ -34,18 +35,22 @@ func IsWSL() bool {
 			return true
 		}
 	}
+
 	data, err := os.ReadFile("/proc/sys/kernel/osrelease")
 	if err == nil {
 		return strings.Contains(strings.ToLower(string(data)), "microsoft")
 	}
+
 	data, err = os.ReadFile("/proc/version")
 	if err == nil {
 		return strings.Contains(strings.ToLower(string(data)), "microsoft")
 	}
+
 	path, err := exec.LookPath("wslpath")
 	if err != nil {
 		return false
 	}
+
 	return path == "/usr/bin/wslpath"
 }
 
@@ -55,8 +60,10 @@ func byteToString(b []byte) string {
 	for i := 0; i < n; i++ {
 		if b[i] == 0 {
 			n = i
+
 			break
 		}
 	}
+
 	return string(b[:n])
 }

@@ -18,13 +18,16 @@ func (fs *fileStat) times() {
 	fs.ctime = time.Unix(int64(fs.sys.Ctim.Sec), int64(fs.sys.Ctim.Nsec)) //nolint:unconvert // needed conversion
 
 	var stx unix.Statx_t
+
 	err := unix.Statx(unix.AT_FDCWD, fs.path, unix.AT_SYMLINK_NOFOLLOW, unix.STATX_BTIME, &stx)
 	if err != nil {
 		return
 	}
+
 	if stx.Mask&unix.STATX_BTIME == 0 {
 		return
 	}
+
 	fs.btime = time.Unix(int64(stx.Btime.Sec), int64(stx.Btime.Nsec)) //nolint:unconvert // needed conversion
 }
 

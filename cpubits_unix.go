@@ -15,19 +15,24 @@ import (
 // BuildBits() is returned.
 func CPUBits() (int, error) {
 	var uts unix.Utsname
+
 	err := unix.Uname(&uts)
 	if err != nil {
 		return 0, err
 	}
 
 	machine := make([]byte, len(uts.Machine))
+
 	for i, v := range uts.Machine {
 		if v == 0 {
 			machine = machine[:i]
+
 			break
 		}
+
 		machine[i] = v
 	}
+
 	arch := strings.TrimSpace(string(machine))
 
 	if strings.HasSuffix(arch, "64") {

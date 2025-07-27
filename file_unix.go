@@ -20,14 +20,17 @@ func create(name string, perm os.FileMode, flag int) (*os.File, error) {
 		if err != nil {
 			_ = f.Close()
 			_ = os.Remove(name)
+
 			return nil, err
 		}
 	}
+
 	return wrap(name, flag, f, err)
 }
 
 func createTemp(dir, pattern string, flag int) (*os.File, error) {
 	f, err := os.CreateTemp(dir, pattern)
+
 	return wrap(f.Name(), flag, f, err)
 }
 
@@ -45,6 +48,7 @@ func mkdirTemp(dir, pattern string) (string, error) {
 
 func openFile(name string, flag int, perm os.FileMode) (*os.File, error) {
 	f, err := os.OpenFile(name, flag, perm)
+
 	return wrap(name, flag, f, err)
 }
 
@@ -62,6 +66,7 @@ func wrap(name string, flag int, f *os.File, err error) (*os.File, error) {
 		if err != nil {
 			_ = f.Close()
 			_ = os.Remove(name)
+
 			return nil, err
 		}
 	}
