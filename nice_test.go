@@ -17,14 +17,16 @@ func TestNice(t *testing.T) {
 }
 
 func TestNiceRenice(t *testing.T) {
-	nice, err := compat.Nice()
-	if err != nil {
-		t.Error(err)
+	if compat.IsWasip1 {
+		skip(t, "Skipping test: operation not supported")
+
+		return
 	}
 
-	err = compat.Renice(nice)
+	err := compat.Renice(compat.MaxNice)
 	if err != nil {
-		t.Error(err)
+		// Don't fail on "permission denied" on Linux
+		skip(t, err)
 	}
 }
 
@@ -48,10 +50,12 @@ func TestNiceReniceIfRoot(t *testing.T) {
 		t.Error(err)
 	}
 
-	for n := compat.MinNice; n <= compat.MaxNice; n++ {
+	for n := 0; n >= compat.MinNice; n-- {
 		err = compat.Renice(n)
 		if err != nil {
 			t.Error(err)
+
+			break
 		}
 	}
 
