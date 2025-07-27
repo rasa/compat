@@ -59,7 +59,7 @@ func TestRuntime(t *testing.T) { //nolint:gocyclo // quiet linter
 		return
 	}
 
-	out, err := exec.Command(goExe, "tool", "dist", "list").Output()
+	out, err := exec.Command(goExe, "tool", "dist", "list").Output() //nolint:noctx // quiet linter
 	if err != nil {
 		if compat.IsTinygo || compat.IsWasip1 {
 			skipf(t, "Skipping test: %v", err)
