@@ -4,9 +4,9 @@ on:
   workflow_call:
   workflow_dispatch:
 
-concurrency:
-  group: ${{ github.workflow }}
-  cancel-in-progress: true
+# concurrency:
+#  group: ${{ github.workflow }}
+#  cancel-in-progress: true
 
 permissions:
   contents: read
@@ -19,9 +19,9 @@ jobs:
     secrets: inherit
   build-most:
     uses: ./.github/workflows/build-most.yml
-    needs: build
     with:
-      cpu: all
+      goarches: all
+    needs: build
     if: success()
     secrets: inherit
   build-android:
