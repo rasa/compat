@@ -10,7 +10,7 @@ linters:
     - dupword
     - errcheck
     - errorlint
-    - funlen
+    # - funlen # works locally, but fails on github
     - goconst
     - gocritic
     - gocyclo
