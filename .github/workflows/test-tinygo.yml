@@ -31,8 +31,6 @@ jobs:
         with:
           go-version: ${{ matrix.go-version.big }}
 
-      - run: echo "$(go env GOROOT)/lib/wasm" >>"${GITHUB_PATH}"
-
       - run: go get -t ./...
 
       - uses: acifani/setup-tinygo@v2.0.1
