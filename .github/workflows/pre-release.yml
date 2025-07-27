@@ -20,10 +20,16 @@ jobs:
     secrets: inherit
   build-all:
     uses: ./.github/workflows/build-all.yml
+    if: success()
+    needs: mega-linter
     secrets: inherit
   test-all:
     uses: ./.github/workflows/test-all.yml
+    if: success()
+    needs: build-all
     secrets: inherit
   build-all-releases:
     uses: ./.github/workflows/build-all-releases.yml
+    if: success()
+    needs: test-all
     secrets: inherit

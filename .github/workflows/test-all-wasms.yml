@@ -4,7 +4,11 @@ on:
   workflow_call:
   workflow_dispatch:
 
-permissions:
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: true
+
+ permissions:
   contents: read
 
 jobs:
@@ -13,4 +17,6 @@ jobs:
     secrets: inherit
   test-wasip1:
     uses: ./.github/workflows/test-wasip1.yml
+    needs: test-js
+    if: success()
     secrets: inherit

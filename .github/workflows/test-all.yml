@@ -4,7 +4,11 @@ on:
   workflow_call:
   workflow_dispatch:
 
-permissions:
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: true
+
+ permissions:
   contents: read
 
 jobs:
@@ -13,7 +17,11 @@ jobs:
     secrets: inherit
   test-all-solaris:
     uses: ./.github/workflows/test-all-solaris.yml
+    needs: test-all-bsds
+    if: success()
     secrets: inherit
   test-all-wasms:
     uses: ./.github/workflows/test-all-wasms.yml
+    needs: test-all-solaris
+    if: success()
     secrets: inherit

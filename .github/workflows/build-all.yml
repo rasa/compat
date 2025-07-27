@@ -4,6 +4,10 @@ on:
   workflow_call:
   workflow_dispatch:
 
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: true
+
 # mega-linter needs:
 permissions:
   contents: write
@@ -16,10 +20,16 @@ jobs:
     secrets: inherit
   build-most:
     uses: ./.github/workflows/build-most.yml
+    needs: build
+    if: success()
     secrets: inherit
   build-android:
     uses: ./.github/workflows/build-android.yml
+    needs: build-most
+    if: success()
     secrets: inherit
   build-ios:
     uses: ./.github/workflows/build-ios.yml
+    needs: build-android
+    if: success()
     secrets: inherit

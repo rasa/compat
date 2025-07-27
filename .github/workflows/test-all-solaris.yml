@@ -4,6 +4,10 @@ on:
   workflow_call:
   workflow_dispatch:
 
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: true
+
 # mega-linter needs:
 permissions:
   contents: read
@@ -14,4 +18,6 @@ jobs:
     secrets: inherit
   test-solaris:
     uses: ./.github/workflows/test-solaris.yml
+    needs: test-illumos
+    if: success()
     secrets: inherit
