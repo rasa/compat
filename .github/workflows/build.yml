@@ -139,7 +139,7 @@ jobs:
           export TEST_OPTS="${TEST_OPTS[*]}"
           printf 'TEST_OPTS="%s"\n' "${TEST_OPTS}"
           if ! make ci; then
-            // @TODO(rasa) remove this hack
+            # @TODO(rasa) remove this hack
             if [[ "${{ matrix.os }}" == "windows-2025" ]]; then
               exit 0
             fi
