@@ -111,7 +111,7 @@ jobs:
       - name: Set Go cache variables
         if: contains(fromJSON(format('["{0}","all"]', matrix.os)), inputs.runner)
         run: |
-          printf '::notice ::%s\n' "$(go version)"
+          # printf '::notice ::%s\n' "$(go version)"
           # printf 'GOVERSION=%s\n'  "$(go version | sed 's#^.*go##;s# .*##')" >>"${GITHUB_ENV}"
           printf 'GOCACHE=%s\n'    "$(go env GOCACHE | tr '\\' '/')" >>"${GITHUB_ENV}"
           printf 'GOMODCACHE=%s\n' "$(go env GOMODCACHE | tr '\\' '/')" >>"${GITHUB_ENV}"
@@ -140,8 +140,9 @@ jobs:
           printf 'TEST_OPTS="%s"\n' "${TEST_OPTS}"
           make ci && exit 0
           # @TODO(rasa) remove this hack
-          test "${{ matrix.os }}" == "windows-2025" && exit 0
-          exit 1
+          test "${{ matrix.os }}" == "windows-2025" || exit 1
+          echo '::error::tests failed on windows-2025'
+          exit 0
         env:
           COMPAT_DEBUG: 1
 
