@@ -11,7 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Run tests on tinygo.
 - Run tests for wasip1 on both regular go, and tinygo.
-- Add `IsAct`, `IsApple`, `IsBSD`, `IsSolaria` and `IsUnix` constants.
+- Add `IsAct`, `IsApple`, `IsBSD`, `IsSolaria`, `IsTinygo`, and `IsUnix` constants.
 - Modularized Github actions.
 
 ### Fixed
