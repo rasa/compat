@@ -9,13 +9,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Run tests for wasip1 on tinygo (and regular go).
+- Run tests on tinygo.
+- Run tests for wasip1 on both regular go, and tinygo.
+- Add `IsApple`, `IsBSD`, `IsSolaria` and `IsUnix` constants.
 - Modularized Github actions.
 
 ### Fixed
 
 - Fix all tests on wasip1.
 - Fix `CPUBits()` to return the value returned by `BuildBits()` if we can't determine the CPU's bits.
+- Enhance and fix typos in comments.
+- Fix tests when running under `act`.
 
 ### Changed
 
