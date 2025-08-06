@@ -138,11 +138,11 @@ jobs:
           fi
           export TEST_OPTS="${TEST_OPTS[*]}"
           printf 'TEST_OPTS="%s"\n' "${TEST_OPTS}"
-          make ci && exit 0
+          make ci # && exit 0
           # @TODO(rasa) remove this hack
-          test "${{ matrix.os }}" == "windows-2025" || exit 1
-          echo '::error::tests failed on windows-2025'
-          exit 0
+          # test "${{ matrix.os }}" == "windows-2025" || exit 1
+          # echo '::error::tests failed on windows-2025'
+          # exit 0
         env:
           COMPAT_DEBUG: 1
 
