@@ -55,7 +55,13 @@ on:
           - macos-14-large # amd64
           - macos-13 # amd64
           - macos-13-xlarge # arm64
-          - "all"
+          - ubuntu
+          - windows
+          - macos-15
+          - macos-14
+          - macos-13
+          - macos
+          - all
         default: "ubuntu-24.04"
 
 permissions:
