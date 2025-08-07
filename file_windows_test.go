@@ -216,7 +216,13 @@ func checkPerm(t *testing.T, name string, perm os.FileMode) {
 func dumpACLs(t *testing.T, name string, doDir bool) {
 	t.Helper()
 
-	cmd := exec.Command("icacls.exe", name, "/q")
+	exe, err := exec.LookPath("icacls.exe")
+	if err != nil {
+		t.Logf("Command not found: %v", err)
+		return
+	}
+
+	cmd := exec.Command(exe, name, "/q")
 	out, err := cmd.CombinedOutput()
 	if err != nil {
 		t.Logf("Error running icacls: %v", err)
@@ -224,8 +230,16 @@ func dumpACLs(t *testing.T, name string, doDir bool) {
 	s := "\n" + string(out)
 	t.Log(s)
 
-	params := fmt.Sprintf("Get-Acl '%s' | Format-List Owner,Access", name)
-	cmd = exec.Command("pwsh.exe", "-Command", params)
+	exe, err = exec.LookPath("pwsh.exe")
+	if err != nil {
+		exe, err = exec.LookPath("powershell.exe")
+	}
+	if err != nil {
+		t.Logf("Command not found: %v", err)
+	}
+
+	params := fmt.Sprintf("Get-Acl '%s' | Format-List", name)
+	cmd = exec.Command(exe, "-Command", params)
 	out, err = cmd.CombinedOutput()
 	if err != nil {
 		t.Logf("Error running pwsh: %v", err)
