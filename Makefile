@@ -4,7 +4,7 @@ SHELL := /bin/bash
 
 .PHONY: all
 all: ## build pipeline
-all: mod gen build spell lint test
+all: mod gen build spell lint fix test
 
 .PHONY: precommit
 precommit: ## validate the branch before commit
@@ -44,6 +44,10 @@ spell: ## misspell
 .PHONY: lint
 lint: ## golangci-lint
 	go tool golangci-lint run --fix
+
+.PHONY: fix
+fix: ## gofumpt
+	go tool gofumpt -w .
 
 .PHONY: vuln
 vuln: ## govulncheck
