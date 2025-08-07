@@ -2,7 +2,7 @@
 # checkov:skip=CKV_GHA_7: The build output cannot be affected by user parameters...
 # yaml-language-server: $schema https://json.schemastore.org/github-workflow.json
 
-name: build-android
+name: build-only-android
 
 on: # yamllint disable-line rule:truthy
   workflow_call:
@@ -53,8 +53,7 @@ env:
   GOOS: 'android'
 
 jobs:
-  build-android:
-    name: build-android
+  build-only-android:
     runs-on: ubuntu-24.04
     defaults:
       run:
@@ -92,7 +91,7 @@ jobs:
 
       - run: printf '::notice ::%s\n' "$(go version)"
 
-      - run: go mod download
+      - run: go get -t ./...
 
       - name: Install Android SDK via download
         run: |

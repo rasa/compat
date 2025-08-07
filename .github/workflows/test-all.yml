@@ -16,14 +16,14 @@ jobs:
     needs: test-tinygo
     if: success()
     secrets: inherit
-  test-all-solaris:
-    uses: ./.github/workflows/test-all-solaris.yml
+  test-all-solaria:
+    uses: ./.github/workflows/test-all-solaria.yml
     needs: test-all-bsds
     if: success()
     secrets: inherit
   test-all-wasms:
     uses: ./.github/workflows/test-all-wasms.yml
-    needs: test-all-solaris
+    needs: test-all-solaria
     if: success()
     secrets: inherit
-  
+

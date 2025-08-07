@@ -13,20 +13,20 @@ jobs:
     with:
       runner: all
     secrets: inherit
-  build-most:
-    uses: ./.github/workflows/build-most.yml
+  build-only-nocgo:
+    uses: ./.github/workflows/build-only-nocgo.yml
     with:
       goarches: all
     needs: build
     if: success()
     secrets: inherit
-  build-android:
-    uses: ./.github/workflows/build-android.yml
-    needs: build-most
+  build-only-android:
+    uses: ./.github/workflows/build-only-android.yml
+    needs: build-only-nocgo
     if: success()
     secrets: inherit
-  build-ios:
-    uses: ./.github/workflows/build-ios.yml
-    needs: build-android
+  build-only-ios:
+    uses: ./.github/workflows/build-only-ios.yml
+    needs: build-only-android
     if: success()
     secrets: inherit

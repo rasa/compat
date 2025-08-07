@@ -1,7 +1,7 @@
 ---
 # yaml-language-server: $schema https://json.schemastore.org/github-workflow.json
 
-name: build-most (all except Android and iOS)
+name: build-only-nocgo
 
 on: # yamllint disable-line rule:truthy
   workflow_call: # Required so this workflow can be called from another workflow
@@ -37,8 +37,7 @@ env:
   verbose_testing: ${{ inputs.verbose_testing }}
 
 jobs:
-  build-most:
-    name: build-most
+  build-only-nocgo:
     runs-on: ubuntu-24.04
 
     steps:

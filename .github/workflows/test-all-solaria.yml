@@ -1,4 +1,4 @@
-name: test-all-solaris
+name: test-all-solaria
 
 on:
   workflow_call:

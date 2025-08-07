@@ -1,0 +1,33 @@
+name: build-all-windows
+
+on:
+  workflow_call: # Required so this workflow can be called from another workflow
+  workflow_dispatch: # Allows you to run this workflow manually from the Actions tab
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  build-windows-2022:
+    uses: ./.github/workflows/build.yml
+    with:
+      runner: windows-2022
+    secrets: inherit
+  build-windows-2025:
+    uses: ./.github/workflows/build.yml
+    needs: build-windows-2022
+    if: success()
+    with:
+      runner: windows-2025
+    secrets: inherit
+  build-windows-11-arm:
+    uses: ./.github/workflows/build.yml
+    needs: build-windows-2025
+    if: success() && github.repository_visibility == 'public'
+    with:
+      runner: windows-11-arm
+    secrets: inherit

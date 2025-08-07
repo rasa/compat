@@ -1,7 +1,7 @@
 ---
 # yaml-language-server: $schema https://json.schemastore.org/github-workflow.json
 
-name: build-ios
+name: build-only-ios
 
 on: # yamllint disable-line rule:truthy
   workflow_call:
@@ -13,8 +13,7 @@ env:
   GOARCH: arm64
 
 jobs:
-  build-ios:
-    name: build-ios
+  build-only-ios:
     runs-on: macos-15
 
     steps:
@@ -27,7 +26,7 @@ jobs:
 
       - run: printf '::notice ::%s\n' "$(go version)"
 
-      - run: go mod download
+      - run: go get -t ./...
 
       - run: go build -trimpath ./...
 
