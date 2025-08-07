@@ -219,16 +219,16 @@ func dumpACLs(t *testing.T, name string, doDir bool) {
 	cmd := exec.Command("icacls.exe", "/q", name)
 	out, err := cmd.CombinedOutput()
 	if err != nil {
-		t.Logf("Error running icacls: %v\n", err)
+		t.Logf("Error running icacls: %v", err)
 	}
 	s := "\n" + string(out)
 	t.Log(s)
 
 	params := fmt.Sprintf("Get-Acl '%s'", name)
-	cmd := exec.Command("pwsh.exe", "-Command", params)
-	out, err := cmd.CombinedOutput()
+	cmd = exec.Command("pwsh.exe", "-Command", params)
+	out, err = cmd.CombinedOutput()
 	if err != nil {
-		t.Logf("Error running pwsh: %v\n", err)
+		t.Logf("Error running pwsh: %v", err)
 	}
 	s = "\n" + string(out)
 	t.Log(s)
