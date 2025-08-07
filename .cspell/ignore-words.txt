@@ -14,6 +14,17 @@
 ## is regenerated.
 ##
 
+cyclop
+depguard
+exhaustruct
+forbidigo
+gochecknoglobals
+gochecknoinits
+interfacebloat
+nlreturn
+paralleltest
+thelper 
+
 toolchaintrace
 acifani
 binaryen
