@@ -132,13 +132,13 @@ jobs:
         if: contains(fromJSON(format('["{0}","all"]', matrix.os)), inputs.runner)
         run: |
           printf 'inputs.verbose_testing="%s"\n' "${{ inputs.verbose_testing }}"
-          TEST_OPTS=()
+          TEST_OPTS_ARRAY=()
           if [[ "${{ inputs.verbose_testing }}" == "true" ]]; then
-            TEST_OPTS+=(-v)
+            TEST_OPTS_ARRAY+=(-v)
           fi
-          export TEST_OPTS="${TEST_OPTS[*]}"
+          export TEST_OPTS="${TEST_OPTS_ARRAY[*]}"
           printf 'TEST_OPTS="%s"\n' "${TEST_OPTS}"
-          make ci # && exit 0
+          make ci TEST_OPTS="$TEST_OPTS" # && exit 0
           # @TODO(rasa) remove this hack
           # test "${{ matrix.os }}" == "windows-2025" || exit 1
           # echo '::error::tests failed on windows-2025'
