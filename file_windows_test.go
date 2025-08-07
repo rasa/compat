@@ -6,6 +6,7 @@
 package compat_test
 
 import (
+	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -215,12 +216,22 @@ func checkPerm(t *testing.T, name string, perm os.FileMode) {
 func dumpACLs(t *testing.T, name string, doDir bool) {
 	t.Helper()
 
-	cmd := exec.Command("icacls.exe", name)
+	cmd := exec.Command("icacls.exe", "/q", name)
 	out, err := cmd.CombinedOutput()
 	if err != nil {
 		t.Logf("Error running icacls: %v\n", err)
 	}
-	t.Log(string(out))
+	s := "\n" + string(out)
+	t.Log(s)
+
+	params := fmt.Sprintf("Get-Acl '%s'", name)
+	cmd := exec.Command("pwsh.exe", "-Command", params)
+	out, err := cmd.CombinedOutput()
+	if err != nil {
+		t.Logf("Error running pwsh: %v\n", err)
+	}
+	s = "\n" + string(out)
+	t.Log(s)
 
 	if doDir {
 		dir, _ := filepath.Split(name)
