@@ -162,7 +162,7 @@ jobs:
         #  CGO_ENABLED: ${{ contains(matrix.os, 'windows') && '0' || '1' }}
 
       - run: go tool goreleaser release --clean --snapshot
-        if: startsWith(matrix.os, inputs.runner) || inputs.runner == 'all'
+        if: runner.os == 'Linux' && ( startsWith(matrix.os, inputs.runner) || inputs.runner == 'all' )
 
       - name: Upload dist
         if: startsWith(matrix.os, inputs.runner) || inputs.runner == 'all'
