@@ -224,7 +224,7 @@ func dumpACLs(t *testing.T, name string, doDir bool) {
 	s := "\n" + string(out)
 	t.Log(s)
 
-	params := fmt.Sprintf("Get-Acl '%s' | Format-List", name)
+	params := fmt.Sprintf("Get-Acl '%s' | Format-List Owner,Access", name)
 	cmd = exec.Command("pwsh.exe", "-Command", params)
 	out, err = cmd.CombinedOutput()
 	if err != nil {
