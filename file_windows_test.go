@@ -208,46 +208,47 @@ func checkPerm(t *testing.T, name string, perm os.FileMode) {
 	}
 
 	if got != perm {
-		dumpACLs(t, name, true)
+		logACLs(t, name, true)
 		t.Fatalf("got %04o, want %04o", got, perm)
 	}
 }
 
-func dumpACLs(t *testing.T, name string, doDir bool) {
+func logACLs(t *testing.T, name string, doDir bool) {
 	t.Helper()
 
-	exe, err := exec.LookPath("icacls.exe")
-	if err != nil {
-		t.Logf("Command not found: %v", err)
-	} else {
-		cmd := exec.Command(exe, name, "/q")
-		out, err := cmd.CombinedOutput()
-		if err != nil {
-			t.Logf("Error running icacls: %v", err)
-		}
-		s := "\n" + string(out)
-		t.Log(s)
-	}
+	args := []string{name, "/q"}
+	_ = logOutput(t, "icacls.exe", args)
 
-	exe, err = exec.LookPath("pwsh.exe")
+	command := fmt.Sprintf("Get-Acl '%s' | Format-List", name)
+	args = []string{"-Command", command}
+	err := logOutput(t, "pwsh.exe", args)
 	if err != nil {
-		exe, err = exec.LookPath("powershell.exe")
-	}
-	if err != nil {
-		t.Logf("Command not found: %v", err)
-	} else {
-		params := fmt.Sprintf("Get-Acl '%s' | Format-List", name)
-		cmd = exec.Command(exe, "-Command", params)
-		out, err = cmd.CombinedOutput()
-		if err != nil {
-			t.Logf("Error running pwsh: %v", err)
-		}
-		s = "\n" + string(out)
-		t.Log(s)
+		_ = logOutput(t, "powershell.exe", args)
 	}
 
 	if doDir {
 		dir, _ := filepath.Split(name)
-		dumpACLs(t, dir, false)
+		logACLs(t, dir, false)
 	}
+}
+
+func logOutput(t *testing.T, exe string, args []string) error {
+	t.Helper()
+
+	exe, err := exec.LookPath(exe)
+	if err != nil {
+		t.Logf("Command not found: %v", err)
+
+		return err
+	}
+
+	cmd := exec.Command(exe, args...)
+	out, err := cmd.CombinedOutput()
+	if err != nil {
+		t.Logf("Error running %v: %v", exe, err)
+	}
+	s := "\n" + string(out)
+	t.Log(s)
+
+	return nil
 }
