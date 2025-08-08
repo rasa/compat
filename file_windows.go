@@ -19,8 +19,6 @@ import (
 	"golang.org/x/sys/windows"
 )
 
-const supportsCreateWithStickyBit = false
-
 type tokenPrimaryGroup struct {
 	PrimaryGroup *windows.SID
 }
@@ -237,22 +235,6 @@ func sdFromSi(si securityInfo) (*windows.SECURITY_DESCRIPTOR, error) {
 	return sd, nil
 }
 
-// saFromSi converts a si (securityInfo) to an *sa (*syscall.SecurityAttributes)
-// @TODO return a *windows.SecurityAttributes
-func saFromSi(si securityInfo) (*syscall.SecurityAttributes, error) {
-	sd, err := sdFromSi(si)
-	if err != nil {
-		return nil, err
-	}
-
-	var sa syscall.SecurityAttributes
-	sa.Length = uint32(unsafe.Sizeof(sa))
-	sa.SecurityDescriptor = uintptr(unsafe.Pointer(sd))
-	sa.InheritHandle = 0
-
-	return &sa, nil
-}
-
 func currentUsername() string {
 	usr, err := user.Current()
 	if err != nil {
@@ -288,6 +270,8 @@ func setExplicitAccess(ea *windows.EXPLICIT_ACCESS, sid *windows.SID, mask uint3
 	ea.Trustee.TrusteeType = tt
 	ea.Trustee.TrusteeValue = windows.TrusteeValueFromSID(sid)
 }
+
+// const supportsCreateWithStickyBit = false
 
 // The following code is:
 // Copyright 2014 The Go Authors. All rights reserved.
@@ -598,17 +582,12 @@ func lastIndexByteString(s string, c byte) int {
 func _mkdir(name string, sa *syscall.SecurityAttributes) error {
 	longName := fixLongPath(name)
 	e := ignoringEINTR(func() error {
+		// <compat change>
+		// return syscall.Mkdir(longName, syscallMode(perm))
 		name, err := syscall.UTF16PtrFromString(longName)
 		if err != nil {
 			return err
 		}
-		// <compat change>
-		// return syscall.Mkdir(longName, syscallMode(perm))
-		// sa, err := saFromSi(si)
-		// if err != nil {
-		// 	return err
-		// }
-
 		err = syscall.CreateDirectory(name, sa)
 		if err != nil {
 			_ = os.Remove(longName)
@@ -625,6 +604,7 @@ func _mkdir(name string, sa *syscall.SecurityAttributes) error {
 	}
 
 	// mkdir(2) itself won't handle the sticky bit on *BSD and Solaris
+	// <compat change>
 	// if !supportsCreateWithStickyBit && si.perm&os.ModeSticky != 0 {
 	// 	e = setStickyBit(name)
 
@@ -633,6 +613,7 @@ func _mkdir(name string, sa *syscall.SecurityAttributes) error {
 	// 		return e
 	// 	}
 	// }
+	// </compat change>
 
 	return nil
 }
