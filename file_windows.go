@@ -19,6 +19,10 @@ import (
 	"golang.org/x/sys/windows"
 )
 
+type tokenPrimaryGroup struct {
+	PrimaryGroup *windows.SID
+}
+
 type securityInfo struct {
 	ownerSid *windows.SID
 	groupSid *windows.SID
@@ -39,7 +43,7 @@ func chmod(name string, perm os.FileMode) error {
 
 func create(name string, perm os.FileMode, flag int) (*os.File, error) {
 	flag |= O_CREATE
-	sa, err := securityAttributes(perm, true)
+	sa, err := saFromPerm(perm, true)
 	if err != nil {
 		return nil, err
 	}
@@ -48,7 +52,7 @@ func create(name string, perm os.FileMode, flag int) (*os.File, error) {
 }
 
 func createTemp(dir, pattern string, flag int) (*os.File, error) {
-	sa, err := securityAttributes(CreateTempPerm, true)
+	sa, err := saFromPerm(CreateTempPerm, true) // 0o600
 	if err != nil {
 		return nil, err
 	}
@@ -57,36 +61,34 @@ func createTemp(dir, pattern string, flag int) (*os.File, error) {
 }
 
 func mkdir(name string, perm os.FileMode) error {
-	si, err := _securityInfo(perm)
+	sa, err := saFromPerm(perm, true)
 	if err != nil {
 		return err
 	}
 
-	return _mkdir(name, si)
+	return _mkdir(name, sa)
 }
 
 func mkdirAll(name string, perm os.FileMode) error {
-	si, err := _securityInfo(perm)
+	sa, err := saFromPerm(perm, true)
 	if err != nil {
 		return err
 	}
 
-	return _mkdirAll(name, si)
+	return _mkdirAll(name, sa)
 }
 
 func mkdirTemp(dir, pattern string) (string, error) {
-	perm := MkdirTempPerm
-
-	si, err := _securityInfo(perm)
+	sa, err := saFromPerm(MkdirTempPerm, true) // 0o700
 	if err != nil {
 		return "", err
 	}
 
-	return _mkdirTemp(dir, pattern, si)
+	return _mkdirTemp(dir, pattern, sa)
 }
 
 func openFile(name string, flag int, perm os.FileMode) (*os.File, error) {
-	sa, err := securityAttributes(perm, flag|O_CREATE == O_CREATE)
+	sa, err := saFromPerm(perm, flag|O_CREATE == O_CREATE)
 	if err != nil {
 		return nil, err
 	}
@@ -110,7 +112,9 @@ func writeFile(name string, data []byte, perm os.FileMode, flag int) error {
 	return f.Close()
 }
 
-func securityAttributes(perm os.FileMode, create bool) (*syscall.SecurityAttributes, error) {
+// saFromPerm converts a perm (FileMode) to an *sa (*syscall.SecurityAttributes).
+// @TODO return a *windows.SecurityAttributes.
+func saFromPerm(perm os.FileMode, create bool) (*syscall.SecurityAttributes, error) {
 	var sa syscall.SecurityAttributes
 	sa.Length = uint32(unsafe.Sizeof(sa))
 
@@ -119,61 +123,56 @@ func securityAttributes(perm os.FileMode, create bool) (*syscall.SecurityAttribu
 	}
 
 	perm &^= os.FileMode(GetUmask()) //nolint:gosec // quiet linter
-	sd, _, err := securityDescriptor(perm)
+	sd, err := sdFromPerm(perm)
 	if err != nil {
 		return nil, err
 	}
 
-	// Convert security descriptor to SECURITY_ATTRIBUTES
-	sa = syscall.SecurityAttributes{
-		Length:             uint32(unsafe.Sizeof(syscall.SecurityAttributes{})),
-		SecurityDescriptor: uintptr(unsafe.Pointer(sd)), // Directly pass the security descriptor pointer
-		InheritHandle:      1,                           // No handle inheritance
-	}
+	sa.SecurityDescriptor = uintptr(unsafe.Pointer(sd))
+	sa.InheritHandle = 0
+
 	return &sa, nil
 }
 
-func _securityInfo(perm os.FileMode) (*securityInfo, error) {
+// siFromPerm converts a perm (FileMode) to an *si (*securityInfo).
+func siFromPerm(perm os.FileMode) (*securityInfo, error) {
 	perm &^= os.FileMode(GetUmask()) //nolint:gosec // quiet linter
-	_, si, err := securityDescriptor(perm)
 
-	return si, err
-}
-
-func securityDescriptor(perm os.FileMode) (*windows.SECURITY_DESCRIPTOR, *securityInfo, error) {
 	// Get current user's SID
-	usr, err := user.Current()
-	if err != nil {
-		return nil, nil, fmt.Errorf("cannot get current user: %w", err)
-	}
-	ownerSid, _, _, err := windows.LookupSID("", usr.Username)
-	if err != nil {
-		return nil, nil, fmt.Errorf("cannot lookup SID for %s: %w", usr.Username, err)
-	}
-
 	token := windows.Token(0)
-	err = windows.OpenProcessToken(windows.CurrentProcess(), windows.TOKEN_QUERY, &token)
+	err := windows.OpenProcessToken(windows.CurrentProcess(), windows.TOKEN_QUERY, &token)
 	if err != nil {
-		return nil, nil, fmt.Errorf("failed to get process token for %s: %w", usr.Username, err)
+		return nil, fmt.Errorf("failed to get process token for %s: %w", currentUsername(), err)
 	}
 	defer token.Close()
 
 	var size uint32
 	// First call to get required buffer size
-	_ = windows.GetTokenInformation(token, windows.TokenPrimaryGroup, nil, 0, &size)
+	_ = windows.GetTokenInformation(token, windows.TokenOwner, nil, 0, &size)
 
 	buf := make([]byte, size)
-	err = windows.GetTokenInformation(token, windows.TokenPrimaryGroup, &buf[0], size, &size)
+	err = windows.GetTokenInformation(token, windows.TokenOwner, &buf[0], size, &size)
 	if err != nil {
-		return nil, nil, fmt.Errorf("failed to get token information for %s: %w", usr.Username, err)
+		return nil, fmt.Errorf("failed to get user token information for %s: %w", currentUsername(), err)
 	}
 
-	group := (*tokenPrimaryGroup)(unsafe.Pointer(&buf[0]))
-	groupSid := group.PrimaryGroup
+	tu := (*windows.Tokenuser)(unsafe.Pointer(&buf[0]))
+	ownerSid := tu.User.Sid
+
+	_ = windows.GetTokenInformation(token, windows.TokenPrimaryGroup, nil, 0, &size)
+
+	buf = make([]byte, size)
+	err = windows.GetTokenInformation(token, windows.TokenPrimaryGroup, &buf[0], size, &size)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get group token information for %s: %w", currentUsername(), err)
+	}
+
+	tg := (*tokenPrimaryGroup)(unsafe.Pointer(&buf[0]))
+	groupSid := tg.PrimaryGroup
 
 	worldSid, err := windows.CreateWellKnownSid(windows.WinWorldSid)
 	if err != nil {
-		return nil, nil, fmt.Errorf("failed to create world SID: %w", err)
+		return nil, fmt.Errorf("failed to create world SID: %w", err)
 	}
 
 	var ea [3]windows.EXPLICIT_ACCESS
@@ -191,32 +190,58 @@ func securityDescriptor(perm os.FileMode) (*windows.SECURITY_DESCRIPTOR, *securi
 
 	acl, err := windows.ACLFromEntries(ea[:], nil)
 	if err != nil {
-		return nil, nil, fmt.Errorf("failed to create ACLs: %w", err)
-	}
-
-	sd, err := windows.NewSecurityDescriptor()
-	if err != nil {
-		return nil, nil, fmt.Errorf("failed to create security descriptor: %w", err)
-	}
-
-	err = sd.SetDACL(acl, true, false)
-	if err != nil {
-		return nil, nil, fmt.Errorf("failed to set ACL in security descriptor: %w", err)
-	}
-
-	err = sd.SetOwner(ownerSid, false)
-	if err != nil {
-		return nil, nil, fmt.Errorf("failed to set ACL owner in security descriptor: %w", err)
-	}
-
-	err = sd.SetGroup(groupSid, false)
-	if err != nil {
-		return nil, nil, fmt.Errorf("failed to set ACL group in security descriptor: %w", err)
+		return nil, fmt.Errorf("failed to create ACLs: %w", err)
 	}
 
 	si := securityInfo{ownerSid, groupSid, acl, perm}
 
-	return sd, &si, nil
+	return &si, nil
+}
+
+// sdFromPerm converts a perm (FileMode) to an *sd (*windows.SECURITY_DESCRIPTOR).
+func sdFromPerm(perm os.FileMode) (*windows.SECURITY_DESCRIPTOR, error) {
+	si, err := siFromPerm(perm)
+	if err != nil {
+		return nil, err
+	}
+
+	sd, err := sdFromSi(*si)
+	if err != nil {
+		return nil, err
+	}
+
+	return sd, err
+}
+
+// sdFromSi converts a si (securityInfo) to an *sd (*windows.SECURITY_DESCRIPTOR).
+func sdFromSi(si securityInfo) (*windows.SECURITY_DESCRIPTOR, error) {
+	sd, err := windows.NewSecurityDescriptor()
+	if err != nil {
+		return nil, fmt.Errorf("failed to create security descriptor: %w", err)
+	}
+	err = sd.SetOwner(si.ownerSid, false)
+	if err != nil {
+		return nil, fmt.Errorf("failed to set ACL owner in security descriptor: %w", err)
+	}
+	err = sd.SetGroup(si.groupSid, false)
+	if err != nil {
+		return nil, fmt.Errorf("failed to set ACL group in security descriptor: %w", err)
+	}
+	err = sd.SetDACL(si.acl, true, false)
+	if err != nil {
+		return nil, fmt.Errorf("failed to set ACL in security descriptor: %w", err)
+	}
+
+	return sd, nil
+}
+
+func currentUsername() string {
+	usr, err := user.Current()
+	if err != nil {
+		return "n/a"
+	}
+
+	return usr.Username
 }
 
 func accessMask(mode os.FileMode, shift int) uint32 {
@@ -233,6 +258,7 @@ func accessMask(mode os.FileMode, shift int) uint32 {
 	if perm&(0o1<<shift) == (0o1 << shift) { //nolint:mnd // quiet linter
 		mask |= windows.GENERIC_EXECUTE
 	}
+
 	return mask
 }
 
@@ -245,25 +271,7 @@ func setExplicitAccess(ea *windows.EXPLICIT_ACCESS, sid *windows.SID, mask uint3
 	ea.Trustee.TrusteeValue = windows.TrusteeValueFromSID(sid)
 }
 
-func setNamedSecurityInfo(name string, si *securityInfo) error {
-	return windows.SetNamedSecurityInfo(
-		name,
-		windows.SE_FILE_OBJECT,
-		windows.OWNER_SECURITY_INFORMATION|
-			windows.GROUP_SECURITY_INFORMATION|
-			windows.DACL_SECURITY_INFORMATION,
-		si.ownerSid,
-		si.groupSid,
-		si.acl,
-		nil,
-	)
-}
-
-type tokenPrimaryGroup struct {
-	PrimaryGroup *windows.SID
-}
-
-const supportsCreateWithStickyBit = true
+// const supportsCreateWithStickyBit = false
 
 // The following code is:
 // Copyright 2014 The Go Authors. All rights reserved.
@@ -489,7 +497,7 @@ func prefixAndSuffix(pattern string) (prefix, suffix string, err error) {
 // If dir is the empty string, MkdirTemp uses the default directory for temporary files, as returned by TempDir.
 // Multiple programs or goroutines calling MkdirTemp simultaneously will not choose the same directory.
 // It is the caller's responsibility to remove the directory when it is no longer needed.
-func _mkdirTemp(dir, pattern string, si *securityInfo) (string, error) {
+func _mkdirTemp(dir, pattern string, sa *syscall.SecurityAttributes) (string, error) {
 	if dir == "" {
 		dir = os.TempDir()
 	}
@@ -503,7 +511,7 @@ func _mkdirTemp(dir, pattern string, si *securityInfo) (string, error) {
 	try := 0
 	for {
 		name := prefix + nextRandom() + suffix
-		err := _mkdir(name, si)
+		err := _mkdir(name, sa)
 		if err == nil {
 			return name, nil
 		}
@@ -571,19 +579,16 @@ func lastIndexByteString(s string, c byte) int {
 // Mkdir creates a new directory with the specified name and permission
 // bits (before umask).
 // If there is an error, it will be of type [*PathError].
-func _mkdir(name string, si *securityInfo) error {
+func _mkdir(name string, sa *syscall.SecurityAttributes) error {
 	longName := fixLongPath(name)
 	e := ignoringEINTR(func() error {
+		// <compat change>
+		// return syscall.Mkdir(longName, syscallMode(perm))
 		name, err := syscall.UTF16PtrFromString(longName)
 		if err != nil {
 			return err
 		}
-		// return syscall.Mkdir(longName, syscallMode(perm))
-		err = windows.CreateDirectory(name, nil)
-		if err != nil {
-			return err
-		}
-		err = setNamedSecurityInfo(longName, si)
+		err = syscall.CreateDirectory(name, sa)
 		if err != nil {
 			_ = os.Remove(longName)
 
@@ -591,6 +596,7 @@ func _mkdir(name string, si *securityInfo) error {
 		}
 
 		return nil
+		// </compat change>
 	})
 
 	if e != nil {
@@ -598,14 +604,16 @@ func _mkdir(name string, si *securityInfo) error {
 	}
 
 	// mkdir(2) itself won't handle the sticky bit on *BSD and Solaris
-	if !supportsCreateWithStickyBit && si.perm&os.ModeSticky != 0 {
-		e = setStickyBit(name)
+	// <compat change>
+	// if !supportsCreateWithStickyBit && si.perm&os.ModeSticky != 0 {
+	// 	e = setStickyBit(name)
 
-		if e != nil {
-			os.Remove(name)
-			return e
-		}
-	}
+	// 	if e != nil {
+	// 		os.Remove(name)
+	// 		return e
+	// 	}
+	// }
+	// </compat change>
 
 	return nil
 }
@@ -635,13 +643,13 @@ func ignoringEINTR(fn func() error) error {
 ///////////////////////////////////////////////////////////////////////////////
 
 // setStickyBit adds ModeSticky to the permission bits of path, non atomic.
-func setStickyBit(name string) error {
-	fi, err := os.Stat(name)
-	if err != nil {
-		return err
-	}
-	return os.Chmod(name, fi.Mode()|os.ModeSticky)
-}
+// func setStickyBit(name string) error {
+// 	fi, err := os.Stat(name)
+// 	if err != nil {
+// 		return err
+// 	}
+// 	return os.Chmod(name, fi.Mode()|os.ModeSticky)
+// }
 
 ///////////////////////////////////////////////////////////////////////////////
 // Copied from https://github.com/golang/go/blob/e282cbb1/src/os/path.go#L12C1-L66C2
@@ -654,7 +662,7 @@ func setStickyBit(name string) error {
 // directories that MkdirAll creates.
 // If path is already a directory, MkdirAll does nothing
 // and returns nil.
-func _mkdirAll(path string, si *securityInfo) error {
+func _mkdirAll(path string, sa *syscall.SecurityAttributes) error {
 	// Fast path: if we can tell whether path is a directory or file, stop with success or error.
 	dir, err := os.Stat(path)
 	if err == nil {
@@ -683,14 +691,14 @@ func _mkdirAll(path string, si *securityInfo) error {
 	// If there is a parent directory, and it is not the volume name,
 	// recurse to ensure parent directory exists.
 	if parent := path[:i]; len(parent) > len(filepath.VolumeName(path)) {
-		err = _mkdirAll(parent, si)
+		err = _mkdirAll(parent, sa)
 		if err != nil {
 			return err
 		}
 	}
 
 	// Parent now exists; invoke Mkdir and use its result.
-	err = _mkdir(path, si)
+	err = _mkdir(path, sa)
 	if err != nil {
 		// Handle arguments like "foo/." by
 		// double-checking that directory doesn't exist.

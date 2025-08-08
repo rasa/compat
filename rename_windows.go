@@ -15,23 +15,23 @@ import (
 	"golang.org/x/sys/windows"
 )
 
-func rename(source, destination string) error {
-	sourcep := fixLongPath(source)
+func rename(src, dst string) error {
+	longsrc := fixLongPath(src)
 
-	src, err := syscall.UTF16PtrFromString(sourcep)
+	src16, err := syscall.UTF16PtrFromString(longsrc)
 	if err != nil {
-		return &os.LinkError{Op: "rename", Old: source, New: destination, Err: err}
+		return &os.LinkError{Op: "rename", Old: src, New: dst, Err: err}
 	}
-	destinationp := fixLongPath(destination)
-	dest, err := syscall.UTF16PtrFromString(destinationp)
+	longdst := fixLongPath(dst)
+	dst16, err := syscall.UTF16PtrFromString(longdst)
 	if err != nil {
-		return &os.LinkError{Op: "rename", Old: source, New: destination, Err: err}
+		return &os.LinkError{Op: "rename", Old: src, New: dst, Err: err}
 	}
 
 	var attrs uint32 = windows.MOVEFILE_REPLACE_EXISTING | windows.MOVEFILE_WRITE_THROUGH
 	// see http://msdn.microsoft.com/en-us/library/windows/desktop/aa365240(v=vs.85).aspx
-	if err := windows.MoveFileEx(src, dest, attrs); err != nil {
-		return &os.LinkError{Op: "rename", Old: source, New: destination, Err: err}
+	if err := windows.MoveFileEx(src16, dst16, attrs); err != nil {
+		return &os.LinkError{Op: "rename", Old: src, New: dst, Err: err}
 	}
 
 	return nil

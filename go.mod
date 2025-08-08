@@ -7,6 +7,7 @@ tool (
 	github.com/golangci/golangci-lint/cmd/golangci-lint
 	github.com/goreleaser/goreleaser/v2
 	golang.org/x/vuln/cmd/govulncheck
+	mvdan.cc/gofumpt
 )
 
 require (

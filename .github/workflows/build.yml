@@ -55,7 +55,13 @@ on:
           - macos-14-large # amd64
           - macos-13 # amd64
           - macos-13-xlarge # arm64
-          - "all"
+          - ubuntu
+          - windows
+          - macos-15
+          - macos-14
+          - macos-13
+          - macos
+          - all
         default: "ubuntu-24.04"
 
 permissions:
@@ -88,10 +94,10 @@ jobs:
         shell: bash
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
-        if: contains(fromJSON(format('["{0}","all"]', matrix.os)), inputs.runner)
+        if: startsWith(matrix.os, inputs.runner) || inputs.runner == 'all'
 
       - uses: actions/setup-go@0aaccfd150d50ccaeb58ebd88d36e91967a5f35b # v5.4.0
-        if: contains(fromJSON(format('["{0}","all"]', matrix.os)), inputs.runner)
+        if: startsWith(matrix.os, inputs.runner) || inputs.runner == 'all'
         # if: runner.os != 'Windows'
         with:
           go-version: '1.24'
@@ -109,7 +115,7 @@ jobs:
       #     cache: false
 
       - name: Set Go cache variables
-        if: contains(fromJSON(format('["{0}","all"]', matrix.os)), inputs.runner)
+        if: startsWith(matrix.os, inputs.runner) || inputs.runner == 'all'
         run: |
           # printf '::notice ::%s\n' "$(go version)"
           # printf 'GOVERSION=%s\n'  "$(go version | sed 's#^.*go##;s# .*##')" >>"${GITHUB_ENV}"
@@ -118,7 +124,7 @@ jobs:
           # go env
 
       - name: Cache Go's build and mod caches
-        if: contains(fromJSON(format('["{0}","all"]', matrix.os)), inputs.runner)
+        if: startsWith(matrix.os, inputs.runner) || inputs.runner == 'all'
         uses: actions/cache@v4
         with:
           path: |
@@ -129,16 +135,16 @@ jobs:
             ${{ runner.os }}-go-
 
       - name: Build
-        if: contains(fromJSON(format('["{0}","all"]', matrix.os)), inputs.runner)
+        if: startsWith(matrix.os, inputs.runner) || inputs.runner == 'all'
         run: |
           printf 'inputs.verbose_testing="%s"\n' "${{ inputs.verbose_testing }}"
-          TEST_OPTS=()
+          TEST_OPTS_ARRAY=()
           if [[ "${{ inputs.verbose_testing }}" == "true" ]]; then
-            TEST_OPTS+=(-v)
+            TEST_OPTS_ARRAY+=(-v)
           fi
-          export TEST_OPTS="${TEST_OPTS[*]}"
+          export TEST_OPTS="${TEST_OPTS_ARRAY[*]}"
           printf 'TEST_OPTS="%s"\n' "${TEST_OPTS}"
-          make ci # && exit 0
+          make ci TEST_OPTS="$TEST_OPTS" # && exit 0
           # @TODO(rasa) remove this hack
           # test "${{ matrix.os }}" == "windows-2025" || exit 1
           # echo '::error::tests failed on windows-2025'
@@ -147,7 +153,7 @@ jobs:
           COMPAT_DEBUG: 1
 
       - name: Upload coverage
-        if: contains(fromJSON(format('["{0}","all"]', matrix.os)), inputs.runner)
+        if: startsWith(matrix.os, inputs.runner) || inputs.runner == 'all'
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: coverage-${{ matrix.os }}
@@ -156,17 +162,17 @@ jobs:
         #  CGO_ENABLED: ${{ contains(matrix.os, 'windows') && '0' || '1' }}
 
       - run: go tool goreleaser release --clean --snapshot
-        if: contains(fromJSON(format('["{0}","all"]', matrix.os)), inputs.runner) && runner.os == 'Linux'
+        if: runner.os == 'Linux' && ( startsWith(matrix.os, inputs.runner) || inputs.runner == 'all' )
 
       - name: Upload dist
-        if: contains(fromJSON(format('["{0}","all"]', matrix.os)), inputs.runner)
+        if: startsWith(matrix.os, inputs.runner) || inputs.runner == 'all'
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: dist-${{ matrix.os }}
           path: dist
 
       - name: Upload coverage to Codecov
-        if: contains(fromJSON(format('["{0}","all"]', matrix.os)), inputs.runner)
+        if: startsWith(matrix.os, inputs.runner) || inputs.runner == 'all'
         uses: codecov/codecov-action@18283e04ce6e62d37312384ff67231eb8fd56d24 # v5.4.3
         with:
           fail_ci_if_error: false
