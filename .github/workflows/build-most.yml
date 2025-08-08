@@ -8,16 +8,16 @@ permissions:
   contents: read
 
 jobs:
-  build-top3:
+  build-top6:
     uses: ./.github/workflows/build.yml
     with:
-      runner: top3
+      runner: top6
     secrets: inherit
   build-only-nocgo:
     uses: ./.github/workflows/build-only-nocgo.yml
     with:
       goarches: all
-    needs: build-top3
+    needs: build-top6
     if: success()
     secrets: inherit
   build-only-android:
