@@ -52,7 +52,7 @@ func create(name string, perm os.FileMode, flag int) (*os.File, error) {
 }
 
 func createTemp(dir, pattern string, flag int) (*os.File, error) {
-	sa, err := saFromPerm(CreateTempPerm, true)
+	sa, err := saFromPerm(CreateTempPerm, true) // 0o600
 	if err != nil {
 		return nil, err
 	}
@@ -79,7 +79,7 @@ func mkdirAll(name string, perm os.FileMode) error {
 }
 
 func mkdirTemp(dir, pattern string) (string, error) {
-	sa, err := saFromPerm(MkdirTempPerm, true)
+	sa, err := saFromPerm(MkdirTempPerm, true) // 0o700
 	if err != nil {
 		return "", err
 	}
@@ -112,8 +112,8 @@ func writeFile(name string, data []byte, perm os.FileMode, flag int) error {
 	return f.Close()
 }
 
-// saFromPerm converts a perm (FileMode) to an *sa (*syscall.SecurityAttributes)
-// @TODO return a *windows.SecurityAttributes
+// saFromPerm converts a perm (FileMode) to an *sa (*syscall.SecurityAttributes).
+// @TODO return a *windows.SecurityAttributes.
 func saFromPerm(perm os.FileMode, create bool) (*syscall.SecurityAttributes, error) {
 	var sa syscall.SecurityAttributes
 	sa.Length = uint32(unsafe.Sizeof(sa))
@@ -134,7 +134,7 @@ func saFromPerm(perm os.FileMode, create bool) (*syscall.SecurityAttributes, err
 	return &sa, nil
 }
 
-// siFromPerm converts a perm (FileMode) to an *si (*securityInfo)
+// siFromPerm converts a perm (FileMode) to an *si (*securityInfo).
 func siFromPerm(perm os.FileMode) (*securityInfo, error) {
 	perm &^= os.FileMode(GetUmask()) //nolint:gosec // quiet linter
 
@@ -198,7 +198,7 @@ func siFromPerm(perm os.FileMode) (*securityInfo, error) {
 	return &si, nil
 }
 
-// sdFromPerm converts a perm (FileMode) to an *sd (*windows.SECURITY_DESCRIPTOR)
+// sdFromPerm converts a perm (FileMode) to an *sd (*windows.SECURITY_DESCRIPTOR).
 func sdFromPerm(perm os.FileMode) (*windows.SECURITY_DESCRIPTOR, error) {
 	si, err := siFromPerm(perm)
 	if err != nil {
@@ -213,7 +213,7 @@ func sdFromPerm(perm os.FileMode) (*windows.SECURITY_DESCRIPTOR, error) {
 	return sd, err
 }
 
-// sdFromSi converts a si (securityInfo) to an *sd (*windows.SECURITY_DESCRIPTOR)
+// sdFromSi converts a si (securityInfo) to an *sd (*windows.SECURITY_DESCRIPTOR).
 func sdFromSi(si securityInfo) (*windows.SECURITY_DESCRIPTOR, error) {
 	sd, err := windows.NewSecurityDescriptor()
 	if err != nil {

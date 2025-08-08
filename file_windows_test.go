@@ -40,7 +40,7 @@ func TestFileWindowsChmod(t *testing.T) {
 	for _, perm := range perms {
 		err = compat.Chmod(name, perm)
 		if err != nil {
-			t.Fatalf("Chmod(%04o): %v", perm, err)
+			t.Fatalf("Chmod(%04o) failed: %v", perm, err)
 		}
 
 		checkPerm(t, name, perm)
@@ -204,7 +204,7 @@ func checkPerm(t *testing.T, name string, perm os.FileMode) {
 
 	got, err := compat.ExportStat(name) // acl.GetExplicitFileAccessMode(name)
 	if err != nil {
-		t.Fatalf("GetExplicitFileAccessMode(%v) returned %v", name, err)
+		t.Fatalf("Stat(%v) failed: %v", name, err)
 	}
 
 	if got != perm {
@@ -219,16 +219,15 @@ func dumpACLs(t *testing.T, name string, doDir bool) {
 	exe, err := exec.LookPath("icacls.exe")
 	if err != nil {
 		t.Logf("Command not found: %v", err)
-		return
+	} else {
+		cmd := exec.Command(exe, name, "/q")
+		out, err := cmd.CombinedOutput()
+		if err != nil {
+			t.Logf("Error running icacls: %v", err)
+		}
+		s := "\n" + string(out)
+		t.Log(s)
 	}
-
-	cmd := exec.Command(exe, name, "/q")
-	out, err := cmd.CombinedOutput()
-	if err != nil {
-		t.Logf("Error running icacls: %v", err)
-	}
-	s := "\n" + string(out)
-	t.Log(s)
 
 	exe, err = exec.LookPath("pwsh.exe")
 	if err != nil {
@@ -236,16 +235,16 @@ func dumpACLs(t *testing.T, name string, doDir bool) {
 	}
 	if err != nil {
 		t.Logf("Command not found: %v", err)
+	} else {
+		params := fmt.Sprintf("Get-Acl '%s' | Format-List", name)
+		cmd = exec.Command(exe, "-Command", params)
+		out, err = cmd.CombinedOutput()
+		if err != nil {
+			t.Logf("Error running pwsh: %v", err)
+		}
+		s = "\n" + string(out)
+		t.Log(s)
 	}
-
-	params := fmt.Sprintf("Get-Acl '%s' | Format-List", name)
-	cmd = exec.Command(exe, "-Command", params)
-	out, err = cmd.CombinedOutput()
-	if err != nil {
-		t.Logf("Error running pwsh: %v", err)
-	}
-	s = "\n" + string(out)
-	t.Log(s)
 
 	if doDir {
 		dir, _ := filepath.Split(name)
