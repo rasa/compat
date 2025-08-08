@@ -21,6 +21,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Enhance and fix typos in comments.
 - Fix tests when running under `act`.
 - Fix intermittent test failures on Windows 2025.
+- Fix Stat() by re-adding `CTime()` support on wasip1 (using regular go).
+- Fix Stat() by removing `ATime()` and `CTime()` support on wasip1 (using tinygo).
 
 ### Changed
 
