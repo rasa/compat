@@ -55,14 +55,17 @@ on:
           - macos-14-large # amd64
           - macos-13 # amd64
           - macos-13-xlarge # arm64
+          # wildcards:
           - ubuntu
           - windows
           - macos-15
           - macos-14
           - macos-13
           - macos
-          - top3
-          - all
+          # groups:
+          - top3 # ubuntu-24.04, windows-2025 & macos-15
+          - top6 # ubuntu-24.04, windows-2025, windows-2022, windows-11-arm, macos-15 & macos-13
+          - all # all 13 runners
         default: "ubuntu-24.04"
 
 permissions:
@@ -101,6 +104,10 @@ jobs:
           (
             inputs.runner == 'top3' &&
             contains(fromJSON('["ubuntu-24.04","windows-2025", "macos-15"]'), matrix.os) 
+          ) ||
+          (
+            inputs.runner == 'top6' &&
+            contains(fromJSON('["ubuntu-24.04","windows-2025", "windows-2022", "windows-11-arm", "macos-15", "macos-13"]'), matrix.os) 
           ) &&
           !(
             contains(matrix.os, 'arm') &&
@@ -131,11 +138,11 @@ jobs:
       - name: Set Go cache variables
         if: env.SHOULD_RUN
         run: |
+          # Set GOCACHE and GOMODCACHE env vars
           # printf '::notice ::%s\n' "$(go version)"
           # printf 'GOVERSION=%s\n'  "$(go version | sed 's#^.*go##;s# .*##')" >>"${GITHUB_ENV}"
           printf 'GOCACHE=%s\n'    "$(go env GOCACHE | tr '\\' '/')" >>"${GITHUB_ENV}"
           printf 'GOMODCACHE=%s\n' "$(go env GOMODCACHE | tr '\\' '/')" >>"${GITHUB_ENV}"
-          # go env
 
       - name: Cache Go's build and mod caches
         if: env.SHOULD_RUN
@@ -148,21 +155,16 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-go-
 
-      - name: Build
+      - name: make ci
         if: env.SHOULD_RUN
         run: |
-          printf 'inputs.verbose_testing="%s"\n' "${{ inputs.verbose_testing }}"
+          # make ci
           TEST_OPTS_ARRAY=()
           if [[ "${{ inputs.verbose_testing }}" == "true" ]]; then
             TEST_OPTS_ARRAY+=(-v)
           fi
           export TEST_OPTS="${TEST_OPTS_ARRAY[*]}"
-          printf 'TEST_OPTS="%s"\n' "${TEST_OPTS}"
-          make ci TEST_OPTS="$TEST_OPTS" # && exit 0
-          # @TODO(rasa) remove this hack
-          # test "${{ matrix.os }}" == "windows-2025" || exit 1
-          # echo '::error::tests failed on windows-2025'
-          # exit 0
+          make ci TEST_OPTS="$TEST_OPTS"
         env:
           COMPAT_DEBUG: 1
 
