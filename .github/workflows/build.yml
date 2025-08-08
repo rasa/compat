@@ -94,7 +94,7 @@ jobs:
         shell: bash
     steps:
       - run: echo "SHOULD_RUN=yes" >> "${GITHUB_ENV}"
-        if: startsWith(matrix.os, inputs.runner) || inputs.runner == 'all' && !(contains(matrix.os, "arm") && github.repository_visibility == 'public')
+        if: startsWith(matrix.os, inputs.runner) || inputs.runner == 'all' && !(contains(matrix.os, 'arm') && github.repository_visibility == 'public')
 
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         if: env.SHOULD_RUN
