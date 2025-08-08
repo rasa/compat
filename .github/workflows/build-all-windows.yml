@@ -12,22 +12,9 @@ permissions:
   contents: read
 
 jobs:
-  build-windows-2022:
+  build--all-windows:
     uses: ./.github/workflows/build.yml
     with:
-      runner: windows-2022
+      runner: windows
     secrets: inherit
-  build-windows-2025:
-    uses: ./.github/workflows/build.yml
-    needs: build-windows-2022
-    if: success()
-    with:
-      runner: windows-2025
-    secrets: inherit
-  build-windows-11-arm:
-    uses: ./.github/workflows/build.yml
-    needs: build-windows-2025
-    if: success() && github.repository_visibility == 'public'
-    with:
-      runner: windows-11-arm
-    secrets: inherit
+  
