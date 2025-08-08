@@ -14,6 +14,6 @@ jobs:
     secrets: inherit
   test-solaris:
     uses: ./.github/workflows/test-solaris.yml
-    needs: test-illumos
-    if: success()
+    # needs: test-illumos
+    # if: success()
     secrets: inherit
