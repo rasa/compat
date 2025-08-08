@@ -61,6 +61,7 @@ on:
           - macos-14
           - macos-13
           - macos
+          - top3
           - all
         default: "ubuntu-24.04"
 
@@ -94,7 +95,16 @@ jobs:
         shell: bash
     steps:
       - run: echo "SHOULD_RUN=yes" >> "${GITHUB_ENV}"
-        if: startsWith(matrix.os, inputs.runner) || inputs.runner == 'all' && !(contains(matrix.os, 'arm') && github.repository_visibility == 'public')
+        if: >
+          startsWith(matrix.os, inputs.runner) ||
+          inputs.runner == 'all' || (
+            inputs.runner == 'top3' &&
+            contains(fromJSON('["ubuntu-24.04","windows-2025", "macos-15]'), matrix.os) 
+          ) &&
+          !(
+            contains(matrix.os, 'arm')
+            && github.repository_visibility == 'public'
+          )
 
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         if: env.SHOULD_RUN
