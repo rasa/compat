@@ -20,6 +20,8 @@ jobs:
 
     - uses: vmactions/freebsd-vm@v1
       with:
+        release: "15.0"
+        # arch: aarch64
         # envs: 'GITHUB_TOKEN'
         usesh: true
         prepare: |
