@@ -8,24 +8,16 @@ permissions:
   contents: read
 
 jobs:
-  build-ubuntu:
-    uses: ./.github/workflows/build-ubuntu.yml
-    secrets: inherit
-  build-all-windows:
-    uses: ./.github/workflows/build-all-windows.yml
-    if: success()
-    needs: build-ubuntu
-    secrets: inherit
-  build-only-macos:
-    uses: ./.github/workflows/build-only-macos.yml
-    if: success()
-    needs: build-all-windows
+  build-top3:
+    uses: ./.github/workflows/build.yml
+    with:
+      runner: top3
     secrets: inherit
   build-only-nocgo:
     uses: ./.github/workflows/build-only-nocgo.yml
     with:
       goarches: all
-    needs: build-only-macos
+    needs: build-top3
     if: success()
     secrets: inherit
   build-only-android:
