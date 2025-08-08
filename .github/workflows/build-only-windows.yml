@@ -1,4 +1,4 @@
-name: build-all-windows
+name: build-only-windows
 
 on:
   workflow_call: # Required so this workflow can be called from another workflow
@@ -12,9 +12,9 @@ permissions:
   contents: read
 
 jobs:
-  build--all-windows:
+  build-only-windows:
     uses: ./.github/workflows/build.yml
+    # name: build-only-windows
     with:
-      runner: windows
+      runner: windows-2025
     secrets: inherit
-  

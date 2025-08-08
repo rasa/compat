@@ -14,13 +14,13 @@ jobs:
   mega-linter:
     uses: ./.github/workflows/mega-linter.yml
     secrets: inherit
-  build-all:
-    uses: ./.github/workflows/build-all.yml
+  build-most:
+    uses: ./.github/workflows/build-most.yml
     if: success()
     needs: mega-linter
     secrets: inherit
   test-all:
     uses: ./.github/workflows/test-all.yml
     if: success()
-    needs: build-all
+    needs: build-most
     secrets: inherit

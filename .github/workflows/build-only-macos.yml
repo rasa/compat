@@ -1,4 +1,4 @@
-name: build-all-windows
+name: build-only-macos
 
 on:
   workflow_call: # Required so this workflow can be called from another workflow
@@ -12,9 +12,9 @@ permissions:
   contents: read
 
 jobs:
-  build--all-windows:
+  build-only-macos:
     uses: ./.github/workflows/build.yml
+    # name: build-only-macos
     with:
-      runner: windows
+      runner: macos-15
     secrets: inherit
-  

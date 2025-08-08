@@ -237,7 +237,9 @@ func logOutput(t *testing.T, exe string, args []string) error {
 
 	exe, err := exec.LookPath(exe)
 	if err != nil {
-		t.Logf("Command not found: %v", err)
+		if testing.Verbose() {
+			t.Logf("Command not found: %v", err)
+		}
 
 		return err
 	}

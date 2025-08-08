@@ -4,7 +4,7 @@ SHELL := /bin/bash
 
 .PHONY: all
 all: ## build pipeline
-all: mod gen build spell lint fix test
+all: download gen build spell lint fix test
 
 .PHONY: precommit
 precommit: ## validate the branch before commit
@@ -25,9 +25,13 @@ clean: ## remove files created during build pipeline
 	rm -f '"$(shell go env GOCACHE)/../golangci-lint"'
 	go clean -i -cache -testcache -modcache -fuzzcache -x
 
+.PHONY: download
+download: ## go mod download
+	go mod download -x
+
 .PHONY: mod
 mod: ## go mod tidy
-	go mod tidy
+	go mod tidy -x
 
 .PHONY: gen
 gen: ## go generate
@@ -68,8 +72,8 @@ endif
 
 # cgo: C compiler "gcc" not found: exec: "gcc": executable file not found in $PATH
 CC := $(shell go env CC)
-HAS_CC := $(shell command -v $(CC) >/dev/null || echo no)
-ifeq ($(HAS_CC),no)
+HAS_CC := $(shell command -v $(CC) >/dev/null)
+ifeq ($(HAS_CC),)
 RACE_OPT =
 endif
 
