@@ -20,12 +20,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix `CPUBits()` to return the value returned by `BuildBits()` if we can't determine the CPU's bits.
 - Enhance and fix typos in comments.
 - Fix tests when running under `act`.
+- Fix intermittent test failures on Windows 2025.
 
 ### Changed
 
 - Change `Stat()`'s `Mode()` to return `0o600` for files and `0o700` for directories, on wasip1.
-- Change `Stat()`'s `UID()` to return the value `os.Getuid()` returns, on wasip1.
-- Change `Stat()`'s `GID()` to return the value `os.Getgid()` returns, on wasip1.
+- Change `Stat()`'s `UID()` to return the value `os.Getuid()` returns (1), on wasip1.
+- Change `Stat()`'s `GID()` to return the value `os.Getgid()` returns (1), on wasip1.
 - Bump tinygo to 0.38.0.
 
 ## [0.4.2](https://github.com/rasa/compat/compare/v0.4.2)
