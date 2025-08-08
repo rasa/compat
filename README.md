@@ -83,7 +83,7 @@ PartID()  =64512
 FileID()  =56893266
 Links()   =1
 ATime()   =2025-05-08 22:11:01.354744521 -0700 PDT
-BTime()   =0001-01-01 00:00:00 +0000 UTC
+BTime()   =2025-05-08 22:11:01.353744514 -0700 PDT
 CTime()   =2025-05-08 22:11:01.353744514 -0700 PDT
 MTime()   =2025-05-08 22:11:01.353744514 -0700 PDT
 UID()     =1000
@@ -116,7 +116,7 @@ The table below lists the operating system support for each of the `FileInfo` fu
 | OpenBSD      | ✅     | ✅    | ✅   | ✖️    | ✅   | ✅   |
 | Plan9        | ✅     | ❌    | ✅   | ❌    | ❌   | ☑️   |
 | Solaris      | ✅     | ✅    | ✅   | ✖️    | ✅   | ✅   |
-| Wasip1/<br/>WASM | ✅ | ✅    | ✅   | ❌    | ❌   | ✅   |
+| Wasip1/<br/>WASM | ✅ | ✅    | ✅   | ❌    | ✅  | ✅   |
 | Windows      | ✅     | ✅    | ✅   | ✅    | ✅   | ✅†  |
 <!--           | PartID+ | Links | ATime | BTime | CTime | UID+ | -->
 
