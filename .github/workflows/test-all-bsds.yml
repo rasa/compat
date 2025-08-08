@@ -13,16 +13,16 @@ jobs:
     secrets: inherit
   test-freebsd:
     uses: ./.github/workflows/test-freebsd.yml
-    needs: test-dragonflybsd
+    # needs: test-dragonflybsd
     # if: success()
     secrets: inherit
   test-netbsd:
     uses: ./.github/workflows/test-netbsd.yml
-    needs: test-freebsd
+    # needs: test-freebsd
     # if: success()
     secrets: inherit
   test-openbsd:
     uses: ./.github/workflows/test-openbsd.yml
-    needs: test-netbsd
+    # needs: test-netbsd
     # if: success()
     secrets: inherit
