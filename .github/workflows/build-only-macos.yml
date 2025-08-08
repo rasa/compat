@@ -1,0 +1,20 @@
+name: build-only-macos
+
+on:
+  workflow_call: # Required so this workflow can be called from another workflow
+  workflow_dispatch: # Allows you to run this workflow manually from the Actions tab
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  build-only-macos:
+    uses: ./.github/workflows/build.yml
+    # name: build-only-macos
+    with:
+      runner: macos-15
+    secrets: inherit
