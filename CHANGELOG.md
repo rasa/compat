@@ -2,8 +2,8 @@
 
 All notable changes to this project will be documented in this file.
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
-and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+The format is based on [Keep a Changelog](https://keepachangelog.com/)
+and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased](https://github.com/rasa/compat/compare/v0.4.3...HEAD)
 
@@ -13,7 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-## [0.4.3](https://github.com/rasa/compat/compare/v0.4.3)
+## [0.4.3](https://github.com/rasa/compat/compare/v0.4.2...v0.4.3)
 
 ### Added
 
@@ -39,7 +39,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Change `Stat()`'s `GID()` to return the value `os.Getgid()` returns (1), on wasip1.
 - Bump tinygo to 0.38.0.
 
-## [0.4.2](https://github.com/rasa/compat/compare/v0.4.2)
+## [0.4.2](https://github.com/rasa/compat/compare/v0.4.1...v0.4.2)
 
 ### Added
 
@@ -64,7 +64,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Various code refactorings.
 - Improve code comments.
 
-## [0.4.1](https://github.com/rasa/compat/releases/tag/v0.4.1)
+## [0.4.1](https://github.com/rasa/compat/compare/v0.4.0...v0.4.1)
 
 ### Added
 
@@ -82,25 +82,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add `Umask()` and `GetUmask()` functions.
 - Add running tests on all BSD variants, Illumos, Solaris, and JS/Wasm.
 
-## [0.4.0](https://github.com/rasa/compat/releases/tag/v0.4.0)
+## [0.4.0](https://github.com/rasa/compat/compare/v0.3.0...v0.4.0)
 
 ### Changed
 
 - Rename Device* functions to Partition* to be more user friendly.
 
-## [0.3.0](https://github.com/rasa/compat/releases/tag/v0.3.0)
+## [0.3.0](https://github.com/rasa/compat/compare/v0.2.0...v0.3.0)
 
 ### Added
 
 - Add `IsAdmin()` and `IsWSL()` functions.
 
-## [0.2.0](https://github.com/rasa/compat/releases/tag/v0.2.0)
+## [0.2.0](https://github.com/rasa/compat/compare/v0.1.0...v0.2.0)
 
 ### Added
 
 - Add `Nice()` and `Renice()` functions.
 
-## [0.1.0](https://github.com/rasa/compat/releases/tag/v0.1.0)
+## [0.1.0](https://github.com/rasa/compat/compare/bcf970117c696f70992faaa061148a206a3c4b8e...v0.1.0)
 
 ### Added
 
