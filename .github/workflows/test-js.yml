@@ -25,7 +25,6 @@ jobs:
         node-version: 20
 
     - run: |
-        set +e
         # Run Go WASM test in Node.js
         printf '::notice ::%s\n' "$(go version)"
         cp "$(go env GOROOT)/lib/wasm/wasm_exec.js" .

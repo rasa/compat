@@ -11,19 +11,19 @@ jobs:
   test-tinygo:
     uses: ./.github/workflows/test-tinygo.yml
     secrets: inherit
-  test-all-bsds:
-    uses: ./.github/workflows/test-all-bsds.yml
+  test-all-wasms:
+    uses: ./.github/workflows/test-all-wasms.yml
     needs: test-tinygo
-    if: success()
+    # if: success()
     secrets: inherit
   test-all-solaria:
     uses: ./.github/workflows/test-all-solaria.yml
-    needs: test-all-bsds
-    if: success()
+    needs: test-all-wasms
+    # if: success()
     secrets: inherit
-  test-all-wasms:
-    uses: ./.github/workflows/test-all-wasms.yml
+  test-all-bsds:
+    uses: ./.github/workflows/test-all-bsds.yml
     needs: test-all-solaria
-    if: success()
+    # if: success()
     secrets: inherit
-
+  

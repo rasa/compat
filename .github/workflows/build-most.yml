@@ -1,0 +1,32 @@
+name: build-most
+
+on:
+  workflow_call:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-top6:
+    uses: ./.github/workflows/build.yml
+    with:
+      runner: top6
+    secrets: inherit
+  build-only-nocgo:
+    uses: ./.github/workflows/build-only-nocgo.yml
+    with:
+      goarches: all
+    needs: build-top6
+    if: success()
+    secrets: inherit
+  build-only-android:
+    uses: ./.github/workflows/build-only-android.yml
+    needs: build-only-nocgo
+    if: success()
+    secrets: inherit
+  build-only-ios:
+    uses: ./.github/workflows/build-only-ios.yml
+    needs: build-only-android
+    if: success()
+    secrets: inherit

@@ -6,6 +6,7 @@
 package compat_test
 
 import (
+	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -39,7 +40,7 @@ func TestFileWindowsChmod(t *testing.T) {
 	for _, perm := range perms {
 		err = compat.Chmod(name, perm)
 		if err != nil {
-			t.Fatalf("Chmod(%04o): %v", perm, err)
+			t.Fatalf("Chmod(%04o) failed: %v", perm, err)
 		}
 
 		checkPerm(t, name, perm)
@@ -203,27 +204,53 @@ func checkPerm(t *testing.T, name string, perm os.FileMode) {
 
 	got, err := compat.ExportStat(name) // acl.GetExplicitFileAccessMode(name)
 	if err != nil {
-		t.Fatalf("GetExplicitFileAccessMode(%v) returned %v", name, err)
+		t.Fatalf("Stat(%v) failed: %v", name, err)
 	}
 
 	if got != perm {
-		dumpACLs(t, name, true)
+		logACLs(t, name, true)
 		t.Fatalf("got %04o, want %04o", got, perm)
 	}
 }
 
-func dumpACLs(t *testing.T, name string, doDir bool) {
+func logACLs(t *testing.T, name string, doDir bool) {
 	t.Helper()
 
-	cmd := exec.Command("icacls.exe", name)
-	out, err := cmd.CombinedOutput()
+	args := []string{name, "/q"}
+	_ = logOutput(t, "icacls.exe", args)
+
+	command := fmt.Sprintf("Get-Acl '%s' | Format-List", name)
+	args = []string{"-Command", command}
+	err := logOutput(t, "pwsh.exe", args)
 	if err != nil {
-		t.Logf("Error running icacls: %v\n", err)
+		_ = logOutput(t, "powershell.exe", args)
 	}
-	t.Log(string(out))
 
 	if doDir {
 		dir, _ := filepath.Split(name)
-		dumpACLs(t, dir, false)
+		logACLs(t, dir, false)
 	}
+}
+
+func logOutput(t *testing.T, exe string, args []string) error {
+	t.Helper()
+
+	exe, err := exec.LookPath(exe)
+	if err != nil {
+		if testing.Verbose() {
+			t.Logf("Command not found: %v", err)
+		}
+
+		return err
+	}
+
+	cmd := exec.Command(exe, args...)
+	out, err := cmd.CombinedOutput()
+	if err != nil {
+		t.Logf("Error running %v: %v", exe, err)
+	}
+	s := "\n" + string(out)
+	t.Log(s)
+
+	return nil
 }

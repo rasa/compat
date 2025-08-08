@@ -13,6 +13,6 @@ jobs:
     secrets: inherit
   test-wasip:
     uses: ./.github/workflows/test-wasip1.yml
-    needs: test-js
-    if: success()
+    # needs: test-js
+    # if: success()
     secrets: inherit
