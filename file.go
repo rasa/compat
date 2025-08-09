@@ -36,10 +36,20 @@ func Chmod(name string, mode os.FileMode) error {
 // be used for I/O; the associated file descriptor has mode [O_RDWR].
 // The directory containing the file must already exist.
 // If there is an error, it will be of type [*PathError].
-func Create(name string) (*os.File, error) {
+func Create(name string, opts ...Option) (*os.File, error) {
 	// https://github.com/golang/go/blob/master/src/os/file.go#L393
 	// return OpenFile(name, O_RDWR|O_CREATE|O_TRUNC, 0666)
-	return create(name, CreatePerm, O_CREATE) // O_RDWR|O_CREATE|O_TRUNC)
+
+	fopts := FileOptions{
+		keepFileMode: true,
+		fileMode:     CreatePerm,
+		flag:         O_CREATE,
+	}
+	for _, opt := range opts {
+		opt(&fopts)
+	}
+
+	return create(name, fopts.fileMode, fopts.flag) // O_RDWR|O_CREATE|O_TRUNC)
 }
 
 // CreateEx creates or truncates the named file.
@@ -65,8 +75,17 @@ func CreateEx(name string, perm os.FileMode, flag int) (*os.File, error) {
 // Multiple programs or goroutines calling CreateTemp simultaneously will not choose the same file.
 // The caller can use the file's Name method to find the pathname of the file.
 // It is the caller's responsibility to remove the file when it is no longer needed.
-func CreateTemp(dir, pattern string) (*os.File, error) {
-	return createTemp(dir, pattern, 0)
+func CreateTemp(dir, pattern string, opts ...Option) (*os.File, error) {
+	fopts := FileOptions{
+		keepFileMode: true,
+		fileMode:     CreateTempPerm,
+		flag:         O_CREATE,
+	}
+	for _, opt := range opts {
+		opt(&fopts)
+	}
+
+	return createTemp(dir, pattern, fopts.fileMode, fopts.flag)
 }
 
 // CreateTempEx creates a new temporary file in the directory dir,
@@ -80,7 +99,7 @@ func CreateTemp(dir, pattern string) (*os.File, error) {
 // The caller can use the file's Name method to find the pathname of the file.
 // It is the caller's responsibility to remove the file when it is no longer needed.
 func CreateTempEx(dir, pattern string, flag int) (*os.File, error) {
-	return createTemp(dir, pattern, flag)
+	return createTemp(dir, pattern, CreateTempPerm, flag)
 }
 
 // Mkdir creates a new directory with the specified name and perm's permission

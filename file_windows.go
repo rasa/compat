@@ -51,8 +51,11 @@ func create(name string, perm os.FileMode, flag int) (*os.File, error) {
 	return openFileNolog(name, flag, perm, sa)
 }
 
-func createTemp(dir, pattern string, flag int) (*os.File, error) {
-	sa, err := saFromPerm(CreateTempPerm, true) // 0o600
+func createTemp(dir, pattern string, perm os.FileMode, flag int) (*os.File, error) {
+	if perm == 0 {
+		perm = CreateTempPerm
+	}
+	sa, err := saFromPerm(perm, true) // 0o600
 	if err != nil {
 		return nil, err
 	}

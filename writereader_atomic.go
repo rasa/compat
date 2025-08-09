@@ -21,11 +21,36 @@ import (
 // for the target file.
 func WriteReaderAtomic(filename string, r io.Reader, opts ...Option) (err error) { //nolint:funlen,gocyclo // quiet linter
 	// original behavior is to preserve the mode of an existing file.
-	fopts := &FileOptions{
+	fopts := FileOptions{
 		keepFileMode: true,
 	}
 	for _, opt := range opts {
-		opt(fopts)
+		opt(&fopts)
+	}
+
+	var fileMode os.FileMode
+	// change default file mode for when file does not exist yet.
+	if fopts.defaultFileMode != 0 {
+		fileMode = fopts.defaultFileMode
+	}
+
+	// get the file mode from the original file and use that for the replacement
+	// file, too.
+	if fopts.keepFileMode {
+		var destInfo os.FileInfo
+
+		destInfo, err = Stat(filename)
+		if err != nil && !os.IsNotExist(err) {
+			return err
+		}
+
+		if destInfo != nil {
+			fileMode = destInfo.Mode()
+		}
+	}
+	// given file mode always takes precedence
+	if fopts.fileMode != 0 {
+		fileMode = fopts.fileMode
 	}
 
 	// write to a temp file first, then we'll atomically replace the target file
@@ -35,7 +60,7 @@ func WriteReaderAtomic(filename string, r io.Reader, opts ...Option) (err error)
 		dir = "."
 	}
 
-	f, err := CreateTemp(dir, file)
+	f, err := createTemp(dir, file, fileMode, fopts.flag)
 	if err != nil {
 		return fmt.Errorf("cannot create temp file: %w", err)
 	}
@@ -65,42 +90,6 @@ func WriteReaderAtomic(filename string, r io.Reader, opts ...Option) (err error)
 	err = f.Close()
 	if err != nil {
 		return fmt.Errorf("cannot close tempfile %q: %w", name, err)
-	}
-
-	sourceInfo, err := Stat(name)
-	if err != nil {
-		return err
-	}
-
-	var fileMode os.FileMode
-	// change default file mode for when file does not exist yet.
-	if fopts.defaultFileMode != 0 {
-		fileMode = fopts.defaultFileMode
-	}
-	// get the file mode from the original file and use that for the replacement
-	// file, too.
-	if fopts.keepFileMode {
-		var destInfo os.FileInfo
-
-		destInfo, err = Stat(filename)
-		if err != nil && !os.IsNotExist(err) {
-			return err
-		}
-
-		if destInfo != nil {
-			fileMode = destInfo.Mode()
-		}
-	}
-	// given file mode always takes precedence
-	if fopts.fileMode != 0 {
-		fileMode = fopts.fileMode
-	}
-	// apply possible file mode change
-	if fileMode != 0 && fileMode != sourceInfo.Mode() {
-		err = Chmod(name, fileMode)
-		if err != nil {
-			return fmt.Errorf("cannot set permissions on tempfile %q: %w", name, err)
-		}
 	}
 
 	err = Rename(name, filename)

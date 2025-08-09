@@ -15,6 +15,7 @@ type FileOptions struct {
 	defaultFileMode os.FileMode
 	fileMode        os.FileMode
 	keepFileMode    bool
+	flag            int
 }
 
 // Option functions modify FileOptions.
@@ -41,5 +42,12 @@ func DefaultFileMode(mode os.FileMode) Option {
 func KeepFileMode(keep bool) Option {
 	return func(opts *FileOptions) {
 		opts.keepFileMode = keep
+	}
+}
+
+// Flag sets the flag option.
+func Flag(flag int) Option {
+	return func(opts *FileOptions) {
+		opts.flag = flag
 	}
 }

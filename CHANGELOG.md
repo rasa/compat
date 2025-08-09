@@ -9,7 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Added
 
+- Set perms when `WriteFileAtomic()` and `WriteReaderAtomic()` creates temp file.
+- Add `Option` param to `Create()` and `CreateTemp()`.
+- Add `Flag()` to `FileOptions` functions.
+
 ### Fixed
+
+- If a mode of `0` is passed to a function, use the function's default mode.
 
 ### Changed
 
