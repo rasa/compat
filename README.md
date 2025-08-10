@@ -17,6 +17,11 @@
 * [Overview](#overview)
 * [Usage](#usage)
 * [Stat](#stat)
+* [Installing](#installing)
+* [FileInfo Functions](#fileinfo-functions)
+* [Other Functions](#other-functions)
+* [Contributing](#contributing)
+* [License](#license)
 <!--te-->
 
 # Overview
@@ -75,7 +80,7 @@ which, on Linux, produces:
 ```text
 Name()   =hello.txt
 Size()   =11
-Mode()   =0o664 (-rw-rw-r--)
+Mode()   =0o654 (-rw-r-xr--)
 ModTime()=2025-08-09 18:46:55.360909223 -0700 PDT
 IsDir()  =false
 Sys()    =&{Dev:64512 Ino:18756660 Nlink:1 Mode:33204 Uid:1000 Gid:1000 X__pad0:0 Rdev:0 Size:11 Blksize:4096 Blocks:8 Atim:{Sec:1754790298 Nsec:87132300} Mtim:{Sec:1754790415 Nsec:360909223} Ctim:{Sec:1754790415 Nsec:360909223} X__unused:[0 0 0]}
@@ -129,6 +134,7 @@ Access : Everyone Allow  Read, Synchronize
 Audit  :
 Sddl   : O:S-1-5-21-2970224322-3395479738-1485484954-1001G:S-1-5-21-2970224322-3395479738-1485484954-513D:P(A;;FR;;;WD)(A;;0x1200a9;;;S-1-5-21-2970224322-3395479738-1485484954-5
          19f;;;S-1-5-21-2970224322-3395479738-1485484954-1001)
+```
 
 # Installing
 

@@ -97,7 +97,12 @@ jobs:
       run:
         shell: bash
     steps:
-      - run: echo "SHOULD_RUN=yes" >> "${GITHUB_ENV}"
+      - name: Set SHOULD_RUN var for ${{ inputs.runner }}
+        run: |
+          echo "SHOULD_RUN=yes" >> "${GITHUB_ENV}"
+          if [[ "${{ inputs.runner }}" =~ "^(top|all)" ]]; then
+            printf "::notice::inputs.runner=%s\n" "${{ inputs.runner }}"
+          fi
         if: >
           startsWith(matrix.os, inputs.runner) ||
           inputs.runner == 'all' ||
