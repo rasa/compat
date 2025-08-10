@@ -20,7 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Fix ACL rights by using GetTokenInformation(.., TokenUser, ..) on Windows.
 - Fix `Create()` failure due to missing flag.
 - If a mode of `0` is passed to a function, use the function's default mode.
-- Fix tests by not using unsuppoted `TempDir()` on js/wasm.
+- Fix tests by using go's standard test framework on js/wasm.
 
 ### Changed
 

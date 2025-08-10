@@ -529,13 +529,7 @@ func TestFilePosixWriteFileEx(t *testing.T) {
 }
 
 func tmpfile(t *testing.T) (string, error) {
-	tempDir := "."
-	if !compat.IsJS {
-		// TempDir: mkdir /tmp/xxx: not implemented on js
-		tempDir = t.TempDir()
-	}
-
-	f, err := compat.CreateTemp(tempDir, "")
+	f, err := compat.CreateTemp(t.TempDir(), "")
 	if err != nil {
 		return "", err
 	}
