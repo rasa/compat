@@ -16,7 +16,7 @@ func create(name string, perm os.FileMode, flag int) (*os.File, error) {
 		perm = CreatePerm
 	}
 
-	flag = (flag | O_CREATE) & ^O_EXCL
+	flag = (flag | O_CREATE) // & ^O_EXCL
 	return openFile(name, flag, perm)
 }
 
