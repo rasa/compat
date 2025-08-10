@@ -49,7 +49,8 @@ var mkdirAll = os.MkdirAll
 var mkdirTemp = os.MkdirTemp
 
 func openFile(name string, flag int, perm os.FileMode) (*os.File, error) {
-	f, err := os.OpenFile(name, flag, perm)
+	oflag := flag & ^O_DELETE‎
+	f, err := os.OpenFile(name, oflag, perm)
 	if err != nil {
 		return nil, err
 	}
