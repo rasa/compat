@@ -12,7 +12,7 @@ import (
 func TestNice(t *testing.T) {
 	_, err := compat.Nice()
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	}
 }
 
@@ -47,7 +47,7 @@ func TestNiceReniceIfRoot(t *testing.T) {
 
 	nice, err := compat.Nice()
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	}
 
 	for n := 0; n >= compat.MinNice; n-- {

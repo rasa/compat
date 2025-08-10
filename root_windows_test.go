@@ -37,12 +37,12 @@ func TestRootIsRoot(t *testing.T) {
 	// We could remove the reliance on windows, by hardcoding "S-1-5-32-544".
 	sid, err := windows.CreateWellKnownSid(windows.WinBuiltinAdministratorsSid)
 	if err != nil {
-		t.Errorf("Unable to create well known sid for administrators: %v", err)
+		t.Fatalf("Unable to create well known sid for administrators: %v", err)
 	}
 	isRoot := strings.Contains(string(stdoutStderr), sid.String()) // "S-1-5-32-544"
 	got, err := compat.IsRoot()
 	if err != nil {
-		t.Errorf("IsRoot() returned: %v", err)
+		t.Fatalf("IsRoot() returned: %v", err)
 	}
 	if got != isRoot {
 		// Report result, but don't fail, as the user may not be an administrator.

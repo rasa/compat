@@ -20,12 +20,12 @@ func TestStatStat(t *testing.T) {
 
 	name, err := createTemp(t)
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	}
 
 	fi, err := compat.Stat(name)
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	}
 
 	_, base := filepath.Split(name)
@@ -61,17 +61,17 @@ func TestStatLinks(t *testing.T) {
 
 	name, err := createTemp(t)
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	}
 
 	fi, err := compat.Stat(name)
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	}
 
 	var want uint64 = 1
 	if got := fi.Links(); got != want {
-		t.Errorf("Links(): got %v, want %v", got, want)
+		t.Fatalf("Links(): got %v, want %v", got, want)
 	}
 
 	dir, _ := filepath.Split(name)
@@ -79,32 +79,32 @@ func TestStatLinks(t *testing.T) {
 
 	err = os.Link(name, link)
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	}
 
 	fi, err = compat.Stat(name)
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	}
 
 	want = 2
 	if got := fi.Links(); got != want {
-		t.Errorf("Links(): got %v, want %v", got, want)
+		t.Fatalf("Links(): got %v, want %v", got, want)
 	}
 
 	err = os.Remove(link)
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	}
 
 	fi, err = compat.Stat(name)
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	}
 
 	want = 1
 	if got := fi.Links(); got != want {
-		t.Errorf("Links(): got %v, want %v", got, want)
+		t.Fatalf("Links(): got %v, want %v", got, want)
 	}
 }
 
@@ -119,16 +119,16 @@ func TestStatATime(t *testing.T) {
 
 	name, err := createTemp(t)
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	}
 
 	fi, err := compat.Stat(name)
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	}
 
 	if got := fi.ATime(); !timesClose(got, now) {
-		t.Errorf("ATime(): got %v, want %v", got, now)
+		t.Fatalf("ATime(): got %v, want %v", got, now)
 	}
 
 	if compat.IsTinygo {
@@ -140,16 +140,16 @@ func TestStatATime(t *testing.T) {
 
 	err = os.Chtimes(name, atime, atime)
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	}
 
 	fi, err = compat.Stat(name)
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	}
 
 	if got := fi.ATime(); !timesClose(got, atime) {
-		t.Errorf("ATime(): got %v, want %v", got, atime)
+		t.Fatalf("ATime(): got %v, want %v", got, atime)
 	}
 }
 
@@ -164,16 +164,16 @@ func TestStatBTime(t *testing.T) {
 
 	name, err := createTemp(t)
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	}
 
 	fi, err := compat.Stat(name)
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	}
 
 	if got := fi.BTime(); !timesClose(got, now) {
-		t.Errorf("BTime(): got %v, want %v", got, now)
+		t.Fatalf("BTime(): got %v, want %v", got, now)
 	}
 }
 
@@ -188,16 +188,16 @@ func TestStatCTime(t *testing.T) {
 
 	name, err := createTemp(t)
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	}
 
 	fi, err := compat.Stat(name)
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	}
 
 	if got := fi.CTime(); !timesClose(got, now) {
-		t.Errorf("CTime(): got %v, want %v", got, now)
+		t.Fatalf("CTime(): got %v, want %v", got, now)
 	}
 }
 
@@ -206,16 +206,16 @@ func TestStatMTime(t *testing.T) {
 
 	name, err := createTemp(t)
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	}
 
 	fi, err := compat.Stat(name)
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	}
 
 	if got := fi.MTime(); !timesClose(got, now) {
-		t.Errorf("MTime(): got %v, want %v", got, now)
+		t.Fatalf("MTime(): got %v, want %v", got, now)
 	}
 
 	if compat.IsTinygo {
@@ -227,16 +227,16 @@ func TestStatMTime(t *testing.T) {
 
 	err = os.Chtimes(name, mtime, mtime)
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	}
 
 	fi, err = compat.Stat(name)
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	}
 
 	if got := fi.MTime(); !timesClose(got, mtime) {
-		t.Errorf("MTime(): got %v, want %v", got, mtime)
+		t.Fatalf("MTime(): got %v, want %v", got, mtime)
 	}
 }
 
@@ -249,19 +249,19 @@ func TestStatUID(t *testing.T) {
 
 	name, err := createTemp(t)
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	}
 
 	fi, err := compat.Stat(name)
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	}
 
 	got := fi.UID()
 
 	if compat.IsWindows {
 		if got == compat.UnknownID {
-			t.Errorf("UID(): got %v", got)
+			t.Fatalf("UID(): got %v", got)
 		}
 
 		return
@@ -269,7 +269,7 @@ func TestStatUID(t *testing.T) {
 
 	want := uint64(os.Getuid()) //nolint:gosec // G115: conversion int -> uint64
 	if got != want {
-		t.Errorf("UID(): got %v, want %v", got, want)
+		t.Fatalf("UID(): got %v, want %v", got, want)
 	}
 }
 
@@ -282,19 +282,19 @@ func TestStatGID(t *testing.T) {
 
 	name, err := createTemp(t)
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	}
 
 	fi, err := compat.Stat(name)
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	}
 
 	got := fi.GID()
 
 	if compat.IsWindows {
 		if got == compat.UnknownID {
-			t.Errorf("GID(): got %v", got)
+			t.Fatalf("GID(): got %v", got)
 		}
 
 		return
@@ -302,113 +302,113 @@ func TestStatGID(t *testing.T) {
 
 	want := uint64(os.Getgid()) //nolint:gosec // G115: conversion int -> uint64
 	if got != want {
-		t.Errorf("GID(): got %v, want %v", got, want)
+		t.Fatalf("GID(): got %v, want %v", got, want)
 	}
 }
 
 func TestStatSamePartition(t *testing.T) {
 	name, err := createTemp(t)
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	}
 
 	fi1, err := compat.Stat(name)
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	}
 
 	fi2, err := compat.Stat(name)
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	}
 
 	if got := compat.SamePartition(fi1, fi2); !got {
-		t.Errorf("SamePartition(): got %v, want true", got)
+		t.Fatalf("SamePartition(): got %v, want true", got)
 	}
 }
 
 func TestStatSamePartitions(t *testing.T) {
 	name, err := createTemp(t)
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	}
 
 	if got := compat.SamePartitions(name, name); !got {
-		t.Errorf("SamePartitions(): got %v, want true", got)
+		t.Fatalf("SamePartitions(): got %v, want true", got)
 	}
 }
 
 func TestStatSameFile(t *testing.T) {
 	name, err := createTemp(t)
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	}
 
 	fi1, err := compat.Stat(name)
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	}
 
 	fi2, err := compat.Stat(name)
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	}
 
 	if got := compat.SameFile(fi1, fi2); !got {
-		t.Errorf("SameFile(): got %v, want true", got)
+		t.Fatalf("SameFile(): got %v, want true", got)
 	}
 }
 
 func TestStatSameFiles(t *testing.T) {
 	name, err := createTemp(t)
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	}
 
 	if got := compat.SameFiles(name, name); !got {
-		t.Errorf("SameFiles(): got %v, want true", got)
+		t.Fatalf("SameFiles(): got %v, want true", got)
 	}
 }
 
 func TestStatDiffFile(t *testing.T) {
 	name1, err := createTemp(t)
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	}
 
 	name2, err := createTemp(t)
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	}
 
 	fi1, err := compat.Stat(name1)
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	}
 
 	fi2, err := compat.Stat(name2)
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	}
 
 	if got := compat.SameFile(fi1, fi2); got {
-		t.Errorf("SameFile(): got %v, want true", got)
+		t.Fatalf("SameFile(): got %v, want true", got)
 	}
 }
 
 func TestStatDiffFiles(t *testing.T) {
 	name1, err := createTemp(t)
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	}
 
 	name2, err := createTemp(t)
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	}
 
 	if got := compat.SameFiles(name1, name2); got {
-		t.Errorf("SameFiles(): got %v, want true", got)
+		t.Fatalf("SameFiles(): got %v, want true", got)
 	}
 }
 

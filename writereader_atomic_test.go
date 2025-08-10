@@ -23,12 +23,12 @@ func TestWriteReaderAtomic(t *testing.T) {
 	})
 
 	if err := compat.WriteReaderAtomic(file, content); err != nil {
-		t.Errorf("Failed to write file: %q: %v", file, err)
+		t.Fatalf("Failed to write file: %q: %v", file, err)
 	}
 
 	fi, err := compat.Stat(file)
 	if err != nil {
-		t.Errorf("Failed to stat file: %q: %v", file, err)
+		t.Fatalf("Failed to stat file: %q: %v", file, err)
 	}
 
 	want := compat.CreateTempPerm // 0o600
@@ -36,7 +36,7 @@ func TestWriteReaderAtomic(t *testing.T) {
 	got := fi.Mode().Perm()
 
 	if got != want {
-		t.Errorf("got %04o, want %04o", got, want)
+		t.Fatalf("got %04o, want %04o", got, want)
 	}
 }
 
@@ -53,14 +53,14 @@ func TestWriteReaderAtomicDefaultFileMode(t *testing.T) {
 
 	err := compat.WriteReaderAtomic(file, content, compat.DefaultFileMode(perm644))
 	if err != nil {
-		t.Errorf("Failed to write file: %q: %v", file, err)
+		t.Fatalf("Failed to write file: %q: %v", file, err)
 	}
 
 	var fi os.FileInfo
 
 	fi, err = compat.Stat(file)
 	if err != nil {
-		t.Errorf("Failed to stat file: %q: %v", file, err)
+		t.Fatalf("Failed to stat file: %q: %v", file, err)
 	}
 
 	want := fixPerms(perm644)
@@ -70,22 +70,22 @@ func TestWriteReaderAtomicDefaultFileMode(t *testing.T) {
 
 	got := fi.Mode().Perm()
 	if got != want {
-		t.Errorf("got %04o, want %04o (1)", got, want)
+		t.Fatalf("got %04o, want %04o (1)", got, want)
 	}
 	// check if file mode is preserved
 	err = compat.Chmod(file, 0o600)
 	if err != nil {
-		t.Errorf("Failed to change file mode: %q: %v", file, err)
+		t.Fatalf("Failed to change file mode: %q: %v", file, err)
 	}
 
 	err = compat.WriteReaderAtomic(file, content, compat.DefaultFileMode(perm644))
 	if err != nil {
-		t.Errorf("Failed to write file: %q: %v", file, err)
+		t.Fatalf("Failed to write file: %q: %v", file, err)
 	}
 
 	fi, err = compat.Stat(file)
 	if err != nil {
-		t.Errorf("Failed to stat file: %q: %v", file, err)
+		t.Fatalf("Failed to stat file: %q: %v", file, err)
 	}
 
 	want = perm600
@@ -93,7 +93,7 @@ func TestWriteReaderAtomicDefaultFileMode(t *testing.T) {
 	got = fi.Mode().Perm()
 
 	if got != want {
-		t.Errorf("got %04o, want %04o (2)", got, want)
+		t.Fatalf("got %04o, want %04o (2)", got, want)
 	}
 }
 
@@ -110,12 +110,12 @@ func TestWriteReaderAtomicMode(t *testing.T) {
 
 	err := compat.WriteReaderAtomic(file, content, compat.FileMode(perm644))
 	if err != nil {
-		t.Errorf("Failed to write file: %q: %v", file, err)
+		t.Fatalf("Failed to write file: %q: %v", file, err)
 	}
 
 	fi, err := compat.Stat(file)
 	if err != nil {
-		t.Errorf("Failed to stat file: %q: %v", file, err)
+		t.Fatalf("Failed to stat file: %q: %v", file, err)
 	}
 
 	want := fixPerms(perm644)
@@ -125,26 +125,26 @@ func TestWriteReaderAtomicMode(t *testing.T) {
 
 	got := fi.Mode().Perm()
 	if got != want {
-		t.Errorf("got %04o, want %04o (1)", got, want)
+		t.Fatalf("got %04o, want %04o (1)", got, want)
 	}
 	// ensure previous file mode is ignored
 	err = compat.Chmod(file, perm600)
 	if err != nil {
-		t.Errorf("Failed to change file mode: %q: %v", file, err)
+		t.Fatalf("Failed to change file mode: %q: %v", file, err)
 	}
 
 	err = compat.WriteReaderAtomic(file, content, compat.FileMode(perm644))
 	if err != nil {
-		t.Errorf("Failed to write file: %q: %v", file, err)
+		t.Fatalf("Failed to write file: %q: %v", file, err)
 	}
 
 	fi, err = compat.Stat(file)
 	if err != nil {
-		t.Errorf("Failed to stat file: %q: %v", file, err)
+		t.Fatalf("Failed to stat file: %q: %v", file, err)
 	}
 
 	got = fi.Mode().Perm()
 	if got != want {
-		t.Errorf("got %04o, want %04o (2)", got, want)
+		t.Fatalf("got %04o, want %04o (2)", got, want)
 	}
 }

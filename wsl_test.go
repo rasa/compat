@@ -18,6 +18,6 @@ func TestWSLIsWSL(t *testing.T) {
 	got := compat.IsWSL()
 
 	if got != want {
-		t.Errorf("IsWSL(): got %v, want %v", got, want)
+		t.Fatalf("IsWSL(): got %v, want %v", got, want)
 	}
 }

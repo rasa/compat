@@ -17,7 +17,7 @@ func TestRootIsRoot(t *testing.T) {
 
 	got, err := compat.IsRoot()
 	if err != nil {
-		t.Errorf("IsRoot() returned: %v", err)
+		t.Fatalf("IsRoot() returned: %v", err)
 	}
 
 	if !isRoot {
