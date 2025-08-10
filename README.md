@@ -75,7 +75,7 @@ which, on Linux, produces:
 ```text
 Name()   =hello.txt
 Size()   =11
-Mode()   =0o664 (-rw-rw-r--)
+Mode()   =0o654 (-rw-r-xr--)
 ModTime()=2025-08-09 18:46:55.360909223 -0700 PDT
 IsDir()  =false
 Sys()    =&{Dev:64512 Ino:18756660 Nlink:1 Mode:33204 Uid:1000 Gid:1000 X__pad0:0 Rdev:0 Size:11 Blksize:4096 Blocks:8 Atim:{Sec:1754790298 Nsec:87132300} Mtim:{Sec:1754790415 Nsec:360909223} Ctim:{Sec:1754790415 Nsec:360909223} X__unused:[0 0 0]}
