@@ -28,7 +28,7 @@ jobs:
         # Run Go js/wasm test in node.js
         printf '::notice ::%s\n' "$(go version)"
         GOROOT=$(go env GOROOT)
-        cp "${GOROOT}/misc/wasm/wasm_exec.js" .
+        cp "${GOROOT}/lib/wasm/wasm_exec.js" .
         GOOS=js GOARCH=wasm go test -v -exec="${GOROOT}/lib/wasm/go_js_wasm_exec" .
         node run-test.js
         exit 0
