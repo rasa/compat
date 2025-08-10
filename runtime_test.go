@@ -51,7 +51,7 @@ var arches = []string{
 func TestRuntime(t *testing.T) { //nolint:funlen,gocyclo // quiet linter
 	goExe, err := exec.LookPath("go")
 	if err != nil {
-		if compat.IsTinygo || compat.IsWasip1 {
+		if compat.IsTinygo || compat.IsWasm {
 			skipf(t, "Skipping test: %v", err)
 
 			return
@@ -64,7 +64,7 @@ func TestRuntime(t *testing.T) { //nolint:funlen,gocyclo // quiet linter
 
 	out, err := exec.Command(goExe, "tool", "dist", "list").Output() //nolint:noctx // quiet linter
 	if err != nil {
-		if compat.IsTinygo || compat.IsWasip1 {
+		if compat.IsTinygo || compat.IsWasm {
 			skipf(t, "Skipping test: %v", err)
 
 			return
