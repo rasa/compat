@@ -9,15 +9,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Added
 
-- Set perms when `WriteFileAtomic()` and `WriteReaderAtomic()` creates temp file.
+- Set perms when `WriteFileAtomic()` and `WriteReaderAtomic()` create file, not after closing.
 - Add `Option` param to `Create()` and `CreateTemp()`.
 - Add `Flag()` to `FileOptions` functions.
+- Add Windows example `Stat()` call to readme.
+- Add `icacls` and powershell's `Get-Acl` output to readme.
 
 ### Fixed
 
+- Fix ACL rights by using GetTokenInformation(.., TokenUser, ..) on Windows.
 - If a mode of `0` is passed to a function, use the function's default mode.
 
 ### Changed
+
+- Run more tests against many `FileMode` values, not just one.
+- Rework demo to create hello.txt, instead of using .exe.
+- Rework test framework's setting the expected `Mode()` result for selected OSes.
 
 ## [0.4.3](https://github.com/rasa/compat/compare/v0.4.2...v0.4.3)
 

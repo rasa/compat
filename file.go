@@ -43,13 +43,13 @@ func Create(name string, opts ...Option) (*os.File, error) {
 	fopts := FileOptions{
 		keepFileMode: true,
 		fileMode:     CreatePerm,
-		flag:         O_CREATE,
+		flag:         O_RDWR | O_CREATE | O_TRUNC,
 	}
 	for _, opt := range opts {
 		opt(&fopts)
 	}
 
-	return create(name, fopts.fileMode, fopts.flag) // O_RDWR|O_CREATE|O_TRUNC)
+	return create(name, fopts.fileMode, fopts.flag)
 }
 
 // CreateEx creates or truncates the named file.
@@ -63,7 +63,7 @@ func Create(name string, opts ...Option) (*os.File, error) {
 func CreateEx(name string, perm os.FileMode, flag int) (*os.File, error) {
 	// https://github.com/golang/go/blob/master/src/os/file.go#L393
 	// return OpenFile(name, O_RDWR|O_CREATE|O_TRUNC, 0666)
-	return create(name, perm, flag|O_CREATE)
+	return create(name, perm, flag)
 }
 
 // CreateTemp creates a new temporary file in the directory dir,
@@ -154,7 +154,7 @@ func WriteFile(name string, data []byte, perm os.FileMode) error {
 }
 
 // WriteFileEx writes data to the named file, creating it if necessary.
-// It creates or opens the named file with specified flag ([O_RDONLY] etc.).
+// It creates or opens the named file with specified flag ([O_RDWR] etc.).
 // If the file does not exist, WriteFileEx creates it with perm's permissions bits (before umask);
 // otherwise WriteFile truncates or appends, without changing permissions.
 // Since WriteFile requires multiple system calls to complete, a failure mid-operation

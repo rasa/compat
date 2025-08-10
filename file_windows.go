@@ -151,10 +151,10 @@ func siFromPerm(perm os.FileMode) (*securityInfo, error) {
 
 	var size uint32
 	// First call to get required buffer size
-	_ = windows.GetTokenInformation(token, windows.TokenOwner, nil, 0, &size)
+	_ = windows.GetTokenInformation(token, windows.TokenUser, nil, 0, &size)
 
 	buf := make([]byte, size)
-	err = windows.GetTokenInformation(token, windows.TokenOwner, &buf[0], size, &size)
+	err = windows.GetTokenInformation(token, windows.TokenUser, &buf[0], size, &size)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get user token information for %s: %w", currentUsername(), err)
 	}

@@ -15,45 +15,6 @@ import (
 
 const allowedTimeVariance = 1 * time.Second
 
-var (
-	want000 = os.FileMode(0o000)
-	want600 = os.FileMode(0o600)
-	want644 = os.FileMode(0o644)
-	want666 = os.FileMode(0o666)
-	want700 = os.FileMode(0o700)
-	want777 = os.FileMode(0o777)
-
-	wantCreatePerm     = compat.CreatePerm     // 0o666
-	wantCreateTempPerm = compat.CreateTempPerm // 0o600
-	wantMkdirTempPerm  = compat.MkdirTempPerm  // 0o700
-
-	helloBytes = []byte("hello")
-)
-
-func init() {
-	if compat.IsWasip1 {
-		if compat.IsTinygo {
-			// Tinygo's os.Stat() returns mode 0o000
-			wantCreatePerm = want000
-			wantCreateTempPerm = want000
-			wantMkdirTempPerm = want000
-			want644 = want000
-			want666 = want000
-			want777 = want000
-		} else {
-			wantCreatePerm = want600
-			want644 = want600
-			want666 = want600
-			want777 = want700
-		}
-	}
-
-	if compat.IsWindows {
-		wantCreateTempPerm = os.FileMode(0o666)
-		wantMkdirTempPerm = os.FileMode(0o777)
-	}
-}
-
 func TestStatStat(t *testing.T) {
 	now := time.Now()
 

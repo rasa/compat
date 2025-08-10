@@ -65,26 +65,25 @@ func TestFileWindowsCreate(t *testing.T) {
 }
 
 func TestFileWindowsCreateEx(t *testing.T) {
-	name, err := tmpname(t)
-	if err != nil {
-		t.Fatal(err)
-	}
-	perm := want600
-	fh, err := compat.CreateEx(name, perm, 0)
-	if err != nil {
-		t.Fatal(err)
-	}
-	_ = fh.Close()
-	checkPerm(t, name, perm)
-	err = os.Remove(name)
-	if err != nil {
-		t.Fatal(err)
+	for _, perm := range perms {
+		name, err := tmpname(t)
+		if err != nil {
+			t.Fatal(err)
+		}
+		fh, err := compat.CreateEx(name, perm, 0)
+		if err != nil {
+			t.Fatal(err)
+		}
+		_ = fh.Close()
+		checkPerm(t, name, perm)
+		err = os.Remove(name)
+		if err != nil {
+			t.Fatal(err)
+		}
 	}
 }
 
 func TestFileWindowsCreateTemp(t *testing.T) {
-	perm := compat.CreateTempPerm
-
 	dir := t.TempDir()
 	fh, err := compat.CreateTemp(dir, "")
 	if err != nil {
@@ -92,7 +91,7 @@ func TestFileWindowsCreateTemp(t *testing.T) {
 	}
 	name := fh.Name()
 	_ = fh.Close()
-	checkPerm(t, name, perm)
+	checkPerm(t, name, compat.CreateTempPerm)
 	err = os.Remove(name)
 	if err != nil {
 		t.Fatal(err)
@@ -100,47 +99,48 @@ func TestFileWindowsCreateTemp(t *testing.T) {
 }
 
 func TestFileWindowsMkdir(t *testing.T) {
-	name, err := tmpname(t)
-	if err != nil {
-		t.Fatal(err)
-	}
-	perm := want700
-	err = compat.Mkdir(name, perm)
-	if err != nil {
-		t.Fatal(err)
-	}
-	checkPerm(t, name, perm)
-	err = os.Remove(name)
-	if err != nil {
-		t.Fatal(err)
+	for _, perm := range perms {
+		name, err := tmpname(t)
+		if err != nil {
+			t.Fatal(err)
+		}
+		err = compat.Mkdir(name, perm)
+		if err != nil {
+			t.Fatal(err)
+		}
+		checkPerm(t, name, perm)
+		err = os.Remove(name)
+		if err != nil {
+			t.Fatal(err)
+		}
 	}
 }
 
 func TestFileWindowsMkdirAll(t *testing.T) {
-	name, err := tmpname(t)
-	if err != nil {
-		t.Fatal(err)
-	}
-	perm := want700
-	err = compat.MkdirAll(name, perm)
-	if err != nil {
-		t.Fatal(err)
-	}
-	checkPerm(t, name, perm)
-	err = os.Remove(name)
-	if err != nil {
-		t.Fatal(err)
+	for _, perm := range perms {
+		name, err := tmpname(t)
+		if err != nil {
+			t.Fatal(err)
+		}
+		err = compat.MkdirAll(name, perm)
+		if err != nil {
+			t.Fatal(err)
+		}
+		checkPerm(t, name, perm)
+		err = os.Remove(name)
+		if err != nil {
+			t.Fatal(err)
+		}
 	}
 }
 
 func TestFileWindowsMkdirTemp(t *testing.T) {
 	dir := t.TempDir()
-	perm := compat.MkdirTempPerm
 	name, err := compat.MkdirTemp(dir, "")
 	if err != nil {
 		t.Fatal(err)
 	}
-	checkPerm(t, name, perm)
+	checkPerm(t, name, compat.MkdirTempPerm)
 	err = os.Remove(name)
 	if err != nil {
 		t.Fatal(err)
@@ -148,54 +148,57 @@ func TestFileWindowsMkdirTemp(t *testing.T) {
 }
 
 func TestFileWindowsOpenFile(t *testing.T) {
-	name, err := tmpname(t)
-	if err != nil {
-		t.Fatal(err)
-	}
-	perm := want600
-	fh, err := compat.OpenFile(name, os.O_CREATE, perm)
-	if err != nil {
-		t.Fatal(err)
-	}
-	_ = fh.Close()
-	checkPerm(t, name, perm)
-	err = os.Remove(name)
-	if err != nil {
-		t.Fatal(err)
+	for _, perm := range perms {
+		name, err := tmpname(t)
+		if err != nil {
+			t.Fatal(err)
+		}
+		fh, err := compat.OpenFile(name, os.O_CREATE, perm)
+		if err != nil {
+			t.Fatal(err)
+		}
+		_ = fh.Close()
+		checkPerm(t, name, perm)
+		err = os.Remove(name)
+		if err != nil {
+			t.Fatal(err)
+		}
 	}
 }
 
 func TestFileWindowsWriteFile(t *testing.T) {
-	name, err := tmpname(t)
-	if err != nil {
-		t.Fatal(err)
-	}
-	perm := want600
-	err = compat.WriteFile(name, helloBytes, perm)
-	if err != nil {
-		t.Fatal(err)
-	}
-	checkPerm(t, name, perm)
-	err = os.Remove(name)
-	if err != nil {
-		t.Fatal(err)
+	for _, perm := range perms {
+		name, err := tmpname(t)
+		if err != nil {
+			t.Fatal(err)
+		}
+		err = compat.WriteFile(name, helloBytes, perm)
+		if err != nil {
+			t.Fatal(err)
+		}
+		checkPerm(t, name, perm)
+		err = os.Remove(name)
+		if err != nil {
+			t.Fatal(err)
+		}
 	}
 }
 
 func TestFileWindowsWriteFileEx(t *testing.T) {
-	name, err := tmpname(t)
-	if err != nil {
-		t.Fatal(err)
-	}
-	perm := want600
-	err = compat.WriteFileEx(name, helloBytes, perm, 0)
-	if err != nil {
-		t.Fatal(err)
-	}
-	checkPerm(t, name, perm)
-	err = os.Remove(name)
-	if err != nil {
-		t.Fatal(err)
+	for _, perm := range perms {
+		name, err := tmpname(t)
+		if err != nil {
+			t.Fatal(err)
+		}
+		err = compat.WriteFileEx(name, helloBytes, perm, 0)
+		if err != nil {
+			t.Fatal(err)
+		}
+		checkPerm(t, name, perm)
+		err = os.Remove(name)
+		if err != nil {
+			t.Fatal(err)
+		}
 	}
 }
 
@@ -244,7 +247,7 @@ func logOutput(t *testing.T, exe string, args []string) error {
 		return err
 	}
 
-	cmd := exec.Command(exe, args...)
+	cmd := exec.Command(exe, args...) //nolint:noctx // quiet linter
 	out, err := cmd.CombinedOutput()
 	if err != nil {
 		t.Logf("Error running %v: %v", exe, err)

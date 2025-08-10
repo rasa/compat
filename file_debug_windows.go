@@ -6,6 +6,7 @@
 package compat
 
 import (
+	"flag"
 	"fmt"
 	"maps"
 	"os"
@@ -16,11 +17,13 @@ import (
 	"golang.org/x/sys/windows"
 )
 
+func init() {
+	testing.Init()
+	flag.Parse()
+}
+
 func dumpMasks(perm os.FileMode, ownerMask uint32, groupMask uint32, worldMask uint32) { //nolint:unused // quiet linter
-	if !testing.Verbose() {
-		return
-	}
-	if os.Getenv("COMPAT_DEBUG") == "" {
+	if !testing.Verbose() || os.Getenv("COMPAT_DEBUG") == "" {
 		return
 	}
 	omask := aMask(ownerMask)
@@ -75,4 +78,23 @@ func (a aMask) String() string { //nolint:unused // quiet linter
 	}
 
 	return rv
+}
+
+func lookupAccountSid(sidString string) (name, domain string, use uint32, err error) {
+	sid, err := windows.StringToSid(sidString)
+	if err != nil {
+		return "", "", 0, err
+	}
+
+	var nLen, dLen uint32
+	_ = windows.LookupAccountSid(nil, sid, nil, &nLen, nil, &dLen, &use) // size query
+
+	nameBuf := make([]uint16, nLen)
+	domBuf := make([]uint16, dLen)
+	err = windows.LookupAccountSid(nil, sid, &nameBuf[0], &nLen, &domBuf[0], &dLen, &use)
+	if err != nil {
+		return "", "", 0, err
+	}
+
+	return windows.UTF16ToString(nameBuf), windows.UTF16ToString(domBuf), use, nil
 }

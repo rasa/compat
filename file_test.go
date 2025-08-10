@@ -11,13 +11,50 @@ import (
 	"github.com/rasa/compat"
 )
 
+var (
+	wantCreatePerm     = compat.CreatePerm     // 0o666
+	wantCreateTempPerm = compat.CreateTempPerm // 0o600
+	wantMkdirTempPerm  = compat.MkdirTempPerm  // 0o700
+
+	helloBytes = []byte("hello")
+)
+
 func init() {
 	// @TODO(rasa): test different umask settings
 	compat.Umask(0)
+
+	wantCreatePerm = fixPosixPerms(wantCreatePerm, false)
+	wantCreateTempPerm = fixPosixPerms(wantCreateTempPerm, false)
+	wantMkdirTempPerm = fixPosixPerms(wantMkdirTempPerm, true)
+}
+
+func fixPerms(perm os.FileMode) os.FileMode {
+	if compat.IsWasip1 {
+		if compat.IsTinygo {
+			// Tinygo's os.Stat() returns mode 0o000
+			return os.FileMode(0o000)
+		} else {
+			return perm & 0o700
+		}
+	}
+
+	return perm
+}
+
+func fixPosixPerms(perm os.FileMode, isDir bool) os.FileMode {
+	if compat.IsWindows {
+		if isDir {
+			return os.FileMode(0o777)
+		} else {
+			return os.FileMode(0o666)
+		}
+	}
+	return fixPerms(perm)
 }
 
 func TestFilePosixChmod(t *testing.T) {
-	want := want666
+	perm := os.FileMode(0o644)
+	want := fixPosixPerms(perm, false)
 
 	name, err := tmpfile(t)
 	if err != nil {
@@ -26,7 +63,7 @@ func TestFilePosixChmod(t *testing.T) {
 		return
 	}
 
-	err = compat.Chmod(name, want)
+	err = compat.Chmod(name, perm)
 	if err != nil {
 		t.Fatal(err)
 
@@ -88,7 +125,8 @@ func TestFilePosixCreate(t *testing.T) {
 }
 
 func TestFilePosixCreateEx(t *testing.T) {
-	want := wantCreatePerm
+	perm := compat.CreatePerm
+	want := fixPosixPerms(perm, false)
 
 	name, err := tmpname(t)
 	if err != nil {
@@ -97,7 +135,7 @@ func TestFilePosixCreateEx(t *testing.T) {
 		return
 	}
 
-	fh, err := compat.CreateEx(name, want, 0)
+	fh, err := compat.CreateEx(name, perm, 0)
 	if err != nil {
 		t.Fatal(err)
 
@@ -256,7 +294,8 @@ func TestFilePosixCreateTempExDelete(t *testing.T) {
 }
 
 func TestFilePosixMkdir(t *testing.T) {
-	want := want777
+	perm := os.FileMode(0o777)
+	want := fixPosixPerms(perm, true)
 
 	name, err := tmpname(t)
 	if err != nil {
@@ -265,7 +304,7 @@ func TestFilePosixMkdir(t *testing.T) {
 		return
 	}
 
-	err = compat.Mkdir(name, want)
+	err = compat.Mkdir(name, perm)
 	if err != nil {
 		t.Fatal(err)
 
@@ -288,7 +327,8 @@ func TestFilePosixMkdir(t *testing.T) {
 }
 
 func TestFilePosixMkdirAll(t *testing.T) {
-	want := want777
+	perm := os.FileMode(0o777)
+	want := fixPosixPerms(perm, true)
 
 	name, err := tmpname(t)
 	if err != nil {
@@ -297,7 +337,7 @@ func TestFilePosixMkdirAll(t *testing.T) {
 		return
 	}
 
-	err = compat.MkdirAll(name, want)
+	err = compat.MkdirAll(name, perm)
 	if err != nil {
 		t.Fatal(err)
 
@@ -347,7 +387,8 @@ func TestFilePosixMkdirTemp(t *testing.T) {
 }
 
 func TestFilePosixOpenFile(t *testing.T) {
-	want := want666
+	perm := os.FileMode(0o666)
+	want := fixPosixPerms(perm, false)
 
 	name, err := tmpname(t)
 	if err != nil {
@@ -356,7 +397,7 @@ func TestFilePosixOpenFile(t *testing.T) {
 		return
 	}
 
-	fh, err := compat.OpenFile(name, compat.O_RDWR|compat.O_CREATE, want)
+	fh, err := compat.OpenFile(name, compat.O_RDWR|compat.O_CREATE, perm)
 	if err != nil {
 		t.Fatal(err)
 
@@ -422,7 +463,8 @@ func TestFilePosixOpenFileDelete(t *testing.T) {
 }
 
 func TestFilePosixWriteFile(t *testing.T) {
-	want := want666
+	perm := os.FileMode(0o666)
+	want := fixPosixPerms(perm, false)
 
 	name, err := tmpname(t)
 	if err != nil {
@@ -454,7 +496,8 @@ func TestFilePosixWriteFile(t *testing.T) {
 }
 
 func TestFilePosixWriteFileEx(t *testing.T) {
-	want := want666
+	perm := os.FileMode(0o666)
+	want := fixPosixPerms(perm, false)
 
 	name, err := tmpname(t)
 	if err != nil {
@@ -463,7 +506,7 @@ func TestFilePosixWriteFileEx(t *testing.T) {
 		return
 	}
 
-	err = compat.WriteFileEx(name, helloBytes, want, 0)
+	err = compat.WriteFileEx(name, helloBytes, perm, 0)
 	if err != nil {
 		t.Fatal(err)
 

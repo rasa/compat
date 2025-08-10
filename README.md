@@ -40,55 +40,100 @@ Here's an example of calling `compat.Stat()`:
 package main
 
 import (
-  "fmt"
-  "github.com/rasa/compat"
+	"fmt"
+	"log"
+
+	"github.com/rasa/compat"
 )
 
 func main() {
-  fi, err := compat.Stat(os.Executable())
-  if err != nil {
-    fmt.Println(err)
-    return
-  }
-        // Same functions as os.Stat() and os.Lstat():
-  fmt.Printf("Name()    =%v\n", fi.Name())     // base name of the file
-  fmt.Printf("Size()    =%v\n", fi.Size())     // length in bytes
-  fmt.Printf("Mode()    =0o%o\n", fi.Mode())   // file mode bits
-  fmt.Printf("ModTime() =%v\n", fi.ModTime())  // last modified
-  fmt.Printf("IsDir()   =%v\n", fi.IsDir())    // is a directory
-  fmt.Printf("Sys()     =%+v\n", fi.Sys())     // underlying data source
-        // New functions provided by this compat library:
-  fmt.Printf("PartID()  =%v\n", fi.PartitionID()) // partition (device) ID
-  fmt.Printf("FileID()  =%v\n", fi.FileID())   // file (inode) ID
-  fmt.Printf("Links()   =%v\n", fi.Links())    // number of hard links
-  fmt.Printf("ATime()   =%v\n", fi.ATime())    // last accessed
-  fmt.Printf("BTime()   =%v\n", fi.BTime())    // created (birthed)
-  fmt.Printf("CTime()   =%v\n", fi.CTime())    // status/metadata changed
-  fmt.Printf("MTime()   =%v\n", fi.MTime())    // alias for ModTime
-  fmt.Printf("UID()     =%v\n", fi.UID())      // user ID
-  fmt.Printf("GID()     =%v\n", fi.GID())      // group ID
+	name := "hello.txt"
+	err := compat.WriteFile(name, []byte("Hello World"), 0o654)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fi, err := compat.Stat(name)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Printf("Name()   =%v\n", fi.Name())
+	fmt.Printf("Size()   =%v\n", fi.Size())
+	fmt.Printf("Mode()   =0o%o (%v)\n", fi.Mode(), fi.Mode())
+	fmt.Printf("ModTime()=%v\n", fi.ModTime())
+	fmt.Printf("IsDir()  =%v\n", fi.IsDir())
+	fmt.Printf("Sys()    =%+v\n", fi.Sys())
+	fmt.Printf("PartID() =%v\n", fi.PartitionID())
+	fmt.Printf("FileID() =%v (0x%x)\n", fi.FileID(), fi.FileID())
+	fmt.Printf("Links()  =%v\n", fi.Links())
+	fmt.Printf("ATime()  =%v\n", fi.ATime())
+	fmt.Printf("BTime()  =%v\n", fi.BTime())
+	fmt.Printf("CTime()  =%v\n", fi.CTime())
+	fmt.Printf("MTime()  =%v\n", fi.MTime())
+	fmt.Printf("UID()    =%v (0x%x)\n", fi.UID(), fi.UID())
+	fmt.Printf("GID()    =%v (0x%x)\n", fi.GID(), fi.GID())
 }
+
 ```
-
-which, on Linux, produced:
-
+which, on Linux, produces:
 ```text
-Name()    =cmd
-Size()    =1597624
-Mode()    =0o775
-ModTime() =2025-05-08 22:11:01.353744514 -0700 PDT
-IsDir()   =false
-Sys()     =&{Dev:64512 Ino:56893266 Nlink:1 Mode:33277 Uid:1000 Gid:1000 X__pad0:0 Rdev:0 Size:1597624 Blksize:4096 Blocks:3128 Atim:{Sec:1746767461 Nsec:354744521} Mtim:{Sec:1746767461 Nsec:353744514} Ctim:{Sec:1746767461 Nsec:353744514} X__unused:[0 0 0]}
-PartID()  =64512
-FileID()  =56893266
-Links()   =1
-ATime()   =2025-05-08 22:11:01.354744521 -0700 PDT
-BTime()   =2025-05-08 22:11:01.353744514 -0700 PDT
-CTime()   =2025-05-08 22:11:01.353744514 -0700 PDT
-MTime()   =2025-05-08 22:11:01.353744514 -0700 PDT
-UID()     =1000
-GID()     =1000
+Name()   =hello.txt
+Size()   =11
+Mode()   =0o664 (-rw-rw-r--)
+ModTime()=2025-08-09 18:46:55.360909223 -0700 PDT
+IsDir()  =false
+Sys()    =&{Dev:64512 Ino:18756660 Nlink:1 Mode:33204 Uid:1000 Gid:1000 X__pad0:0 Rdev:0 Size:11 Blksize:4096 Blocks:8 Atim:{Sec:1754790298 Nsec:87132300} Mtim:{Sec:1754790415 Nsec:360909223} Ctim:{Sec:1754790415 Nsec:360909223} X__unused:[0 0 0]}
+PartID() =64512
+FileID() =18756660 (0x11e3434)
+Links()  =1
+ATime()  =2025-08-09 18:44:58.0871323 -0700 PDT
+BTime()  =2025-08-09 10:57:37.073054326 -0700 PDT
+CTime()  =2025-08-09 18:46:55.360909223 -0700 PDT
+MTime()  =2025-08-09 18:46:55.360909223 -0700 PDT
+UID()    =1000 (0x3e8)
+GID()    =1000 (0x3e8)
 ```
+and on Windows, produces:
+```text
+Name()   =hello.txt
+Size()   =11
+Mode()   =0o654 (-rw-r-xr--)
+ModTime()=2025-08-09 18:44:58.0871323 -0700 PDT
+IsDir()  =false
+Sys()    =&{FileAttributes:32 CreationTime:{LowDateTime:4072684994 HighDateTime:31197526} LastAccessTime:{LowDateTime:1626920091 HighDateTime:31197592} LastWriteTime:{LowDateT
+HighDateTime:31197592} FileSizeHigh:0 FileSizeLow:11}
+PartID() =8
+FileID() =19421773393914848 (0x450000000d6be0)
+Links()  =1
+ATime()  =2025-08-09 18:44:58.0871323 -0700 PDT
+BTime()  =2025-08-09 10:56:35.879469 -0700 PDT
+CTime()  =2025-08-09 18:44:58.0871323 -0700 PDT
+MTime()  =2025-08-09 18:44:58.0871323 -0700 PDT
+UID()    =197609 (0x303e9)
+GID()    =197121 (0x30201)
+```
+with icacls showing:
+```
+icacls hello.txt
+
+hello.txt computername\ross:(R,W,D)
+          computername\None:(RX)
+          Everyone:(R)
+```
+and powershell showing:
+```
+powershell -command "Get-Acl hello.txt | Format-List"
+
+Path   : Microsoft.PowerShell.Core\FileSystem::C:\path\to\hello.txt
+Owner  : computername\ross
+Group  : computername\None
+Access : Everyone Allow  Read, Synchronize
+         computername\None Allow  ReadAndExecute, Synchronize
+         computername\ross Allow  Write, Delete, Read, Synchronize
+Audit  :
+Sddl   : O:S-1-5-21-2970224322-3395479738-1485484954-1001G:S-1-5-21-2970224322-3395479738-1485484954-513D:P(A;;FR;;;WD)(A;;0x1200a9;;;S-1-5-21-2970224322-3395479738-1485484954-5
+         19f;;;S-1-5-21-2970224322-3395479738-1485484954-1001)
 
 # Installing
 

@@ -15,30 +15,34 @@ import (
 )
 
 func main() {
-	exe, _ := os.Executable()
+	_ = compat.Umask(0)
 
-	fi, err := compat.Stat(exe)
+	name := "hello.txt"
+	err := compat.WriteFile(name, []byte("Hello World"), 0o654)
 	if err != nil {
-		log.Print(err)
+		log.Fatal(err)
+	}
 
-		return
+	fi, err := compat.Stat(name)
+	if err != nil {
+		log.Fatal(err)
 	}
 
 	fmt.Printf("Name()   =%v\n", fi.Name())
 	fmt.Printf("Size()   =%v\n", fi.Size())
-	fmt.Printf("Mode()   =0o%o\n", fi.Mode())
+	fmt.Printf("Mode()   =0o%o (%v)\n", fi.Mode(), fi.Mode())
 	fmt.Printf("ModTime()=%v\n", fi.ModTime())
 	fmt.Printf("IsDir()  =%v\n", fi.IsDir())
 	fmt.Printf("Sys()    =%+v\n", fi.Sys())
 	fmt.Printf("PartID() =%v\n", fi.PartitionID())
-	fmt.Printf("FileID() =%v\n", fi.FileID())
+	fmt.Printf("FileID() =%v (0x%x)\n", fi.FileID(), fi.FileID())
 	fmt.Printf("Links()  =%v\n", fi.Links())
 	fmt.Printf("ATime()  =%v\n", fi.ATime())
 	fmt.Printf("BTime()  =%v\n", fi.BTime())
 	fmt.Printf("CTime()  =%v\n", fi.CTime())
 	fmt.Printf("MTime()  =%v\n", fi.MTime())
-	fmt.Printf("UID()    =%v\n", fi.UID())
-	fmt.Printf("GID()    =%v\n", fi.GID())
+	fmt.Printf("UID()    =%v (0x%x)\n", fi.UID(), fi.UID())
+	fmt.Printf("GID()    =%v (0x%x)\n", fi.GID(), fi.GID())
 
 	samePartition()
 	samePartitionl()

@@ -9,16 +9,15 @@ import (
 	"os"
 )
 
-func chmod(name string, perm os.FileMode) error {
-	return os.Chmod(name, perm)
-}
+var chmod = os.Chmod
 
 func create(name string, perm os.FileMode, flag int) (*os.File, error) {
 	if perm == 0 {
 		perm = CreatePerm
 	}
 
-	return openFile(name, flag|O_CREATE, perm)
+	flag = (flag | O_CREATE) & ^O_EXCL
+	return openFile(name, flag, perm)
 }
 
 // @TODO clone os.CreateTemp so perms are set on creation, as is done in Windows.
@@ -31,7 +30,7 @@ func createTemp(dir, pattern string, perm os.FileMode, flag int) (*os.File, erro
 		return nil, err
 	}
 
-	if err == nil && perm != CreateTempPerm {
+	if perm != CreateTempPerm {
 		err = os.Chmod(f.Name(), perm)
 		if err != nil {
 			_ = f.Close()
@@ -43,17 +42,11 @@ func createTemp(dir, pattern string, perm os.FileMode, flag int) (*os.File, erro
 	return wrap(f.Name(), flag, f)
 }
 
-func mkdir(name string, perm os.FileMode) error {
-	return os.Mkdir(name, perm)
-}
+var mkdir = os.Mkdir
 
-func mkdirAll(name string, perm os.FileMode) error {
-	return os.MkdirAll(name, perm)
-}
+var mkdirAll = os.MkdirAll
 
-func mkdirTemp(dir, pattern string) (string, error) {
-	return os.MkdirTemp(dir, pattern)
-}
+var mkdirTemp = os.MkdirTemp
 
 func openFile(name string, flag int, perm os.FileMode) (*os.File, error) {
 	f, err := os.OpenFile(name, flag, perm)
