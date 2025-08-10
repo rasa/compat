@@ -25,18 +25,10 @@ jobs:
         node-version: 20
 
     - run: |
-        # Run Go WASM test in Node.js
+        # Run Go js/wasm test in node.js
         printf '::notice ::%s\n' "$(go version)"
-        cp "$(go env GOROOT)/lib/wasm/wasm_exec.js" .
-        test -f wasm_exec.js || wget https://raw.githubusercontent.com/golang/go/refs/heads/master/lib/wasm/wasm_exec.js
-        GOOS=js GOARCH=wasm go test -v -c -o main.test.wasm .
-        cat <<-'EOF' >run-test.js
-        require("./wasm_exec.js");
-        const fs = require("fs");
-        const go = new Go();
-        WebAssembly.instantiate(fs.readFileSync("main.test.wasm"), go.importObject)
-          .then(r => go.run(r.instance))
-          .catch(err => console.error(err));
-        EOF
+        GOROOT=$(go env GOROOT)
+        cp "${GOROOT}/misc/wasm/wasm_exec.js" .
+        GOOS=js GOARCH=wasm go test -v -exec="${GOROOT}/lib/wasm/go_js_wasm_exec" .
         node run-test.js
         exit 0
