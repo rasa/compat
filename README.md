@@ -17,11 +17,6 @@
 * [Overview](#overview)
 * [Usage](#usage)
 * [Stat](#stat)
-* [Installing](#installing)
-* [FileInfo Functions](#fileinfo-functions)
-* [Other Functions](#other-functions)
-* [Contributing](#contributing)
-* [License](#license)
 <!--te-->
 
 # Overview
