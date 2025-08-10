@@ -45,6 +45,7 @@ func Create(name string, opts ...Option) (*os.File, error) {
 		fileMode:     CreatePerm,
 		flag:         O_RDWR | O_CREATE | O_TRUNC,
 	}
+
 	for _, opt := range opts {
 		opt(&fopts)
 	}
@@ -52,17 +53,23 @@ func Create(name string, opts ...Option) (*os.File, error) {
 	return create(name, fopts.fileMode, fopts.flag)
 }
 
-// CreateEx creates or truncates the named file.
-// It creates the named file with specified flag ([O_RDONLY] etc.).
-// If the file already exists, it is truncated. If the file does not exist,
-// it is create using the perm's permission bits (before umask).
-// If successful, methods on the returned File can
+// CreateEx creates or opens the named file.
+// It creates or opens the file with the specified flags ([O_RDWR] etc.).
+// If O_RDWR or O_WRONLY is not specified, O_RDWR will be used.
+// If the file already exists, and O_TRUNC is passed, it is truncated.
+// If the file does not exist, it is create using the perm's permission bits
+// (before umask). If successful, methods on the returned File can
 // be used for I/O; the associated file descriptor has mode [O_RDWR].
 // The directory containing the file must already exist.
 // If there is an error, it will be of type [*PathError].
 func CreateEx(name string, perm os.FileMode, flag int) (*os.File, error) {
 	// https://github.com/golang/go/blob/master/src/os/file.go#L393
 	// return OpenFile(name, O_RDWR|O_CREATE|O_TRUNC, 0666)
+
+	flag |= O_CREATE
+	if flag&O_WRONLY == 0 {
+		flag |= O_RDWR
+	}
 	return create(name, perm, flag)
 }
 

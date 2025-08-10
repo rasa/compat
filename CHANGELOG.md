@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ### Fixed
 
 - Fix ACL rights by using GetTokenInformation(.., TokenUser, ..) on Windows.
+- Fix `CreateEx()` failure due to missing flag.
 - If a mode of `0` is passed to a function, use the function's default mode.
 
 ### Changed
