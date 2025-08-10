@@ -14,11 +14,13 @@ import (
 	"github.com/rasa/compat"
 )
 
+const mode = os.FileMode(0o654) // Something other than the default.
+
 func main() {
 	_ = compat.Umask(0)
 
 	name := "hello.txt"
-	err := compat.WriteFile(name, []byte("Hello World"), 0o654)
+	err := compat.WriteFile(name, []byte("Hello World"), mode)
 	if err != nil {
 		log.Fatal(err)
 	}
