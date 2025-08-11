@@ -6,6 +6,8 @@ package compat_test
 import (
 	"context"
 	"os"
+	"runtime"
+	"strings"
 	"testing"
 
 	"github.com/rasa/compat"
@@ -23,6 +25,12 @@ func TestPartitionType(t *testing.T) {
 	ctx := context.Background()
 	partitionType, err := compat.PartitionType(ctx, name)
 	if err != nil {
+		if strings.Contains(err.Error(), "not implemented") {
+			skip(t, "Skipping test on " + runtime.GOOS + ": " + err.Error())
+
+			return
+		}
+
 		t.Error(err)
 
 		return
