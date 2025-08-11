@@ -6,6 +6,9 @@ name: build-only-nocgo
 on: # yamllint disable-line rule:truthy
   workflow_call: # Required so this workflow can be called from another workflow
     inputs:
+      cgo:
+        type: string
+        default: "0"
       goarches:
         type: string
         default: default
@@ -14,6 +17,13 @@ on: # yamllint disable-line rule:truthy
         default: "false"
   workflow_dispatch: # Allows you to run this workflow manually from the Actions tab
     inputs:
+      # checkov:skip=CKV_GHA_7:The build output cannot be affected by user parameters...
+      cgo:
+        type: choice
+        default: "0"
+        options:
+          - "0"
+          - "1"
       # checkov:skip=CKV_GHA_7:The build output cannot be affected by user parameters...
       goarches:
         description: "Build on the default GOARCH, or all GOARCHes for the OS"
@@ -32,7 +42,6 @@ on: # yamllint disable-line rule:truthy
         default: "false"
 
 env:
-  CGO_ENABLED: 0
   goarches: ${{ inputs.goarches }}
   verbose_testing: ${{ inputs.verbose_testing }}
 
@@ -51,6 +60,8 @@ jobs:
     - run: printf '::notice ::%s\n' "$(go version)"
 
     - name: go build (all targets but android and ios)
+      env:
+        CGO_ENABLED: ${{ inputs.cgo }}
       run: |
         # go build (all targets but android and ios)
         printf 'goarches=%s\n' "${{ inputs.goarches }}"
