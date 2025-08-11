@@ -5,6 +5,8 @@
 
 package compat
 
+import "time"
+
 // Not supported: ATime | BTime | CTime.
 const supported SupportedType = Links | UID | GID
 
