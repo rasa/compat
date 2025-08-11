@@ -1,6 +1,8 @@
 // SPDX-FileCopyrightText: Copyright © 2025 Ross Smith II <ross@smithii.com>
 // SPDX-License-Identifier: MIT
 
+//go:build !(openbsd && ppc64) && !(netbsd && 386) && !(freebsd && riscv64) && cgo && !(darwin && arm64) && !(darwin && amd64) && !(aix && ppc64)
+
 package compat_test
 
 import (
