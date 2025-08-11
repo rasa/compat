@@ -26,7 +26,7 @@ func TestPartitionType(t *testing.T) {
 	partitionType, err := compat.PartitionType(ctx, name)
 	if err != nil {
 		if strings.Contains(err.Error(), "not implemented") {
-			skip(t, "Skipping test on " + runtime.GOOS + ": " + err.Error())
+			skip(t, "Skipping test on "+runtime.GOOS+": "+err.Error())
 
 			return
 		}
