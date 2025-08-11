@@ -315,7 +315,7 @@ func TestStatUser(t *testing.T) {
 		return // tinygo doesn't support t.Skip
 	}
 
-	if compat.IsTiny {
+	if compat.IsTinygo {
 		// tinygo: Current requires cgo or $USER, $HOME set in environment
 		skip(t, "Skipping test: User() not supported on tinygo")
 
@@ -352,7 +352,7 @@ func TestStatGroup(t *testing.T) {
 		return // tinygo doesn't support t.Skip
 	}
 
-	if compat.IsTiny {
+	if compat.IsTinygo {
 		skip(t, "Skipping test: Group() not supported on tinygo")
 
 		return // tinygo doesn't support t.Skip
