@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Added
 
+- Add `PartitionType()` function.
 - Add `Getuid()` and `Getgid()` functions.
 - Add `IsX86CPU`, `IsArmCPU`, `IsMipsCPU`, and `IsPpcCPU` constants.
 
