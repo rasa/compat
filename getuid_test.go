@@ -12,8 +12,13 @@ import (
 func TestGetuid(t *testing.T) {
 	uid, err := compat.Getuid()
 	if err != nil {
-		t.Fatalf("Getuid: got %v, want nil", err)
+		t.Errorf("Getuid: got %v, want nil", err)
 
+		return // tinygo doesn't support t.Fatal
+	}
+
+	if compat.IsWasip1 {
+		// Wasip1 returns -1 for UID
 		return
 	}
 
@@ -25,8 +30,13 @@ func TestGetuid(t *testing.T) {
 func TestGetgid(t *testing.T) {
 	gid, err := compat.Getgid()
 	if err != nil {
-		t.Fatalf("Getgid: got %v, want nil", err)
+		t.Errorf("Getgid: got %v, want nil", err)
 
+		return // tinygo doesn't support t.Fatal
+	}
+
+	if compat.IsWasip1 {
+		// Wasip1 returns -1 for GID
 		return
 	}
 

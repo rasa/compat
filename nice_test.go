@@ -20,7 +20,7 @@ func TestNiceRenice(t *testing.T) {
 	if compat.IsWasip1 {
 		skip(t, "Skipping test: operation not supported")
 
-		return
+		return // tinygo doesn't support t.Skip
 	}
 
 	err := compat.Renice(compat.MaxNice)
@@ -34,7 +34,7 @@ func TestNiceReniceIfRoot(t *testing.T) {
 	if compat.IsWasip1 {
 		skip(t, "Skipping test: operation not supported")
 
-		return
+		return // tinygo doesn't support t.Skip
 	}
 
 	isRoot, _ := compat.IsRoot()
@@ -42,7 +42,7 @@ func TestNiceReniceIfRoot(t *testing.T) {
 	if !compat.IsWindows && !isRoot {
 		skip(t, "Skipping test: we aren't the root/admin user")
 
-		return
+		return // tinygo doesn't support t.Skip
 	}
 
 	nice, err := compat.Nice()
@@ -56,7 +56,7 @@ func TestNiceReniceIfRoot(t *testing.T) {
 			// under act, "permission denied" is returned, even though we root.
 			skip(t, err)
 
-			return
+			return // tinygo doesn't support t.Skip
 		}
 	}
 

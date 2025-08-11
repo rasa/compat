@@ -56,7 +56,7 @@ func TestStatLinks(t *testing.T) {
 	if !compat.Supports(compat.Links) {
 		skip(t, "Skipping test: Links() not supported on "+runtime.GOOS)
 
-		return
+		return // tinygo doesn't support t.Skip
 	}
 
 	name, err := createTemp(t)
@@ -112,7 +112,7 @@ func TestStatATime(t *testing.T) {
 	if !compat.Supports(compat.ATime) {
 		skip(t, "Skipping test: ATime() not supported on "+runtime.GOOS)
 
-		return
+		return // tinygo doesn't support t.Skip
 	}
 
 	now := time.Now()
@@ -157,7 +157,7 @@ func TestStatBTime(t *testing.T) {
 	if !compat.Supports(compat.BTime) {
 		skip(t, "Skipping test: BTime() not supported on "+runtime.GOOS)
 
-		return
+		return // tinygo doesn't support t.Skip
 	}
 
 	now := time.Now()
@@ -181,7 +181,7 @@ func TestStatCTime(t *testing.T) {
 	if !compat.Supports(compat.CTime) {
 		skip(t, "Skipping test: CTime() not supported on "+runtime.GOOS)
 
-		return
+		return // tinygo doesn't support t.Skip
 	}
 
 	now := time.Now()
@@ -244,7 +244,7 @@ func TestStatUID(t *testing.T) {
 	if !compat.Supports(compat.UID) {
 		skip(t, "Skipping test: UID() not supported on "+runtime.GOOS)
 
-		return
+		return // tinygo doesn't support t.Skip
 	}
 
 	name, err := createTemp(t)
@@ -277,7 +277,7 @@ func TestStatGID(t *testing.T) {
 	if !compat.Supports(compat.GID) {
 		skip(t, "Skipping test: GID() not supported on "+runtime.GOOS)
 
-		return
+		return // tinygo doesn't support t.Skip
 	}
 
 	name, err := createTemp(t)

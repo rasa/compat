@@ -54,7 +54,7 @@ func TestRuntime(t *testing.T) { //nolint:funlen,gocyclo // quiet linter
 		if compat.IsTinygo || compat.IsWasm {
 			skipf(t, "Skipping test: %v", err)
 
-			return
+			return // tinygo doesn't support t.Fatal
 		}
 
 		t.Fatal(err)
@@ -67,7 +67,7 @@ func TestRuntime(t *testing.T) { //nolint:funlen,gocyclo // quiet linter
 		if compat.IsTinygo || compat.IsWasm {
 			skipf(t, "Skipping test: %v", err)
 
-			return
+			return // tinygo doesn't support t.Fatal
 		}
 
 		t.Fatal(err)
