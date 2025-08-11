@@ -6,13 +6,14 @@
 package compat
 
 import (
+	"errors"
 	"unsafe"
 
 	"golang.org/x/sys/windows"
 )
 
 // Getuid returns the User ID as a uint64. On Windows, the user's SID is
-// converted to it's POSIX equivalent, which is compatiable with Cygwin and
+// converted to it's POSIX equivalent, which is compatible with Cygwin and
 // Git for Windows. On Plan9, the User ID is a 64-bit hash of the user's name.
 func Getuid() (uint64, error) {
 	var token windows.Token
@@ -38,11 +39,11 @@ func Getuid() (uint64, error) {
 		return UnknownID, err
 	}
 
-	return uint64(uid), nil
+	return uint64(uid), nil //nolint:gosec // quiet linter
 }
 
 // Getgid returns the Group ID as a uint64. On Windows, the user's primary group's
-// SID is converted to its POSIX equivalent, which is compatiable with Cygwin and
+// SID is converted to its POSIX equivalent, which is compatible with Cygwin and
 // Git for Windows. On Plan9, the Getgid returns the value returned by Getuid().
 func Getgid() (uint64, error) {
 	primaryDomainSID, err := getPrimaryDomainSID()
@@ -60,7 +61,7 @@ func Getgid() (uint64, error) {
 		return UnknownID, err
 	}
 
-	return uint64(gid), nil
+	return uint64(gid), nil //nolint:gosec // quiet linter
 }
 
 func getPrimaryGroupSID() (*windows.SID, error) {
@@ -74,7 +75,7 @@ func getPrimaryGroupSID() (*windows.SID, error) {
 	// Get size for TOKEN_PRIMARY_GROUP
 	var size uint32
 	err = windows.GetTokenInformation(token, windows.TokenPrimaryGroup, nil, 0, &size)
-	if err != windows.ERROR_INSUFFICIENT_BUFFER {
+	if !errors.Is(err, windows.ERROR_INSUFFICIENT_BUFFER) {
 		return nil, err
 	}
 
