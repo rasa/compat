@@ -5,8 +5,10 @@ package compat_test
 
 import (
 	"os"
+	"os/user"
 	"path/filepath"
 	"runtime"
+	"strings"
 	"testing"
 	"time"
 
@@ -267,7 +269,7 @@ func TestStatUID(t *testing.T) {
 		return
 	}
 
-	want := uint64(os.Getuid()) //nolint:gosec // G115: conversion int -> uint64
+	want := os.Getuid()
 	if got != want {
 		t.Fatalf("UID(): got %v, want %v", got, want)
 	}
@@ -300,9 +302,74 @@ func TestStatGID(t *testing.T) {
 		return
 	}
 
-	want := uint64(os.Getgid()) //nolint:gosec // G115: conversion int -> uint64
+	want := os.Getgid()
 	if got != want {
 		t.Fatalf("GID(): got %v, want %v", got, want)
+	}
+}
+
+func TestStatUser(t *testing.T) {
+	if !compat.Supports(compat.UID) {
+		skip(t, "Skipping test: User() not supported on "+runtime.GOOS)
+
+		return // tinygo doesn't support t.Skip
+	}
+
+	name, err := createTemp(t)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	fi, err := compat.Stat(name)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	got := fi.User()
+
+	u, err := user.Current()
+	if err != nil {
+		t.Fatal(err)
+	}
+	want := u.Username
+
+	if !compareNames(got, want) {
+		t.Fatalf("User(): got %v, want %v", got, want)
+	}
+}
+
+func TestStatGroup(t *testing.T) {
+	if !compat.Supports(compat.GID) {
+		skip(t, "Skipping test: Group() not supported on "+runtime.GOOS)
+
+		return // tinygo doesn't support t.Skip
+	}
+
+	name, err := createTemp(t)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	fi, err := compat.Stat(name)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	got := fi.Group()
+
+	u, err := user.Current()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	g, err := user.LookupGroupId(u.Gid)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	want := g.Name
+	if !compareNames(got, want) {
+		t.Fatalf("Group(): got %v, want %v", got, want)
 	}
 }
 
@@ -440,4 +507,33 @@ func createTemp(t *testing.T) (string, error) {
 
 func timesClose(a, b time.Time) bool {
 	return a.Sub(b).Abs() < allowedTimeVariance
+}
+
+func compareNames(got string, want string) bool {
+	if !compat.IsWindows {
+		return got == want
+	}
+
+	if got == "" || want == "" {
+		return false
+	}
+	gotDomain, gotName := parseName(got)
+	wantDomain, wantName := parseName(want)
+	if gotName == wantName {
+		if gotDomain == wantDomain || gotDomain == "" || wantDomain == "" {
+			return true
+		}
+	}
+
+	return false
+}
+
+func parseName(name string) (string, string) {
+	parts := strings.Split(name, `\`)
+	switch {
+	case len(parts) == 1:
+		return "", strings.ToLower(parts[0])
+	default:
+		return strings.ToLower(parts[0]), strings.ToLower(parts[1])
+	}
 }
