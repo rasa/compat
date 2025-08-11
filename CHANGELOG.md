@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Added
 
+- Add `Getuid()` and `Getgid()` functions.
+- Add `IsX86CPU`, `IsArmCPU`, `IsMipsCPU`, and `IsPpcCPU` constants.
+
 ### Fixed
 
 ### Changed

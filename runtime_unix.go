@@ -5,4 +5,6 @@
 
 package compat
 
+// IsUnix is true if the unix build tag has been set.
+// Currently, it's equivalent to: IsAIX || IsAndroid || IsApple || IsBSD || IsLinux || IsSolaria.
 const IsUnix = true
