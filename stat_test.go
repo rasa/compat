@@ -510,6 +510,12 @@ func timesClose(a, b time.Time) bool {
 }
 
 func compareNames(got string, want string) bool {
+	if compat.IsWasip1 {
+		if got == "" && want == "daemon" {
+			return true
+		}
+	}
+
 	if !compat.IsWindows {
 		return got == want
 	}
