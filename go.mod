@@ -13,7 +13,7 @@ tool (
 require (
 	github.com/capnspacehook/go-acl v0.0.0-20191017210724-28a28d1b4c77
 	github.com/cespare/xxhash v1.1.0
-	github.com/shirou/gopsutil/v4 v4.25.6
+	github.com/shirou/gopsutil/v4 v4.25.7
 	golang.org/x/sys v0.35.0
 )
 
