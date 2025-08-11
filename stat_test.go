@@ -315,6 +315,13 @@ func TestStatUser(t *testing.T) {
 		return // tinygo doesn't support t.Skip
 	}
 
+	if compat.IsTiny {
+		// tinygo: Current requires cgo or $USER, $HOME set in environment
+		skip(t, "Skipping test: User() not supported on tinygo")
+
+		return // tinygo doesn't support t.Skip
+	}
+		
 	name, err := createTemp(t)
 	if err != nil {
 		t.Fatal(err)
@@ -341,6 +348,12 @@ func TestStatUser(t *testing.T) {
 func TestStatGroup(t *testing.T) {
 	if !compat.Supports(compat.GID) {
 		skip(t, "Skipping test: Group() not supported on "+runtime.GOOS)
+
+		return // tinygo doesn't support t.Skip
+	}
+
+	if compat.IsTiny {
+		skip(t, "Skipping test: Group() not supported on tinygo")
 
 		return // tinygo doesn't support t.Skip
 	}
