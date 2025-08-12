@@ -167,10 +167,10 @@ The table below lists the operating system support for each of the `FileInfo` fu
 <!--           | PartID+ | Links | ATime | BTime | CTime | UID+ | -->
 
 \* Support will depend on the underlying file system. See [Comparison of file systems](https://wikipedia.org/wiki/Comparison_of_file_systems#Metadata) for details.<br/>
-† Uses the same logic as in Cygwin/MSYS2 to map Windows string-based SIDs to 64-bit integer UIDs/GIDs.
+† Uses the same logic as in Cygwin/MSYS2 to map Windows string-based SIDs to 32-bit integer UIDs/GIDs.
 
 ✅ fully supported.<br/>
-☑️ the UID() and GID() values are 64-bit hashes of the user and group names.<br/>
+☑️ the UID() and GID() values are 32-bit hashes of the user and group names.<br/>
 ✖️ not implemented (but it appears the OS supports it, so we could add support).<br/>
 ❌ not implemented (as it appears the OS doesn't support it).<br/>
 <!-- 🚧 planned to be implemented.<br/> -->

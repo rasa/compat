@@ -31,9 +31,21 @@ const (
 	// GID defines if FileInfo's GID() function is supported by the OS.
 	// GID() returns the group ID of the file's group.
 	GID
+)
 
-	// UnknownID is returned when the UID or GID could not be determined.
-	UnknownID = ^uint64(0) // -1 but as a uint
+// UnknownID is returned when the UID or GID could not be determined.
+const UnknownID = int(-1)
+
+// UserIDSourceType defines if the UID() or User() field is source for the user's UID.
+type UserIDSourceType uint
+
+const (
+	// UserIDSourceIsNumeric defines if the OS stores the user's ID as an int.
+	UserIDSourceIsNumeric UserIDSourceType = 1 << iota
+	// UserIDSourceIsNumeric defines if the OS stores the user's ID as a string.
+	UserIDSourceIsString
+	// UserIDSourceIsNone defines if the OS does not support user's IDs.
+	UserIDSourceIsNone
 )
 
 // A FileInfo describes a file and is returned by [Stat].
@@ -52,8 +64,11 @@ type FileInfo interface {
 	BTime() time.Time    // created (birthed) time, or 0 if unsupported
 	CTime() time.Time    // status/metadata changed time, or 0 if unsupported
 	MTime() time.Time    // last modified time (alias)
-	UID() uint64         // user ID, or 0 if unsupported
-	GID() uint64         // group ID, or 0 if unsupported
+	UID() int            // user ID, or -1 if an error or unsupported
+	GID() int            // group ID, or -1 if an error or unsupported
+	User() string        // user name, or "" if an error or unsupported
+	Group() string       // group name, or "" if an error or unsupported
+	Error() error        // error result of the last system call that failed
 }
 
 func (fs *fileStat) Name() string        { return fs.name }
@@ -66,15 +81,18 @@ func (fs *fileStat) PartitionID() uint64 { return fs.partID }
 func (fs *fileStat) FileID() uint64      { return fs.fileID }
 func (fs *fileStat) Links() uint64       { return fs.links }
 func (fs *fileStat) ATime() time.Time    { return fs.atime }
-func (fs *fileStat) BTime() time.Time    { return fs.btime }
-func (fs *fileStat) CTime() time.Time    { return fs.ctime }
 func (fs *fileStat) MTime() time.Time    { return fs.mtime } // duplicates ModTime
-func (fs *fileStat) UID() uint64         { return fs.uid }
-func (fs *fileStat) GID() uint64         { return fs.gid }
+func (fs *fileStat) Error() error        { return fs.err }
 
 // Supports returns whether function is supported by the operating system.
 func Supports(function SupportedType) bool {
 	return supported&function == function
+}
+
+// UserIDSource returns the source of the user's ID: UserIDSourceIsNumeric,
+// UserIDSourceIsString, or UserIDSourceIsNone.
+func UserIDSource() UserIDSourceType {
+	return userIDSource
 }
 
 // Stat returns a [FileInfo] describing the named file.

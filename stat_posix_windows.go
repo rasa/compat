@@ -132,6 +132,7 @@ func isSameDomainSID(sid1, sid2 *windows.SID) bool {
 	return last1 > 0 && last2 > 0 && s1[:last1] == s2[:last2]
 }
 
+// See https://cygwin.com/cygwin-ug-net/ntsec.html
 func sidToPOSIXID(sid *windows.SID, primaryDomainSid *windows.SID) (int, error) {
 	sidStr := sid.String()
 
@@ -160,26 +161,66 @@ func sidToPOSIXID(sid *windows.SID, primaryDomainSid *windows.SID) (int, error) 
 	}
 }
 
-func getUserGroupIDs(path string) (uint64, uint64, error) {
+func nameFromSID(sid *windows.SID) (string, error) {
+	name16 := make([]uint16, 256)      //nolint:mnd // quiet linter
+	domain16 := make([]uint16, 256)    //nolint:mnd // quiet linter
+	nameLen := uint32(len(name16))     //nolint:gosec // quiet linter
+	domainLen := uint32(len(domain16)) //nolint:gosec // quiet linter
+	var sidUse uint32
+
+	err := windows.LookupAccountSid(
+		nil, // Local system
+		sid,
+		&name16[0],
+		&nameLen,
+		&domain16[0],
+		&domainLen,
+		&sidUse,
+	)
+	if err != nil {
+		return "", fmt.Errorf("cannot get name from SID: %w", err)
+	}
+
+	name := syscall.UTF16ToString(name16[:nameLen])
+	domain := syscall.UTF16ToString(domain16[:domainLen])
+
+	if domain != "" {
+		name = domain + `\` + name
+	}
+
+	return name, nil
+}
+
+func getUserGroup(path string) (int, int, string, string, error) {
 	ownerSID, groupSID, err := getFileOwnerAndGroupSIDs(path)
 	if err != nil {
-		return UnknownID, UnknownID, err
+		return UnknownID, UnknownID, "", "", err
 	}
 
 	primaryDomainSID, err := getPrimaryDomainSID()
 	if err != nil {
-		return UnknownID, UnknownID, err
+		return UnknownID, UnknownID, "", "", err
 	}
 
 	uid, err := sidToPOSIXID(ownerSID, primaryDomainSID)
 	if err != nil {
-		return UnknownID, UnknownID, err
+		return UnknownID, UnknownID, "", "", err
 	}
 
 	gid, err := sidToPOSIXID(groupSID, primaryDomainSID)
 	if err != nil {
-		return UnknownID, UnknownID, err
+		return UnknownID, UnknownID, "", "", err
 	}
 
-	return uint64(uid), uint64(gid), nil //nolint:gosec // quiet linter
+	user, err := nameFromSID(ownerSID)
+	if err != nil {
+		return UnknownID, UnknownID, "", "", err
+	}
+
+	group, err := nameFromSID(groupSID)
+	if err != nil {
+		return UnknownID, UnknownID, "", "", err
+	}
+
+	return uid, gid, user, group, nil
 }
