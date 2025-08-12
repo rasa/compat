@@ -10,6 +10,9 @@ ecrc
 golangci
 goreleaser
 jsonlintrc
+nocgo
+partitiontype
 pylintrc
 textlintrc
-wasi
+tinygo
+vhdx
