@@ -1,8 +1,6 @@
 // SPDX-FileCopyrightText: Copyright © 2025 Ross Smith II <ross@smithii.com>
 // SPDX-License-Identifier: MIT
 
-//go:build !(openbsd && ppc64) && !(netbsd && 386) && !(freebsd && riscv64) && !(cgo && aix && ppc64)
-
 package compat_test
 
 import (
@@ -28,7 +26,7 @@ func TestPartitionType(t *testing.T) {
 	partitionType, err := compat.PartitionType(ctx, name)
 	if err != nil {
 		if strings.Contains(err.Error(), "not implemented") {
-			skip(t, "Skipping test on "+runtime.GOOS+": "+err.Error())
+			skip(t, "Skipping test on "+runtime.GOOS+"/"+runtime.GOARCH+": "+err.Error())
 
 			return
 		}
