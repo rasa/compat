@@ -8,26 +8,35 @@ package compat
 import (
 	"os/user"
 
-	"github.com/cespare/xxhash"
+	"github.com/OneOfOne/xxhash"
+	// was "github.com/cespare/xxhash"
 )
 
-// Getuid returns the User ID as a uint64. On Windows, the user's SID is
-// converted to it's POSIX equivalent, which is compatible with Cygwin and
-// Git for Windows. On Plan9, the User ID is a 64-bit hash of the user's name.
-func Getuid() (uint64, error) {
+// Getuid returns the User ID for the current user. On Windows, the user's SID is
+// converted to its POSIX equivalent, which is compatible with Cygwin and
+// Git for Windows. On Plan9, Getuid returns a 32-bit hash of the user's name.
+func Getuid() (int, error) {
 	u, err := user.Current()
 	if err != nil {
 		return UnknownID, err
 	}
 
-	uid := xxhash.Sum64([]byte(u.Username))
+	uid := int(xxhash.Checksum32([]byte(u.Username)))
 
 	return uid, nil
 }
 
-// Getgid returns the Group ID as a uint64. On Windows, the user's primary group's
-// SID is converted to its POSIX equivalent, which is compatible with Cygwin and
-// Git for Windows. On Plan9, the Getgid returns the value returned by Getuid().
-func Getgid() (uint64, error) {
-	return Getuid()
+// Getgid returns the default Group ID for the current user. On Windows, the
+// user's primary group's SID is converted to its POSIX equivalent, which is
+// compatible with Cygwin and Git for Windows. On Plan9, Getuid returns a
+// 32-bit hash of the user's group's name, as provided by golang's os/user package.
+func Getgid() (int, error) {
+	u, err := user.Current()
+	if err != nil {
+		return UnknownID, err
+	}
+
+	gid := int(xxhash.Checksum32([]byte(u.Gid)))
+
+	return gid, nil
 }

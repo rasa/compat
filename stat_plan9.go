@@ -10,11 +10,13 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/cespare/xxhash"
+	"github.com/OneOfOne/xxhash"
 )
 
 // Not supported: Links | BTime | CTime.
 const supported SupportedType = ATime | UID | GID
+
+const userIDSource UserIDSourceType = UserIDSourceIsString
 
 // A fileStat is the implementation of FileInfo returned by Stat and Lstat.
 // See https://github.com/golang/go/blob/8cd6d68a/src/os/types_plan9.go#L13
@@ -30,8 +32,16 @@ type fileStat struct {
 	atime  time.Time
 	btime  time.Time
 	ctime  time.Time
-	uid    uint64
-	gid    uint64
+	uid    int
+	gid    int
+	user   string
+	group  string
+	// path string // unused
+	// btimed bool // unused
+	// ctimed bool // unused
+	usered  bool
+	grouped bool
+	err     error
 }
 
 func stat(fi os.FileInfo, _ string) (FileInfo, error) {
@@ -49,10 +59,42 @@ func stat(fi os.FileInfo, _ string) (FileInfo, error) {
 	fs.atime = time.Unix(int64(fs.sys.Atime), 0)
 	// fs.btime not supported
 	// fs.ctime not supported
-	fs.uid = xxhash.Sum64([]byte(fs.sys.Uid))
-	fs.gid = xxhash.Sum64([]byte(fs.sys.Gid))
+	fs.user = fs.sys.Uid
+	fs.group = fs.sys.Gid
 
 	return &fs, nil
 }
+
+func (fs *fileStat) BTime() time.Time { return fs.btime }
+func (fs *fileStat) CTime() time.Time { return fs.ctime }
+
+func (fs *fileStat) UID() int {
+	if !fs.usered {
+		fs.usered = true
+		if fs.user == "" {
+			fs.uid = UnknownID
+		} else {
+			fs.uid = int(xxhash.Checksum32([]byte(fs.user)))
+		}
+	}
+
+	return fs.uid
+}
+
+func (fs *fileStat) GID() int {
+	if !fs.grouped {
+		fs.grouped = true
+		if fs.group == "" {
+			fs.gid = UnknownID
+		} else {
+			fs.gid = int(xxhash.Checksum32([]byte(fs.group)))
+		}
+	}
+
+	return fs.gid
+}
+
+func (fs *fileStat) User() string  { return fs.user }
+func (fs *fileStat) Group() string { return fs.group }
 
 // See https://github.com/golang/go/blob/d13da639/src/os/types_plan9.go#L26

@@ -20,6 +20,8 @@ import (
 
 const supported SupportedType = Links | ATime | BTime | CTime | UID | GID
 
+const userIDSource UserIDSourceType = UserIDSourceIsString
+
 // A fileStat is the implementation of FileInfo returned by Stat and Lstat.
 // See https://github.com/golang/go/blob/8cd6d68a/src/os/types_windows.go#L18
 type fileStat struct {
@@ -35,10 +37,17 @@ type fileStat struct {
 	atime  time.Time
 	btime  time.Time
 	ctime  time.Time
-	uid    uint64
-	gid    uint64
-	sync.Mutex
-	path string
+	uid    int
+	gid    int
+	user   string
+	group  string
+	path   string
+	btimed bool
+	ctimed bool
+	usered bool
+	// grouped bool unused
+	err error
+	mux sync.Mutex // only on Windows
 }
 
 // See https://github.com/golang/go/blob/cad1fc52/src/runtime/os_windows.go#L448
@@ -77,8 +86,8 @@ func stat(fi os.FileInfo, name string) (FileInfo, error) {
 		return nil, &os.PathError{Op: "stat", Path: name, Err: err}
 	}
 
-	fs.Lock()
-	defer fs.Unlock()
+	fs.mux.Lock()
+	defer fs.mux.Unlock()
 
 	attrs := uint32(syscall.FILE_FLAG_BACKUP_SEMANTICS | syscall.FILE_FLAG_OPEN_REPARSE_POINT)
 
@@ -101,27 +110,6 @@ func stat(fi os.FileInfo, name string) (FileInfo, error) {
 	fs.mtime = fi.ModTime()
 	fs.sys = *fi.Sys().(*syscall.Win32FileAttributeData)
 
-	fs.partID = uint64(i.VolumeSerialNumber)                             // uint32
-	fs.fileID = (uint64(i.FileIndexHigh) << 32) + uint64(i.FileIndexLow) //nolint:mnd // quiet linter
-	fs.links = uint64(i.NumberOfLinks)
-	fs.atime = time.Unix(0, fs.sys.LastAccessTime.Nanoseconds())
-	fs.btime = time.Unix(0, fs.sys.CreationTime.Nanoseconds())
-	// @TODO(rasa): https://cygwin.com/cygwin-ug-net/ntsec.html
-	fs.uid, fs.gid, _ = getUserGroupIDs(name)
-
-	var bi FILE_BASIC_INFO
-	err = windows.GetFileInformationByHandleEx(h, windows.FileBasicInfo, (*byte)(unsafe.Pointer(&bi)), uint32(unsafe.Sizeof(bi)))
-	// ignore failures on changetime.
-	if err == nil {
-		// ChangedTime is 100-nanosecond intervals since January 1, 1601.
-		nsec := bi.ChangedTime
-		// Change starting time to the Epoch (00:00:00 UTC, January 1, 1970).
-		nsec -= 116444736000000000
-		// Convert into nanoseconds.
-		nsec *= 100
-		fs.ctime = time.Unix(0, nsec)
-	}
-
 	perm, err := _stat(name)
 	if err != nil {
 		return nil, &os.PathError{Op: "stat", Path: name, Err: err}
@@ -129,7 +117,112 @@ func stat(fi os.FileInfo, name string) (FileInfo, error) {
 	fs.mode &= os.FileMode(^uint32(0o777)) //nolint:mnd // quiet
 	fs.mode |= perm.Perm()
 
+	fs.partID = uint64(i.VolumeSerialNumber)                             // uint32
+	fs.fileID = (uint64(i.FileIndexHigh) << 32) + uint64(i.FileIndexLow) //nolint:mnd // quiet linter
+	fs.links = uint64(i.NumberOfLinks)
+	fs.atime = time.Unix(0, fs.sys.LastAccessTime.Nanoseconds())
+	fs.btime = time.Unix(0, fs.sys.CreationTime.Nanoseconds())
+
 	return &fs, nil
+}
+
+func (fs *fileStat) BTime() time.Time {
+	return fs.btime
+}
+
+func (fs *fileStat) CTime() time.Time {
+	if fs.ctimed {
+		return fs.ctime
+	}
+
+	fs.ctimed = true
+
+	pathp, err := windows.UTF16PtrFromString(fs.path)
+	if err != nil {
+		fs.err = &os.PathError{Op: "stat", Path: fs.path, Err: err}
+		return fs.ctime
+	}
+
+	fs.mux.Lock()
+	defer fs.mux.Unlock()
+
+	attrs := uint32(syscall.FILE_FLAG_BACKUP_SEMANTICS | syscall.FILE_FLAG_OPEN_REPARSE_POINT)
+
+	h, err := windows.CreateFile(pathp, 0, 0, nil, windows.OPEN_EXISTING, attrs, 0)
+	if err != nil {
+		fs.err = &os.PathError{Op: "stat", Path: fs.path, Err: err}
+		return fs.ctime
+	}
+	defer windows.CloseHandle(h) //nolint:errcheck // quiet linter
+
+	var bi FILE_BASIC_INFO
+	err = windows.GetFileInformationByHandleEx(h, windows.FileBasicInfo, (*byte)(unsafe.Pointer(&bi)), uint32(unsafe.Sizeof(bi)))
+	if err != nil {
+		fs.err = &os.PathError{Op: "stat", Path: fs.path, Err: err}
+		return fs.ctime
+	}
+
+	// ChangedTime is 100-nanosecond intervals since January 1, 1601.
+	nsec := bi.ChangedTime
+	// Change starting time to the Epoch (00:00:00 UTC, January 1, 1970).
+	nsec -= 116444736000000000
+	// Convert into nanoseconds.
+	nsec *= 100
+	fs.ctime = time.Unix(0, nsec)
+
+	return fs.ctime
+}
+
+func (fs *fileStat) UID() int {
+	if !fs.usered {
+		fs.usered = true
+		var err error
+		fs.uid, fs.gid, fs.user, fs.group, err = getUserGroup(fs.path)
+		if err != nil {
+			fs.err = err
+		}
+	}
+
+	return fs.uid
+}
+
+func (fs *fileStat) GID() int {
+	if !fs.usered {
+		fs.usered = true
+		var err error
+		fs.uid, fs.gid, fs.user, fs.group, err = getUserGroup(fs.path)
+		if err != nil {
+			fs.err = err
+		}
+	}
+
+	return fs.gid
+}
+
+func (fs *fileStat) User() string {
+	if !fs.usered {
+		fs.usered = true
+		var err error
+		fs.uid, fs.gid, fs.user, fs.group, err = getUserGroup(fs.path)
+		if err != nil {
+			fs.err = err
+		}
+	}
+
+	return fs.user
+}
+
+func (fs *fileStat) Group() string {
+	if !fs.usered {
+		fs.usered = true
+		var err error
+		fs.uid, fs.gid, fs.user, fs.group, err = getUserGroup(fs.path)
+		if err != nil {
+			fs.err = err
+		}
+	}
+
+	return fs.group
 }
 
 func _stat(name string) (os.FileMode, error) {

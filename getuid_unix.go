@@ -11,16 +11,17 @@ import (
 	"syscall"
 )
 
-// Getuid returns the User ID as a uint64. On Windows, the user's SID is
-// converted to it's POSIX equivalent, which is compatible with Cygwin and
-// Git for Windows. On Plan9, the User ID is a 64-bit hash of the user's name.
-func Getuid() (uint64, error) {
-	return uint64(syscall.Getuid()), nil //nolint:gosec // quiet linter
+// Getuid returns the User ID for the current user. On Windows, the user's SID is
+// converted to its POSIX equivalent, which is compatible with Cygwin and
+// Git for Windows. On Plan9, Getuid returns a 32-bit hash of the user's name.
+func Getuid() (int, error) {
+	return syscall.Getuid(), nil
 }
 
-// Getgid returns the Group ID as a uint64. On Windows, the user's primary group's
-// SID is converted to its POSIX equivalent, which is compatible with Cygwin and
-// Git for Windows. On Plan9, the Getgid returns the value returned by Getuid().
-func Getgid() (uint64, error) {
-	return uint64(syscall.Getgid()), nil //nolint:gosec // quiet linter
+// Getgid returns the default Group ID for the current user. On Windows, the
+// user's primary group's SID is converted to its POSIX equivalent, which is
+// compatible with Cygwin and Git for Windows. On Plan9, Getuid returns a
+// 32-bit hash of the user's group's name, as provided by golang's os/user package.
+func Getgid() (int, error) {
+	return syscall.Getgid(), nil
 }

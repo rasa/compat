@@ -25,7 +25,14 @@ type fileStat struct {
 	atime  time.Time
 	btime  time.Time
 	ctime  time.Time
-	uid    uint64
-	gid    uint64
+	uid    int
+	gid    int
+	user   string
+	group  string
 	path   string
+	btimed bool
+	// ctimed bool // unused
+	usered  bool
+	grouped bool
+	err     error
 }
