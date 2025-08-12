@@ -12,7 +12,11 @@ import (
 // Not supported: BTime.
 const supported SupportedType = Links | ATime | CTime | UID | GID
 
+const userIDSource UserIDSourceType = UserIDSourceIsNone
+
 func (fs *fileStat) times() {
 	fs.atime = time.Unix(fs.sys.Atime, int64(fs.sys.AtimeNsec))
 	fs.ctime = time.Unix(fs.sys.Ctime, int64(fs.sys.CtimeNsec))
 }
+
+func (fs *fileStat) BTime() time.Time { return fs.btime }

@@ -9,6 +9,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Added
 
+- Add `User()` function to `Stat()`s `FileMode` struct, to return the file's
+  user's name.
+- Add `Group()` function to `Stat()`s `FileMode` struct to return the file's
+  group name.
+- Add `Error()` function to `Stat()`s `FileMode` struct to return the last error
+  received when calling `BTime()`, `CTime()`, `UID()`, `GID()`,
+  `User()`, or `Group()` if an additional system call is executed.
+- Add `UserIDSource()` function to return if the `UID()` function or the
+  `User()` function is the user's actual ID in the OS, or if the OS doesn't use
+  user IDs.
 - Add `PartitionType()` function.
 - Add `Getuid()` and `Getgid()` functions.
 - Add `IsX86CPU`, `IsArmCPU`, `IsMipsCPU`, and `IsPpcCPU` constants.
@@ -16,6 +26,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ### Fixed
 
 ### Changed
+
+- Change `Stat()`'s `UID()` and `GID()` to return int values, to be more
+  aligned with linux/unix. ***BREAKING CHANGE***
+- Speed up `Stat()` calls by deferring additional system calls to execute the
+  first time `BTime()`, `CTime()`, `UID()`, `GID()`, `User()`, or `Group()` is
+  called.
 
 ## [0.4.4](https://github.com/rasa/compat/compare/v0.4.3...v0.4.4)
 
