@@ -321,7 +321,7 @@ func TestStatUser(t *testing.T) {
 
 		return // tinygo doesn't support t.Skip
 	}
-		
+
 	name, err := createTemp(t)
 	if err != nil {
 		t.Fatal(err)
