@@ -1,6 +1,6 @@
 # compat
 
-[![Build](https://github.com/rasa/compat/actions/workflows/build.yml/badge.svg)](https://github.com/rasa/compat/actions/workflows/build.yml)
+[![Build](https://github.com/rasa/compat/actions/workflows/build-ubuntu.yml/badge.svg)](https://github.com/rasa/compat/actions/workflows/build-ubuntu.yml)
 [![Last Commit](https://img.shields.io/github/last-commit/rasa/compat.svg)](https://github.com/rasa/compat/commits)
 [![Codecov](https://codecov.io/gh/rasa/compat/branch/main/graph/badge.svg)](https://codecov.io/gh/rasa/compat)
 [![Release](https://img.shields.io/github/v/release/rasa/compat.svg?style=flat)](https://github.com/rasa/compat/releases)
