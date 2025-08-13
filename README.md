@@ -73,14 +73,14 @@ Size()   =11
 Mode()   =0o654 (-rw-r-xr--)
 ModTime()=2025-08-12 22:46:17.404309557 -0700 PDT
 IsDir()  =false
-PartID() =64512
-FileID() =18756660
-Links()  =1
-ATime()  =2025-08-12 09:24:50.0851287 -0700 PDT
-BTime()  =2025-08-09 19:29:29.108563883 -0700 PDT
-CTime()  =2025-08-12 22:46:17.404309557 -0700 PDT
-UID()    =1000
-GID()    =1000
+PartID() =64512                                   // unique device ID
+FileID() =18756660                                // unique file ID on the device
+Links()  =1                                       // number of hard links
+ATime()  =2025-08-12 09:24:50.085128701 -0700 PDT // last Accessed
+BTime()  =2025-08-09 19:29:29.108563883 -0700 PDT // Birthed/created
+CTime()  =2025-08-12 22:46:17.404309557 -0700 PDT // metadata last Changed
+UID()    =1000                                    // user ID
+GID()    =1000                                    // group ID
 ```
 and on Windows, produces:
 ```text
@@ -93,7 +93,7 @@ PartID() =8
 FileID() =10414574139156045
 Links()  =1
 ATime()  =2025-08-12 22:44:50.4214598 -0700 PDT
-BTime()  =2025-08-09 10:56:35.879469 -0700 PDT
+BTime()  =2025-08-09 10:56:35.8794691 -0700 PDT
 CTime()  =2025-08-12 22:44:50.4214598 -0700 PDT
 UID()    =197609
 GID()    =197121
@@ -132,7 +132,7 @@ To install compat, use `go get`:
 The `Stat()` and `Lstat()` functions return a `FileInfo` object.
 The table below lists the operating system support for each of the `FileInfo` functions:
 
-| OS           | PartitionID()/ <br/>FileID()* | Links()* | ATime()* | BTime()* | CTime()* | UID()* / <br/>GID()* |
+| OS           | PartitionID()/ <br/>FileID()* | Links()* | ATime()*<br/>(last<br/>*A*ccessed) | BTime()*<br/>(*B*irthed/<br/>created) | CTime()*<br/>(metadata<br/>last *C*hanged) | UID()* / <br/>GID()* |
 |--------------|--------|--------|------|--------|------|-------|
 | AIX          | ✅     | ✅    | ✅   | ❌    | ✅   | ✅   |
 | Android      | ✅     | ✅    | ✅   | ✅    | ✅   | ✅   |
