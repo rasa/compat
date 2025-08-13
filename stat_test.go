@@ -41,7 +41,7 @@ func TestStatStat(t *testing.T) {
 		t.Errorf("Size(): got %v, want %v", got, want)
 	}
 
-	if got := fi.Mode(); got != compat.CreateTempPerm {
+	if got := fi.Mode().Perm(); got != compat.CreateTempPerm {
 		t.Errorf("Mode(): got 0o%o, want 0o%o", got, compat.CreateTempPerm)
 	}
 

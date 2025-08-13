@@ -23,17 +23,17 @@ func TestLstatStat(t *testing.T) {
 
 	now := time.Now()
 
-	name, _, err := createTempSymlink(t)
+	_, link, err := createTempSymlink(t)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	fi, err := compat.Lstat(name)
+	fi, err := compat.Stat(link)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	_, base := filepath.Split(name)
+	_, base := filepath.Split(link)
 
 	if got := fi.Name(); got != base {
 		t.Errorf("Name(): got %v, want %v", got, base)
@@ -44,8 +44,59 @@ func TestLstatStat(t *testing.T) {
 		t.Errorf("Size(): got %v, want %v", got, want)
 	}
 
-	if got := fi.Mode(); got != compat.CreateTempPerm {
+	if got := fi.Mode().Perm(); got != compat.CreateTempPerm {
 		t.Errorf("Mode(): got 0o%o, want 0o%o", got, compat.CreateTempPerm)
+	}
+
+	if got := fi.Mode()&os.ModeSymlink == 0; got != true {
+		t.Errorf("Mode()&os.ModeSymlink==0: got %v, want %v", got, true)
+	}
+
+	if got := fi.IsDir(); got != false {
+		t.Errorf("IsDir(): got %v, want %v", got, false)
+	}
+
+	if got := fi.ModTime(); !timesClose(got, now) {
+		t.Errorf("ModTime(): got %v, want %v", got, now)
+	}
+}
+
+func TestLstatLstat(t *testing.T) {
+	if compat.IsWasip1 {
+		skip(t, "Skipping test: symlinks are not supported on "+runtime.GOOS+"/"+runtime.GOARCH)
+
+		return // tinygo doesn't support t.Skip
+	}
+
+	now := time.Now()
+
+	_, link, err := createTempSymlink(t)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	fi, err := compat.Lstat(link)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	_, base := filepath.Split(link)
+
+	if got := fi.Name(); got != base {
+		t.Errorf("Name(): got %v, want %v", got, base)
+	}
+
+	want := int64(len(helloBytes))
+	if got := fi.Size(); got == want {
+		t.Errorf("Size(): got %v, want !%v", got, want)
+	}
+
+	if got := fi.Mode().Perm(); got == compat.CreateTempPerm {
+		t.Errorf("Mode(): got 0o%o, want !0o%o", got, compat.CreateTempPerm)
+	}
+
+	if got := fi.Mode()&os.ModeSymlink != 0; got != true {
+		t.Errorf("Mode()&os.ModeSymlink!=0: got %v, want %v", got, true)
 	}
 
 	if got := fi.IsDir(); got != false {
@@ -630,7 +681,8 @@ func createTempSymlink(t *testing.T) (string, string, error) {
 	}
 
 	target := f.Name()
-	link := target + ".lnk"
+	dir, base := filepath.Split(target)
+	link := filepath.Join(dir, "link-"+base+".lnk")
 
 	// oldUmask := syscall.Umask(0)
 	// defer syscall.Umask(oldUmask)
