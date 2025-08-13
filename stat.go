@@ -10,31 +10,28 @@ import (
 	"time"
 )
 
-// SupportedType defines a bitmask that identifies if the OS supports specific
+// supportsType defines a bitmask that identifies if the OS supports specific
 // fields, or not.
-type SupportedType uint
+type supportsType uint
 
 const (
-	// Links defines if FileInfo's Links() function is supported by the OS.
-	// Links() returns the number of hard links to the file.
-	Links SupportedType = 1 << iota
-	// ATime defines if FileInfo's ATime() function is supported by the OS.
-	// ATime() returns the time the file was last accessed.
-	ATime
-	// BTime defines if FileInfo's BTime() function is supported by the OS.
-	// BTime() returns the time the file was created (or "birthed").
-	BTime
-	// CTime defines if FileInfo's CTime() function is supported by the OS.
-	// CTime() returns the time the file's status/metadata was last changed.
-	CTime
-	// UID defines if FileInfo's UID() function is supported by the OS.
-	// UID() returns the user ID of the file's owner.
-	UID
-	// GID defines if FileInfo's GID() function is supported by the OS.
-	// GID() returns the group ID of the file's group.
-	GID
-	// Symlinks defines if symlinks are supported by the OS.
-	Symlinks
+	// supportsLinks defines if FileInfo's Links() function is supported by the OS.
+	supportsLinks supportsType = 1 << iota
+	// supportsATime defines if FileInfo's ATime() function is supported by the OS.
+	// Deprecated: No longer used or needed.
+	supportsATime
+	// supportsBTime defines if FileInfo's BTime() function is supported by the OS.
+	supportsBTime
+	// supportsCTime defines if FileInfo's CTime() function is supported by the OS.
+	supportsCTime
+	// supportsUID defines if FileInfo's UID() function is supported by the OS.
+	// Deprecated: No longer used or needed.
+	supportsUID
+	// supportsGID defines if FileInfo's GID() function is supported by the OS.
+	// Deprecated: No longer used or needed.
+	supportsGID
+	// supportsSymlinks defines if symlinks are supported by the OS.
+	supportsSymlinks
 )
 
 // UnknownID is returned when the UID or GID could not be determined.
@@ -108,15 +105,30 @@ func (fs *fileStat) String() string {
 	return b.String()
 }
 
-// Supports returns whether function is supported by the operating system.
-func Supports(function SupportedType) bool {
-	return supported&function == function
-}
-
 // UserIDSource returns the source of the user's ID: UserIDSourceIsNumeric,
 // UserIDSourceIsString, or UserIDSourceIsNone.
 func UserIDSource() UserIDSourceType {
 	return userIDSource
+}
+
+// SupportsLinks returns true if FileInfo's Links() function is supported by the OS.
+func SupportsLinks() bool {
+	return supports&supportsLinks == supportsLinks
+}
+
+// SupportsBTime returns true if FileInfo's BTime() function is supported by the OS.
+func SupportsBTime() bool {
+	return supports&supportsBTime == supportsBTime
+}
+
+// SupportsCTime returns true if FileInfo's CTime() function is supported by the OS.
+func SupportsCTime() bool {
+	return supports&supportsCTime == supportsCTime
+}
+
+// SupportsSymlinks returns true if the os.Symlinks() function is supported by the OS.
+func SupportsSymlinks() bool {
+	return supports&supportsSymlinks == supportsSymlinks
 }
 
 // Stat returns a [FileInfo] describing the named file.

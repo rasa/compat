@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Added
 
+- Add `SupportsLinks()`, `SupportsBTime()`, `SupportsCTime()` and `SupportsSymlinks()` functions.
 - Add `String()` function to `FileInfo`.
 - Add missing `Lstat()` tests.
 
@@ -18,6 +19,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Changed
 
+- Deprecate `Supported()` function.
+- Deprecate `Links`, `ATime`, `BTime`, `CTime`, `UID` and `GID` constants.
 - Simplify `Stat()` call example in cmd/demo.
 
 ## [0.5.0](https://github.com/rasa/compat/compare/v0.4.4...v0.5.0)

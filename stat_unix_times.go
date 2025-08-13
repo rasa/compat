@@ -10,7 +10,7 @@ import (
 )
 
 // Not supported: BTime.
-const supported SupportedType = Links | ATime | CTime | UID | GID | Syslinks
+const supports supportsType = supportsLinks | supportsCTime | supportsSymlinks
 
 const userIDSource UserIDSourceType = UserIDSourceIsNumeric
 

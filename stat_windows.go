@@ -18,7 +18,7 @@ import (
 	"github.com/capnspacehook/go-acl"
 )
 
-const supported SupportedType = Links | ATime | BTime | CTime | UID | GID | Symlinks
+const supports supportsType = supportsLinks | supportsBTime | supportsCTime | supportsSymlinks
 
 const userIDSource UserIDSourceType = UserIDSourceIsString
 

@@ -113,7 +113,7 @@ func getPrimaryDomainSID() (*windows.SID, error) {
 func getRID(sid *windows.SID) (int, error) {
 	count := uint32(sid.SubAuthorityCount())
 	if count == 0 {
-		return -1, errors.New("no subauthorities found")
+		return UnknownID, errors.New("no subauthorities found")
 	}
 
 	return int(sid.SubAuthority(count - 1)), nil
@@ -142,13 +142,13 @@ func sidToPOSIXID(sid *windows.SID, primaryDomainSid *windows.SID) (int, error) 
 	case strings.HasPrefix(sidStr, "S-1-5-32-"):
 		rid, err := getRID(sid)
 		if err != nil {
-			return -1, err
+			return UnknownID, err
 		}
 		return 0x20000 + rid, nil //nolint:mnd // quiet linter
 	case strings.HasPrefix(sidStr, "S-1-5-21-"):
 		rid, err := getRID(sid)
 		if err != nil {
-			return -1, err
+			return UnknownID, err
 		}
 		if isSameDomainSID(sid, primaryDomainSid) {
 			return 0x40000 + rid, nil //nolint:mnd // quiet linter
@@ -157,7 +157,7 @@ func sidToPOSIXID(sid *windows.SID, primaryDomainSid *windows.SID) (int, error) 
 		return 0x30000 + rid, nil //nolint:mnd // quiet linter
 	default:
 
-		return -1, fmt.Errorf("unsupported SID: %s", sidStr)
+		return UnknownID, fmt.Errorf("unsupported SID: %s", sidStr)
 	}
 }
 
