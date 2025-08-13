@@ -15,10 +15,11 @@ import (
 	"time"
 )
 
-func stat(fi os.FileInfo, name string) (FileInfo, error) {
+func stat(fi os.FileInfo, name string, followSymlinks bool) (FileInfo, error) {
 	var fs fileStat
 
 	fs.path = name
+	fs.followSymlinks = followSymlinks
 	fs.name = fi.Name()
 	fs.size = fi.Size()
 	fs.mode = fi.Mode()

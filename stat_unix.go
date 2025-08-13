@@ -32,7 +32,8 @@ type fileStat struct {
 	path   string
 	btimed bool
 	// ctimed bool // unused
-	usered  bool
-	grouped bool
-	err     error
+	usered         bool
+	grouped        bool
+	followSymlinks bool
+	err            error
 }

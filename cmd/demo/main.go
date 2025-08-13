@@ -17,8 +17,6 @@ import (
 const mode = os.FileMode(0o654) // Something other than the default.
 
 func main() {
-	_ = compat.Umask(0)
-
 	name := "hello.txt"
 	err := compat.WriteFile(name, []byte("Hello World"), mode)
 	if err != nil {
@@ -30,21 +28,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	fmt.Printf("Name()   =%v\n", fi.Name())
-	fmt.Printf("Size()   =%v\n", fi.Size())
-	fmt.Printf("Mode()   =0o%o (%v)\n", fi.Mode(), fi.Mode())
-	fmt.Printf("ModTime()=%v\n", fi.ModTime())
-	fmt.Printf("IsDir()  =%v\n", fi.IsDir())
-	fmt.Printf("Sys()    =%+v\n", fi.Sys())
-	fmt.Printf("PartID() =%v\n", fi.PartitionID())
-	fmt.Printf("FileID() =%v (0x%x)\n", fi.FileID(), fi.FileID())
-	fmt.Printf("Links()  =%v\n", fi.Links())
-	fmt.Printf("ATime()  =%v\n", fi.ATime())
-	fmt.Printf("BTime()  =%v\n", fi.BTime())
-	fmt.Printf("CTime()  =%v\n", fi.CTime())
-	fmt.Printf("MTime()  =%v\n", fi.MTime())
-	fmt.Printf("UID()    =%v (0x%x)\n", fi.UID(), fi.UID())
-	fmt.Printf("GID()    =%v (0x%x)\n", fi.GID(), fi.GID())
+	print(fi.String())
 
 	samePartition()
 	samePartitionl()
@@ -52,6 +36,7 @@ func main() {
 	sameFile()
 	sameFilel()
 	sameFiles()
+	_ = os.Remove(name)
 }
 
 func samePartition() {

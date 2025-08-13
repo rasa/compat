@@ -44,7 +44,7 @@ type fileStat struct {
 	err     error
 }
 
-func stat(fi os.FileInfo, _ string) (FileInfo, error) {
+func stat(fi os.FileInfo, _ string, _ bool) (FileInfo, error) {
 	var fs fileStat
 
 	fs.name = fi.Name()

@@ -42,13 +42,17 @@ package main
 import (
 	"fmt"
 	"log"
+	"os"
+	"path/filepath"
 
 	"github.com/rasa/compat"
 )
 
+const mode = os.FileMode(0o654) // Something other than the default.
+
 func main() {
 	name := "hello.txt"
-	err := compat.WriteFile(name, []byte("Hello World"), 0o654)
+	err := compat.WriteFile(name, []byte("Hello World"), mode)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -58,21 +62,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	fmt.Printf("Name()   =%v\n", fi.Name())
-	fmt.Printf("Size()   =%v\n", fi.Size())
-	fmt.Printf("Mode()   =0o%o (%v)\n", fi.Mode(), fi.Mode())
-	fmt.Printf("ModTime()=%v\n", fi.ModTime())
-	fmt.Printf("IsDir()  =%v\n", fi.IsDir())
-	fmt.Printf("Sys()    =%+v\n", fi.Sys())
-	fmt.Printf("PartID() =%v\n", fi.PartitionID())
-	fmt.Printf("FileID() =%v (0x%x)\n", fi.FileID(), fi.FileID())
-	fmt.Printf("Links()  =%v\n", fi.Links())
-	fmt.Printf("ATime()  =%v\n", fi.ATime())
-	fmt.Printf("BTime()  =%v\n", fi.BTime())
-	fmt.Printf("CTime()  =%v\n", fi.CTime())
-	fmt.Printf("MTime()  =%v\n", fi.MTime())
-	fmt.Printf("UID()    =%v (0x%x)\n", fi.UID(), fi.UID())
-	fmt.Printf("GID()    =%v (0x%x)\n", fi.GID(), fi.GID())
+	print(fi.String())
 }
 
 ```
@@ -81,37 +71,32 @@ which, on Linux, produces:
 Name()   =hello.txt
 Size()   =11
 Mode()   =0o654 (-rw-r-xr--)
-ModTime()=2025-08-09 18:46:55.360909223 -0700 PDT
+ModTime()=2025-08-12 22:46:17.404309557 -0700 PDT
 IsDir()  =false
-Sys()    =&{Dev:64512 Ino:18756660 Nlink:1 Mode:33204 Uid:1000 Gid:1000 X__pad0:0 Rdev:0 Size:11 Blksize:4096 Blocks:8 Atim:{Sec:1754790298 Nsec:87132300} Mtim:{Sec:1754790415 Nsec:360909223} Ctim:{Sec:1754790415 Nsec:360909223} X__unused:[0 0 0]}
 PartID() =64512
-FileID() =18756660 (0x11e3434)
+FileID() =18756660
 Links()  =1
-ATime()  =2025-08-09 18:44:58.0871323 -0700 PDT
-BTime()  =2025-08-09 10:57:37.073054326 -0700 PDT
-CTime()  =2025-08-09 18:46:55.360909223 -0700 PDT
-MTime()  =2025-08-09 18:46:55.360909223 -0700 PDT
-UID()    =1000 (0x3e8)
-GID()    =1000 (0x3e8)
+ATime()  =2025-08-12 09:24:50.0851287 -0700 PDT
+BTime()  =2025-08-09 19:29:29.108563883 -0700 PDT
+CTime()  =2025-08-12 22:46:17.404309557 -0700 PDT
+UID()    =1000
+GID()    =1000
 ```
 and on Windows, produces:
 ```text
 Name()   =hello.txt
 Size()   =11
 Mode()   =0o654 (-rw-r-xr--)
-ModTime()=2025-08-09 18:44:58.0871323 -0700 PDT
+ModTime()=2025-08-12 22:44:50.4214598 -0700 PDT
 IsDir()  =false
-Sys()    =&{FileAttributes:32 CreationTime:{LowDateTime:4072684994 HighDateTime:31197526} LastAccessTime:{LowDateTime:1626920091 HighDateTime:31197592} LastWriteTime:{LowDateT
-HighDateTime:31197592} FileSizeHigh:0 FileSizeLow:11}
 PartID() =8
-FileID() =19421773393914848 (0x450000000d6be0)
+FileID() =10414574139156045
 Links()  =1
-ATime()  =2025-08-09 18:44:58.0871323 -0700 PDT
+ATime()  =2025-08-12 22:44:50.4214598 -0700 PDT
 BTime()  =2025-08-09 10:56:35.879469 -0700 PDT
-CTime()  =2025-08-09 18:44:58.0871323 -0700 PDT
-MTime()  =2025-08-09 18:44:58.0871323 -0700 PDT
-UID()    =197609 (0x303e9)
-GID()    =197121 (0x30201)
+CTime()  =2025-08-12 22:44:50.4214598 -0700 PDT
+UID()    =197609
+GID()    =197121
 ```
 with icacls showing:
 ```

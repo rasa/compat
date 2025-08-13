@@ -9,9 +9,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Added
 
+- Add `String()` function to `FileInfo`.
+
 ### Fixed
 
+- Fix to only follow symlinks via `Stat()` not `Lstat()`.
+
 ### Changed
+
+- Simplified `Stat()` call example in cmd/demo.
 
 ## [0.5.0](https://github.com/rasa/compat/compare/v0.4.4...v0.5.0)
 

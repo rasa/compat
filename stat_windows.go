@@ -46,8 +46,9 @@ type fileStat struct {
 	ctimed bool
 	usered bool
 	// grouped bool unused
-	err error
-	mux sync.Mutex // only on Windows
+	followSymlinks bool
+	err            error
+	mux            sync.Mutex // only on Windows
 }
 
 // See https://github.com/golang/go/blob/cad1fc52/src/runtime/os_windows.go#L448
@@ -77,8 +78,10 @@ func isWindowsAtLeast(major, minor, build uint32) bool {
 // Originally copied from https://github.com/golang/go/blob/d65c209b/src/os/types_windows.go#L287
 ////////////////////////////////////////////////////////////////////////////////
 
-func stat(fi os.FileInfo, name string) (FileInfo, error) {
+func stat(fi os.FileInfo, name string, followSymlinks bool) (FileInfo, error) {
 	var fs fileStat
+
+	fs.followSymlinks = followSymlinks
 
 	name = fixLongPath(name)
 	pathp, err := windows.UTF16PtrFromString(name)
@@ -89,7 +92,11 @@ func stat(fi os.FileInfo, name string) (FileInfo, error) {
 	fs.mux.Lock()
 	defer fs.mux.Unlock()
 
-	attrs := uint32(syscall.FILE_FLAG_BACKUP_SEMANTICS | syscall.FILE_FLAG_OPEN_REPARSE_POINT)
+	attrs := uint32(syscall.FILE_FLAG_BACKUP_SEMANTICS)
+
+	if !followSymlinks {
+		attrs |= syscall.FILE_FLAG_OPEN_REPARSE_POINT
+	}
 
 	h, err := windows.CreateFile(pathp, 0, 0, nil, windows.OPEN_EXISTING, attrs, 0)
 	if err != nil {
@@ -146,7 +153,11 @@ func (fs *fileStat) CTime() time.Time {
 	fs.mux.Lock()
 	defer fs.mux.Unlock()
 
-	attrs := uint32(syscall.FILE_FLAG_BACKUP_SEMANTICS | syscall.FILE_FLAG_OPEN_REPARSE_POINT)
+	attrs := uint32(syscall.FILE_FLAG_BACKUP_SEMANTICS)
+
+	if !fs.followSymlinks {
+		attrs |= syscall.FILE_FLAG_OPEN_REPARSE_POINT
+	}
 
 	h, err := windows.CreateFile(pathp, 0, 0, nil, windows.OPEN_EXISTING, attrs, 0)
 	if err != nil {

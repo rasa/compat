@@ -15,7 +15,7 @@ const (
 	defaultDirMode  = os.FileMode(0o700)
 )
 
-func stat(fi os.FileInfo, name string) (FileInfo, error) {
+func stat(fi os.FileInfo, name string, _ bool) (FileInfo, error) {
 	var fs fileStat
 
 	fs.path = name

@@ -4,7 +4,9 @@
 package compat
 
 import (
+	"fmt"
 	"os"
+	"strings"
 	"time"
 )
 
@@ -69,6 +71,7 @@ type FileInfo interface {
 	User() string        // user name, or "" if an error or unsupported
 	Group() string       // group name, or "" if an error or unsupported
 	Error() error        // error result of the last system call that failed
+	String() string
 }
 
 func (fs *fileStat) Name() string        { return fs.name }
@@ -83,6 +86,25 @@ func (fs *fileStat) Links() uint64       { return fs.links }
 func (fs *fileStat) ATime() time.Time    { return fs.atime }
 func (fs *fileStat) MTime() time.Time    { return fs.mtime } // duplicates ModTime
 func (fs *fileStat) Error() error        { return fs.err }
+
+func (fs *fileStat) String() string {
+	var b strings.Builder
+	fmt.Fprintf(&b, "Name()   =%v\n", fs.Name())
+	fmt.Fprintf(&b, "Size()   =%v\n", fs.Size())
+	fmt.Fprintf(&b, "Mode()   =0o%o (%v)\n", fs.Mode(), fs.Mode())
+	fmt.Fprintf(&b, "ModTime()=%v\n", fs.ModTime())
+	fmt.Fprintf(&b, "IsDir()  =%v\n", fs.IsDir())
+	fmt.Fprintf(&b, "PartID() =%v\n", fs.PartitionID())
+	fmt.Fprintf(&b, "FileID() =%v\n", fs.FileID())
+	fmt.Fprintf(&b, "Links()  =%v\n", fs.Links())
+	fmt.Fprintf(&b, "ATime()  =%v\n", fs.ATime())
+	fmt.Fprintf(&b, "BTime()  =%v\n", fs.BTime())
+	fmt.Fprintf(&b, "CTime()  =%v\n", fs.CTime())
+	fmt.Fprintf(&b, "UID()    =%v\n", fs.UID())
+	fmt.Fprintf(&b, "GID()    =%v\n", fs.GID())
+
+	return b.String()
+}
 
 // Supports returns whether function is supported by the operating system.
 func Supports(function SupportedType) bool {
@@ -103,7 +125,7 @@ func Stat(name string) (FileInfo, error) {
 		return nil, err
 	}
 
-	return stat(fi, name)
+	return stat(fi, name, true)
 }
 
 // Lstat returns a [FileInfo] describing the named file.
@@ -120,7 +142,7 @@ func Lstat(name string) (FileInfo, error) {
 		return nil, err
 	}
 
-	return stat(fi, name)
+	return stat(fi, name, false)
 }
 
 // SamePartition reports whether fi1 and fi2 describe files on the same disk
