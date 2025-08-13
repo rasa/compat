@@ -26,7 +26,11 @@ func (fs *fileStat) BTime() time.Time {
 
 		var stx unix.Statx_t
 
-		err := unix.Statx(unix.AT_FDCWD, fs.path, unix.AT_SYMLINK_NOFOLLOW, unix.STATX_BTIME, &stx)
+		var flags int
+		if !fs.followSymlinks {
+			flags = unix.AT_SYMLINK_NOFOLLOW
+		}
+		err := unix.Statx(unix.AT_FDCWD, fs.path, flags, unix.STATX_BTIME, &stx)
 		if err != nil {
 			fs.err = err
 			return fs.btime
