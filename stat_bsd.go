@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-const supported SupportedType = Links | ATime | BTime | CTime | UID | GID
+const supported SupportedType = Links | ATime | BTime | CTime | UID | GID | Syslinks
 
 const userIDSource UserIDSourceType = UserIDSourceIsNumeric
 

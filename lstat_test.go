@@ -15,7 +15,7 @@ import (
 )
 
 func TestLstatStat(t *testing.T) { //nolint:dupl // quiet linter
-	if compat.IsWasip1 {
+	if !compat.Supports(compat.Symlinks) {
 		skip(t, "Skipping test: symlinks are not supported on "+runtime.GOOS+"/"+runtime.GOARCH)
 
 		return // tinygo doesn't support t.Skip
@@ -44,8 +44,10 @@ func TestLstatStat(t *testing.T) { //nolint:dupl // quiet linter
 		t.Errorf("Size(): got %v, want %v", got, want)
 	}
 
-	if got := fi.Mode().Perm(); got != compat.CreateTempPerm {
-		t.Errorf("Mode(): got 0o%o, want 0o%o", got, compat.CreateTempPerm)
+	if !compat.IsWindows {
+		if got := fi.Mode().Perm(); got != compat.CreateTempPerm {
+			t.Errorf("Mode(): got 0o%o, want 0o%o", got, compat.CreateTempPerm)
+		}
 	}
 
 	if got := fi.Mode()&os.ModeSymlink == 0; got != true {
@@ -62,7 +64,7 @@ func TestLstatStat(t *testing.T) { //nolint:dupl // quiet linter
 }
 
 func TestLstatLstat(t *testing.T) { //nolint:dupl // quiet linter
-	if compat.IsWasip1 {
+	if !compat.Supports(compat.Symlinks) {
 		skip(t, "Skipping test: symlinks are not supported on "+runtime.GOOS+"/"+runtime.GOARCH)
 
 		return // tinygo doesn't support t.Skip
@@ -115,7 +117,7 @@ func TestLstatLinks(t *testing.T) {
 		return // tinygo doesn't support t.Skip
 	}
 
-	if compat.IsWasip1 {
+	if !compat.Supports(compat.Symlinks) {
 		skip(t, "Skipping test: symlinks are not supported on "+runtime.GOOS+"/"+runtime.GOARCH)
 
 		return // tinygo doesn't support t.Skip
@@ -182,7 +184,7 @@ func TestLstatATime(t *testing.T) {
 		return // tinygo doesn't support t.Skip
 	}
 
-	if compat.IsWasip1 {
+	if !compat.Supports(compat.Symlinks) {
 		skip(t, "Skipping test: symlinks are not supported on "+runtime.GOOS+"/"+runtime.GOARCH)
 
 		return // tinygo doesn't support t.Skip
@@ -242,7 +244,7 @@ func TestLstatBTime(t *testing.T) {
 		return // tinygo doesn't support t.Skip
 	}
 
-	if compat.IsWasip1 {
+	if !compat.Supports(compat.Symlinks) {
 		skip(t, "Skipping test: symlinks are not supported on "+runtime.GOOS+"/"+runtime.GOARCH)
 
 		return // tinygo doesn't support t.Skip
@@ -272,7 +274,7 @@ func TestLstatCTime(t *testing.T) {
 		return // tinygo doesn't support t.Skip
 	}
 
-	if compat.IsWasip1 {
+	if !compat.Supports(compat.Symlinks) {
 		skip(t, "Skipping test: symlinks are not supported on "+runtime.GOOS+"/"+runtime.GOARCH)
 
 		return // tinygo doesn't support t.Skip
@@ -296,7 +298,7 @@ func TestLstatCTime(t *testing.T) {
 }
 
 func TestLstatMTime(t *testing.T) {
-	if compat.IsWasip1 {
+	if !compat.Supports(compat.Symlinks) {
 		skip(t, "Skipping test: symlinks are not supported on "+runtime.GOOS+"/"+runtime.GOARCH)
 
 		return // tinygo doesn't support t.Skip
@@ -356,7 +358,7 @@ func TestLstatUID(t *testing.T) {
 		return // tinygo doesn't support t.Skip
 	}
 
-	if compat.IsWasip1 {
+	if !compat.Supports(compat.Symlinks) {
 		skip(t, "Skipping test: symlinks are not supported on "+runtime.GOOS+"/"+runtime.GOARCH)
 
 		return // tinygo doesn't support t.Skip
@@ -395,7 +397,7 @@ func TestLstatGID(t *testing.T) {
 		return // tinygo doesn't support t.Skip
 	}
 
-	if compat.IsWasip1 {
+	if !compat.Supports(compat.Symlinks) {
 		skip(t, "Skipping test: symlinks are not supported on "+runtime.GOOS+"/"+runtime.GOARCH)
 
 		return // tinygo doesn't support t.Skip
@@ -434,7 +436,7 @@ func TestLstatUser(t *testing.T) {
 		return // tinygo doesn't support t.Skip
 	}
 
-	if compat.IsWasip1 {
+	if !compat.Supports(compat.Symlinks) {
 		skip(t, "Skipping test: symlinks are not supported on "+runtime.GOOS+"/"+runtime.GOARCH)
 
 		return // tinygo doesn't support t.Skip
@@ -483,7 +485,7 @@ func TestLstatGroup(t *testing.T) {
 		return // tinygo doesn't support t.Skip
 	}
 
-	if compat.IsWasip1 {
+	if !compat.Supports(compat.Symlinks) {
 		skip(t, "Skipping test: symlinks are not supported on "+runtime.GOOS+"/"+runtime.GOARCH)
 
 		return // tinygo doesn't support t.Skip
@@ -531,7 +533,7 @@ func TestLstatGroup(t *testing.T) {
 }
 
 func TestLstatSamePartition(t *testing.T) {
-	if compat.IsWasip1 {
+	if !compat.Supports(compat.Symlinks) {
 		skip(t, "Skipping test: symlinks are not supported on "+runtime.GOOS+"/"+runtime.GOARCH)
 
 		return // tinygo doesn't support t.Skip
@@ -558,7 +560,7 @@ func TestLstatSamePartition(t *testing.T) {
 }
 
 func TestLstatSamePartitions(t *testing.T) {
-	if compat.IsWasip1 {
+	if !compat.Supports(compat.Symlinks) {
 		skip(t, "Skipping test: symlinks are not supported on "+runtime.GOOS+"/"+runtime.GOARCH)
 
 		return // tinygo doesn't support t.Skip
@@ -575,7 +577,7 @@ func TestLstatSamePartitions(t *testing.T) {
 }
 
 func TestLstatSameFile(t *testing.T) {
-	if compat.IsWasip1 {
+	if !compat.Supports(compat.Symlinks) {
 		skip(t, "Skipping test: symlinks are not supported on "+runtime.GOOS+"/"+runtime.GOARCH)
 
 		return // tinygo doesn't support t.Skip
@@ -602,7 +604,7 @@ func TestLstatSameFile(t *testing.T) {
 }
 
 func TestLstatSameFiles(t *testing.T) {
-	if compat.IsWasip1 {
+	if !compat.Supports(compat.Symlinks) {
 		skip(t, "Skipping test: symlinks are not supported on "+runtime.GOOS+"/"+runtime.GOARCH)
 
 		return // tinygo doesn't support t.Skip
@@ -619,7 +621,7 @@ func TestLstatSameFiles(t *testing.T) {
 }
 
 func TestLstatDiffFile(t *testing.T) {
-	if compat.IsWasip1 {
+	if !compat.Supports(compat.Symlinks) {
 		skip(t, "Skipping test: symlinks are not supported on "+runtime.GOOS+"/"+runtime.GOARCH)
 
 		return // tinygo doesn't support t.Skip
@@ -651,7 +653,7 @@ func TestLstatDiffFile(t *testing.T) {
 }
 
 func TestLstatDiffFiles(t *testing.T) {
-	if compat.IsWasip1 {
+	if !compat.Supports(compat.Symlinks) {
 		skip(t, "Skipping test: symlinks are not supported on "+runtime.GOOS+"/"+runtime.GOARCH)
 
 		return // tinygo doesn't support t.Skip

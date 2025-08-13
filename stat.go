@@ -33,6 +33,8 @@ const (
 	// GID defines if FileInfo's GID() function is supported by the OS.
 	// GID() returns the group ID of the file's group.
 	GID
+	// Symlinks defines if symlinks are supported by the OS.
+	Symlinks
 )
 
 // UnknownID is returned when the UID or GID could not be determined.

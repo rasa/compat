@@ -14,7 +14,7 @@ import (
 )
 
 // Not supported: Links | BTime | CTime.
-const supported SupportedType = ATime | UID | GID
+const supported SupportedType = ATime | UID | GID | Syslinks
 
 const userIDSource UserIDSourceType = UserIDSourceIsString
 

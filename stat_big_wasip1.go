@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-// Not supported: BTime.
+// Not supported: BTime | Syslinks
 const supported SupportedType = Links | ATime | CTime | UID | GID
 
 const userIDSource UserIDSourceType = UserIDSourceIsNone
