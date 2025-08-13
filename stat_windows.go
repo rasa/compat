@@ -42,7 +42,7 @@ type fileStat struct {
 	user   string
 	group  string
 	path   string
-	btimed bool
+	// btimed bool unused
 	ctimed bool
 	usered bool
 	// grouped bool unused

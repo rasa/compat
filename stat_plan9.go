@@ -41,7 +41,8 @@ type fileStat struct {
 	// ctimed bool // unused
 	usered  bool
 	grouped bool
-	err     error
+	// followSymlinks bool // unused
+	err error
 }
 
 func stat(fi os.FileInfo, _ string, _ bool) (FileInfo, error) {
