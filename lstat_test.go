@@ -14,7 +14,7 @@ import (
 	"github.com/rasa/compat"
 )
 
-func TestLstatStat(t *testing.T) {
+func TestLstatStat(t *testing.T) { //nolint:dupl // quiet linter
 	if compat.IsWasip1 {
 		skip(t, "Skipping test: symlinks are not supported on "+runtime.GOOS+"/"+runtime.GOARCH)
 
@@ -61,7 +61,7 @@ func TestLstatStat(t *testing.T) {
 	}
 }
 
-func TestLstatLstat(t *testing.T) {
+func TestLstatLstat(t *testing.T) { //nolint:dupl // quiet linter
 	if compat.IsWasip1 {
 		skip(t, "Skipping test: symlinks are not supported on "+runtime.GOOS+"/"+runtime.GOARCH)
 
