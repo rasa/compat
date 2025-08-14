@@ -14,6 +14,18 @@
 ## is regenerated.
 ##
 
+acifani
+antontroshin
+armv
+binaryen
+bytecodealliance
+eabi
+ooce
+sdkmanager
+toolchaintrace
+usesh
+vmactions
+
 asasalint        #  2 hits in  1 file: .golangci.yml
 capnspacehook    #  4 hits in  2 files
 cespare          #  2 hits in  1 file: getuid_plan9.go
