@@ -55,17 +55,13 @@ on:
           - macos-14-large # amd64
           - macos-13 # amd64
           - macos-13-xlarge # arm64
-          # wildcards:
-          - ubuntu
-          - windows
-          - macos-15
-          - macos-14
-          - macos-13
-          - macos
           # groups:
-          - top3 # ubuntu-24.04, windows-2025 & macos-15
-          - top6 # ubuntu-24.04, windows-2025, windows-2022, windows-11-arm, macos-15 & macos-13
-          - all # all 13 runners
+          - top3
+          - top6
+          - ubuntu3
+          - windows3
+          - macos3
+          - all # all of the above runners
         default: "ubuntu-24.04"
 
 permissions:
@@ -104,20 +100,14 @@ jobs:
             printf "::notice::inputs.runner=%s\n" "${{ inputs.runner }}"
           fi
         if: >
-          startsWith(matrix.os, inputs.runner) ||
+          matrix.os == inputs.runner ||
           inputs.runner == 'all' ||
-          (
-            inputs.runner == 'top3' &&
-            contains(fromJSON('["ubuntu-24.04","windows-2025", "macos-15"]'), matrix.os)
-          ) ||
-          (
-            inputs.runner == 'top6' &&
-            contains(fromJSON('["ubuntu-24.04","windows-2025", "windows-2022", "windows-11-arm", "macos-15", "macos-13"]'), matrix.os)
-          ) &&
-          !(
-            contains(matrix.os, 'arm') &&
-            github.repository_visibility == 'public'
-          )
+          (inputs.runner == 'top3'     && contains(fromJSON('["ubuntu-24.04","windows-2025", "macos-15"]'), matrix.os)) ||
+          (inputs.runner == 'top6'     && contains(fromJSON('["ubuntu-24.04","windows-2025", "windows-2022", "windows-11-arm", "macos-15", "macos-13"]'), matrix.os)) &&
+          (inputs.runner == 'ubuntu3'  && contains(fromJSON('["ubuntu-24.04","ubuntu-24.04-arm", "ubuntu-22.04"]'), matrix.os)) ||
+          (inputs.runner == 'windows3' && contains(fromJSON('["windows-2025","windows-2022", "windows-11-arm"]'), matrix.os)) ||
+          (inputs.runner == 'macos3'   && contains(fromJSON('["macos-15", "macos-14", "macos-13"]'), matrix.os)) &&
+          !(contains(matrix.os, 'arm') && github.repository_visibility == 'public')
 
       - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
         if: env.SHOULD_RUN
