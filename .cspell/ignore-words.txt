@@ -19,7 +19,9 @@ antontroshin
 armv
 binaryen
 bytecodealliance
+ccessed
 eabi
+irthed
 ooce
 sdkmanager
 toolchaintrace
