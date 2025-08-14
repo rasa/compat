@@ -23,7 +23,7 @@ const (
 	// Deprecated: Use SupportsLinks() instead.
 	Links = supportsLinks
 	// ATime defines if FileInfo's ATime() function is supported by the OS.
-	// Deprecated: No longer used or needed.
+	// Deprecated: Use SupportsATime() instead.
 	ATime = supportsATime
 	// BTime defines if FileInfo's BTime() function is supported by the OS.
 	// Deprecated: Use SupportsBTime() instead.
@@ -40,7 +40,11 @@ const (
 )
 
 // Supported returns whether supportedType is supported by the operating system.
-// Deprecated: Use SupportsLinks(), SupportsBTime() and SupportsCTime() functions instead.
+// Deprecated: Use SupportsLinks(), SupportsATime(), SupportsBTime() and
+// SupportsCTime() functions instead.
 func Supported(supportedType SupportedType) bool {
 	return supports&supportedType == supportedType
 }
+
+// Deprecated: Use UserIDSourceIsInt instead.
+const UserIDSourceIsNumeric = UserIDSourceIsInt

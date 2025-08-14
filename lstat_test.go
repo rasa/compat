@@ -178,6 +178,12 @@ func TestLstatLinks(t *testing.T) {
 }
 
 func TestLstatATime(t *testing.T) { //nolint:dupl // quiet linter
+	if !compat.SupportsATime() {
+		skip(t, "Skipping test: ATime() not supported on "+runtime.GOOS)
+
+		return // tinygo doesn't support t.Skip
+	}
+
 	if !compat.SupportsSymlinks() {
 		skip(t, "Skipping test: symlinks are not supported on "+runtime.GOOS)
 

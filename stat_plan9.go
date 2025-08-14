@@ -14,7 +14,7 @@ import (
 )
 
 // Not supported: Links | BTime | CTime.
-const supports supportsType = supportsSymlinks
+const supports supportsType = supportsATime | supportsSymlinks
 
 const userIDSource UserIDSourceType = UserIDSourceIsString
 

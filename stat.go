@@ -15,20 +15,27 @@ import (
 type supportsType uint
 
 const (
-	// supportsLinks defines if FileInfo's Links() function is supported by the OS.
+	// supportsLinks defines if FileInfo's Links() function is supported by
+	// the OS.
 	supportsLinks supportsType = 1 << iota
-	// supportsATime defines if FileInfo's ATime() function is supported by the OS.
-	// Deprecated: No longer used or needed.
+	// supportsATime defines if FileInfo's ATime() function is supported by
+	// the OS.
 	supportsATime
-	// supportsBTime defines if FileInfo's BTime() function is supported by the OS.
+	// supportsBTime defines if FileInfo's BTime() function is supported by
+	// the OS.
 	supportsBTime
-	// supportsCTime defines if FileInfo's CTime() function is supported by the OS.
+	// supportsCTime defines if FileInfo's CTime() function is supported by
+	// the OS.
 	supportsCTime
-	// supportsUID defines if FileInfo's UID() function is supported by the OS.
-	// Deprecated: No longer used or needed.
+	// supportsUID defines if FileInfo's UID() function is supported by the
+	// OS.
+	// Deprecated: No longer used or needed, as UID() is effectively
+	// supported by all OSes.
 	supportsUID
-	// supportsGID defines if FileInfo's GID() function is supported by the OS.
-	// Deprecated: No longer used or needed.
+	// supportsGID defines if FileInfo's GID() function is supported by the
+	// OS.
+	// Deprecated: No longer used or needed, as GID() is effectively
+	// supported by all OSes.
 	supportsGID
 	// supportsSymlinks defines if symlinks are supported by the OS.
 	supportsSymlinks
@@ -37,15 +44,20 @@ const (
 // UnknownID is returned when the UID or GID could not be determined.
 const UnknownID = int(-1)
 
-// UserIDSourceType defines if the UID() or User() field is source for the user's UID.
+// UserIDSourceType defines if the underlying source for the user's ID, is an
+// int (UID() function), or a string (User() function).
 type UserIDSourceType uint
 
 const (
-	// UserIDSourceIsNumeric defines if the OS stores the user's ID as an int.
-	UserIDSourceIsNumeric UserIDSourceType = 1 << iota
-	// UserIDSourceIsNumeric defines if the OS stores the user's ID as a string.
+	// UserIDSourceIsInt defines if the OS uses an int to identify the user.
+	UserIDSourceIsInt UserIDSourceType = 1 << iota
+	// UserIDSourceIsString defines if the OS uses a string to identify the
+	// user.
 	UserIDSourceIsString
-	// UserIDSourceIsNone defines if the OS does not support user's IDs.
+	// UserIDSourceIsSID defines if the OS uses a SID to identify the user.
+	UserIDSourceIsSID
+	// UserIDSourceIsNone defines if the OS does not provide user's IDs, so
+	// we provide sane defaults instead.
 	UserIDSourceIsNone
 )
 
@@ -88,24 +100,24 @@ func (fs *fileStat) Error() error        { return fs.err }
 
 func (fs *fileStat) String() string {
 	var b strings.Builder
-	fmt.Fprintf(&b, "Name()   =%v\n", fs.Name())
-	fmt.Fprintf(&b, "Size()   =%v\n", fs.Size())
-	fmt.Fprintf(&b, "Mode()   =0o%o (%v)\n", fs.Mode(), fs.Mode())
-	fmt.Fprintf(&b, "ModTime()=%v\n", fs.ModTime())
-	fmt.Fprintf(&b, "IsDir()  =%v\n", fs.IsDir())
-	fmt.Fprintf(&b, "PartID() =%v\n", fs.PartitionID())
-	fmt.Fprintf(&b, "FileID() =%v\n", fs.FileID())
-	fmt.Fprintf(&b, "Links()  =%v\n", fs.Links())
-	fmt.Fprintf(&b, "ATime()  =%v\n", fs.ATime())
-	fmt.Fprintf(&b, "BTime()  =%v\n", fs.BTime())
-	fmt.Fprintf(&b, "CTime()  =%v\n", fs.CTime())
-	fmt.Fprintf(&b, "UID()    =%v\n", fs.UID())
-	fmt.Fprintf(&b, "GID()    =%v\n", fs.GID())
+	fmt.Fprintf(&b, "Name:   %v\n", fs.Name())
+	fmt.Fprintf(&b, "Size:   %v\n", fs.Size())
+	fmt.Fprintf(&b, "Mode:   0o%o (%v)\n", fs.Mode(), fs.Mode())
+	fmt.Fprintf(&b, "ModTime:%v\n", fs.ModTime())
+	fmt.Fprintf(&b, "IsDir:  %v\n", fs.IsDir())
+	fmt.Fprintf(&b, "PartID: %v\n", fs.PartitionID())
+	fmt.Fprintf(&b, "FileID: %v\n", fs.FileID())
+	fmt.Fprintf(&b, "Links:  %v\n", fs.Links())
+	fmt.Fprintf(&b, "ATime:  %v\n", fs.ATime())
+	fmt.Fprintf(&b, "BTime:  %v\n", fs.BTime())
+	fmt.Fprintf(&b, "CTime:  %v\n", fs.CTime())
+	fmt.Fprintf(&b, "UID:    %v (%v)\n", fs.UID(), fs.User())
+	fmt.Fprintf(&b, "GID:    %v (%v)\n", fs.GID(), fs.Group())
 
 	return b.String()
 }
 
-// UserIDSource returns the source of the user's ID: UserIDSourceIsNumeric,
+// UserIDSource returns the source of the user's ID: UserIDSourceIsInt,
 // UserIDSourceIsString, or UserIDSourceIsNone.
 func UserIDSource() UserIDSourceType {
 	return userIDSource
@@ -114,6 +126,11 @@ func UserIDSource() UserIDSourceType {
 // SupportsLinks returns true if FileInfo's Links() function is supported by the OS.
 func SupportsLinks() bool {
 	return supports&supportsLinks == supportsLinks
+}
+
+// SupportsATime returns true if FileInfo's ATime() function is supported by the OS.
+func SupportsATime() bool {
+	return supports&supportsATime == supportsATime
 }
 
 // SupportsBTime returns true if FileInfo's BTime() function is supported by the OS.

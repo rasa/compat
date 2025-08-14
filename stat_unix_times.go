@@ -10,9 +10,9 @@ import (
 )
 
 // Not supported: BTime.
-const supports supportsType = supportsLinks | supportsCTime | supportsSymlinks
+const supports supportsType = supportsLinks | supportsATime | supportsCTime | supportsSymlinks
 
-const userIDSource UserIDSourceType = UserIDSourceIsNumeric
+const userIDSource UserIDSourceType = UserIDSourceIsInt
 
 func (fs *fileStat) times() {
 	fs.atime = time.Unix(int64(fs.sys.Atim.Sec), int64(fs.sys.Atim.Nsec)) //nolint:unconvert // needed conversion

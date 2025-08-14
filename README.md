@@ -132,7 +132,7 @@ To install compat, use `go get`:
 The `Stat()` and `Lstat()` functions return a `FileInfo` object.
 The table below lists the operating system support for each of the `FileInfo` functions:
 
-| OS           | PartitionID()/ <br/>FileID()* | Links()* | ATime()*<br/>(last<br/>*A*ccessed) | BTime()*<br/>(*B*irthed/<br/>created) | CTime()*<br/>(metadata<br/>last *C*hanged) | UID()* / <br/>GID()* |
+| OS           | PartitionID()/ <br/>FileID()* | Links()* | ATime()*<br/>(last<br/>*A*ccessed) | BTime()*<br/>(*B*irthed/<br/>created) | CTime()*<br/>(metadata<br/>last *C*hanged) | UID()/GID()<br/>User()/ Group() |
 |--------------|--------|--------|------|--------|------|-------|
 | AIX          | ✅     | ✅    | ✅   | ❌    | ✅   | ✅   |
 | Android      | ✅     | ✅    | ✅   | ✅    | ✅   | ✅   |
@@ -147,16 +147,17 @@ The table below lists the operating system support for each of the `FileInfo` fu
 | OpenBSD      | ✅     | ✅    | ✅   | ✖️    | ✅   | ✅   |
 | Plan9        | ✅     | ❌    | ✅   | ❌    | ❌   | ☑️   |
 | Solaris      | ✅     | ✅    | ✅   | ✖️    | ✅   | ✅   |
-| Wasip1/<br/>WASM | ✅ | ✅    | ✅   | ❌    | ✅  | ✅   |
-| Windows      | ✅     | ✅    | ✅   | ✅    | ✅   | ✅†  |
+| Wasip1/<br/>WASM | ✅ | ✅    | ✅†  | ❌    | ✅  | ✅   |
+| Windows      | ✅     | ✅    | ✅   | ✅    | ✅   | ✅‡  |
 <!--           | PartID+ | Links | ATime | BTime | CTime | UID+ | -->
 
 \* Support will depend on the underlying file system. See [Comparison of file systems](https://wikipedia.org/wiki/Comparison_of_file_systems#Metadata) for details.<br/>
-† Uses the same logic as in Cygwin/MSYS2 to map Windows string-based SIDs to 32-bit integer UIDs/GIDs.
+† Not supported if compiled using the Tinygo compiler.<br/>
+‡ Provides the same integer values as Cygwin/MSYS2/Git for Windows in mapping Windows SIDs (Security Identifiers).
 
 ✅ fully supported.<br/>
 ☑️ the UID() and GID() values are 32-bit hashes of the user and group names.<br/>
-✖️ not implemented (but it appears the OS supports it, so we could add support).<br/>
+✖️ not implemented (but if the OS supports it, so we could add support).<br/>
 ❌ not implemented (as it appears the OS doesn't support it).<br/>
 <!-- 🚧 planned to be implemented.<br/> -->
 

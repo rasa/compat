@@ -18,9 +18,9 @@ import (
 	"github.com/capnspacehook/go-acl"
 )
 
-const supports supportsType = supportsLinks | supportsBTime | supportsCTime | supportsSymlinks
+const supports supportsType = supportsLinks | supportsATime | supportsBTime | supportsCTime | supportsSymlinks
 
-const userIDSource UserIDSourceType = UserIDSourceIsString
+const userIDSource UserIDSourceType = UserIDSourceIsSID
 
 // A fileStat is the implementation of FileInfo returned by Stat and Lstat.
 // See https://github.com/golang/go/blob/8cd6d68a/src/os/types_windows.go#L18

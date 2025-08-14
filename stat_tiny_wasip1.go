@@ -7,7 +7,7 @@ package compat
 
 import "time"
 
-// Not supported: BTime | CTime | Syslinks
+// Not supported: ATime | BTime | CTime | Symlinks
 const supports supportsType = supportsLinks
 
 const userIDSource UserIDSourceType = UserIDSourceIsNone

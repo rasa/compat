@@ -9,9 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Added
 
-- Add `SupportsLinks()`, `SupportsBTime()`, `SupportsCTime()` and `SupportsSymlinks()` functions.
-- Add `String()` function to `FileInfo`.
+- Add `SupportsLinks()`, `SupportsATime()`, `SupportsBTime()`, `SupportsCTime()`
+  and `SupportsSymlinks()` functions.
+- Add `String()` function to `FileInfo` interface.
 - Add missing `Lstat()` tests.
+- Add `UserIDSourceIsSID` return value for `UserIDSource()` function under Windows.
 
 ### Fixed
 
@@ -27,13 +29,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Added
 
-- Add `User()` function to `Stat()`s `FileMode` struct, to return the file's
+- Add `User()` function to `Stat()`s `FileInfo` interface, to return the file's
   user's name.
-- Add `Group()` function to `Stat()`s `FileMode` struct to return the file's
+- Add `Group()` function to `Stat()`s `FileInfo` interface to return the file's
   group name.
-- Add `Error()` function to `Stat()`s `FileMode` struct to return the last error
-  received when calling `BTime()`, `CTime()`, `UID()`, `GID()`,
-  `User()`, or `Group()` if an additional system call is executed.
+- Add `Error()` function to `Stat()`s `FileInfo` interface to return the last
+  error received when calling `BTime()`, `CTime()`, `UID()`, `GID()`, `User()`,
+  or `Group()` if an additional system call is executed.
 - Add `UserIDSource()` function to return if the `UID()` function or the
   `User()` function is the user's actual ID in the OS, or if the OS doesn't use
   user IDs.

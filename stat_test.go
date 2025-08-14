@@ -111,6 +111,12 @@ func TestStatLinks(t *testing.T) {
 }
 
 func TestStatATime(t *testing.T) { //nolint:dupl // quiet linter
+	if !compat.SupportsATime() {
+		skip(t, "Skipping test: ATime() not supported on "+runtime.GOOS)
+
+		return // tinygo doesn't support t.Skip
+	}
+
 	now := time.Now()
 
 	name, err := createTemp(t)
