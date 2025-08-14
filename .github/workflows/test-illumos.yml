@@ -8,9 +8,12 @@ on:
 permissions:
   contents: read
 
+env:
+  GO_VERSION: "1.24"
+
 jobs:
   test-illumos:
-    name: test-illumos (go 1.25)
+    name: test-illumos (go 1.24)
     runs-on: ubuntu-latest
     timeout-minutes: 10
     # env:
@@ -23,9 +26,11 @@ jobs:
         # envs: 'GITHUB_TOKEN'
         usesh: true
         prepare: |
-          pkg install go-125
+          GO_VERSION="${{ env.GO_VERSION }}"
+          pkg_version="${GO_VERSION//.}"
+          pkg install "go-${pkg_version}"
         run: |
-          PATH="/opt/ooce/go-1.25/bin:${PATH}"
+          PATH="/opt/ooce/go-${{ env.GO_VERSION }}/bin:${PATH}"
           export PATH
           printf '::notice ::%s\n' "$(go version)"
           go env
