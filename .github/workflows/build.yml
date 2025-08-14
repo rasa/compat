@@ -108,11 +108,11 @@ jobs:
           inputs.runner == 'all' ||
           (
             inputs.runner == 'top3' &&
-            contains(fromJSON('["ubuntu-24.04","windows-2025", "macos-15"]'), matrix.os) 
+            contains(fromJSON('["ubuntu-24.04","windows-2025", "macos-15"]'), matrix.os)
           ) ||
           (
             inputs.runner == 'top6' &&
-            contains(fromJSON('["ubuntu-24.04","windows-2025", "windows-2022", "windows-11-arm", "macos-15", "macos-13"]'), matrix.os) 
+            contains(fromJSON('["ubuntu-24.04","windows-2025", "windows-2022", "windows-11-arm", "macos-15", "macos-13"]'), matrix.os)
           ) &&
           !(
             contains(matrix.os, 'arm') &&
@@ -126,7 +126,7 @@ jobs:
         if: env.SHOULD_RUN
         # if: runner.os != 'Windows'
         with:
-          go-version: '1.24'
+          go-version: '1.25'
           check-latest: true
           cache: false
 
@@ -136,7 +136,7 @@ jobs:
       # - uses: antontroshin/setup-go@bda02de8887c9946189f81e7e59512914aeb9ea4
       #   if: runner.os == 'Windows'
       #   with:
-      #     go-version: '1.24'
+      #     go-version: '1.25'
       #     check-latest: true
       #     cache: false
 

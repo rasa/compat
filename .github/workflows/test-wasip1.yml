@@ -25,7 +25,7 @@ jobs:
         go-version:
           # - big: "1.23.11"
           #   tiny: "0.36.0"
-          - big: "1.24"
+          - big: "1.25"
             tiny: "0.38.0"
         # FIXME: TinyGo needs to be manually bumped; it doesn't immediately
         # release support for new major Go versions something should ping when a
@@ -59,7 +59,7 @@ jobs:
 
       - run: which go_wasip1_wasm_exec
 
-   
+
       - uses: acifani/setup-tinygo@v2.0.1
         with:
           tinygo-version: "${{ matrix.go-version.tiny }}"
