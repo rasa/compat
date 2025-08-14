@@ -13,6 +13,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Changed
 
+- Deprecate `CreateEx()`, `CreateTempEx()` and `WriteFileEx()` functions.
+
 ## [0.5.1](https://github.com/rasa/compat/compare/v0.5.0...v0.5.1)
 
 ### Added
