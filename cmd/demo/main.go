@@ -36,7 +36,7 @@ func main() {
 	sameFile()
 	sameFilel()
 	sameFiles()
-//	_ = os.Remove(name)
+	_ = os.Remove(name)
 }
 
 func samePartition() {
