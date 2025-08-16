@@ -57,22 +57,24 @@ type fileStat struct {
 // license that can be found in the LICENSE file.
 
 ////////////////////////////////////////////////////////////////////////////////
-// Originally copied from https://github.com/golang/go/blob/d65c209b/src/os/types_windows.go#L287
+// Originally copied from
+// https://github.com/golang/go/blob/77f911e3/src/os/types_windows.go#L287-L336
 ////////////////////////////////////////////////////////////////////////////////
 
 func stat(fi os.FileInfo, name string, followSymlinks bool) (FileInfo, error) {
 	var fs fileStat
 
+	fs.mux.Lock()
+	defer fs.mux.Unlock()
+
 	fs.followSymlinks = followSymlinks
 
 	name = golang.FixLongPath(name)
+
 	pathp, err := windows.UTF16PtrFromString(name)
 	if err != nil {
 		return nil, &os.PathError{Op: "stat", Path: name, Err: err}
 	}
-
-	fs.mux.Lock()
-	defer fs.mux.Unlock()
 
 	attrs := uint32(syscall.FILE_FLAG_BACKUP_SEMANTICS)
 
@@ -85,7 +87,6 @@ func stat(fi os.FileInfo, name string, followSymlinks bool) (FileInfo, error) {
 		return nil, &os.PathError{Op: "stat", Path: name, Err: err}
 	}
 	defer windows.CloseHandle(h) //nolint:errcheck // quiet linter
-
 	var i windows.ByHandleFileInformation
 	err = windows.GetFileInformationByHandle(h, &i)
 	if err != nil {

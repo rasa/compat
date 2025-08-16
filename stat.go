@@ -83,6 +83,7 @@ type FileInfo interface {
 	Group() string       // group name, or "" if an error or unsupported
 	Error() error        // error result of the last system call that failed
 	String() string
+	Info() (os.FileInfo, error)
 }
 
 func (fs *fileStat) Name() string        { return fs.name }
@@ -97,7 +98,6 @@ func (fs *fileStat) Links() uint64       { return fs.links }
 func (fs *fileStat) ATime() time.Time    { return fs.atime }
 func (fs *fileStat) MTime() time.Time    { return fs.mtime } // duplicates ModTime
 func (fs *fileStat) Error() error        { return fs.err }
-
 func (fs *fileStat) String() string {
 	var b strings.Builder
 	fmt.Fprintf(&b, "Name:   %v\n", fs.Name())
@@ -115,6 +115,10 @@ func (fs *fileStat) String() string {
 	fmt.Fprintf(&b, "GID:    %v (%v)\n", fs.GID(), fs.Group())
 
 	return b.String()
+}
+
+func (fs *fileStat) Info() (os.FileInfo, error) {
+	return os.FileInfo(fs), fs.Error()
 }
 
 // UserIDSource returns the source of the user's ID: UserIDSourceIsInt,
