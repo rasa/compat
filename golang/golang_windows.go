@@ -22,14 +22,14 @@ import (
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-// Snippet: https://github.com/golang/go/blob/cad1fc52/src/os/getwd.go#L13-L16
+// Snippet: https://github.com/golang/go/blob/77f911e3/src/os/getwd.go#L13-L16
 
 var getwdCache struct {
 	sync.Mutex
 	dir string
 }
 
-// Snippet: https://github.com/golang/go/blob/dbaa2d3e/src/internal/syscall/windows/syscall_windows.go#L162-L179
+// Snippet: https://github.com/golang/go/blob/77f911e3/src/internal/syscall/windows/syscall_windows.go#L162-L179
 
 type FILE_BASIC_INFO struct {
 	CreationTime   int64
@@ -50,13 +50,13 @@ type FILE_BASIC_INFO struct {
 	_ uint32
 }
 
-// Snippet: https://github.com/golang/go/blob/e282cbb1/src/os/tempfile.go#L22-L24
+// Snippet: https://github.com/golang/go/blob/77f911e3/src/os/tempfile.go#L22-L24
 
 func nextRandom() string {
 	return Uitoa(uint(uint32(runtime_rand())))
 }
 
-// Snippet: https://github.com/golang/go/blob/e282cbb1/src/internal/bytealg/lastindexbyte_generic.go#L16-L23
+// Snippet: https://github.com/golang/go/blob/77f911e3/src/internal/bytealg/lastindexbyte_generic.go#L16-L23
 
 func lastIndexByteString(s string, c byte) int {
 	for i := len(s) - 1; i >= 0; i-- {
@@ -67,7 +67,7 @@ func lastIndexByteString(s string, c byte) int {
 	return -1
 }
 
-// Snippet: https://github.com/golang/go/blob/e282cbb1/src/internal/itoa/itoa.go#L18-L33
+// Snippet: https://github.com/golang/go/blob/77f911e3/src/internal/itoa/itoa.go#L18-L33
 
 func Uitoa(val uint) string {
 	if val == 0 { // avoid string allocation
@@ -86,11 +86,11 @@ func Uitoa(val uint) string {
 	return string(buf[i:])
 }
 
-// Snippet: https://github.com/golang/go/blob/77f911e31c243a8302c086d64dbef340b0c999b8/src/internal/poll/errno_windows.go#L14
+// Snippet: https://github.com/golang/go/blob/77f911e3/src/internal/poll/errno_windows.go#L14-L16
 
 var errERROR_IO_PENDING error = syscall.Errno(syscall.ERROR_IO_PENDING)
 
-// Snippet: https://github.com/golang/go/blob/77f911e31c243a8302c086d64dbef340b0c999b8/src/internal/poll/errno_windows.go#L20
+// Snippet: https://github.com/golang/go/blob/77f911e3/src/internal/poll/errno_windows.go#L20-L31
 
 func errnoErr(e syscall.Errno) error {
 	switch e {
@@ -105,7 +105,7 @@ func errnoErr(e syscall.Errno) error {
 	return e
 }
 
-// Snippet: https://github.com/golang/go/blob/e282cbb1/src/os/file.go#L327-L349
+// Snippet: https://github.com/golang/go/blob/77f911e3/src/os/file.go#L327-L348
 
 // compat: added , sa *syscall.SecurityAttributes
 func Mkdir(name string, perm FileMode, sa *syscall.SecurityAttributes) error {
@@ -132,7 +132,7 @@ func Mkdir(name string, perm FileMode, sa *syscall.SecurityAttributes) error {
 	return nil
 }
 
-// Snippet: https://github.com/golang/go/blob/e282cbb1/src/os/file_posix.go#L60-L73
+// Snippet: https://github.com/golang/go/blob/77f911e3/src/os/file_posix.go#L60-L73
 
 func syscallMode(i FileMode) (o uint32) {
 	o |= uint32(i.Perm())
@@ -149,7 +149,7 @@ func syscallMode(i FileMode) (o uint32) {
 	return
 }
 
-// Snippet: https://github.com/golang/go/blob/e282cbb1/src/os/file_posix.go#L254-L262
+// Snippet: https://github.com/golang/go/blob/77f911e3/src/os/file_posix.go#L254-L261
 
 func ignoringEINTR(fn func() error) error {
 	for {
@@ -160,7 +160,7 @@ func ignoringEINTR(fn func() error) error {
 	}
 }
 
-// Snippet: https://github.com/golang/go/blob/e282cbb1/src/os/file_windows.go#L138-L149
+// Snippet: https://github.com/golang/go/blob/77f911e3/src/os/file_windows.go#L114-L125
 
 // compat: added: , sa *syscall.SecurityAttributes
 func openFileNolog(name string, flag int, perm FileMode, sa *syscall.SecurityAttributes) (*File, error) {
@@ -173,12 +173,10 @@ func openFileNolog(name string, flag int, perm FileMode, sa *syscall.SecurityAtt
 		return nil, &PathError{Op: "open", Path: name, Err: err}
 	}
 	// syscall.Open always returns a non-blocking handle.
-	// newFile() is private, so call NewFile() instead.
-	// return newFile(r, name, "file", false), nil
-	return NewFile(uintptr(r), name), nil
+	return newFile(r, name, "file", false), nil
 }
 
-// Snippet: https://github.com/golang/go/blob/e282cbb1/src/os/path.go#L19-L66
+// Snippet: https://github.com/golang/go/blob/77f911e3/src/os/path.go#L19-L66
 
 // compat: added: , sa *syscall.SecurityAttributes
 func MkdirAll(path string, perm FileMode, sa *syscall.SecurityAttributes) error {
@@ -230,7 +228,7 @@ func MkdirAll(path string, perm FileMode, sa *syscall.SecurityAttributes) error 
 	return nil
 }
 
-// Snippet: https://github.com/golang/go/blob/cad1fc52/src/os/path_windows.go#L100-L105
+// Snippet: https://github.com/golang/go/blob/77f911e3/src/os/path_windows.go#L100-L105
 
 func fixLongPath(path string) string {
 	if canUseLongPaths {
@@ -239,7 +237,7 @@ func fixLongPath(path string) string {
 	return addExtendedPrefix(path)
 }
 
-// Snippet: https://github.com/golang/go/blob/cad1fc52/src/os/path_windows.go#L108-L202
+// Snippet: https://github.com/golang/go/blob/77f911e3/src/os/path_windows.go#L108-L202
 
 func addExtendedPrefix(path string) string {
 	if len(path) >= 4 {
@@ -337,7 +335,7 @@ func addExtendedPrefix(path string) string {
 	return syscall.UTF16ToString(buf)
 }
 
-// Snippet: https://github.com/golang/go/blob/e282cbb1/src/os/tempfile.go#L35-L58
+// Snippet: https://github.com/golang/go/blob/77f911e3/src/os/tempfile.go#L35-L58
 
 // compat: added , sa *syscall.SecurityAttributes
 func CreateTemp(dir, pattern string, flag int, sa *syscall.SecurityAttributes) (*File, error) {
@@ -365,11 +363,11 @@ func CreateTemp(dir, pattern string, flag int, sa *syscall.SecurityAttributes) (
 	}
 }
 
-// Snippet: https://github.com/golang/go/blob/e282cbb1/src/os/tempfile.go#L60-L60
+// Snippet: https://github.com/golang/go/blob/77f911e3/src/os/tempfile.go#L60-L60
 
 var errPatternHasSeparator = errors.New("pattern contains path separator")
 
-// Snippet: https://github.com/golang/go/blob/e282cbb1/src/os/tempfile.go#L64-L76
+// Snippet: https://github.com/golang/go/blob/77f911e3/src/os/tempfile.go#L64-L76
 
 func prefixAndSuffix(pattern string) (prefix, suffix string, err error) {
 	for i := 0; i < len(pattern); i++ {
@@ -385,7 +383,7 @@ func prefixAndSuffix(pattern string) (prefix, suffix string, err error) {
 	return prefix, suffix, nil
 }
 
-// Snippet: https://github.com/golang/go/blob/e282cbb1/src/os/tempfile.go#L76-L117
+// Snippet: https://github.com/golang/go/blob/77f911e3/src/os/tempfile.go#L86-L117
 
 // compat: added , sa *syscall.SecurityAttributes
 func MkdirTemp(dir, pattern string, sa *syscall.SecurityAttributes) (string, error) {
@@ -421,7 +419,7 @@ func MkdirTemp(dir, pattern string, sa *syscall.SecurityAttributes) (string, err
 	}
 }
 
-// Snippet: https://github.com/golang/go/blob/e282cbb1/src/os/tempfile.go#L119-L124
+// Snippet: https://github.com/golang/go/blob/77f911e3/src/os/tempfile.go#L119-L124
 
 func joinPath(dir, name string) string {
 	if len(dir) > 0 && IsPathSeparator(dir[len(dir)-1]) {
@@ -528,7 +526,7 @@ func Open(name string, flag int, perm uint32, sa *syscall.SecurityAttributes) (f
 	return h, nil
 }
 
-// Snippet: https://github.com/golang/go/blob/77f911e3/src/syscall/zsyscall_windows.go#L506
+// Snippet: https://github.com/golang/go/blob/77f911e3/src/syscall/zsyscall_windows.go#L506-L513
 
 func createFile(name *uint16, access uint32, mode uint32, sa *SecurityAttributes, createmode uint32, attrs uint32, templatefile int32) (handle Handle, err error) {
 	r0, _, e1 := Syscall9(procCreateFileW.Addr(), 7, uintptr(unsafe.Pointer(name)), uintptr(access), uintptr(mode), uintptr(unsafe.Pointer(sa)), uintptr(createmode), uintptr(attrs), uintptr(templatefile), 0, 0)

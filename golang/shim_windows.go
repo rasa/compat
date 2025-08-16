@@ -159,3 +159,8 @@ var (
 	modkernel32     = syscall.NewLazyDLL("kernel32.dll")
 	procCreateFileW = modkernel32.NewProc("CreateFileW")
 )
+
+// @TODO(rasa): support nonBlocking == false
+func newFile(h syscall.Handle, name string, /*kind*/ _ string, /*nonBlocking*/ _ bool) *File {
+	return NewFile(uintptr(h), name)
+}
