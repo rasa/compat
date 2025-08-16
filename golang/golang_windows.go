@@ -168,7 +168,7 @@ func openFileNolog(name string, flag int, perm FileMode, sa *syscall.SecurityAtt
 		return nil, &PathError{Op: "open", Path: name, Err: syscall.ENOENT}
 	}
 	path := fixLongPath(name)
-	r, err := Open(path, flag|syscall.O_CLOEXEC, syscallMode(perm), sa)
+	r, err := Open(path, flag|syscall.O_CLOEXEC, syscallMode(perm), sa) // compat: added: , sa
 	if err != nil {
 		return nil, &PathError{Op: "open", Path: name, Err: err}
 	}

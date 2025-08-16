@@ -160,7 +160,11 @@ var (
 	procCreateFileW = modkernel32.NewProc("CreateFileW")
 )
 
-// @TODO(rasa): support nonBlocking == false
-func newFile(h syscall.Handle, name string, /*kind*/ _ string, /*nonBlocking*/ _ bool) *File {
+// emulate newFile() as f.cleanup and f.pfd are private.
+func newFile(h syscall.Handle, name string /*kind*/, _ string /*nonBlocking*/, _ bool) *File {
+	if h == syscall.InvalidHandle {
+		return nil
+	}
+
 	return NewFile(uintptr(h), name)
 }
