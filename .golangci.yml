@@ -89,6 +89,8 @@ linters:
       - third_party$
       - builtin$
       - examples$
+      - golang/golang_windows.go
+
 formatters:
   enable:
     - gofumpt
@@ -103,3 +105,4 @@ formatters:
       - third_party$
       - builtin$
       - examples$
+      - golang/golang_windows.go
