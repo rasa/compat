@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Added
 
+- Add `ReadDir()` and `FormatDirEntry()` functions.
+- Add cmd/updater program to keep upstream code up to date.
+
 ### Fixed
 
 ### Changed
