@@ -13,16 +13,18 @@ import (
 	"syscall"
 
 	"golang.org/x/sys/windows"
+
+	"github.com/rasa/compat/golang"
 )
 
 func rename(src, dst string) error {
-	longsrc := fixLongPath(src)
+	longsrc := golang.FixLongPath(src)
 
 	src16, err := syscall.UTF16PtrFromString(longsrc)
 	if err != nil {
 		return &os.LinkError{Op: "rename", Old: src, New: dst, Err: err}
 	}
-	longdst := fixLongPath(dst)
+	longdst := golang.FixLongPath(dst)
 	dst16, err := syscall.UTF16PtrFromString(longdst)
 	if err != nil {
 		return &os.LinkError{Op: "rename", Old: src, New: dst, Err: err}
