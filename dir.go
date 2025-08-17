@@ -5,6 +5,7 @@ package compat
 
 import (
 	"os"
+	"path/filepath"
 	"slices"
 	"strings"
 )
@@ -37,29 +38,50 @@ type DirEntry interface {
 
 // Source: https://github.com/golang/go/blob/77f911e3/src/io/fs/readdir.go#L52
 
-// dirInfo is a DirEntry based on a FileInfo.
-type dirInfo struct {
-	fileInfo FileInfo
+type dirEntry struct {
+	parent string
+	name   string
+	typ    os.FileMode
+	osInfo os.FileInfo
+	info   FileInfo
+	infoed bool
+	err    error
 }
 
-func (di dirInfo) IsDir() bool {
-	return di.fileInfo.IsDir()
+func (d dirEntry) IsDir() bool {
+	return d.typ.IsDir()
 }
 
-func (di dirInfo) Type() os.FileMode {
-	return di.fileInfo.Mode().Type()
+func (d dirEntry) Type() os.FileMode {
+	return d.typ
 }
 
-func (di dirInfo) Info() (FileInfo, error) {
-	return di.fileInfo, nil
+func (d dirEntry) Info() (FileInfo, error) {
+	if d.infoed {
+		return d.info, d.err
+	}
+	d.infoed = true //nolint:staticcheck // quiet linter
+	path := filepath.Join(d.parent, d.name)
+	if d.osInfo == nil {
+		d.osInfo, d.err = os.Stat(path)
+		if d.err != nil {
+			return nil, d.err
+		}
+	}
+	d.info, d.err = stat(d.osInfo, path, false)
+	if d.err != nil {
+		return nil, d.err
+	}
+
+	return d.info, nil
 }
 
-func (di dirInfo) Name() string {
-	return di.fileInfo.Name()
+func (d dirEntry) Name() string {
+	return d.name
 }
 
-func (di dirInfo) String() string {
-	return FormatDirEntry(di)
+func (d dirEntry) String() string {
+	return FormatDirEntry(d)
 }
 
 // Source: https://github.com/golang/go/blob/77f911e3/src/os/dir.go#L87
@@ -72,19 +94,15 @@ func (di dirInfo) String() string {
 func ReadDir(name string) ([]DirEntry, error) {
 	dirs, err := os.ReadDir(name)
 	if err != nil {
-		return nil, err
+		return []DirEntry{}, err
 	}
-	var rv = make([]DirEntry, len(dirs))
+	rv := make([]DirEntry, len(dirs))
 	for i, dir := range dirs {
-		fi, err := dir.Info()
-		if err != nil {
-			return nil, err
+		rv[i] = dirEntry{
+			parent: name,
+			name:   dir.Name(),
+			typ:    dir.Type(),
 		}
-		cfi, err := stat(fi, name, false)
-		if err != nil {
-			return nil, err
-		}
-		rv[i] = dirInfo{cfi}
 	}
 	slices.SortFunc(rv, func(a, b DirEntry) int {
 		return strings.Compare(a.Name(), b.Name())
@@ -97,9 +115,27 @@ func ReadDir(name string) ([]DirEntry, error) {
 
 // FileInfoToDirEntry returns a [DirEntry] that returns information from info.
 // If info is nil, FileInfoToDirEntry returns nil.
-func FileInfoToDirEntry(info FileInfo) DirEntry {
+func FileInfoToDirEntry(info FileInfo, parent string) DirEntry {
 	if info == nil {
 		return nil
 	}
-	return dirInfo{fileInfo: info}
+
+	return dirEntry{
+		parent: parent,
+		name:   info.Name(),
+		typ:    info.Mode(),
+		info:   info,
+	}
+}
+
+func OSDirEntryToDirEntry(entry os.DirEntry, parent string) DirEntry {
+	if entry == nil {
+		return nil
+	}
+
+	return dirEntry{
+		parent: parent,
+		name:   entry.Name(),
+		typ:    entry.Type(),
+	}
 }
