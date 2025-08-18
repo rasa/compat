@@ -41,7 +41,7 @@ func chmod(name string, perm os.FileMode) error {
 }
 
 func create(name string, perm os.FileMode, flag int) (*os.File, error) {
-	flag |= O_CREATE
+	flag |= os.O_CREATE
 	sa, err := saFromPerm(perm, true)
 	if err != nil {
 		return nil, err
@@ -90,7 +90,7 @@ func mkdirTemp(dir, pattern string) (string, error) {
 }
 
 func openFile(name string, flag int, perm os.FileMode) (*os.File, error) {
-	sa, err := saFromPerm(perm, flag|O_CREATE == O_CREATE)
+	sa, err := saFromPerm(perm, flag|os.O_CREATE == os.O_CREATE)
 	if err != nil {
 		return nil, err
 	}

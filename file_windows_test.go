@@ -21,9 +21,9 @@ func init() {
 	// @TODO(rasa): test different umask settings
 	compat.Umask(0)
 
-	for u := 6; u <= 7; u++ {
-		for g := 0; g <= 7; g++ {
-			for o := 0; o <= 7; o++ {
+	for u := 7; u >= 6; u-- {
+		for g := 7; g >= 0; g-- {
+			for o := 7; o >= 0; o-- {
 				mode := os.FileMode(u<<0o6 | g<<0o3 | o) //nolint:gosec // quiet linter
 				perms = append(perms, mode)
 			}
@@ -166,6 +166,33 @@ func TestFileWindowsOpenFile(t *testing.T) {
 	}
 }
 
+func TestFileWindowsRemove(t *testing.T) {
+	for _, perm := range perms {
+		name, err := tmpfile(t)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		t.Logf("%v (%03o): %v", perm, perm, name)
+		err = compat.Chmod(name, perm)
+		if err != nil {
+			t.Fatalf("Chmod(%04o) failed: %v", perm, err)
+		}
+
+		checkPerm(t, name, perm)
+		perm = os.FileMode(0o666) // CreatePerm
+		err = compat.Chmod(name, perm)
+		checkPerm(t, name, perm)
+		if err != nil {
+			t.Fatalf("Chmod(%04o) failed: %v", perm, err)
+		}
+		err = os.Remove(name)
+		if err != nil {
+			t.Fatalf("Remove failed: %v: %v", name, err)
+		}
+	}
+}
+
 func TestFileWindowsWriteFile(t *testing.T) {
 	for _, perm := range perms {
 		name, err := tmpname(t)
@@ -211,8 +238,8 @@ func checkPerm(t *testing.T, name string, perm os.FileMode) {
 	}
 
 	if got != perm {
-		logACLs(t, name, true)
-		t.Fatalf("got %04o, want %04o", got, perm)
+		logACLs(t, name, false)
+		t.Fatalf("got 0o%03o (%v), want 0o%03o (%v)", got, got, perm, perm)
 	}
 }
 
@@ -224,9 +251,12 @@ func logACLs(t *testing.T, name string, doDir bool) {
 
 	command := fmt.Sprintf("Get-Acl '%s' | Format-List", name)
 	args = []string{"-Command", command}
-	err := logOutput(t, "pwsh.exe", args)
+	exe, err := exec.LookPath("pwsh.exe")
 	if err != nil {
-		_ = logOutput(t, "powershell.exe", args)
+		exe, err = exec.LookPath("powershell.exe")
+	}
+	if err == nil {
+		_ = logOutput(t, exe, args)
 	}
 
 	if doDir {

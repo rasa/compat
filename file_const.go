@@ -8,6 +8,8 @@ import (
 	"os"
 )
 
+var _ = fs.ModeDir
+
 const (
 	// CreatePerm is the FileMode used by Create().
 	CreatePerm os.FileMode = 0o666
@@ -16,7 +18,16 @@ const (
 	// MkdirTempPerm is the FileMode used by MkdirTemp()..
 	MkdirTempPerm os.FileMode = 0o700
 
+	// Verify we don't conflict with any of the values listed at
+	//  https://github.com/golang/go/blob/77f911e3/src/syscall/types_windows.go#L37-L55
+
+	// O_DELETE deletes the file when closed.
+	O_DELETE = 0x8000000
+
 	// https://github.com/golang/go/blob/e282cbb1/src/os/file.go#L77
+
+	// The following constants are not used by the compat library, but are
+	// provided to make code migration easier.
 
 	O_RDONLY = os.O_RDONLY // open the file read-only. //nolint:revive // quiet linter
 	O_WRONLY = os.O_WRONLY // open the file write-only. //nolint:revive // quiet linter
@@ -27,8 +38,6 @@ const (
 	O_EXCL   = os.O_EXCL   // used with O_CREATE, file must not exist.
 	O_SYNC   = os.O_SYNC   // open for synchronous I/O.
 	O_TRUNC  = os.O_TRUNC  // truncate regular writable file when opened.
-	// O_DELETE deletes the file when closed.
-	O_DELETE = 0x40000000
 
 	ModeDir        = fs.ModeDir        // d: is a directory
 	ModeAppend     = fs.ModeAppend     // a: append-only

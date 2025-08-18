@@ -43,7 +43,7 @@ func Create(name string, opts ...Option) (*os.File, error) {
 	fopts := FileOptions{
 		keepFileMode: true,
 		fileMode:     CreatePerm,
-		flag:         O_RDWR | O_CREATE | O_TRUNC,
+		flag:         os.O_RDWR | os.O_CREATE | os.O_TRUNC,
 	}
 
 	for _, opt := range opts {
@@ -66,7 +66,7 @@ func CreateTemp(dir, pattern string, opts ...Option) (*os.File, error) {
 	fopts := FileOptions{
 		keepFileMode: true,
 		fileMode:     CreateTempPerm,
-		flag:         O_CREATE,
+		flag:         os.O_CREATE,
 	}
 	for _, opt := range opts {
 		opt(&fopts)

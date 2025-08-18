@@ -13,6 +13,10 @@ import (
 	"golang.org/x/sys/windows"
 )
 
+// O_DELETE deletes the file when closed.
+// Redefining here to avoid a circular dependency..
+const O_DELETE = 0x8000000
+
 type (
 	File      = os.File
 	FileMode  = os.FileMode
@@ -93,7 +97,6 @@ const (
 	O_EXCL   = os.O_EXCL   // used with O_CREATE, file must not exist.
 	O_SYNC   = os.O_SYNC   // open for synchronous I/O.
 	O_TRUNC  = os.O_TRUNC  // truncate regular writable file when opened.
-	O_DELETE = 0x40000000
 )
 
 // See https://github.com/golang/go/blob/77f911e3/src/runtime/os_windows.go#L446

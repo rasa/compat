@@ -69,9 +69,9 @@ const UserIDSourceIsNumeric = UserIDSourceIsInt
 var CreateEx = createex
 
 func createex(name string, perm os.FileMode, flag int) (*os.File, error) {
-	flag |= O_CREATE
-	if flag&O_WRONLY == 0 {
-		flag |= O_RDWR
+	flag |= os.O_CREATE
+	if flag&os.O_WRONLY == 0 {
+		flag |= os.O_RDWR
 	}
 
 	return create(name, perm, flag)
