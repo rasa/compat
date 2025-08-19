@@ -61,7 +61,9 @@ var remove = os.Remove
 
 var removeAll = os.RemoveAll
 
-var symlink = os.Symlink
+func symlink(oldname, newname string, _ bool) error {
+	return os.Symlink(oldname, newname)
+}
 
 func writeFile(name string, data []byte, perm os.FileMode, _ int) error {
 	return os.WriteFile(name, data, perm)

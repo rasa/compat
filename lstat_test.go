@@ -449,6 +449,43 @@ func TestLstatUser(t *testing.T) {
 	}
 	want := u.Username
 
+	if compareNames(got, want) {
+		t.Fatalf("User(): got %v, want %v", got, want)
+	}
+}
+
+func TestLstatUserSetOwner(t *testing.T) {
+	if !compat.SupportsSymlinks() {
+		skip(t, "Skipping test: symlinks are not supported on "+runtime.GOOS)
+
+		return // tinygo doesn't support t.Skip
+	}
+
+	if compat.IsTinygo {
+		// tinygo: Current requires cgo or $USER, $HOME set in environment
+		skip(t, "Skipping test: User() not supported on tinygo")
+
+		return // tinygo doesn't support t.Skip
+	}
+
+	_, name, err := createTempSymlink(t, compat.WithSetSymlinkOwner(true))
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	fi, err := compat.Lstat(name)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	got := fi.User()
+
+	u, err := user.Current()
+	if err != nil {
+		t.Fatal(err)
+	}
+	want := u.Username
+
 	if !compareNames(got, want) {
 		t.Fatalf("User(): got %v, want %v", got, want)
 	}
@@ -468,6 +505,47 @@ func TestLstatGroup(t *testing.T) {
 	}
 
 	_, name, err := createTempSymlink(t)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	fi, err := compat.Lstat(name)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	got := fi.Group()
+
+	u, err := user.Current()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	g, err := user.LookupGroupId(u.Gid)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	want := g.Name
+	if !compareNames(got, want) {
+		t.Fatalf("Group(): got %v, want %v", got, want)
+	}
+}
+
+func TestLstatGroupSetOwner(t *testing.T) {
+	if !compat.SupportsSymlinks() {
+		skip(t, "Skipping test: symlinks are not supported on "+runtime.GOOS)
+
+		return // tinygo doesn't support t.Skip
+	}
+
+	if compat.IsTinygo {
+		skip(t, "Skipping test: Group() not supported on tinygo")
+
+		return // tinygo doesn't support t.Skip
+	}
+
+	_, name, err := createTempSymlink(t, compat.WithSetSymlinkOwner(true))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -637,7 +715,7 @@ func TestLstatDiffFiles(t *testing.T) {
 	}
 }
 
-func createTempSymlink(t *testing.T) (string, string, error) {
+func createTempSymlink(t *testing.T, opts ...compat.Option) (string, string, error) {
 	t.Helper()
 
 	f, err := compat.CreateTemp(t.TempDir(), "*")
@@ -662,7 +740,7 @@ func createTempSymlink(t *testing.T) (string, string, error) {
 		return "", "", err
 	}
 
-	err = compat.Symlink(target, link)
+	err = compat.Symlink(target, link, opts...)
 	if err != nil {
 		return "", "", err
 	}

@@ -25,8 +25,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Changed
 
+- Renamed `DefaultFileMode()` to  `WithDefaultFileMode()`.
+- Renamed `Flag()` to  `WithFlags()`.
+- Renamed `KeepFileMode()` to  `WithKeepFileMode()`.
+- Renamed `UseFileMode()` to  `WithFileMode()`.
 - Renamed `FileMode()` to `UseFileMode()`. ***BREAKING CHANGE***
 - Renamed `FileOptions` to `Options`.
+- Deprecate `DefaultFileMode()`, `Flag()`, `KeepFileMode()`, and `UseFileMode()`
+  functions.
 - Deprecate `CreateEx()`, `CreateTempEx()` and `WriteFileEx()` functions.
 
 ## [0.5.1](https://github.com/rasa/compat/compare/v0.5.0...v0.5.1)

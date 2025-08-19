@@ -137,16 +137,17 @@ func removeAll(path string) error {
 	return golang.RemoveAll(path)
 }
 
-func symlink(oldname, newname string) error {
+func symlink(oldname, newname string, setSymlinkOwner bool) error {
 	err := os.Symlink(oldname, newname)
 	if err != nil {
 		return err
 	}
 
-	// @TODO(rasa) Add SetSymlinkOwner(b bool) option, default false
-	_ = setOwnerToCurrentUser(newname)
+	if !setSymlinkOwner {
+		return nil
+	}
 
-	return nil
+	return setOwnerToCurrentUser(newname)
 }
 
 func writeFile(name string, data []byte, perm os.FileMode, flag int) error {
@@ -326,11 +327,12 @@ func setExplicitAccess(ea *windows.EXPLICIT_ACCESS, sid *windows.SID, mask uint3
 
 func setOwnerToCurrentUser(path string) error {
 	var tok windows.Token
-	if err := windows.OpenProcessToken(
+	err := windows.OpenProcessToken(
 		windows.CurrentProcess(),
 		windows.TOKEN_ADJUST_PRIVILEGES|windows.TOKEN_QUERY,
 		&tok,
-	); err != nil {
+	)
+	if err != nil {
 		return fmt.Errorf("OpenProcessToken: %w", err)
 	}
 	defer tok.Close()
@@ -343,27 +345,30 @@ func setOwnerToCurrentUser(path string) error {
 	userSID := tu.User.Sid
 
 	// Enable SeTakeOwnershipPrivilege (required to take ownership when you don't own it)
-	if err := enablePrivilege(tok, seTakeOwnershipPrivilegeW); err != nil {
+	err = enablePrivilege(tok, seTakeOwnershipPrivilegeW)
+	if err != nil {
 		return fmt.Errorf("enable SeTakeOwnershipPrivilege: %w", err)
 	}
 	// Optional, sometimes helpful
-	_ = enablePrivilege(tok, seRestorePrivilegeW)
+	err = enablePrivilege(tok, seRestorePrivilegeW)
 
 	// Set owner by name (affects target if path is a symlink)
-	if err := windows.SetNamedSecurityInfo(
+	err = windows.SetNamedSecurityInfo(
 		path,
 		windows.SE_FILE_OBJECT,
 		windows.OWNER_SECURITY_INFORMATION,
-		userSID, nil, nil, nil,
-	); err != nil {
+		userSID, nil, nil, nil)
+	if err != nil {
 		return fmt.Errorf("SetNamedSecurityInfo: %w", err)
 	}
+
 	return nil
 }
 
 func enablePrivilege(tok windows.Token, name *uint16) error {
 	var luid windows.LUID
-	if err := windows.LookupPrivilegeValue(nil, name, &luid); err != nil {
+	err := windows.LookupPrivilegeValue(nil, name, &luid)
+	if err != nil {
 		return fmt.Errorf("LookupPrivilegeValue: %w", err)
 	}
 
@@ -376,7 +381,8 @@ func enablePrivilege(tok windows.Token, name *uint16) error {
 	}
 
 	// Must be called on a real token handle opened with TOKEN_ADJUST_PRIVILEGES.
-	if err := windows.AdjustTokenPrivileges(tok, false, &tp, 0, nil, nil); err != nil {
+	err = windows.AdjustTokenPrivileges(tok, false, &tp, 0, nil, nil)
+	if err != nil {
 		return fmt.Errorf("AdjustTokenPrivileges: %w", err)
 	}
 	// AdjustTokenPrivileges can "succeed" but not assign; check last error.

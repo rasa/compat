@@ -54,7 +54,7 @@ func TestWriteReaderAtomicDefaultFileMode(t *testing.T) {
 	perm644 := os.FileMode(0o644)
 	perm600 := os.FileMode(0o600)
 
-	err := compat.WriteReaderAtomic(file, content, compat.DefaultFileMode(perm644))
+	err := compat.WriteReaderAtomic(file, content, compat.WithDefaultFileMode(perm644))
 	if err != nil {
 		t.Fatalf("Failed to write file: %q: %v", file, err)
 	}
@@ -81,7 +81,7 @@ func TestWriteReaderAtomicDefaultFileMode(t *testing.T) {
 		t.Fatalf("Failed to change file mode: %q: %v", file, err)
 	}
 
-	err = compat.WriteReaderAtomic(file, content, compat.DefaultFileMode(perm644))
+	err = compat.WriteReaderAtomic(file, content, compat.WithDefaultFileMode(perm644))
 	if err != nil {
 		t.Fatalf("Failed to write file: %q: %v", file, err)
 	}
@@ -112,7 +112,7 @@ func TestWriteReaderAtomicMode(t *testing.T) {
 	perm644 := os.FileMode(0o644)
 	perm600 := os.FileMode(0o600)
 
-	err := compat.WriteReaderAtomic(file, content, compat.UseFileMode(perm644))
+	err := compat.WriteReaderAtomic(file, content, compat.WithFileMode(perm644))
 	if err != nil {
 		t.Fatalf("Failed to write file: %q: %v", file, err)
 	}
@@ -137,7 +137,7 @@ func TestWriteReaderAtomicMode(t *testing.T) {
 		t.Fatalf("Failed to change file mode: %q: %v", file, err)
 	}
 
-	err = compat.WriteReaderAtomic(file, content, compat.UseFileMode(perm644))
+	err = compat.WriteReaderAtomic(file, content, compat.WithFileMode(perm644))
 	if err != nil {
 		t.Fatalf("Failed to write file: %q: %v", file, err)
 	}

@@ -49,8 +49,8 @@ func WriteReaderAtomic(filename string, r io.Reader, opts ...Option) (err error)
 		}
 	}
 	// given file mode always takes precedence
-	if fopts.useFileMode != 0 {
-		fileMode = fopts.useFileMode
+	if fopts.fileMode != 0 {
+		fileMode = fopts.fileMode
 	}
 
 	// write to a temp file first, then we'll atomically replace the target file
@@ -60,7 +60,7 @@ func WriteReaderAtomic(filename string, r io.Reader, opts ...Option) (err error)
 		dir = "."
 	}
 
-	f, err := createTemp(dir, file, fileMode, fopts.flag)
+	f, err := createTemp(dir, file, fileMode, fopts.flags)
 	if err != nil {
 		return fmt.Errorf("cannot create temp file: %w", err)
 	}

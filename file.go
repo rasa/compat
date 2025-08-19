@@ -42,15 +42,15 @@ func Create(name string, opts ...Option) (*os.File, error) {
 
 	fopts := Options{
 		keepFileMode: true,
-		useFileMode:  CreatePerm,
-		flag:         os.O_RDWR | os.O_CREATE | os.O_TRUNC,
+		fileMode:     CreatePerm,
+		flags:        os.O_RDWR | os.O_CREATE | os.O_TRUNC,
 	}
 
 	for _, opt := range opts {
 		opt(&fopts)
 	}
 
-	return create(name, fopts.useFileMode, fopts.flag)
+	return create(name, fopts.fileMode, fopts.flags)
 }
 
 // CreateTemp creates a new temporary file in the directory dir,
@@ -64,14 +64,14 @@ func Create(name string, opts ...Option) (*os.File, error) {
 // It is the caller's responsibility to remove the file when it is no longer needed.
 func CreateTemp(dir, pattern string, opts ...Option) (*os.File, error) {
 	fopts := Options{
-		useFileMode: CreateTempPerm,
-		flag:        os.O_CREATE,
+		fileMode: CreateTempPerm,
+		flags:    os.O_CREATE,
 	}
 	for _, opt := range opts {
 		opt(&fopts)
 	}
 
-	return createTemp(dir, pattern, fopts.useFileMode, fopts.flag)
+	return createTemp(dir, pattern, fopts.fileMode, fopts.flags)
 }
 
 // Mkdir creates a new directory with the specified name and perm's permission
@@ -101,14 +101,14 @@ func MkdirAll(path string, perm os.FileMode) error {
 // Multiple programs or goroutines calling MkdirTemp simultaneously will not choose the same directory.
 // It is the caller's responsibility to remove the directory when it is no longer needed.
 func MkdirTemp(dir, pattern string, opts ...Option) (string, error) {
-	fopts := FileOptions{
-		useFileMode: MkdirTempPerm,
+	fopts := Options{
+		fileMode: MkdirTempPerm,
 	}
 	for _, opt := range opts {
 		opt(&fopts)
 	}
 
-	return mkdirTemp(dir, pattern, fopts.useFileMode)
+	return mkdirTemp(dir, pattern, fopts.fileMode)
 }
 
 // OpenFile is the generalized open call; most users will use Open
@@ -141,8 +141,13 @@ func RemoveAll(path string) error {
 // On Windows, a symlink to a non-existent oldname creates a file symlink;
 // if oldname is later created as a directory the symlink will not work.
 // If there is an error, it will be of type *LinkError.
-func Symlink(oldname, newname string) error {
-	return symlink(oldname, newname)
+func Symlink(oldname, newname string, opts ...Option) error {
+	fopts := Options{}
+	for _, opt := range opts {
+		opt(&fopts)
+	}
+
+	return symlink(oldname, newname, fopts.setSymlinkOwner)
 }
 
 // WriteFile writes data to the named file, creating it if necessary.
@@ -154,8 +159,8 @@ func Symlink(oldname, newname string) error {
 func WriteFile(name string, data []byte, perm os.FileMode, opts ...Option) error {
 	fopts := Options{
 		// keepFileMode: true,
-		useFileMode: perm,
-		flag:        0, // O_RDWR | O_CREATE | O_TRUNC,
+		fileMode: perm,
+		// flags:        0, // O_RDWR | O_CREATE | O_TRUNC,
 	}
 
 	for _, opt := range opts {

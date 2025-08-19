@@ -6,7 +6,6 @@
 package compat
 
 import (
-	"errors"
 	"fmt"
 	"strings"
 	"syscall"
@@ -72,7 +71,7 @@ func getFileOwnerAndGroupSIDs(name string) (*windows.SID, *windows.SID, error) {
 	return owner, group, nil
 }
 
-func lsaOpenPolicy(systemName *uint16, access uint32) (handle uintptr, err error) {
+func lsaOpenPolicy(systemName *uint16, access uint32) (handle syscall.Handle, err error) {
 	var objectAttrs LSA_OBJECT_ATTRIBUTES
 	r0, _, _ := procLsaOpenPolicy.Call(
 		uintptr(unsafe.Pointer(systemName)),
@@ -81,7 +80,7 @@ func lsaOpenPolicy(systemName *uint16, access uint32) (handle uintptr, err error
 		uintptr(unsafe.Pointer(&handle)),
 	)
 	if r0 != 0 {
-		return 0, fmt.Errorf("LsaOpenPolicy failed: %w", syscall.Errno(r0))
+		return syscall.InvalidHandle, fmt.Errorf("LsaOpenPolicy failed: %w", syscall.Errno(r0))
 	}
 
 	return handle, nil
@@ -92,11 +91,11 @@ func getPrimaryDomainSID() (*windows.SID, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer procLsaClose.Call(handle) //nolint:errcheck // quiet linter
+	defer procLsaClose.Call(uintptr(handle)) //nolint:errcheck // quiet linter
 
 	var buffer uintptr
 	r0, _, _ := procLsaQueryInformationPolicy.Call(
-		handle,
+		uintptr(handle),
 		uintptr(PolicyAccountDomainInformation),
 		uintptr(unsafe.Pointer(&buffer)),
 	)
@@ -113,7 +112,7 @@ func getPrimaryDomainSID() (*windows.SID, error) {
 func getRID(sid *windows.SID) (int, error) {
 	count := uint32(sid.SubAuthorityCount())
 	if count == 0 {
-		return UnknownID, errors.New("no subauthorities found")
+		return UnknownID, fmt.Errorf("no subauthorities found for %q", sid.String())
 	}
 
 	return int(sid.SubAuthority(count - 1)), nil
@@ -178,7 +177,7 @@ func nameFromSID(sid *windows.SID) (string, error) {
 		&sidUse,
 	)
 	if err != nil {
-		return "", fmt.Errorf("cannot get name from SID: %w", err)
+		return "", fmt.Errorf("cannot get name from SID %q: %w", sid.String(), err)
 	}
 
 	name := syscall.UTF16ToString(name16[:nameLen])
