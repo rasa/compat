@@ -120,7 +120,7 @@ func TestWalkDir(t *testing.T) {
 
 func TestWalkDirSymlink(t *testing.T) {
 	if compat.IsTinygo {
-		skip("@TODO research TestWalkDirSymlink failure on Tinygo")
+		skip(t, "@TODO research TestWalkDirSymlink failure on Tinygo")
 		return
 	}
 
