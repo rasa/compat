@@ -119,9 +119,10 @@ func TestWalkDir(t *testing.T) {
 }
 
 func TestWalkDirSymlink(t *testing.T) {
-	if compat.IsTinygo {
-		skip(t, "@TODO research TestWalkDirSymlink failure on Tinygo")
-		return
+	if !compat.SupportsSymlinks() {
+		skip(t, "Skipping test: symlinks are not supported on "+runtime.GOOS)
+
+		return // tinygo doesn't support t.Skip
 	}
 
 	fsys := fstest.MapFS{

@@ -6,7 +6,7 @@
 
 package golang
 
-// SPDX-FileCopyrightText: Copyright 2012 The Go Authors. All rights reserved.
+// SPDX-FileCopyrightText: Copyright 2010 The Go Authors. All rights reserved.
 // SPDX-License-Identifier: BSD-3
 
 // The following code is:
