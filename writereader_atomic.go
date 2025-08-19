@@ -21,7 +21,7 @@ import (
 // for the target file.
 func WriteReaderAtomic(filename string, r io.Reader, opts ...Option) (err error) { //nolint:funlen,gocyclo // quiet linter
 	// original behavior is to preserve the mode of an existing file.
-	fopts := FileOptions{
+	fopts := Options{
 		keepFileMode: true,
 	}
 	for _, opt := range opts {
@@ -49,8 +49,8 @@ func WriteReaderAtomic(filename string, r io.Reader, opts ...Option) (err error)
 		}
 	}
 	// given file mode always takes precedence
-	if fopts.fileMode != 0 {
-		fileMode = fopts.fileMode
+	if fopts.useFileMode != 0 {
+		fileMode = fopts.useFileMode
 	}
 
 	// write to a temp file first, then we'll atomically replace the target file

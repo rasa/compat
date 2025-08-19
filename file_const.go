@@ -8,8 +8,6 @@ import (
 	"os"
 )
 
-var _ = fs.ModeDir
-
 const (
 	// CreatePerm is the FileMode used by Create().
 	CreatePerm os.FileMode = 0o666
@@ -59,3 +57,5 @@ const (
 	// ModePerm is a mask for the Unix permission bits, 0o777.
 	ModePerm = fs.ModePerm
 )
+
+type FileMode = os.FileMode

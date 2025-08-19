@@ -10,29 +10,29 @@ import (
 	"os"
 )
 
-// FileOptions define the behavior of `WriteReaderAtomic()`, etc.
-type FileOptions struct {
+// Options define the behavior of `WriteReaderAtomic()`, etc.
+type Options struct {
 	defaultFileMode os.FileMode
-	fileMode        os.FileMode
+	useFileMode     os.FileMode
 	keepFileMode    bool
 	flag            int
 }
 
 // Option functions modify FileOptions.
-type Option func(*FileOptions)
+type Option func(*Options)
 
-// FileMode sets the file mode to the desired value and has precedence over all
+// UseFileMode sets the file mode to the desired value and has precedence over all
 // other options.
-func FileMode(mode os.FileMode) Option {
-	return func(opts *FileOptions) {
-		opts.fileMode = mode
+func UseFileMode(mode os.FileMode) Option {
+	return func(opts *Options) {
+		opts.useFileMode = mode
 	}
 }
 
 // DefaultFileMode sets the default file mode instead of using the
 // `os.CreateTemp()` default of `0600`.
 func DefaultFileMode(mode os.FileMode) Option {
-	return func(opts *FileOptions) {
+	return func(opts *Options) {
 		opts.defaultFileMode = mode
 	}
 }
@@ -40,14 +40,14 @@ func DefaultFileMode(mode os.FileMode) Option {
 // KeepFileMode preserves the file mode of an existing file instead of using the
 // default value.
 func KeepFileMode(keep bool) Option {
-	return func(opts *FileOptions) {
+	return func(opts *Options) {
 		opts.keepFileMode = keep
 	}
 }
 
 // Flag sets the flag option.
 func Flag(flag int) Option {
-	return func(opts *FileOptions) {
+	return func(opts *Options) {
 		opts.flag = flag
 	}
 }

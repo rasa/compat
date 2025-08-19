@@ -40,9 +40,9 @@ func Create(name string, opts ...Option) (*os.File, error) {
 	// https://github.com/golang/go/blob/master/src/os/file.go#L393
 	// return OpenFile(name, O_RDWR|O_CREATE|O_TRUNC, 0666)
 
-	fopts := FileOptions{
+	fopts := Options{
 		keepFileMode: true,
-		fileMode:     CreatePerm,
+		useFileMode:  CreatePerm,
 		flag:         os.O_RDWR | os.O_CREATE | os.O_TRUNC,
 	}
 
@@ -50,7 +50,7 @@ func Create(name string, opts ...Option) (*os.File, error) {
 		opt(&fopts)
 	}
 
-	return create(name, fopts.fileMode, fopts.flag)
+	return create(name, fopts.useFileMode, fopts.flag)
 }
 
 // CreateTemp creates a new temporary file in the directory dir,
@@ -63,16 +63,16 @@ func Create(name string, opts ...Option) (*os.File, error) {
 // The caller can use the file's Name method to find the pathname of the file.
 // It is the caller's responsibility to remove the file when it is no longer needed.
 func CreateTemp(dir, pattern string, opts ...Option) (*os.File, error) {
-	fopts := FileOptions{
+	fopts := Options{
 		keepFileMode: true,
-		fileMode:     CreateTempPerm,
+		useFileMode:  CreateTempPerm,
 		flag:         os.O_CREATE,
 	}
 	for _, opt := range opts {
 		opt(&fopts)
 	}
 
-	return createTemp(dir, pattern, fopts.fileMode, fopts.flag)
+	return createTemp(dir, pattern, fopts.useFileMode, fopts.flag)
 }
 
 // Mkdir creates a new directory with the specified name and perm's permission
@@ -123,10 +123,10 @@ func OpenFile(name string, flag int, perm os.FileMode) (*os.File, error) {
 // can leave the file in a partially written state. Use WriteFileAtomic() if this
 // is a concern.
 func WriteFile(name string, data []byte, perm os.FileMode, opts ...Option) error {
-	fopts := FileOptions{
+	fopts := Options{
 		// keepFileMode: true,
-		fileMode: perm,
-		flag:     0, // O_RDWR | O_CREATE | O_TRUNC,
+		useFileMode: perm,
+		flag:        0, // O_RDWR | O_CREATE | O_TRUNC,
 	}
 
 	for _, opt := range opts {
