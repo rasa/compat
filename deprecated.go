@@ -19,6 +19,8 @@ var IsAdmin = IsRoot
 // Deprecated: Use Rename() instead. This function may be removed in the future.
 var ReplaceFile = Rename
 
+// FileOptions define the behavior of `WriteReaderAtomic()`, etc.
+//
 // Deprecated: Use Options instead. This may be removed in the future.
 type FileOptions = Options
 

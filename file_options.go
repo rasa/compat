@@ -18,7 +18,7 @@ type Options struct {
 	flag            int
 }
 
-// Option functions modify FileOptions.
+// Option functions modify Options.
 type Option func(*Options)
 
 // UseFileMode sets the file mode to the desired value and has precedence over all
