@@ -8,13 +8,15 @@ package compat_test
 
 import (
 	"os"
+	"path/filepath"
 	"testing"
 
 	"github.com/rasa/compat"
 )
 
 func TestWriteFileAtomic(t *testing.T) {
-	file := "foo.txt"
+	dir := t.TempDir()
+	file := filepath.Join(dir, "foo.txt")
 	content := []byte("foo")
 
 	t.Cleanup(func() {
@@ -22,7 +24,7 @@ func TestWriteFileAtomic(t *testing.T) {
 	})
 
 	if err := compat.WriteFileAtomic(file, content); err != nil {
-		fatal("Failed to write file: %q: %v", file, err)
+		fatal(t, "Failed to write file: %q: %v", file, err)
 
 		return // Tinygo doesn't support T.Fatal
 	}
@@ -35,14 +37,14 @@ func TestWriteFileAtomic(t *testing.T) {
 	want := compat.CreateTempPerm // 0o600
 
 	got := fi.Mode().Perm()
-
 	if got != want {
 		t.Fatalf("got %04o, want %04o", got, want)
 	}
 }
 
 func TestWriteFileAtomicDefaultFileMode(t *testing.T) {
-	file := "bar.txt"
+	dir := t.TempDir()
+	file := filepath.Join(dir, "bar.txt")
 	content := []byte("bar")
 
 	t.Cleanup(func() {
@@ -99,7 +101,8 @@ func TestWriteFileAtomicDefaultFileMode(t *testing.T) {
 }
 
 func TestWriteFileAtomicMode(t *testing.T) {
-	file := "baz.txt"
+	dir := t.TempDir()
+	file := filepath.Join(dir, "baz.txt")
 	content := []byte("baz")
 
 	t.Cleanup(func() {
