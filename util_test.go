@@ -55,7 +55,7 @@ func fatalf(t *testing.T, format string, a ...any) { //nolint:unused // quiet li
 	fatal(t, fmt.Sprintf(format, a...))
 }
 
-func errno(err error) uint32 {
+func errno(err error) uint32 { //nolint:unused // quiet linter
 	if err == nil {
 		return 0
 	}
