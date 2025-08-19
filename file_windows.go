@@ -6,6 +6,7 @@
 package compat
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"os/user"
@@ -30,14 +31,44 @@ type securityInfo struct {
 }
 
 func chmod(name string, perm os.FileMode) error {
-	// set/reset syscall.FILE_ATTRIBUTE_READONLY/syscall.FILE_ATTRIBUTE_NORMAL
-	err := os.Chmod(name, perm)
-	if err != nil {
-		return err
-	}
+	perm = perm.Perm()
 
 	// set Windows' ACLs
-	return acl.Chmod(name, perm)
+	err := acl.Chmod(name, perm)
+	if err != nil {
+		return fmt.Errorf("%w (acl)", err)
+	}
+
+	// @TODO(rasa) Add ReadOnlyMask(perm os.FileMode) option,
+	// perm options:
+	//   0o200 (u=w) (default)
+	//   0o020 (g=w)
+	//   0o002 (o=w)
+	//   0o000 (disable setting file's read-only attribute)
+
+	// fi, err := os.Stat(name)
+	// if err != nil {
+	// 	return fmt.Errorf("%w (stat)", err)
+	// }
+
+	// // Set or clear Windows' read-only attribute
+	// want := perm&syscall.S_IWRITE != 0 // 0x80 (0o200)
+	// got := fi.Mode().Perm()&syscall.S_IWRITE != 0
+
+	// if want != got {
+	// 	if want {
+	// 		perm |= syscall.S_IWRITE
+	// 	} else {
+	// 		perm &= ^os.FileMode(syscall.S_IWRITE)
+	// 	}
+	// 	fmt.Printf("want=%v; got=%v; perm=%o (%v)", want, got, perm, perm) // @TODO REMOVE ME
+	// 	err = os.Chmod(name, perm)
+	// 	if err != nil {
+	// 		return fmt.Errorf("%w (chmod)", err)
+	// 	}
+	// }
+
+	return nil
 }
 
 func create(name string, perm os.FileMode, flag int) (*os.File, error) {
@@ -80,8 +111,8 @@ func mkdirAll(name string, perm os.FileMode) error {
 	return golang.MkdirAll(name, 0o700, sa) //nolint:mnd // quiet linter
 }
 
-func mkdirTemp(dir, pattern string) (string, error) {
-	sa, err := saFromPerm(MkdirTempPerm, true) // 0o700
+func mkdirTemp(dir, pattern string, perm os.FileMode) (string, error) {
+	sa, err := saFromPerm(perm, true) // 0o700
 	if err != nil {
 		return "", err
 	}
@@ -96,6 +127,26 @@ func openFile(name string, flag int, perm os.FileMode) (*os.File, error) {
 	}
 
 	return golang.OpenFileNolog(name, flag, perm, sa)
+}
+
+func remove(name string) error {
+	return golang.Remove(name)
+}
+
+func removeAll(path string) error {
+	return golang.RemoveAll(path)
+}
+
+func symlink(oldname, newname string) error {
+	err := os.Symlink(oldname, newname)
+	if err != nil {
+		return err
+	}
+
+	// @TODO(rasa) Add SetSymlinkOwner(b bool) option, default false
+	_ = setOwnerToCurrentUser(newname)
+
+	return nil
 }
 
 func writeFile(name string, data []byte, perm os.FileMode, flag int) error {
@@ -272,3 +323,70 @@ func setExplicitAccess(ea *windows.EXPLICIT_ACCESS, sid *windows.SID, mask uint3
 	ea.Trustee.TrusteeType = tt
 	ea.Trustee.TrusteeValue = windows.TrusteeValueFromSID(sid)
 }
+
+func setOwnerToCurrentUser(path string) error {
+	var tok windows.Token
+	if err := windows.OpenProcessToken(
+		windows.CurrentProcess(),
+		windows.TOKEN_ADJUST_PRIVILEGES|windows.TOKEN_QUERY,
+		&tok,
+	); err != nil {
+		return fmt.Errorf("OpenProcessToken: %w", err)
+	}
+	defer tok.Close()
+
+	// Current user SID (needs TOKEN_QUERY)
+	tu, err := tok.GetTokenUser()
+	if err != nil {
+		return fmt.Errorf("GetTokenUser: %w", err)
+	}
+	userSID := tu.User.Sid
+
+	// Enable SeTakeOwnershipPrivilege (required to take ownership when you don't own it)
+	if err := enablePrivilege(tok, seTakeOwnershipPrivilegeW); err != nil {
+		return fmt.Errorf("enable SeTakeOwnershipPrivilege: %w", err)
+	}
+	// Optional, sometimes helpful
+	_ = enablePrivilege(tok, seRestorePrivilegeW)
+
+	// Set owner by name (affects target if path is a symlink)
+	if err := windows.SetNamedSecurityInfo(
+		path,
+		windows.SE_FILE_OBJECT,
+		windows.OWNER_SECURITY_INFORMATION,
+		userSID, nil, nil, nil,
+	); err != nil {
+		return fmt.Errorf("SetNamedSecurityInfo: %w", err)
+	}
+	return nil
+}
+
+func enablePrivilege(tok windows.Token, name *uint16) error {
+	var luid windows.LUID
+	if err := windows.LookupPrivilegeValue(nil, name, &luid); err != nil {
+		return fmt.Errorf("LookupPrivilegeValue: %w", err)
+	}
+
+	tp := windows.Tokenprivileges{
+		PrivilegeCount: 1,
+		Privileges: [1]windows.LUIDAndAttributes{{
+			Luid:       luid,
+			Attributes: windows.SE_PRIVILEGE_ENABLED,
+		}},
+	}
+
+	// Must be called on a real token handle opened with TOKEN_ADJUST_PRIVILEGES.
+	if err := windows.AdjustTokenPrivileges(tok, false, &tp, 0, nil, nil); err != nil {
+		return fmt.Errorf("AdjustTokenPrivileges: %w", err)
+	}
+	// AdjustTokenPrivileges can "succeed" but not assign; check last error.
+	if le := windows.GetLastError(); errors.Is(le, windows.ERROR_NOT_ALL_ASSIGNED) {
+		return fmt.Errorf("privilege not held: %w", le)
+	}
+	return nil
+}
+
+var (
+	seTakeOwnershipPrivilegeW, _ = windows.UTF16PtrFromString("SeTakeOwnershipPrivilege")
+	seRestorePrivilegeW, _       = windows.UTF16PtrFromString("SeRestorePrivilege")
+)

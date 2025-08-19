@@ -6,41 +6,20 @@
 package golang
 
 import (
+	"fmt"
 	"os"
 	"syscall"
 	_ "unsafe"
 
+	"github.com/capnspacehook/go-acl"
 	"golang.org/x/sys/windows"
 )
 
 // O_DELETE deletes the file when closed.
-// Redefining here to avoid a circular dependency..
+// Redefining here to avoid a circular dependency.
 const O_DELETE = 0x8000000
 
-type (
-	File      = os.File
-	FileMode  = os.FileMode
-	PathError = os.PathError
-)
-
-var (
-	ErrExist        = os.ErrExist
-	FixLongPath     = fixLongPath
-	IsExist         = os.IsExist
-	IsNotExist      = os.IsNotExist
-	IsPathSeparator = os.IsPathSeparator
-	Lstat           = os.Lstat
-	ModeSetgid      = os.ModeSetgid
-	ModeSetuid      = os.ModeSetuid
-	ModeSticky      = os.ModeSticky
-	NewFile         = os.NewFile
-	OpenFile        = openFileNolog
-	OpenFileNolog   = openFileNolog
-	PathSeparator   = os.PathSeparator
-	Remove          = os.Remove
-	Stat            = os.Stat
-	TempDir         = os.TempDir
-)
+const perm600 = os.FileMode(0o600)
 
 const (
 	CREATE_NEW                   = syscall.CREATE_NEW
@@ -67,11 +46,16 @@ const (
 	S_IWRITE                     = syscall.S_IWRITE
 	STANDARD_RIGHTS_WRITE        = syscall.STANDARD_RIGHTS_WRITE
 	SYNCHRONIZE                  = syscall.SYNCHRONIZE
+	// See https://github.com/golang/go/blob/77f911e3/src/syscall/types_windows.go#L100
+	// and https://github.com/golang/go/blob/77f911e3/src/internal/syscall/windows/types_windows.go#L27
+	_FILE_WRITE_EA = windows.FILE_WRITE_EA
 )
 
-type (
-	Handle             = syscall.Handle
-	SecurityAttributes = syscall.SecurityAttributes
+var (
+	FixLongPath   = fixLongPath
+	OpenFile      = openFileNolog
+	OpenFileNolog = openFileNolog
+	RemoveAll     = removeAll
 )
 
 var (
@@ -83,20 +67,9 @@ var (
 	UTF16PtrFromString = syscall.UTF16PtrFromString
 )
 
-// See https://github.com/golang/go/blob/77f911e3/src/syscall/types_windows.go#L100
-// and https://github.com/golang/go/blob/77f911e3/src/internal/syscall/windows/types_windows.go#L27
-const _FILE_WRITE_EA = windows.FILE_WRITE_EA
-
-const (
-	O_RDONLY = os.O_RDONLY // open the file read-only.
-	O_WRONLY = os.O_WRONLY // open the file write-only.
-	O_RDWR   = os.O_RDWR   // open the file read-write.
-	// The remaining values may be or'ed in to control behavior.
-	O_APPEND = os.O_APPEND // append data to the file when writing.
-	O_CREATE = os.O_CREATE // create a new file if none exists.
-	O_EXCL   = os.O_EXCL   // used with O_CREATE, file must not exist.
-	O_SYNC   = os.O_SYNC   // open for synchronous I/O.
-	O_TRUNC  = os.O_TRUNC  // truncate regular writable file when opened.
+type (
+	Handle             = syscall.Handle
+	SecurityAttributes = syscall.SecurityAttributes
 )
 
 // See https://github.com/golang/go/blob/77f911e3/src/runtime/os_windows.go#L446
@@ -142,11 +115,6 @@ func mkdir(longName string, _ uint32, sa *syscall.SecurityAttributes) error {
 	return nil
 }
 
-// Source: https://github.com/golang/go/blob/77f911e3/src/os/tempfile.go#L19-L24
-
-//go:linkname runtime_rand runtime.rand
-func runtime_rand() uint64
-
 // See https://github.com/golang/go/blob/77f911e3/src/os/sticky_notbsd.go#L9
 
 const supportsCreateWithStickyBit = true
@@ -170,4 +138,29 @@ func newFile(h syscall.Handle, name string /*kind*/, _ string /*nonBlocking*/, _
 	}
 
 	return NewFile(uintptr(h), name)
+}
+
+func Remove(path string) error {
+	var err error
+	// See https://github.com/golang/go/blob/77f911e3/src/os/removeall_noat.go#L126
+	err1 := os.Remove(path)
+	if err1 == nil || os.IsNotExist(err1) {
+		return nil
+	}
+	if /* runtime.GOOS == "windows" && */ os.IsPermission(err1) {
+		if fs, err2 := os.Stat(path); err2 == nil {
+			err = acl.Chmod(path, perm600)
+			if err != nil {
+				return fmt.Errorf("remove: %w (1)", err)
+			}
+			if err = os.Chmod(path, os.FileMode(0o200|uint32(fs.Mode().Perm()))); err == nil { //nolint:mnd
+				err1 = os.Remove(path)
+			}
+		}
+	}
+	if err == nil {
+		err = err1
+	}
+
+	return err
 }

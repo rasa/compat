@@ -7,6 +7,8 @@ package compat
 
 import (
 	"os"
+
+	"github.com/rasa/compat/golang"
 )
 
 var chmod = os.Chmod
@@ -20,23 +22,14 @@ func create(name string, perm os.FileMode, flag int) (*os.File, error) {
 	return openFile(name, flag, perm)
 }
 
-// @TODO clone os.CreateTemp so perms are set on creation, as is done in Windows.
 func createTemp(dir, pattern string, perm os.FileMode, flag int) (*os.File, error) {
 	if perm == 0 {
 		perm = CreateTempPerm
 	}
-	f, err := os.CreateTemp(dir, pattern)
+
+	f, err := golang.CreateTemp(dir, pattern, perm)
 	if err != nil {
 		return nil, err
-	}
-
-	if perm != CreateTempPerm {
-		err = os.Chmod(f.Name(), perm)
-		if err != nil {
-			_ = f.Close()
-			_ = os.Remove(f.Name())
-			return nil, err
-		}
 	}
 
 	return wrap(f.Name(), flag, f)
@@ -46,7 +39,13 @@ var mkdir = os.Mkdir
 
 var mkdirAll = os.MkdirAll
 
-var mkdirTemp = os.MkdirTemp
+func mkdirTemp(dir, pattern string, perm os.FileMode) (string, error) {
+	if perm == 0 {
+		perm = MkdirTempPerm
+	}
+
+	return golang.MkdirTemp(dir, pattern, perm)
+}
 
 func openFile(name string, flag int, perm os.FileMode) (*os.File, error) {
 	oflag := flag & ^O_DELETE
@@ -57,6 +56,12 @@ func openFile(name string, flag int, perm os.FileMode) (*os.File, error) {
 
 	return wrap(name, flag, f)
 }
+
+var remove = os.Remove
+
+var removeAll = os.RemoveAll
+
+var symlink = os.Symlink
 
 func writeFile(name string, data []byte, perm os.FileMode, _ int) error {
 	return os.WriteFile(name, data, perm)

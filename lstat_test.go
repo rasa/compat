@@ -431,12 +431,6 @@ func TestLstatUser(t *testing.T) {
 		return // tinygo doesn't support t.Skip
 	}
 
-	if compat.IsWindows {
-		skip(t, "Skipping test: symlinks are not yet supported in Windows")
-
-		return // tinygo doesn't support t.Skip
-	}
-
 	_, name, err := createTempSymlink(t)
 	if err != nil {
 		t.Fatal(err)
@@ -469,13 +463,6 @@ func TestLstatGroup(t *testing.T) {
 
 	if compat.IsTinygo {
 		skip(t, "Skipping test: Group() not supported on tinygo")
-
-		return // tinygo doesn't support t.Skip
-	}
-
-	if compat.IsWindows {
-		// though this test will pass, as the group is computername\None.
-		skip(t, "Skipping test: symlinks are not yet supported in Windows")
 
 		return // tinygo doesn't support t.Skip
 	}
@@ -675,7 +662,7 @@ func createTempSymlink(t *testing.T) (string, string, error) {
 		return "", "", err
 	}
 
-	err = os.Symlink(target, link)
+	err = compat.Symlink(target, link)
 	if err != nil {
 		return "", "", err
 	}

@@ -6,6 +6,7 @@
 package compat_test
 
 import (
+	"flag"
 	"fmt"
 	"os"
 	"os/exec"
@@ -17,11 +18,22 @@ import (
 
 var perms []os.FileMode
 
+const perm555 = os.FileMode(0o555)
+
 func init() {
 	// @TODO(rasa): test different umask settings
 	compat.Umask(0)
 
-	for u := 7; u >= 6; u-- {
+	testing.Init()
+	flag.Parse()
+	if testing.Short() {
+		perms = []os.FileMode{perm555}
+		return
+	}
+
+	perms = make([]os.FileMode, 0, 8*8*8)
+
+	for u := 7; u >= 0; u-- {
 		for g := 7; g >= 0; g-- {
 			for o := 7; o >= 0; o-- {
 				mode := os.FileMode(u<<0o6 | g<<0o3 | o) //nolint:gosec // quiet linter
@@ -39,11 +51,10 @@ func TestFileWindowsChmod(t *testing.T) {
 
 	for _, perm := range perms {
 		err = compat.Chmod(name, perm)
+		checkPerm(t, name, perm)
 		if err != nil {
 			t.Fatalf("Chmod(%04o) failed: %v", perm, err)
 		}
-
-		checkPerm(t, name, perm)
 	}
 }
 
@@ -52,13 +63,15 @@ func TestFileWindowsCreate(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	perm := compat.CreatePerm
 	fh, err := compat.Create(name)
+	checkPerm(t, name, perm)
 	if err != nil {
 		t.Fatal(err)
 	}
 	_ = fh.Close()
-	checkPerm(t, name, compat.CreatePerm)
-	err = os.Remove(name)
+	err = compat.Remove(name)
+	checkDeleted(t, name, err)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -66,17 +79,19 @@ func TestFileWindowsCreate(t *testing.T) {
 
 func TestFileWindowsCreateEx(t *testing.T) {
 	for _, perm := range perms {
+		t.Logf("perm=%3o (%v)", perm, perm)
 		name, err := tmpname(t)
 		if err != nil {
 			t.Fatal(err)
 		}
 		fh, err := compat.CreateEx(name, perm, 0)
+		checkPerm(t, name, perm)
 		if err != nil {
 			t.Fatal(err)
 		}
 		_ = fh.Close()
-		checkPerm(t, name, perm)
-		err = os.Remove(name)
+		err = compat.Remove(name)
+		checkDeleted(t, name, err)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -86,13 +101,16 @@ func TestFileWindowsCreateEx(t *testing.T) {
 func TestFileWindowsCreateTemp(t *testing.T) {
 	dir := t.TempDir()
 	fh, err := compat.CreateTemp(dir, "")
+	perm := compat.CreateTempPerm
+	checkPerm(t, "", perm)
 	if err != nil {
 		t.Fatal(err)
 	}
 	name := fh.Name()
+	checkPerm(t, name, perm)
 	_ = fh.Close()
-	checkPerm(t, name, compat.CreateTempPerm)
-	err = os.Remove(name)
+	err = compat.Remove(name)
+	checkDeleted(t, name, err)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -105,11 +123,12 @@ func TestFileWindowsMkdir(t *testing.T) {
 			t.Fatal(err)
 		}
 		err = compat.Mkdir(name, perm)
+		checkPerm(t, name, perm)
 		if err != nil {
 			t.Fatal(err)
 		}
-		checkPerm(t, name, perm)
-		err = os.Remove(name)
+		err = compat.Remove(name)
+		checkDeleted(t, name, err)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -123,11 +142,12 @@ func TestFileWindowsMkdirAll(t *testing.T) {
 			t.Fatal(err)
 		}
 		err = compat.MkdirAll(name, perm)
+		checkPerm(t, name, perm)
 		if err != nil {
 			t.Fatal(err)
 		}
-		checkPerm(t, name, perm)
-		err = os.Remove(name)
+		err = compat.Remove(name)
+		checkDeleted(t, name, err)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -137,11 +157,13 @@ func TestFileWindowsMkdirAll(t *testing.T) {
 func TestFileWindowsMkdirTemp(t *testing.T) {
 	dir := t.TempDir()
 	name, err := compat.MkdirTemp(dir, "")
+	perm := compat.MkdirTempPerm
+	checkPerm(t, name, perm)
 	if err != nil {
 		t.Fatal(err)
 	}
-	checkPerm(t, name, compat.MkdirTempPerm)
-	err = os.Remove(name)
+	err = compat.Remove(name)
+	checkDeleted(t, name, err)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -154,12 +176,13 @@ func TestFileWindowsOpenFile(t *testing.T) {
 			t.Fatal(err)
 		}
 		fh, err := compat.OpenFile(name, os.O_CREATE, perm)
+		checkPerm(t, name, perm)
 		if err != nil {
 			t.Fatal(err)
 		}
 		_ = fh.Close()
-		checkPerm(t, name, perm)
-		err = os.Remove(name)
+		err = compat.Remove(name)
+		checkDeleted(t, name, err)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -175,18 +198,19 @@ func TestFileWindowsRemove(t *testing.T) {
 
 		t.Logf("%v (%03o): %v", perm, perm, name)
 		err = compat.Chmod(name, perm)
+		checkPerm(t, name, perm)
 		if err != nil {
 			t.Fatalf("Chmod(%04o) failed: %v", perm, err)
 		}
 
-		checkPerm(t, name, perm)
-		perm = os.FileMode(0o666) // CreatePerm
+		perm = os.FileMode(0o777) // CreatePerm
 		err = compat.Chmod(name, perm)
 		checkPerm(t, name, perm)
 		if err != nil {
 			t.Fatalf("Chmod(%04o) failed: %v", perm, err)
 		}
-		err = os.Remove(name)
+		err = compat.Remove(name)
+		checkDeleted(t, name, err)
 		if err != nil {
 			t.Fatalf("Remove failed: %v: %v", name, err)
 		}
@@ -200,11 +224,12 @@ func TestFileWindowsWriteFile(t *testing.T) {
 			t.Fatal(err)
 		}
 		err = compat.WriteFile(name, helloBytes, perm)
+		checkPerm(t, name, perm)
 		if err != nil {
 			t.Fatal(err)
 		}
-		checkPerm(t, name, perm)
-		err = os.Remove(name)
+		err = compat.Remove(name)
+		checkDeleted(t, name, err)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -218,11 +243,12 @@ func TestFileWindowsWriteFileEx(t *testing.T) {
 			t.Fatal(err)
 		}
 		err = compat.WriteFileEx(name, helloBytes, perm, 0)
+		checkPerm(t, name, perm)
 		if err != nil {
 			t.Fatal(err)
 		}
-		checkPerm(t, name, perm)
-		err = os.Remove(name)
+		err = compat.Remove(name)
+		checkDeleted(t, name, err)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -232,21 +258,44 @@ func TestFileWindowsWriteFileEx(t *testing.T) {
 func checkPerm(t *testing.T, name string, perm os.FileMode) {
 	t.Helper()
 
+	if name == "" {
+		return
+	}
+
 	got, err := compat.ExportStat(name) // acl.GetExplicitFileAccessMode(name)
 	if err != nil {
-		t.Fatalf("Stat(%v) failed: %v", name, err)
+		t.Fatalf("Stat(%v) failed: %v (%x)", name, err, errno(err))
 	}
 
 	if got != perm {
 		logACLs(t, name, false)
 		t.Fatalf("got 0o%03o (%v), want 0o%03o (%v)", got, got, perm, perm)
+		return
 	}
+}
+
+func checkDeleted(t *testing.T, name string, err error) {
+	t.Helper()
+
+	if name == "" || err == nil {
+		return
+	}
+
+	_, err = compat.ExportStat(name) // acl.GetExplicitFileAccessMode(name)
+	if err != nil {
+		t.Logf("Stat(%v) failed: %v (%x)", name, err, errno(err))
+	}
+
+	logACLs(t, name, false)
 }
 
 func logACLs(t *testing.T, name string, doDir bool) {
 	t.Helper()
 
-	args := []string{name, "/q"}
+	args := []string{name}
+	_ = logOutput(t, "attrib.exe", args)
+
+	args = []string{name, "/q"}
 	_ = logOutput(t, "icacls.exe", args)
 
 	command := fmt.Sprintf("Get-Acl '%s' | Format-List", name)

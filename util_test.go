@@ -4,8 +4,10 @@
 package compat_test
 
 import (
+	"errors"
 	"fmt"
 	"runtime"
+	"syscall"
 	"testing"
 
 	"github.com/rasa/compat"
@@ -51,4 +53,16 @@ func fatal(t *testing.T, msg any) { //nolint:unused // quiet linter
 func fatalf(t *testing.T, format string, a ...any) { //nolint:unused // quiet linter
 	t.Helper()
 	fatal(t, fmt.Sprintf(format, a...))
+}
+
+func errno(err error) uint32 {
+	if err == nil {
+		return 0
+	}
+	var errno syscall.Errno
+	if errors.As(err, &errno) {
+		return uint32(errno)
+	}
+
+	return ^uint32(0)
 }

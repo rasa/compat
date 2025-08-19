@@ -1,4 +1,4 @@
-//nolint // quiet linter
+//nolint:all // quiet linter
 // SPDX-FileCopyrightText: Copyright © 2025 Ross Smith II <ross@smithii.com>
 // SPDX-License-Identifier: MIT
 
@@ -7,11 +7,14 @@
 package golang
 
 import (
-	"errors"
+	"fmt"
+	"io"
+	"os"
 	filepathlite "path/filepath"
-	"sync"
 	"syscall"
 	"unsafe"
+
+	"github.com/capnspacehook/go-acl"
 )
 
 // SPDX-FileCopyrightText: Copyright 2012 The Go Authors. All rights reserved.
@@ -21,13 +24,6 @@ import (
 // Copyright 2012 The Go Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
-
-// Snippet: https://github.com/golang/go/blob/77f911e3/src/os/getwd.go#L13-L16
-
-var getwdCache struct {
-	sync.Mutex
-	dir string
-}
 
 // Snippet: https://github.com/golang/go/blob/77f911e3/src/internal/syscall/windows/syscall_windows.go#L162-L179
 
@@ -48,42 +44,6 @@ type FILE_BASIC_INFO struct {
 	// default alignment is used.” What we see here is padding rather than
 	// alignment, but maybe it is related.
 	_ uint32
-}
-
-// Snippet: https://github.com/golang/go/blob/77f911e3/src/os/tempfile.go#L22-L24
-
-func nextRandom() string {
-	return Uitoa(uint(uint32(runtime_rand())))
-}
-
-// Snippet: https://github.com/golang/go/blob/77f911e3/src/internal/bytealg/lastindexbyte_generic.go#L16-L23
-
-func lastIndexByteString(s string, c byte) int {
-	for i := len(s) - 1; i >= 0; i-- {
-		if s[i] == c {
-			return i
-		}
-	}
-	return -1
-}
-
-// Snippet: https://github.com/golang/go/blob/77f911e3/src/internal/itoa/itoa.go#L18-L33
-
-func Uitoa(val uint) string {
-	if val == 0 { // avoid string allocation
-		return "0"
-	}
-	var buf [20]byte // big enough for 64bit value base 10
-	i := len(buf) - 1
-	for val >= 10 {
-		q := val / 10
-		buf[i] = byte('0' + val - q*10)
-		i--
-		val = q
-	}
-	// val < 10
-	buf[i] = byte('0' + val)
-	return string(buf[i:])
 }
 
 // Snippet: https://github.com/golang/go/blob/77f911e3/src/internal/poll/errno_windows.go#L14-L16
@@ -363,26 +323,6 @@ func CreateTemp(dir, pattern string, flag int, sa *syscall.SecurityAttributes) (
 	}
 }
 
-// Snippet: https://github.com/golang/go/blob/77f911e3/src/os/tempfile.go#L60-L60
-
-var errPatternHasSeparator = errors.New("pattern contains path separator")
-
-// Snippet: https://github.com/golang/go/blob/77f911e3/src/os/tempfile.go#L64-L76
-
-func prefixAndSuffix(pattern string) (prefix, suffix string, err error) {
-	for i := 0; i < len(pattern); i++ {
-		if IsPathSeparator(pattern[i]) {
-			return "", "", errPatternHasSeparator
-		}
-	}
-	if pos := lastIndexByteString(pattern, '*'); pos != -1 { // removed bytealg
-		prefix, suffix = pattern[:pos], pattern[pos+1:]
-	} else {
-		prefix = pattern
-	}
-	return prefix, suffix, nil
-}
-
 // Snippet: https://github.com/golang/go/blob/77f911e3/src/os/tempfile.go#L86-L117
 
 // compat: added , sa *syscall.SecurityAttributes
@@ -417,15 +357,6 @@ func MkdirTemp(dir, pattern string, sa *syscall.SecurityAttributes) (string, err
 		}
 		return "", err
 	}
-}
-
-// Snippet: https://github.com/golang/go/blob/77f911e3/src/os/tempfile.go#L119-L124
-
-func joinPath(dir, name string) string {
-	if len(dir) > 0 && IsPathSeparator(dir[len(dir)-1]) {
-		return dir + name
-	}
-	return dir + string(PathSeparator) + name
 }
 
 // Snippet: https://github.com/golang/go/blob/77f911e3/src/syscall/syscall_windows.go#L364-L456
@@ -535,4 +466,139 @@ func createFile(name *uint16, access uint32, mode uint32, sa *SecurityAttributes
 		err = errnoErr(e1)
 	}
 	return
+}
+
+// Snippet: https://github.com/golang/go/blob/77f911e3/src/os/removeall_noat.go#L15-L142
+
+func removeAll(path string) error {
+	if path == "" {
+		// fail silently to retain compatibility with previous behavior
+		// of RemoveAll. See issue 28830.
+		return nil
+	}
+
+	// The rmdir system call permits removing "." on Plan 9,
+	// so we don't permit it to remain consistent with the
+	// "at" implementation of RemoveAll.
+	if endsWithDot(path) {
+		return &PathError{Op: "RemoveAll", Path: path, Err: syscall.EINVAL}
+	}
+
+	// Simple case: if Remove works, we're done.
+	err := Remove(path)
+	if err == nil || IsNotExist(err) {
+		return nil
+	}
+
+	// Otherwise, is this a directory we need to recurse into?
+	dir, serr := Lstat(path)
+	if serr != nil {
+		if serr, ok := serr.(*PathError); ok && (IsNotExist(serr.Err) || serr.Err == syscall.ENOTDIR) {
+			return nil
+		}
+		return serr
+	}
+	if !dir.IsDir() {
+		// Not a directory; return the error from Remove.
+		return err
+	}
+
+	// Remove contents & return first error.
+	err = nil
+	for {
+		fd, err := os.Open(path) // compat: added: os.
+		if err != nil {
+			if IsNotExist(err) {
+				// Already deleted by someone else.
+				return nil
+			}
+			return err
+		}
+
+		const reqSize = 1024
+		var names []string
+		var readErr error
+
+		for {
+			numErr := 0
+			names, readErr = fd.Readdirnames(reqSize)
+
+			for _, name := range names {
+				err1 := removeAll(path + string(PathSeparator) + name) // compat: changed RemoveAll to removeAll
+				if err == nil {
+					err = err1
+				}
+				if err1 != nil {
+					numErr++
+				}
+			}
+
+			// If we can delete any entry, break to start new iteration.
+			// Otherwise, we discard current names, get next entries and try deleting them.
+			if numErr != reqSize {
+				break
+			}
+		}
+
+		// Removing files from the directory may have caused
+		// the OS to reshuffle it. Simply calling Readdirnames
+		// again may skip some entries. The only reliable way
+		// to avoid this is to close and re-open the
+		// directory. See issue 20841.
+		fd.Close()
+
+		if readErr == io.EOF {
+			break
+		}
+		// If Readdirnames returned an error, use it.
+		if err == nil {
+			err = readErr
+		}
+		if len(names) == 0 {
+			break
+		}
+
+		// We don't want to re-open unnecessarily, so if we
+		// got fewer than request names from Readdirnames, try
+		// simply removing the directory now. If that
+		// succeeds, we are done.
+		if len(names) < reqSize {
+			err1 := Remove(path)
+			if err1 == nil || IsNotExist(err1) {
+				return nil
+			}
+
+			if err != nil {
+				// We got some error removing the
+				// directory contents, and since we
+				// read fewer names than we requested
+				// there probably aren't more files to
+				// remove. Don't loop around to read
+				// the directory again. We'll probably
+				// just get the same error.
+				return err
+			}
+		}
+	}
+
+	// Remove directory.
+	err1 := Remove(path)
+	if err1 == nil || IsNotExist(err1) {
+		return nil
+	}
+	if /* runtime.GOOS == "windows" && */ IsPermission(err1) { // compat: commented out
+		if fs, err := Stat(path); err == nil {
+			err = acl.Chmod(path, 0o600) // compat: added
+			if err != nil {              // compat: added
+				return fmt.Errorf("removeall: %w (1)", err) // compat: added
+			} // compat: added
+			if err = Chmod(path, FileMode(0o200|int(fs.Mode()))); err == nil {
+				err1 = Remove(path)
+			}
+		}
+	}
+	if err == nil {
+		err = err1
+	}
+	return err
 }

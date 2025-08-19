@@ -64,9 +64,8 @@ func Create(name string, opts ...Option) (*os.File, error) {
 // It is the caller's responsibility to remove the file when it is no longer needed.
 func CreateTemp(dir, pattern string, opts ...Option) (*os.File, error) {
 	fopts := Options{
-		keepFileMode: true,
-		useFileMode:  CreateTempPerm,
-		flag:         os.O_CREATE,
+		useFileMode: CreateTempPerm,
+		flag:        os.O_CREATE,
 	}
 	for _, opt := range opts {
 		opt(&fopts)
@@ -101,8 +100,15 @@ func MkdirAll(path string, perm os.FileMode) error {
 // If dir is the empty string, MkdirTemp uses the default directory for temporary files, as returned by TempDir.
 // Multiple programs or goroutines calling MkdirTemp simultaneously will not choose the same directory.
 // It is the caller's responsibility to remove the directory when it is no longer needed.
-func MkdirTemp(dir, pattern string) (string, error) {
-	return mkdirTemp(dir, pattern)
+func MkdirTemp(dir, pattern string, opts ...Option) (string, error) {
+	fopts := FileOptions{
+		useFileMode: MkdirTempPerm,
+	}
+	for _, opt := range opts {
+		opt(&fopts)
+	}
+
+	return mkdirTemp(dir, pattern, fopts.useFileMode)
 }
 
 // OpenFile is the generalized open call; most users will use Open
@@ -114,6 +120,29 @@ func MkdirTemp(dir, pattern string) (string, error) {
 // If there is an error, it will be of type [*PathError].
 func OpenFile(name string, flag int, perm os.FileMode) (*os.File, error) {
 	return openFile(name, flag, perm)
+}
+
+// Remove removes the named file or directory.
+// If there is an error, it will be of type [*PathError].
+func Remove(name string) error {
+	return remove(name)
+}
+
+// RemoveAll removes path and any children it contains.
+// It removes everything it can but returns the first error
+// it encounters. If the path does not exist, RemoveAll
+// returns nil (no error).
+// If there is an error, it will be of type [*PathError].
+func RemoveAll(path string) error {
+	return removeAll(path)
+}
+
+// Symlink creates newname as a symbolic link to oldname.
+// On Windows, a symlink to a non-existent oldname creates a file symlink;
+// if oldname is later created as a directory the symlink will not work.
+// If there is an error, it will be of type *LinkError.
+func Symlink(oldname, newname string) error {
+	return symlink(oldname, newname)
 }
 
 // WriteFile writes data to the named file, creating it if necessary.
