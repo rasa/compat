@@ -80,7 +80,7 @@ func (d dirEntry) Info() (FileInfo, error) {
 	if d.err != nil {
 		return nil, d.err
 	}
-	d.typ = d.info.Mode().Type() //nolint:staticcheck // quiet linter
+	d.typ = d.info.Mode().Type() //nolint:govet,staticcheck // quiet linter
 
 	return d.info, nil
 }
