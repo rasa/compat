@@ -167,11 +167,6 @@ func TestWalkDirSymlink(t *testing.T) {
 }
 
 func TestIssue51617(t *testing.T) {
-	if compat.IsWindows {
-		skip(t, "@TODO reenable this test once the underlying issue is fixed")
-		return
-	}
-
 	dir := t.TempDir()
 	for _, sub := range []string{"a", filepath.Join("a", "bad"), filepath.Join("a", "next")} {
 		if err := os.Mkdir(filepath.Join(dir, sub), 0o755); err != nil {
