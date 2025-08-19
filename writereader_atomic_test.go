@@ -9,13 +9,15 @@ package compat_test
 import (
 	"bytes"
 	"os"
+	"path/filepath"
 	"testing"
 
 	"github.com/rasa/compat"
 )
 
 func TestWriteReaderAtomic(t *testing.T) {
-	file := "foo.txt"
+	dir := t.TempDir()
+	file := filepath.Join(dir, "foo.txt")
 	content := bytes.NewBufferString("foo")
 
 	t.Cleanup(func() {
@@ -41,7 +43,8 @@ func TestWriteReaderAtomic(t *testing.T) {
 }
 
 func TestWriteReaderAtomicDefaultFileMode(t *testing.T) {
-	file := "bar.txt"
+	dir := t.TempDir()
+	file := filepath.Join(dir, "bar.txt")
 	content := bytes.NewBufferString("bar")
 
 	t.Cleanup(func() {
@@ -98,7 +101,8 @@ func TestWriteReaderAtomicDefaultFileMode(t *testing.T) {
 }
 
 func TestWriteReaderAtomicMode(t *testing.T) {
-	file := "baz.txt"
+	dir := t.TempDir()
+	file := filepath.Join(dir, "baz.txt")
 	content := bytes.NewBufferString("baz")
 
 	t.Cleanup(func() {
