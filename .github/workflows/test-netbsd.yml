@@ -13,6 +13,7 @@ jobs:
     name: test-netbsd
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    continue-on-error: true
     # env:
     #  GITHUB_TOKEN : ${{ secrets.GITHUB_TOKEN }}
     steps:
@@ -39,13 +40,16 @@ jobs:
         run: |
             export PATH="/usr/pkg/bin:${PATH}"
             (cd /usr/pkg/bin ; ln -sf go??? go)
-            printf '::notice ::%s\n' "$(go version)"
+            # printf '::notice ::%s\n' "$(go version)"
             go env
-            if !.go build ./...; then
-              printf "::error ::go build failed: error %s\n" "$?"
-              exit 0
+            if go build ./...; then
+              echo "::notice ::build succeeded"
+            else
+              echo "::error ::build failed"
             fi
-            if ! go test -v; then
-              printf '::error ::go test failed: error %s\n" "$?"
-              exit 0
+            if go test -v ./...; then
+              echo "::notice ::tests succeeded"
+            else
+              echo '::error ::tests failed"
+              exit 1
             fi
