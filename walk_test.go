@@ -8,7 +8,6 @@ import (
 	"os"
 	pathpkg "path"
 	"path/filepath"
-	"runtime"
 	"slices"
 	"testing"
 	"testing/fstest"
@@ -16,12 +15,17 @@ import (
 	"github.com/rasa/compat"
 )
 
-// Source: https://github.com/golang/go/blob/77f911e3/src/io/fs/walk_test.go#L17-L183
+const ModeDir = fs.ModeDir
+const ModeSymlink = fs.ModeSymlink
 
-// The following code is:
+type FileMode = fs.FileMode
+type FS = fs.FS
+
 // Copyright 2020 The Go Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
+
+// Source: https://github.com/golang/go/blob/77f911e3/src/io/fs/walk_test.go#L17-L183
 
 type Node struct {
 	name    string
@@ -62,13 +66,13 @@ func walkTree(n *Node, path string, f func(path string, n *Node)) {
 	}
 }
 
-func makeTree() fs.FS {
+func makeTree() FS {
 	fsys := fstest.MapFS{}
 	walkTree(tree, tree.name, func(path string, n *Node) {
 		if n.entries == nil {
 			fsys[path] = &fstest.MapFile{}
 		} else {
-			fsys[path] = &fstest.MapFile{Mode: os.ModeDir}
+			fsys[path] = &fstest.MapFile{Mode: ModeDir}
 		}
 	})
 	return fsys
@@ -120,31 +124,19 @@ func TestWalkDir(t *testing.T) {
 }
 
 func TestWalkDirSymlink(t *testing.T) {
-	if !compat.SupportsSymlinks() {
-		skip(t, "Skipping test: symlinks are not supported on "+runtime.GOOS)
-
-		return // tinygo doesn't support t.Skip
-	}
-
-	if !compat.IsWindows && os.Getenv("SkipTestWalkDirSymlink") == "" {
-		skip(t, "@TODO(rasa) research test failing on linux, but passing on Windows")
-
-		return // tinygo doesn't support t.Skip
-	}
-
 	fsys := fstest.MapFS{
-		"link":    {Data: []byte("dir"), Mode: os.ModeSymlink},
+		"link":    {Data: []byte("dir"), Mode: ModeSymlink},
 		"dir/a":   {},
 		"dir/b/c": {},
-		"dir/d":   {Data: []byte("b"), Mode: os.ModeSymlink},
+		"dir/d":   {Data: []byte("b"), Mode: ModeSymlink},
 	}
 
-	wantTypes := map[string]os.FileMode{
-		"link":     os.ModeDir,
+	wantTypes := map[string]FileMode{
+		"link":     ModeDir,
 		"link/a":   0,
-		"link/b":   os.ModeDir,
+		"link/b":   ModeDir,
 		"link/b/c": 0,
-		"link/d":   os.ModeSymlink,
+		"link/d":   ModeSymlink,
 	}
 	marks := make(map[string]int)
 	walkFn := func(path string, entry compat.DirEntry, err error) error {
@@ -152,7 +144,7 @@ func TestWalkDirSymlink(t *testing.T) {
 		if want, ok := wantTypes[path]; !ok {
 			t.Errorf("Unexpected path %q in walk", path)
 		} else if got := entry.Type(); got != want {
-			t.Errorf("%s entry type = %o (%v); want %o (%v)", path, got, got, want, want)
+			t.Errorf("%s entry type = %v; want %v", path, got, want)
 		}
 		if err != nil {
 			t.Errorf("Walking %s: %v", path, err)
@@ -175,7 +167,7 @@ func TestWalkDirSymlink(t *testing.T) {
 func TestIssue51617(t *testing.T) {
 	dir := t.TempDir()
 	for _, sub := range []string{"a", filepath.Join("a", "bad"), filepath.Join("a", "next")} {
-		if err := os.Mkdir(filepath.Join(dir, sub), 0o755); err != nil {
+		if err := os.Mkdir(filepath.Join(dir, sub), 0755); err != nil {
 			t.Fatal(err)
 		}
 	}
@@ -183,7 +175,7 @@ func TestIssue51617(t *testing.T) {
 	if err := os.Chmod(bad, 0); err != nil {
 		t.Fatal(err)
 	}
-	defer func() { _ = os.Chmod(bad, 0o700) }() // avoid errors on cleanup
+	defer os.Chmod(bad, 0700) // avoid errors on cleanup
 	var saw []string
 	err := compat.WalkDir(os.DirFS(dir), ".", func(path string, d compat.DirEntry, err error) error {
 		if err != nil {
