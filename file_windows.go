@@ -30,7 +30,7 @@ type securityInfo struct {
 	perm     os.FileMode
 }
 
-func chmod(name string, perm os.FileMode) error {
+func chmod(name string, perm os.FileMode, mask ReadOnlyMode) error {
 	perm = perm.Perm()
 
 	// set Windows' ACLs
@@ -39,34 +39,37 @@ func chmod(name string, perm os.FileMode) error {
 		return fmt.Errorf("%w (acl)", err)
 	}
 
-	// @TODO(rasa) Add ReadOnlyMask(perm os.FileMode) option,
-	// perm options:
-	//   0o200 (u=w) (default)
-	//   0o020 (g=w)
-	//   0o002 (o=w)
-	//   0o000 (disable setting file's read-only attribute)
+	if mask == ReadOnlyModeIgnore {
+		return nil
+	}
 
-	// fi, err := os.Stat(name)
-	// if err != nil {
-	// 	return fmt.Errorf("%w (stat)", err)
-	// }
+	fi, err := os.Stat(name)
+	if err != nil {
+		return fmt.Errorf("%w (stat)", err)
+	}
 
-	// // Set or clear Windows' read-only attribute
-	// want := perm&syscall.S_IWRITE != 0 // 0x80 (0o200)
-	// got := fi.Mode().Perm()&syscall.S_IWRITE != 0
+	// Set or clear Windows' read-only attribute
+	want := perm&syscall.S_IWRITE != 0 // 0x80 (0o200)
+	got := fi.Mode().Perm()&syscall.S_IWRITE != 0
 
-	// if want != got {
-	// 	if want {
-	// 		perm |= syscall.S_IWRITE
-	// 	} else {
-	// 		perm &= ^os.FileMode(syscall.S_IWRITE)
-	// 	}
-	// 	fmt.Printf("want=%v; got=%v; perm=%o (%v)", want, got, perm, perm) // @TODO REMOVE ME
-	// 	err = os.Chmod(name, perm)
-	// 	if err != nil {
-	// 		return fmt.Errorf("%w (chmod)", err)
-	// 	}
-	// }
+	if want == got {
+		return nil
+	}
+
+	if mask == ReadOnlyModeReset && !got {
+		return nil
+		want = false
+	}
+
+	if want {
+		perm |= syscall.S_IWRITE
+	} else {
+		perm &= ^os.FileMode(syscall.S_IWRITE)
+	}
+	err = os.Chmod(name, perm)
+	if err != nil {
+		return fmt.Errorf("%w (chmod)", err)
+	}
 
 	return nil
 }
@@ -121,7 +124,7 @@ func mkdirTemp(dir, pattern string, perm os.FileMode) (string, error) {
 }
 
 func openFile(name string, flag int, perm os.FileMode) (*os.File, error) {
-	sa, err := saFromPerm(perm, flag|os.O_CREATE == os.O_CREATE)
+	sa, err := saFromPerm(perm, (flag&os.O_CREATE) == os.O_CREATE)
 	if err != nil {
 		return nil, err
 	}

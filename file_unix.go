@@ -11,7 +11,9 @@ import (
 	"github.com/rasa/compat/golang"
 )
 
-var chmod = os.Chmod
+func chmod(name string, mode os.FileMode, _ ReadOnlyMode) error {
+	return os.Chmod(name, mode)
+}
 
 func create(name string, perm os.FileMode, flag int) (*os.File, error) {
 	if perm == 0 {

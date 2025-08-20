@@ -26,8 +26,14 @@ import (
 //
 // On Plan 9, the mode's permission bits, [ModeAppend], [ModeExclusive],
 // and [ModeTemporary] are used.
-func Chmod(name string, mode os.FileMode) error {
-	return chmod(name, mode)
+func Chmod(name string, mode os.FileMode, opts ...Option) error {
+	fopts := Options{}
+
+	for _, opt := range opts {
+		opt(&fopts)
+	}
+
+	return chmod(name, mode, fopts.readOnlyMode)
 }
 
 // Create creates or truncates the named file. If the file already exists,
@@ -50,6 +56,10 @@ func Create(name string, opts ...Option) (*os.File, error) {
 		opt(&fopts)
 	}
 
+	if fopts.readOnlyMode != ReadOnlyModeSet {
+		fopts.flags |= O_NOROATTR
+	}
+
 	return create(name, fopts.fileMode, fopts.flags)
 }
 
@@ -69,6 +79,10 @@ func CreateTemp(dir, pattern string, opts ...Option) (*os.File, error) {
 	}
 	for _, opt := range opts {
 		opt(&fopts)
+	}
+
+	if fopts.readOnlyMode != ReadOnlyModeSet {
+		fopts.flags |= O_NOROATTR
 	}
 
 	return createTemp(dir, pattern, fopts.fileMode, fopts.flags)
@@ -118,8 +132,20 @@ func MkdirTemp(dir, pattern string, opts ...Option) (string, error) {
 // the containing directory must exist. If successful,
 // methods on the returned File can be used for I/O.
 // If there is an error, it will be of type [*PathError].
-func OpenFile(name string, flag int, perm os.FileMode) (*os.File, error) {
-	return openFile(name, flag, perm)
+func OpenFile(name string, flag int, perm os.FileMode, opts ...Option) (*os.File, error) {
+	fopts := Options{
+		fileMode: perm,
+		flags:    flag,
+	}
+	for _, opt := range opts {
+		opt(&fopts)
+	}
+
+	if fopts.readOnlyMode != ReadOnlyModeSet {
+		fopts.flags |= O_NOROATTR
+	}
+
+	return openFile(name, flag, perm) // fopts.flags, fopts.fileMode)
 }
 
 // Remove removes the named file or directory.
@@ -158,14 +184,16 @@ func Symlink(oldname, newname string, opts ...Option) error {
 // is a concern.
 func WriteFile(name string, data []byte, perm os.FileMode, opts ...Option) error {
 	fopts := Options{
-		// keepFileMode: true,
 		fileMode: perm,
-		// flags:        0, // O_RDWR | O_CREATE | O_TRUNC,
 	}
 
 	for _, opt := range opts {
 		opt(&fopts)
 	}
 
-	return writeFile(name, data, perm, 0)
+	if fopts.readOnlyMode != ReadOnlyModeSet {
+		fopts.flags |= O_NOROATTR
+	}
+
+	return writeFile(name, data, fopts.fileMode, fopts.flags)
 }

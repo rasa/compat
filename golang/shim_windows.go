@@ -9,15 +9,19 @@ import (
 	"fmt"
 	"os"
 	"syscall"
-	_ "unsafe"
+	"unsafe"
 
 	"github.com/capnspacehook/go-acl"
 	"golang.org/x/sys/windows"
 )
 
-// O_DELETE deletes the file when closed.
 // Redefining here to avoid a circular dependency.
-const O_DELETE = 0x8000000
+// O_DELETE deletes the file when closed.
+const (
+	O_DELETE = 0x8000000
+	// O_NOROATTR doesn't set a file's read-only attribute if mode
+	O_NOROATTR = 0x4000000
+)
 
 const perm600 = os.FileMode(0o600)
 
@@ -41,6 +45,7 @@ const (
 	GENERIC_WRITE                = syscall.GENERIC_WRITE
 	InvalidHandle                = syscall.InvalidHandle
 	O_CREAT                      = syscall.O_CREAT
+	O_CLOEXEC                    = syscall.O_CLOEXEC
 	OPEN_ALWAYS                  = syscall.OPEN_ALWAYS
 	OPEN_EXISTING                = syscall.OPEN_EXISTING
 	S_IWRITE                     = syscall.S_IWRITE
@@ -90,11 +95,17 @@ func init() {
 	canUseLongPaths = isWindowsAtLeast(10, 0, 15063) //nolint:mnd // quiet linter
 }
 
-func setDeleteAttributes(flag int, attrs uint32, sharemode uint32) (uint32, uint32) {
+func fixAttributesAndShareMode(flag int, attrs uint32, sharemode uint32) (uint32, uint32) {
 	if flag&O_DELETE == O_DELETE {
 		attrs &^= uint32(windows.FILE_ATTRIBUTE_READONLY)
 		attrs |= (windows.FILE_FLAG_DELETE_ON_CLOSE | windows.FILE_ATTRIBUTE_TEMPORARY)
 		sharemode |= FILE_SHARE_DELETE
+		flag &^= O_DELETE
+	}
+
+	if flag&O_NOROATTR == O_NOROATTR {
+		attrs &^= uint32(windows.FILE_ATTRIBUTE_READONLY)
+		flag &^= O_NOROATTR
 	}
 
 	return attrs, sharemode
@@ -163,4 +174,16 @@ func Remove(path string) error {
 	}
 
 	return err
+}
+
+// Source: https://github.com/golang/go/blob/77f911e31c243a8302c086d64dbef340b0c999b8/src/syscall/syscall_windows.go#L357-L362
+
+func makeInheritSa(sa *SecurityAttributes) *SecurityAttributes {
+	if sa == nil {
+		sa = &SecurityAttributes{}
+		sa.Length = uint32(unsafe.Sizeof(sa))
+	}
+	sa.InheritHandle = 1
+
+	return sa
 }

@@ -395,9 +395,9 @@ func Open(name string, flag int, perm uint32, sa *syscall.SecurityAttributes) (f
 	}
 	sharemode := uint32(FILE_SHARE_READ | FILE_SHARE_WRITE)
 	// var sa *SecurityAttributes // compat: removed
-	// if flag&O_CLOEXEC == 0 {
-	// 	sa = makeInheritSa()
-	// }
+	if flag&O_CLOEXEC == 0 {
+		sa = makeInheritSa(sa) // compat: added: (sa)
+	}
 	var attrs uint32 = FILE_ATTRIBUTE_NORMAL
 	if perm&S_IWRITE == 0 {
 		attrs = FILE_ATTRIBUTE_READONLY
@@ -433,7 +433,7 @@ func Open(name string, flag int, perm uint32, sa *syscall.SecurityAttributes) (f
 	default:
 		createmode = OPEN_EXISTING
 	}
-	attrs, sharemode = setDeleteAttributes(flag, attrs, sharemode) // compat: added
+	attrs, sharemode = fixAttributesAndShareMode(flag, attrs, sharemode) // compat: added
 	h, err := createFile(namep, access, sharemode, sa, createmode, attrs, 0)
 	if h == InvalidHandle {
 		if err == ERROR_ACCESS_DENIED && (attrs&FILE_FLAG_BACKUP_SEMANTICS == 0) {

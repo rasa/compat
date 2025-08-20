@@ -449,7 +449,7 @@ func TestLstatUser(t *testing.T) {
 	}
 	want := u.Username
 
-	if compareNames(got, want) {
+	if compareNames(got, want) == compat.IsWindows {
 		t.Fatalf("User(): got %v, want %v", got, want)
 	}
 }

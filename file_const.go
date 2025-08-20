@@ -13,7 +13,7 @@ const (
 	CreatePerm os.FileMode = 0o666
 	// CreateTempPerm is the FileMode used by CreateTemp().
 	CreateTempPerm os.FileMode = 0o600
-	// MkdirTempPerm is the FileMode used by MkdirTemp()..
+	// MkdirTempPerm is the FileMode used by MkdirTemp().
 	MkdirTempPerm os.FileMode = 0o700
 
 	// Verify we don't conflict with any of the values listed at
@@ -21,6 +21,8 @@ const (
 
 	// O_DELETE deletes the file when closed.
 	O_DELETE = 0x8000000
+	// O_NOROATTR doesn't set a file's read-only attribute on Windows.
+	O_NOROATTR = 0x4000000
 
 	// https://github.com/golang/go/blob/e282cbb1/src/os/file.go#L77
 
@@ -59,3 +61,19 @@ const (
 )
 
 type FileMode = os.FileMode
+
+// ReadOnlyMode defines how to handle a file's read-only attribute on Windows.
+type ReadOnlyMode int
+
+const (
+	// ReadOnlyModeIgnore does not set a file's read-only attribute, and ignores
+	// if it's set (Windows only).
+	ReadOnlyModeIgnore ReadOnlyMode = 0 + iota
+	// ReadOnlyMaskSet set a file's read-only attribute, if the specified 
+	// perm FileMode has the user writable bit (0o200) set. Otherwise, it will
+	// resets (clears) it. (Windows only).
+	ReadOnlyModeSet
+	// ReadOnlyMaskReset does not set a file's read-only attribute, and if it's
+	// set, it resets (clears) it. (Windows only).
+	ReadOnlyModeReset
+)

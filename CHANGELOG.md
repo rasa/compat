@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Added
 
+- Add optional `Option` param to `OpenFile()`.
+- Add optional `Option` param to `Chmod()`.
+- Add `WithReadOnlyMode()` function.
+- Add `ReadOnlyModeIgnore`, `ReadOnlyModeSet` and `ReadOnlyModeReset` constants.
 - Add optional `Option` param to `CreateTemp()`.
 - Add optional `Option` param to `MkdirTemp()`.
 - Add `Symlink()` function.
@@ -28,8 +32,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Renamed `DefaultFileMode()` to  `WithDefaultFileMode()`.
 - Renamed `Flag()` to  `WithFlags()`.
 - Renamed `KeepFileMode()` to  `WithKeepFileMode()`.
-- Renamed `UseFileMode()` to  `WithFileMode()`.
-- Renamed `FileMode()` to `UseFileMode()`. ***BREAKING CHANGE***
+- Renamed `FileMode()` to  `WithFileMode()`. ***BREAKING CHANGE***
 - Renamed `FileOptions` to `Options`.
 - Deprecate `DefaultFileMode()`, `Flag()`, `KeepFileMode()`, and `UseFileMode()`
   functions.
