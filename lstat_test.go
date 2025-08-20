@@ -431,6 +431,13 @@ func TestLstatUser(t *testing.T) {
 		return // tinygo doesn't support t.Skip
 	}
 
+	if compat.IsWindows {
+		// tinygo: Current requires cgo or $USER, $HOME set in environment
+		skip(t, "Skipping test: User() will be indeterminate on Windows")
+
+		return // tinygo doesn't support t.Skip
+	}
+
 	_, name, err := createTempSymlink(t)
 	if err != nil {
 		t.Fatal(err)
@@ -461,9 +468,9 @@ func TestLstatUserSetOwner(t *testing.T) {
 		return // tinygo doesn't support t.Skip
 	}
 
-	if compat.IsTinygo {
+	if !compat.IsWindows {
 		// tinygo: Current requires cgo or $USER, $HOME set in environment
-		skip(t, "Skipping test: User() not supported on tinygo")
+		skip(t, "Skipping test: Windows only test")
 
 		return // tinygo doesn't support t.Skip
 	}
