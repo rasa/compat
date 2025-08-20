@@ -1,3 +1,4 @@
+//nolint:mnd // quiet linter
 // SPDX-FileCopyrightText: Copyright © 2025 Ross Smith II <ross@smithii.com>
 // SPDX-License-Identifier: MIT
 
@@ -6,8 +7,6 @@
 // package updater checks if there are any updates to snippetted code, and
 // provides diffs of any changes found.
 package main
-
-//nolint:mnd // quiet linter
 
 import (
 	"bufio"
