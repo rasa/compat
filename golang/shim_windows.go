@@ -19,7 +19,7 @@ const (
 	// Redefining here to avoid a circular dependency.
 	// O_DELETE deletes the file when closed.
 	O_DELETE = 0x8000000
-	// O_NOROATTR doesn't set a file's read-only attribute if mode
+	// O_NOROATTR doesn't set a file's read-only attribute if mode.
 	O_NOROATTR = 0x4000000
 )
 
