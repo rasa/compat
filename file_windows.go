@@ -354,6 +354,9 @@ func setOwnerToCurrentUser(path string) error {
 	}
 	// Optional, sometimes helpful
 	err = enablePrivilege(tok, seRestorePrivilegeW)
+	if err != nil {
+		return fmt.Errorf("seRestorePrivilegeW: %w", err)
+	}
 
 	// Set owner by name (affects target if path is a symlink)
 	err = windows.SetNamedSecurityInfo(
@@ -392,6 +395,7 @@ func enablePrivilege(tok windows.Token, name *uint16) error {
 	if le := windows.GetLastError(); errors.Is(le, windows.ERROR_NOT_ALL_ASSIGNED) {
 		return fmt.Errorf("privilege not held: %w", le)
 	}
+
 	return nil
 }
 

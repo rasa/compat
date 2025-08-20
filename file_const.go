@@ -69,7 +69,7 @@ const (
 	// ReadOnlyModeIgnore does not set a file's read-only attribute, and ignores
 	// if it's set (Windows only).
 	ReadOnlyModeIgnore ReadOnlyMode = 0 + iota
-	// ReadOnlyMaskSet set a file's read-only attribute, if the specified 
+	// ReadOnlyMaskSet set a file's read-only attribute, if the specified
 	// perm FileMode has the user writable bit (0o200) set. Otherwise, it will
 	// resets (clears) it. (Windows only).
 	ReadOnlyModeSet
