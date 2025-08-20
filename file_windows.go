@@ -56,8 +56,10 @@ func chmod(name string, perm os.FileMode, mask ReadOnlyMode) error {
 		return nil
 	}
 
-	if mask == ReadOnlyModeReset && !got {
-		return nil
+	if mask == ReadOnlyModeReset {
+		if !got {
+			return nil
+		}
 		want = false
 	}
 
