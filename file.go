@@ -26,8 +26,14 @@ import (
 //
 // On Plan 9, the mode's permission bits, [ModeAppend], [ModeExclusive],
 // and [ModeTemporary] are used.
-func Chmod(name string, mode os.FileMode) error {
-	return chmod(name, mode)
+func Chmod(name string, mode os.FileMode, opts ...Option) error {
+	fopts := Options{}
+
+	for _, opt := range opts {
+		opt(&fopts)
+	}
+
+	return chmod(name, mode, fopts.readOnlyMode)
 }
 
 // Create creates or truncates the named file. If the file already exists,
@@ -40,17 +46,21 @@ func Create(name string, opts ...Option) (*os.File, error) {
 	// https://github.com/golang/go/blob/master/src/os/file.go#L393
 	// return OpenFile(name, O_RDWR|O_CREATE|O_TRUNC, 0666)
 
-	fopts := FileOptions{
+	fopts := Options{
 		keepFileMode: true,
 		fileMode:     CreatePerm,
-		flag:         O_RDWR | O_CREATE | O_TRUNC,
+		flags:        os.O_RDWR | os.O_CREATE | os.O_TRUNC,
 	}
 
 	for _, opt := range opts {
 		opt(&fopts)
 	}
 
-	return create(name, fopts.fileMode, fopts.flag)
+	if fopts.readOnlyMode != ReadOnlyModeSet {
+		fopts.flags |= O_NOROATTR
+	}
+
+	return create(name, fopts.fileMode, fopts.flags)
 }
 
 // CreateTemp creates a new temporary file in the directory dir,
@@ -63,16 +73,19 @@ func Create(name string, opts ...Option) (*os.File, error) {
 // The caller can use the file's Name method to find the pathname of the file.
 // It is the caller's responsibility to remove the file when it is no longer needed.
 func CreateTemp(dir, pattern string, opts ...Option) (*os.File, error) {
-	fopts := FileOptions{
-		keepFileMode: true,
-		fileMode:     CreateTempPerm,
-		flag:         O_CREATE,
+	fopts := Options{
+		fileMode: CreateTempPerm,
+		flags:    os.O_CREATE,
 	}
 	for _, opt := range opts {
 		opt(&fopts)
 	}
 
-	return createTemp(dir, pattern, fopts.fileMode, fopts.flag)
+	if fopts.readOnlyMode != ReadOnlyModeSet {
+		fopts.flags |= O_NOROATTR
+	}
+
+	return createTemp(dir, pattern, fopts.fileMode, fopts.flags)
 }
 
 // Mkdir creates a new directory with the specified name and perm's permission
@@ -101,8 +114,15 @@ func MkdirAll(path string, perm os.FileMode) error {
 // If dir is the empty string, MkdirTemp uses the default directory for temporary files, as returned by TempDir.
 // Multiple programs or goroutines calling MkdirTemp simultaneously will not choose the same directory.
 // It is the caller's responsibility to remove the directory when it is no longer needed.
-func MkdirTemp(dir, pattern string) (string, error) {
-	return mkdirTemp(dir, pattern)
+func MkdirTemp(dir, pattern string, opts ...Option) (string, error) {
+	fopts := Options{
+		fileMode: MkdirTempPerm,
+	}
+	for _, opt := range opts {
+		opt(&fopts)
+	}
+
+	return mkdirTemp(dir, pattern, fopts.fileMode)
 }
 
 // OpenFile is the generalized open call; most users will use Open
@@ -112,8 +132,48 @@ func MkdirTemp(dir, pattern string) (string, error) {
 // the containing directory must exist. If successful,
 // methods on the returned File can be used for I/O.
 // If there is an error, it will be of type [*PathError].
-func OpenFile(name string, flag int, perm os.FileMode) (*os.File, error) {
-	return openFile(name, flag, perm)
+func OpenFile(name string, flag int, perm os.FileMode, opts ...Option) (*os.File, error) {
+	fopts := Options{
+		fileMode: perm,
+		flags:    flag,
+	}
+	for _, opt := range opts {
+		opt(&fopts)
+	}
+
+	if fopts.readOnlyMode != ReadOnlyModeSet {
+		fopts.flags |= O_NOROATTR
+	}
+
+	return openFile(name, flag, perm) // fopts.flags, fopts.fileMode)
+}
+
+// Remove removes the named file or directory.
+// If there is an error, it will be of type [*PathError].
+func Remove(name string) error {
+	return remove(name)
+}
+
+// RemoveAll removes path and any children it contains.
+// It removes everything it can but returns the first error
+// it encounters. If the path does not exist, RemoveAll
+// returns nil (no error).
+// If there is an error, it will be of type [*PathError].
+func RemoveAll(path string) error {
+	return removeAll(path)
+}
+
+// Symlink creates newname as a symbolic link to oldname.
+// On Windows, a symlink to a non-existent oldname creates a file symlink;
+// if oldname is later created as a directory the symlink will not work.
+// If there is an error, it will be of type *LinkError.
+func Symlink(oldname, newname string, opts ...Option) error {
+	fopts := Options{}
+	for _, opt := range opts {
+		opt(&fopts)
+	}
+
+	return symlink(oldname, newname, fopts.setSymlinkOwner)
 }
 
 // WriteFile writes data to the named file, creating it if necessary.
@@ -123,15 +183,17 @@ func OpenFile(name string, flag int, perm os.FileMode) (*os.File, error) {
 // can leave the file in a partially written state. Use WriteFileAtomic() if this
 // is a concern.
 func WriteFile(name string, data []byte, perm os.FileMode, opts ...Option) error {
-	fopts := FileOptions{
-		// keepFileMode: true,
+	fopts := Options{
 		fileMode: perm,
-		flag:     0, // O_RDWR | O_CREATE | O_TRUNC,
 	}
 
 	for _, opt := range opts {
 		opt(&fopts)
 	}
 
-	return writeFile(name, data, perm, 0)
+	if fopts.readOnlyMode != ReadOnlyModeSet {
+		fopts.flags |= O_NOROATTR
+	}
+
+	return writeFile(name, data, fopts.fileMode, fopts.flags)
 }

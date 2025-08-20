@@ -123,11 +123,10 @@ var formatTests = []struct {
 
 func TestFormatDirEntry(t *testing.T) {
 	for i, test := range formatTests {
-		di := compat.FileInfoToDirEntry(&test.input)
+		di := compat.FileInfoToDirEntry(&test.input, ".")
 		got := compat.FormatDirEntry(di)
 		if got != test.wantDirEntry {
 			t.Errorf("%d: FormatDirEntry(%#v) = %q, want %q", i, test.input, got, test.wantDirEntry)
 		}
 	}
-
 }

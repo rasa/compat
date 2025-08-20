@@ -7,9 +7,10 @@ import (
 	"os"
 )
 
-func ExportChmod(name string, perm os.FileMode) error {
-	return chmod(name, perm)
-}
+// no longer used:
+// func ExportChmod(name string, perm os.FileMode, mode ReadOnlyMode) error {
+// 	return chmod(name, perm, mode)
+// }
 
 func ExportStat(name string) (os.FileMode, error) {
 	return _stat(name)

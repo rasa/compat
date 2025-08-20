@@ -98,6 +98,7 @@ func (fs *fileStat) Links() uint64       { return fs.links }
 func (fs *fileStat) ATime() time.Time    { return fs.atime }
 func (fs *fileStat) MTime() time.Time    { return fs.mtime } // duplicates ModTime
 func (fs *fileStat) Error() error        { return fs.err }
+
 func (fs *fileStat) String() string {
 	var b strings.Builder
 	fmt.Fprintf(&b, "Name:   %v\n", fs.Name())

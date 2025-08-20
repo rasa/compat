@@ -6,6 +6,8 @@
 package compat
 
 import (
+	"errors"
+	"fmt"
 	"os"
 	"sync"
 	"syscall"
@@ -62,6 +64,10 @@ type fileStat struct {
 ////////////////////////////////////////////////////////////////////////////////
 
 func stat(fi os.FileInfo, name string, followSymlinks bool) (FileInfo, error) {
+	if fi == nil {
+		err := errors.New("fileInfo is nil")
+		return nil, &os.PathError{Op: "stat", Path: name, Err: err}
+	}
 	var fs fileStat
 
 	fs.mux.Lock()
@@ -98,7 +104,12 @@ func stat(fi os.FileInfo, name string, followSymlinks bool) (FileInfo, error) {
 	fs.size = fi.Size()
 	fs.mode = fi.Mode()
 	fs.mtime = fi.ModTime()
-	fs.sys = *fi.Sys().(*syscall.Win32FileAttributeData)
+	sys, ok := fi.Sys().(*syscall.Win32FileAttributeData)
+	if !ok {
+		err = fmt.Errorf("sys is not a Win32FileAttributeData, it's a %T", fi.Sys())
+		return nil, &os.PathError{Op: "stat", Path: name, Err: err}
+	}
+	fs.sys = *sys
 
 	perm, err := _stat(name)
 	if err != nil {

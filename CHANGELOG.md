@@ -9,13 +9,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Added
 
+- Add optional `Option` param to `OpenFile()`.
+- Add optional `Option` param to `Chmod()`.
+- Add `WithReadOnlyMode()` function.
+- Add `ReadOnlyModeIgnore`, `ReadOnlyModeSet` and `ReadOnlyModeReset` constants.
+- Add optional `Option` param to `CreateTemp()`.
+- Add optional `Option` param to `MkdirTemp()`.
+- Add `Symlink()` function.
+- Add `Remove()` and `RemoveAll()` functions.
+- Add `WalkDir()` function (mimics `io/fs`' version).
 - Add `ReadDir()` and `FormatDirEntry()` functions.
 - Add cmd/updater program to keep upstream code up to date.
 
 ### Fixed
 
+- Fix ability to set perms to u+w after setting o-w on Windows.
+- Enable `TestLstatUser` test on Windows.
+- Enable `TestLstatGroup` test on Windows.
+
 ### Changed
 
+- Renamed `DefaultFileMode()` to  `WithDefaultFileMode()`.
+- Renamed `Flag()` to  `WithFlags()`.
+- Renamed `KeepFileMode()` to  `WithKeepFileMode()`.
+- Renamed `FileMode()` to  `WithFileMode()`. ***BREAKING CHANGE***
+- Renamed `FileOptions` to `Options`.
+- Deprecate `DefaultFileMode()`, `Flag()`, `KeepFileMode()`, and `UseFileMode()`
+  functions.
 - Deprecate `CreateEx()`, `CreateTempEx()` and `WriteFileEx()` functions.
 
 ## [0.5.1](https://github.com/rasa/compat/compare/v0.5.0...v0.5.1)
@@ -70,7 +90,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Added
 
-- Set perms when `WriteFileAtomic()` and `WriteReaderAtomic()` create file, not after closing.
+- Set perms when `WriteFileAtomic()` and `WriteReaderAtomic()` create files, not after closing.
 - Add `Option` param to `Create()` and `CreateTemp()`.
 - Add `Flag()` to `FileOptions` functions.
 - Add Windows example `Stat()` call to readme.

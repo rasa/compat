@@ -10,44 +10,69 @@ import (
 	"os"
 )
 
-// FileOptions define the behavior of `WriteReaderAtomic()`, etc.
-type FileOptions struct {
-	defaultFileMode os.FileMode
-	fileMode        os.FileMode
-	keepFileMode    bool
-	flag            int
+// Options define the behavior of `WriteReaderAtomic()`, etc.
+type Options struct {
+	defaultFileMode os.FileMode  // default 0
+	fileMode        os.FileMode  // default 0
+	flags           int          // default 0
+	keepFileMode    bool         // default false
+	readOnlyMode    ReadOnlyMode // default 0
+	setSymlinkOwner bool         // default false
 }
 
-// Option functions modify FileOptions.
-type Option func(*FileOptions)
+// Option functions modify Options.
+type Option func(*Options)
 
-// FileMode sets the file mode to the desired value and has precedence over all
-// other options.
-func FileMode(mode os.FileMode) Option {
-	return func(opts *FileOptions) {
-		opts.fileMode = mode
-	}
-}
-
-// DefaultFileMode sets the default file mode instead of using the
+// WithDefaultFileMode sets the default file mode instead of using the
 // `os.CreateTemp()` default of `0600`.
-func DefaultFileMode(mode os.FileMode) Option {
-	return func(opts *FileOptions) {
+func WithDefaultFileMode(mode os.FileMode) Option {
+	return func(opts *Options) {
 		opts.defaultFileMode = mode
 	}
 }
 
-// KeepFileMode preserves the file mode of an existing file instead of using the
+// WithFileMode sets the file mode to the desired value and has precedence over all
+// other options.
+func WithFileMode(mode os.FileMode) Option {
+	return func(opts *Options) {
+		opts.fileMode = mode
+	}
+}
+
+// WithFlags sets the flag option.
+func WithFlags(flags int) Option {
+	return func(opts *Options) {
+		opts.flags = flags
+	}
+}
+
+// WithKeepFileMode preserves the file mode of an existing file instead of using the
 // default value.
-func KeepFileMode(keep bool) Option {
-	return func(opts *FileOptions) {
+func WithKeepFileMode(keep bool) Option {
+	return func(opts *Options) {
 		opts.keepFileMode = keep
 	}
 }
 
-// Flag sets the flag option.
-func Flag(flag int) Option {
-	return func(opts *FileOptions) {
-		opts.flag = flag
+// WithReadOnlyMode is used to determine if/when to set a file's read-only
+// (RO) attribute on Windows. The following values are supported:
+// ReadOnlyModeIgnore do not set a file's RO attribute, and ignore if it's set.
+// ReadOnlyMaskSet    set a file's RO attribute if the file's FileMode has the
+//
+//	user writable bit set.
+//
+// ReadOnlyMaskReset  do not set a file's RO attribute, and if it's set, reset it.
+func WithReadOnlyMode(mode ReadOnlyMode) Option {
+	return func(opts *Options) {
+		opts.readOnlyMode = mode
+	}
+}
+
+// WithSetSymlinkOwner sets the symlink's owner to be the current user.
+// Otherwise, the symlink will have a default owner assigned by the system,
+// such as BUILTIN\Administrator.
+func WithSetSymlinkOwner(setSymlinkOwner bool) Option {
+	return func(opts *Options) {
+		opts.setSymlinkOwner = setSymlinkOwner
 	}
 }

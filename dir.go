@@ -5,11 +5,12 @@ package compat
 
 import (
 	"os"
+	"path/filepath"
 	"slices"
 	"strings"
 )
 
-// Source: https://github.com/golang/go/blob/77f911e3/src/io/fs/fs.go#L91
+// Source: https://github.com/golang/go/blob/77f911e3/src/io/fs/fs.go#L91-L113
 
 // A DirEntry is an entry read from a directory
 // (using the [ReadDir] function or a [ReadDirFile]'s ReadDir method).
@@ -35,31 +36,61 @@ type DirEntry interface {
 	Info() (FileInfo, error)
 }
 
-// Source: https://github.com/golang/go/blob/77f911e3/src/io/fs/readdir.go#L52
+// Inspired by: https://github.com/golang/go/blob/77f911e3/src/os/file_unix.go#L446-L486
 
-// dirInfo is a DirEntry based on a FileInfo.
-type dirInfo struct {
-	fileInfo FileInfo
+type dirEntry struct {
+	parent string
+	name   string
+	typ    os.FileMode
+	osInfo os.FileInfo
+	info   FileInfo
+	infoed bool
+	err    error
 }
 
-func (di dirInfo) IsDir() bool {
-	return di.fileInfo.IsDir()
+func (d dirEntry) IsDir() bool {
+	return d.typ.IsDir()
 }
 
-func (di dirInfo) Type() os.FileMode {
-	return di.fileInfo.Mode().Type()
+func (d dirEntry) Type() os.FileMode {
+	if d.err != nil {
+		return 0
+	}
+
+	return d.typ
 }
 
-func (di dirInfo) Info() (FileInfo, error) {
-	return di.fileInfo, nil
+func (d dirEntry) Info() (FileInfo, error) {
+	if d.infoed {
+		return d.info, d.err
+	}
+	d.infoed = true //nolint:staticcheck // quiet linter
+	path := d.name
+	if d.parent != "" {
+		path = filepath.Join(d.parent, d.name)
+	}
+	if d.osInfo == nil {
+		// WalkDir doesn't follow symlinks
+		d.osInfo, d.err = os.Lstat(path)
+		if d.err != nil {
+			return nil, d.err
+		}
+	}
+	d.info, d.err = stat(d.osInfo, path, false)
+	if d.err != nil {
+		return nil, d.err
+	}
+	d.typ = d.info.Mode().Type() //nolint:govet,staticcheck // quiet linter
+
+	return d.info, nil
 }
 
-func (di dirInfo) Name() string {
-	return di.fileInfo.Name()
+func (d dirEntry) Name() string {
+	return d.name
 }
 
-func (di dirInfo) String() string {
-	return FormatDirEntry(di)
+func (d dirEntry) String() string {
+	return FormatDirEntry(d)
 }
 
 // Source: https://github.com/golang/go/blob/77f911e3/src/os/dir.go#L87
@@ -70,36 +101,59 @@ func (di dirInfo) String() string {
 // ReadDir returns the entries it was able to read before the error,
 // along with the error.
 func ReadDir(name string) ([]DirEntry, error) {
-	dirs, err := os.ReadDir(name)
+	osDirs, err := os.ReadDir(name)
 	if err != nil {
-		return nil, err
+		return []DirEntry{}, err
 	}
-	var rv = make([]DirEntry, len(dirs))
-	for i, dir := range dirs {
-		fi, err := dir.Info()
-		if err != nil {
-			return nil, err
-		}
-		cfi, err := stat(fi, name, false)
-		if err != nil {
-			return nil, err
-		}
-		rv[i] = dirInfo{cfi}
+	dirs := make([]DirEntry, len(osDirs))
+	for i, dir := range osDirs {
+		dirs[i] = osDirEntryToDirEntry(dir, name)
 	}
-	slices.SortFunc(rv, func(a, b DirEntry) int {
+	slices.SortFunc(dirs, func(a, b DirEntry) int {
 		return strings.Compare(a.Name(), b.Name())
 	})
 
-	return rv, nil
+	return dirs, nil
 }
 
-// Source: https://github.com/golang/go/blob/77f911e3/src/io/fs/readdir.go#L77
+// Inspired by: https://github.com/golang/go/blob/77f911e3/src/io/fs/readdir.go#L77-L84
 
 // FileInfoToDirEntry returns a [DirEntry] that returns information from info.
 // If info is nil, FileInfoToDirEntry returns nil.
-func FileInfoToDirEntry(info FileInfo) DirEntry {
+func FileInfoToDirEntry(info FileInfo, parent string) DirEntry {
 	if info == nil {
 		return nil
 	}
-	return dirInfo{fileInfo: info}
+
+	return dirEntry{
+		parent: parent,
+		name:   info.Name(),
+		typ:    info.Mode().Type(),
+		info:   info,
+	}
+}
+
+func osDirEntryToDirEntry(entry os.DirEntry, parent string) DirEntry {
+	if entry == nil {
+		return nil
+	}
+
+	return dirEntry{
+		parent: parent,
+		name:   entry.Name(),
+		typ:    entry.Type(),
+	}
+}
+
+func osFileInfoToDirEntry(info os.FileInfo, parent string) DirEntry {
+	if info == nil {
+		return nil
+	}
+
+	return dirEntry{
+		parent: parent,
+		name:   info.Name(),
+		typ:    info.Mode().Type(),
+		osInfo: info,
+	}
 }

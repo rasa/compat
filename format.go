@@ -19,7 +19,9 @@ func FormatDirEntry(dir DirEntry) string {
 	// so strip them from the string.
 	mode := dir.Type().String()
 	mode = mode[:len(mode)-9]
-
+	if len(mode) > 1 {
+		mode = mode[:1]
+	}
 	b = append(b, mode...)
 	b = append(b, ' ')
 	b = append(b, name...)

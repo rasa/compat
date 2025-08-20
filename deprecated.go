@@ -19,6 +19,11 @@ var IsAdmin = IsRoot
 // Deprecated: Use Rename() instead. This function may be removed in the future.
 var ReplaceFile = Rename
 
+// FileOptions define the behavior of `WriteReaderAtomic()`, etc.
+//
+// Deprecated: Use Options instead. This may be removed in the future.
+type FileOptions = Options
+
 // Deprecated: Use Supports*() functions instead. This may be removed in the future.
 type SupportedType = supportsType
 
@@ -69,9 +74,9 @@ const UserIDSourceIsNumeric = UserIDSourceIsInt
 var CreateEx = createex
 
 func createex(name string, perm os.FileMode, flag int) (*os.File, error) {
-	flag |= O_CREATE
-	if flag&O_WRONLY == 0 {
-		flag |= O_RDWR
+	flag |= os.O_CREATE
+	if flag&os.O_WRONLY == 0 {
+		flag |= os.O_RDWR
 	}
 
 	return create(name, perm, flag)
@@ -108,3 +113,26 @@ var WriteFileEx = writeFileEx
 func writeFileEx(name string, data []byte, perm os.FileMode, flag int) error {
 	return writeFile(name, data, perm, flag)
 }
+
+// DefaultFileMode sets the default file mode instead of using the
+// `os.CreateTemp()` default of `0600`.
+// Deprecated: Use WithDefaultFileMode() instead.
+// This function may be removed in the future.
+var DefaultFileMode = WithDefaultFileMode
+
+// Flag sets the flag option.
+// Deprecated: Use WithFlags() instead.
+// This function may be removed in the future.
+var Flag = WithFlags
+
+// KeepFileMode preserves the file mode of an existing file instead of using the
+// default value.
+// Deprecated: Use WithKeepFileMode() instead.
+// This function may be removed in the future.
+var KeepFileMode = WithKeepFileMode
+
+// UseFileMode sets the file mode to the desired value and has precedence over all
+// other options.
+// Deprecated: Use WithFileMode() instead.
+// This function may be removed in the future.
+var UseFileMode = WithFileMode

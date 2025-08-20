@@ -13,10 +13,21 @@ const (
 	CreatePerm os.FileMode = 0o666
 	// CreateTempPerm is the FileMode used by CreateTemp().
 	CreateTempPerm os.FileMode = 0o600
-	// MkdirTempPerm is the FileMode used by MkdirTemp()..
+	// MkdirTempPerm is the FileMode used by MkdirTemp().
 	MkdirTempPerm os.FileMode = 0o700
 
+	// Verify we don't conflict with any of the values listed at
+	//  https://github.com/golang/go/blob/77f911e3/src/syscall/types_windows.go#L37-L55
+
+	// O_DELETE deletes the file when closed.
+	O_DELETE = 0x8000000
+	// O_NOROATTR doesn't set a file's read-only attribute on Windows.
+	O_NOROATTR = 0x4000000
+
 	// https://github.com/golang/go/blob/e282cbb1/src/os/file.go#L77
+
+	// The following constants are not used by the compat library, but are
+	// provided to make code migration easier.
 
 	O_RDONLY = os.O_RDONLY // open the file read-only. //nolint:revive // quiet linter
 	O_WRONLY = os.O_WRONLY // open the file write-only. //nolint:revive // quiet linter
@@ -27,8 +38,6 @@ const (
 	O_EXCL   = os.O_EXCL   // used with O_CREATE, file must not exist.
 	O_SYNC   = os.O_SYNC   // open for synchronous I/O.
 	O_TRUNC  = os.O_TRUNC  // truncate regular writable file when opened.
-	// O_DELETE deletes the file when closed.
-	O_DELETE = 0x40000000
 
 	ModeDir        = fs.ModeDir        // d: is a directory
 	ModeAppend     = fs.ModeAppend     // a: append-only
@@ -49,4 +58,22 @@ const (
 
 	// ModePerm is a mask for the Unix permission bits, 0o777.
 	ModePerm = fs.ModePerm
+)
+
+type FileMode = os.FileMode
+
+// ReadOnlyMode defines how to handle a file's read-only attribute on Windows.
+type ReadOnlyMode int
+
+const (
+	// ReadOnlyModeIgnore does not set a file's read-only attribute, and ignores
+	// if it's set (Windows only).
+	ReadOnlyModeIgnore ReadOnlyMode = 0 + iota
+	// ReadOnlyMaskSet set a file's read-only attribute, if the specified
+	// perm FileMode has the user writable bit (0o200) set. Otherwise, it will
+	// resets (clears) it. (Windows only).
+	ReadOnlyModeSet
+	// ReadOnlyMaskReset does not set a file's read-only attribute, and if it's
+	// set, it resets (clears) it. (Windows only).
+	ReadOnlyModeReset
 )
