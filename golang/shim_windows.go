@@ -105,7 +105,7 @@ func fixAttributesAndShareMode(flag int, attrs uint32, sharemode uint32) (uint32
 
 	if flag&O_NOROATTR == O_NOROATTR {
 		attrs &^= uint32(windows.FILE_ATTRIBUTE_READONLY)
-		flag &^= O_NOROATTR
+		flag &^= O_NOROATTR //nolint:ineffassign
 	}
 
 	return attrs, sharemode
