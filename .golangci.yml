@@ -90,7 +90,7 @@ linters:
       - builtin$
       - examples$
       - golang/golang_.*\.go
-      - cmd/updater\.go$
+      - cmd/updater/main\.go$
 
 formatters:
   enable:
@@ -107,4 +107,4 @@ formatters:
       - builtin$
       - examples$
       - golang/golang_.*\.go
-      - cmd/updater\.go$
+      - cmd/updater/main\.go$
