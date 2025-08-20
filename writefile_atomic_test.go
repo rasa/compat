@@ -8,13 +8,15 @@ package compat_test
 
 import (
 	"os"
+	"path/filepath"
 	"testing"
 
 	"github.com/rasa/compat"
 )
 
 func TestWriteFileAtomic(t *testing.T) {
-	file := "foo.txt"
+	dir := t.TempDir()
+	file := filepath.Join(dir, "foo.txt")
 	content := []byte("foo")
 
 	t.Cleanup(func() {
@@ -22,7 +24,9 @@ func TestWriteFileAtomic(t *testing.T) {
 	})
 
 	if err := compat.WriteFileAtomic(file, content); err != nil {
-		t.Fatalf("Failed to write file: %q: %v", file, err)
+		fatalf(t, "Failed to write file: %q: %v", file, err)
+
+		return // Tinygo doesn't support T.Fatal
 	}
 
 	fi, err := compat.Stat(file)
@@ -33,14 +37,14 @@ func TestWriteFileAtomic(t *testing.T) {
 	want := compat.CreateTempPerm // 0o600
 
 	got := fi.Mode().Perm()
-
 	if got != want {
 		t.Fatalf("got %04o, want %04o", got, want)
 	}
 }
 
 func TestWriteFileAtomicDefaultFileMode(t *testing.T) {
-	file := "bar.txt"
+	dir := t.TempDir()
+	file := filepath.Join(dir, "bar.txt")
 	content := []byte("bar")
 
 	t.Cleanup(func() {
@@ -50,7 +54,7 @@ func TestWriteFileAtomicDefaultFileMode(t *testing.T) {
 	perm644 := os.FileMode(0o644)
 	perm600 := os.FileMode(0o600)
 
-	err := compat.WriteFileAtomic(file, content, compat.DefaultFileMode(perm644))
+	err := compat.WriteFileAtomic(file, content, compat.WithDefaultFileMode(perm644))
 	if err != nil {
 		t.Fatalf("Failed to write file: %q: %v", file, err)
 	}
@@ -77,7 +81,7 @@ func TestWriteFileAtomicDefaultFileMode(t *testing.T) {
 		t.Fatalf("Failed to change file mode: %q: %v", file, err)
 	}
 
-	err = compat.WriteFileAtomic(file, content, compat.DefaultFileMode(perm644))
+	err = compat.WriteFileAtomic(file, content, compat.WithDefaultFileMode(perm644))
 	if err != nil {
 		t.Fatalf("Failed to write file: %q: %v", file, err)
 	}
@@ -97,7 +101,8 @@ func TestWriteFileAtomicDefaultFileMode(t *testing.T) {
 }
 
 func TestWriteFileAtomicMode(t *testing.T) {
-	file := "baz.txt"
+	dir := t.TempDir()
+	file := filepath.Join(dir, "baz.txt")
 	content := []byte("baz")
 
 	t.Cleanup(func() {
@@ -107,7 +112,7 @@ func TestWriteFileAtomicMode(t *testing.T) {
 	perm644 := os.FileMode(0o644)
 	perm600 := os.FileMode(0o600)
 
-	err := compat.WriteFileAtomic(file, content, compat.FileMode(perm644))
+	err := compat.WriteFileAtomic(file, content, compat.WithFileMode(perm644))
 	if err != nil {
 		t.Fatalf("Failed to write file: %q: %v", file, err)
 	}
@@ -132,7 +137,7 @@ func TestWriteFileAtomicMode(t *testing.T) {
 		t.Fatalf("Failed to change file mode: %q: %v", file, err)
 	}
 
-	err = compat.WriteFileAtomic(file, content, compat.FileMode(perm644))
+	err = compat.WriteFileAtomic(file, content, compat.WithFileMode(perm644))
 	if err != nil {
 		t.Fatalf("Failed to write file: %q: %v", file, err)
 	}

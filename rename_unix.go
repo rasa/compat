@@ -12,6 +12,4 @@ import (
 	"os"
 )
 
-func rename(source, destination string) error {
-	return os.Rename(source, destination)
-}
+var rename = os.Rename

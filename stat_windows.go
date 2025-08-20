@@ -6,16 +6,18 @@
 package compat
 
 import (
+	"errors"
+	"fmt"
 	"os"
-	"path/filepath"
 	"sync"
 	"syscall"
 	"time"
 	"unsafe"
 
+	"github.com/capnspacehook/go-acl"
 	"golang.org/x/sys/windows"
 
-	"github.com/capnspacehook/go-acl"
+	"github.com/rasa/compat/golang"
 )
 
 const supports supportsType = supportsLinks | supportsATime | supportsBTime | supportsCTime | supportsSymlinks
@@ -51,46 +53,34 @@ type fileStat struct {
 	mux            sync.Mutex // only on Windows
 }
 
-// See https://github.com/golang/go/blob/cad1fc52/src/runtime/os_windows.go#L448
-var canUseLongPaths bool
-
-func init() {
-	canUseLongPaths = isWindowsAtLeast(10, 0, 15063) //nolint:mnd // quiet linter
-}
-
-func isWindowsAtLeast(major, minor, build uint32) bool {
-	mg, mn, bl := windows.RtlGetNtVersionNumbers()
-	if mg < major {
-		return false
-	}
-	if mn < minor {
-		return false
-	}
-	return bl >= build
-}
-
 // Portions of the following code is:
 // Copyright 2009 The Go Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
 ////////////////////////////////////////////////////////////////////////////////
-// Originally copied from https://github.com/golang/go/blob/d65c209b/src/os/types_windows.go#L287
+// Originally copied from
+// https://github.com/golang/go/blob/77f911e3/src/os/types_windows.go#L287-L336
 ////////////////////////////////////////////////////////////////////////////////
 
 func stat(fi os.FileInfo, name string, followSymlinks bool) (FileInfo, error) {
+	if fi == nil {
+		err := errors.New("fileInfo is nil")
+		return nil, &os.PathError{Op: "stat", Path: name, Err: err}
+	}
 	var fs fileStat
+
+	fs.mux.Lock()
+	defer fs.mux.Unlock()
 
 	fs.followSymlinks = followSymlinks
 
-	name = fixLongPath(name)
+	name = golang.FixLongPath(name)
+
 	pathp, err := windows.UTF16PtrFromString(name)
 	if err != nil {
 		return nil, &os.PathError{Op: "stat", Path: name, Err: err}
 	}
-
-	fs.mux.Lock()
-	defer fs.mux.Unlock()
 
 	attrs := uint32(syscall.FILE_FLAG_BACKUP_SEMANTICS)
 
@@ -103,7 +93,6 @@ func stat(fi os.FileInfo, name string, followSymlinks bool) (FileInfo, error) {
 		return nil, &os.PathError{Op: "stat", Path: name, Err: err}
 	}
 	defer windows.CloseHandle(h) //nolint:errcheck // quiet linter
-
 	var i windows.ByHandleFileInformation
 	err = windows.GetFileInformationByHandle(h, &i)
 	if err != nil {
@@ -115,7 +104,12 @@ func stat(fi os.FileInfo, name string, followSymlinks bool) (FileInfo, error) {
 	fs.size = fi.Size()
 	fs.mode = fi.Mode()
 	fs.mtime = fi.ModTime()
-	fs.sys = *fi.Sys().(*syscall.Win32FileAttributeData)
+	sys, ok := fi.Sys().(*syscall.Win32FileAttributeData)
+	if !ok {
+		err = fmt.Errorf("sys is not a Win32FileAttributeData, it's a %T", fi.Sys())
+		return nil, &os.PathError{Op: "stat", Path: name, Err: err}
+	}
+	fs.sys = *sys
 
 	perm, err := _stat(name)
 	if err != nil {
@@ -166,7 +160,7 @@ func (fs *fileStat) CTime() time.Time {
 	}
 	defer windows.CloseHandle(h) //nolint:errcheck // quiet linter
 
-	var bi FILE_BASIC_INFO
+	var bi golang.FILE_BASIC_INFO
 	err = windows.GetFileInformationByHandleEx(h, windows.FileBasicInfo, (*byte)(unsafe.Pointer(&bi)), uint32(unsafe.Sizeof(bi)))
 	if err != nil {
 		fs.err = &os.PathError{Op: "stat", Path: fs.path, Err: err}
@@ -238,155 +232,4 @@ func (fs *fileStat) Group() string {
 
 func _stat(name string) (os.FileMode, error) {
 	return acl.GetExplicitFileAccessMode(name)
-}
-
-///////////////////////////////////////////////////////////////////////////////
-// The following code is:
-// Copyright 2012 The Go Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file.
-///////////////////////////////////////////////////////////////////////////////
-
-////////////////////////////////////////////////////////////////////////////////
-// Copied from https://github.com/golang/go/blob/dbaa2d3e/src/internal/syscall/windows/syscall_windows.go#L162
-////////////////////////////////////////////////////////////////////////////////
-
-type FILE_BASIC_INFO struct {
-	CreationTime   int64
-	LastAccessTime int64
-	LastWriteTime  int64
-	ChangedTime    int64
-	FileAttributes uint32
-
-	// Pad out to 8-byte alignment.
-	//
-	// Without this padding, TestChmod fails due to an argument validation error
-	// in SetFileInformationByHandle on windows/386.
-	//
-	// https://learn.microsoft.com/en-us/cpp/build/reference/zp-struct-member-alignment?view=msvc-170
-	// says that “The C/C++ headers in the Windows SDK assume the platform's
-	// default alignment is used.” What we see here is padding rather than
-	// alignment, but maybe it is related.
-	_ uint32
-}
-
-////////////////////////////////////////////////////////////////////////////////
-// Copied from https://github.com/golang/go/blob/cad1fc52/src/os/path_windows.go#L100
-////////////////////////////////////////////////////////////////////////////////
-
-func fixLongPath(path string) string {
-	if canUseLongPaths {
-		return path
-	}
-	return addExtendedPrefix(path)
-}
-
-////////////////////////////////////////////////////////////////////////////////
-// Copied from https://github.com/golang/go/blob/cad1fc52/src/os/path_windows.go#L107
-////////////////////////////////////////////////////////////////////////////////
-
-// addExtendedPrefix adds the extended path prefix (\\?\) to path.
-func addExtendedPrefix(path string) string { //nolint:gocyclo // quiet linter
-	if len(path) >= 4 { //nolint:mnd // quiet linter
-		if path[:4] == `\??\` {
-			// Already extended with \??\
-			return path
-		}
-		if os.IsPathSeparator(path[0]) && os.IsPathSeparator(path[1]) && path[2] == '?' && os.IsPathSeparator(path[3]) {
-			// Already extended with \\?\ or any combination of directory separators.
-			return path
-		}
-	}
-
-	// Do nothing (and don't allocate) if the path is "short".
-	// Empirically (at least on the Windows Server 2013 builder),
-	// the kernel is arbitrarily okay with < 248 bytes. That
-	// matches what the docs above say:
-	// "When using an API to create a directory, the specified
-	// path cannot be so long that you cannot append an 8.3 file
-	// name (that is, the directory name cannot exceed MAX_PATH
-	// minus 12)." Since MAX_PATH is 260, 260 - 12 = 248.
-	//
-	// The MSDN docs appear to say that a normal path that is 248 bytes long
-	// will work; empirically the path must be less then 248 bytes long.
-	pathLength := len(path)
-	if !filepath.IsAbs(path) {
-		// If the path is relative, we need to prepend the working directory
-		// plus a separator to the path before we can determine if it's too long.
-		// We don't want to call syscall.Getwd here, as that call is expensive to do
-		// every time fixLongPath is called with a relative path, so we use a cache.
-		// Note that getwdCache might be outdated if the working directory has been
-		// changed without using os.Chdir, i.e. using syscall.Chdir directly or cgo.
-		// This is fine, as the worst that can happen is that we fail to fix the path.
-		getwdCache.Lock()
-		if getwdCache.dir == "" {
-			// Init the working directory cache.
-			getwdCache.dir, _ = syscall.Getwd()
-		}
-		pathLength += len(getwdCache.dir) + 1
-		getwdCache.Unlock()
-	}
-
-	if pathLength < 248 { //nolint:mnd // quiet linter
-		// Don't fix. (This is how Go 1.7 and earlier worked,
-		// not automatically generating the \\?\ form)
-		return path
-	}
-
-	var isUNC, isDevice bool
-	if len(path) >= 2 && os.IsPathSeparator(path[0]) && os.IsPathSeparator(path[1]) {
-		if len(path) >= 4 && path[2] == '.' && os.IsPathSeparator(path[3]) {
-			// Starts with //./
-			isDevice = true
-		} else {
-			// Starts with //
-			isUNC = true
-		}
-	}
-	var prefix []uint16
-	if isUNC { //nolint:gocritic // quiet linter
-		// UNC path, prepend the \\?\UNC\ prefix.
-		prefix = []uint16{'\\', '\\', '?', '\\', 'U', 'N', 'C', '\\'}
-	} else if isDevice { //nolint:revive // quiet linter //revive:disable-line
-		// Don't add the extended prefix to device paths, as it would
-		// change its meaning.
-	} else {
-		prefix = []uint16{'\\', '\\', '?', '\\'}
-	}
-
-	p, err := syscall.UTF16FromString(path)
-	if err != nil {
-		return path
-	}
-	// Estimate the required buffer size using the path length plus the null terminator.
-	// pathLength includes the working directory. This should be accurate unless
-	// the working directory has changed without using os.Chdir.
-	n := uint32(pathLength) + 1 //nolint:gosec // quiet linter
-	var buf []uint16
-	for {
-		buf = make([]uint16, n+uint32(len(prefix))) //nolint:gosec // quiet linter
-		n, err = syscall.GetFullPathName(&p[0], n, &buf[len(prefix)], nil)
-		if err != nil {
-			return path
-		}
-		if n <= uint32(len(buf)-len(prefix)) { //nolint:gosec // quiet linter
-			buf = buf[:n+uint32(len(prefix))] //nolint:gosec // quiet linter
-			break
-		}
-	}
-	if isUNC {
-		// Remove leading \\.
-		buf = buf[2:]
-	}
-	copy(buf, prefix)
-	return syscall.UTF16ToString(buf)
-}
-
-////////////////////////////////////////////////////////////////////////////////
-// Copied from https://github.com/golang/go/blob/cad1fc52/src/os/getwd.go#L13
-////////////////////////////////////////////////////////////////////////////////
-
-var getwdCache struct {
-	sync.Mutex
-	dir string
 }

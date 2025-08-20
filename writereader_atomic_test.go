@@ -9,13 +9,15 @@ package compat_test
 import (
 	"bytes"
 	"os"
+	"path/filepath"
 	"testing"
 
 	"github.com/rasa/compat"
 )
 
 func TestWriteReaderAtomic(t *testing.T) {
-	file := "foo.txt"
+	dir := t.TempDir()
+	file := filepath.Join(dir, "foo.txt")
 	content := bytes.NewBufferString("foo")
 
 	t.Cleanup(func() {
@@ -41,7 +43,8 @@ func TestWriteReaderAtomic(t *testing.T) {
 }
 
 func TestWriteReaderAtomicDefaultFileMode(t *testing.T) {
-	file := "bar.txt"
+	dir := t.TempDir()
+	file := filepath.Join(dir, "bar.txt")
 	content := bytes.NewBufferString("bar")
 
 	t.Cleanup(func() {
@@ -51,7 +54,7 @@ func TestWriteReaderAtomicDefaultFileMode(t *testing.T) {
 	perm644 := os.FileMode(0o644)
 	perm600 := os.FileMode(0o600)
 
-	err := compat.WriteReaderAtomic(file, content, compat.DefaultFileMode(perm644))
+	err := compat.WriteReaderAtomic(file, content, compat.WithDefaultFileMode(perm644))
 	if err != nil {
 		t.Fatalf("Failed to write file: %q: %v", file, err)
 	}
@@ -78,7 +81,7 @@ func TestWriteReaderAtomicDefaultFileMode(t *testing.T) {
 		t.Fatalf("Failed to change file mode: %q: %v", file, err)
 	}
 
-	err = compat.WriteReaderAtomic(file, content, compat.DefaultFileMode(perm644))
+	err = compat.WriteReaderAtomic(file, content, compat.WithDefaultFileMode(perm644))
 	if err != nil {
 		t.Fatalf("Failed to write file: %q: %v", file, err)
 	}
@@ -98,7 +101,8 @@ func TestWriteReaderAtomicDefaultFileMode(t *testing.T) {
 }
 
 func TestWriteReaderAtomicMode(t *testing.T) {
-	file := "baz.txt"
+	dir := t.TempDir()
+	file := filepath.Join(dir, "baz.txt")
 	content := bytes.NewBufferString("baz")
 
 	t.Cleanup(func() {
@@ -108,7 +112,7 @@ func TestWriteReaderAtomicMode(t *testing.T) {
 	perm644 := os.FileMode(0o644)
 	perm600 := os.FileMode(0o600)
 
-	err := compat.WriteReaderAtomic(file, content, compat.FileMode(perm644))
+	err := compat.WriteReaderAtomic(file, content, compat.WithFileMode(perm644))
 	if err != nil {
 		t.Fatalf("Failed to write file: %q: %v", file, err)
 	}
@@ -133,7 +137,7 @@ func TestWriteReaderAtomicMode(t *testing.T) {
 		t.Fatalf("Failed to change file mode: %q: %v", file, err)
 	}
 
-	err = compat.WriteReaderAtomic(file, content, compat.FileMode(perm644))
+	err = compat.WriteReaderAtomic(file, content, compat.WithFileMode(perm644))
 	if err != nil {
 		t.Fatalf("Failed to write file: %q: %v", file, err)
 	}

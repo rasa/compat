@@ -21,7 +21,7 @@ import (
 // for the target file.
 func WriteReaderAtomic(filename string, r io.Reader, opts ...Option) (err error) { //nolint:funlen,gocyclo // quiet linter
 	// original behavior is to preserve the mode of an existing file.
-	fopts := FileOptions{
+	fopts := Options{
 		keepFileMode: true,
 	}
 	for _, opt := range opts {
@@ -60,7 +60,7 @@ func WriteReaderAtomic(filename string, r io.Reader, opts ...Option) (err error)
 		dir = "."
 	}
 
-	f, err := createTemp(dir, file, fileMode, fopts.flag)
+	f, err := createTemp(dir, file, fileMode, fopts.flags)
 	if err != nil {
 		return fmt.Errorf("cannot create temp file: %w", err)
 	}

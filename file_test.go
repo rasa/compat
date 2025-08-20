@@ -172,7 +172,7 @@ func TestFilePosixCreateExDelete(t *testing.T) {
 		return
 	}
 
-	fh, err := compat.CreateEx(name, compat.CreatePerm, compat.O_CREATE|compat.O_DELETE)
+	fh, err := compat.CreateEx(name, compat.CreatePerm, os.O_CREATE|compat.O_DELETE)
 	if err != nil {
 		t.Fatal(err)
 
@@ -397,7 +397,7 @@ func TestFilePosixOpenFile(t *testing.T) {
 		return
 	}
 
-	fh, err := compat.OpenFile(name, compat.O_RDWR|compat.O_CREATE, perm)
+	fh, err := compat.OpenFile(name, os.O_RDWR|os.O_CREATE, perm)
 	if err != nil {
 		t.Fatal(err)
 
@@ -434,7 +434,7 @@ func TestFilePosixOpenFileDelete(t *testing.T) {
 		return
 	}
 
-	fh, err := compat.OpenFile(name, compat.O_RDWR|compat.O_CREATE|compat.O_DELETE, os.FileMode(0o666))
+	fh, err := compat.OpenFile(name, os.O_RDWR|os.O_CREATE|compat.O_DELETE, os.FileMode(0o666))
 	if err != nil {
 		// workaround:
 		// https://github.com/rasa/compat/actions/runs/16542086538/job/46784707170#step:6:48
