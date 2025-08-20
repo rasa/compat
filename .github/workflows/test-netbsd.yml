@@ -41,5 +41,11 @@ jobs:
             (cd /usr/pkg/bin ; ln -sf go??? go)
             printf '::notice ::%s\n' "$(go version)"
             go env
-            go build ./...
-            go test -v ./...
+            if !.go build ./...; then
+              printf "::error ::go build failed: error %s\n" "$?"
+              exit 0
+            fi
+            if ! go test -v; then
+              printf '::error ::go test failed: error %s\n" "$?"
+              exit 0
+            fi
