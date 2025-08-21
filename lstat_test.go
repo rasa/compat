@@ -152,8 +152,8 @@ func TestLstatLinks(t *testing.T) {
 	}
 
 	want = 2
-	if compat.IsApple {
-		// not sure why a hard link to a symlink doesn't count on macos/ios
+	if compat.IsBSDLike {
+		// not sure why a hard link to a symlink doesn't count on BSD
 		want = 1
 	}
 

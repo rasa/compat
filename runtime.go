@@ -36,6 +36,7 @@ const (
 const (
 	IsApple   = IsDarwin || IsIOS
 	IsBSD     = IsDragonfly || IsFreeBSD || IsNetBSD || IsOpenBSD
+	IsBSDLike = IsApple || IsBSD
 	IsSolaria = IsIllumos || IsSolaris
 )
 
