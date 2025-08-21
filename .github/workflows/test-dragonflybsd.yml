@@ -27,9 +27,10 @@ jobs:
           pkg update -f
           pkg install -y go
         run: |
+          # NOTE: dragonflybsd requires -buildvcs=false
           go version
           rv=0
-          if go build -trimpath ./...; then
+          if go build -buildvcs=false -trimpath ./...; then
             echo '::notice ::build succeeded'
           else
             rv=$?
