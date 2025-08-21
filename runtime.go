@@ -4,6 +4,7 @@
 package compat
 
 import (
+	"go/version"
 	"os"
 	"runtime"
 )
@@ -61,3 +62,39 @@ const (
 	IsMipsCPU = IsMips || IsMips64 || IsMips64le || IsMipsle
 	IsPpcCPU  = IsPpc64 || IsPpc64le
 )
+
+var tinygoThresholds = []struct {
+	tinygo string
+	goVer  string
+}{
+	{"0.27.0", "go1.20"},
+	{"0.29.0", "go1.21"},
+	{"0.31.0", "go1.22"},
+	{"0.33.0", "go1.23"},
+	{"0.36.0", "go1.24"},
+	{"0.39.0", "go1.25"},
+}
+
+// UnderlyingGoVersion returns the effective Go toolchain version string ("goX.Y")
+// for the current environment.
+// - On standard Go: returns runtime.Version() (already "go1.xx").
+// - On TinyGo: picks the highest Go version supported based on thresholds.
+func UnderlyingGoVersion() string {
+	v := runtime.Version()
+
+	if !IsTinygo {
+		return v
+	}
+
+	v = "go" + v
+
+	// TinyGo: runtime.Version() is like "0.39.1"
+	best := ""
+	for _, th := range tinygoThresholds {
+		if version.Compare(v, "go"+th.tinygo) >= 0 {
+			best = th.goVer
+		}
+	}
+
+	return best
+}

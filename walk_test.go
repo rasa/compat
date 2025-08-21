@@ -4,6 +4,8 @@
 package compat_test
 
 import (
+	"fmt"
+	"go/version"
 	"io/fs"
 	"os"
 	pathpkg "path"
@@ -129,18 +131,14 @@ func TestWalkDir(t *testing.T) {
 }
 
 func TestWalkDirSymlink(t *testing.T) {
-	if compat.IsTinygo {
-		skip(t, "Skipping test: symlinks not supported on tinygo")
-		// link entry type = L---------; want d---------
-		// link/a visited 0 times; expected 1
-		// link/b visited 0 times; expected 1
-		// link/b/c visited 0 times; expected 1
-		// link/d visited 0 times; expected 1
-		return // tinygo doesn't support t.Skip
-	}
-	if compat.IsWasip1 {
-		// same error as above
-		skip(t, "Skipping test: symlinks not supported on "+runtime.GOOS)
+	goVer := compat.UnderlyingGoVersion()
+	if version.Compare(goVer, "go1.25") < 0 {
+		suffix := ""
+		if compat.IsTinygo {
+			suffix = fmt.Sprintf(" (tinygo %v)", runtime.Version())
+		}
+		skipf(t, "Skipping test: test requires go 1.25+, it fails on %v%v", goVer, suffix)
+
 		return // tinygo doesn't support t.Skip
 	}
 
