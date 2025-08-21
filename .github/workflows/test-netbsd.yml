@@ -23,6 +23,7 @@ jobs:
       with:
         # envs: 'GITHUB_TOKEN'
         usesh: true
+        copyback: false
         # See https://github.com/fsnotify/fsnotify/blob/main/.github/workflows/test.yml
         prepare: |
           export PATH="/usr/pkg/bin:${PATH}"
