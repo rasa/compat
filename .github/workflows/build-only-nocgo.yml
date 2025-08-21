@@ -8,10 +8,13 @@ on: # yamllint disable-line rule:truthy
     inputs:
       cgo_enabled:
         default: "0"
+        type: string # required
       goarches:
         default: default
+        type: string # required
       verbose_testing:
         default: "false"
+        type: string # required
   workflow_dispatch: # Allows you to run this workflow manually from the Actions tab
     inputs:
       # checkov:skip=CKV_GHA_7:The build output cannot be affected by user parameters...

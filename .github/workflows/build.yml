@@ -23,8 +23,10 @@ on:
     inputs:
       verbose_testing:
         default: "false"
+        type: string # required
       runner:
         default: "ubuntu-24.04"
+        type: string # required
   workflow_dispatch: # Allows you to run this workflow manually from the Actions tab
     inputs:
       # checkov:skip=CKV_GHA_7: The build output cannot be affected by user parameters...
