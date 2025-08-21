@@ -23,6 +23,7 @@ jobs:
       with:
         # envs: 'GITHUB_TOKEN'
         usesh: true
+        copyback: false
         prepare: |
           pkg refresh --full
           pkg install --accept --licenses developer/go
