@@ -71,7 +71,7 @@ func TestStatLinks(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	var want uint64 = 1
+	var want uint = 1
 	if got := fi.Links(); got != want {
 		t.Fatalf("Links(): got %v, want %v", got, want)
 	}

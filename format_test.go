@@ -60,17 +60,17 @@ func (fs *formatTest) Info() (os.FileInfo, error) {
 	return fs, nil
 }
 
-func (fs *formatTest) PartitionID() uint64 { return 0 }
-func (fs *formatTest) FileID() uint64      { return 0 }
-func (fs *formatTest) Links() uint64       { return 1 }
 func (fs *formatTest) ATime() time.Time    { return time.Time{} }
 func (fs *formatTest) BTime() time.Time    { return time.Time{} }
 func (fs *formatTest) CTime() time.Time    { return time.Time{} }
 func (fs *formatTest) MTime() time.Time    { return fs.modTime }
+func (fs *formatTest) Links() uint         { return 1 }
 func (fs *formatTest) UID() int            { return 0 }
 func (fs *formatTest) GID() int            { return 0 }
 func (fs *formatTest) User() string        { return "" }
 func (fs *formatTest) Group() string       { return "" }
+func (fs *formatTest) PartitionID() uint64 { return 0 }
+func (fs *formatTest) FileID() uint64      { return 0 }
 func (fs *formatTest) Error() error        { return nil }
 func (fs *formatTest) String() string      { return "" }
 
