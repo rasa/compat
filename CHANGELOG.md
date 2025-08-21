@@ -14,6 +14,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Changed
 
+- Reorder field order of `Stat()`'s `String()` function.
+
 ## [v0.5.2](https://github.com/rasa/compat/compare/v0.5.1...v0.5.2)
 
 ### Added
