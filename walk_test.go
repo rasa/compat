@@ -15,11 +15,15 @@ import (
 	"github.com/rasa/compat"
 )
 
-const ModeDir = fs.ModeDir
-const ModeSymlink = fs.ModeSymlink
+const (
+	ModeDir     = fs.ModeDir
+	ModeSymlink = fs.ModeSymlink
+)
 
-type FileMode = fs.FileMode
-type FS = fs.FS
+type (
+	FileMode = fs.FileMode
+	FS       = fs.FS
+)
 
 // Copyright 2020 The Go Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style
@@ -167,7 +171,7 @@ func TestWalkDirSymlink(t *testing.T) {
 func TestIssue51617(t *testing.T) {
 	dir := t.TempDir()
 	for _, sub := range []string{"a", filepath.Join("a", "bad"), filepath.Join("a", "next")} {
-		if err := os.Mkdir(filepath.Join(dir, sub), 0755); err != nil {
+		if err := os.Mkdir(filepath.Join(dir, sub), 0o755); err != nil {
 			t.Fatal(err)
 		}
 	}
@@ -175,7 +179,7 @@ func TestIssue51617(t *testing.T) {
 	if err := os.Chmod(bad, 0); err != nil {
 		t.Fatal(err)
 	}
-	defer os.Chmod(bad, 0700) // avoid errors on cleanup
+	defer os.Chmod(bad, 0o700) // avoid errors on cleanup
 	var saw []string
 	err := compat.WalkDir(os.DirFS(dir), ".", func(path string, d compat.DirEntry, err error) error {
 		if err != nil {
