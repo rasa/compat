@@ -25,7 +25,8 @@ jobs:
         go-version:
           # - big: "1.23.11"
           #   tiny: "0.36.0"
-          # cannot resolve packages: requires go version 1.19 through 1.24, got go1.25
+          - big: "1.25"
+            tiny: "0.39.0"
           - big: "1.24"
             tiny: "0.38.0"
         # FIXME: TinyGo needs to be manually bumped; it doesn't immediately
