@@ -16,14 +16,8 @@ jobs:
     needs: test-tinygo
     # if: success()
     secrets: inherit
-  test-all-solaria:
-    uses: ./.github/workflows/test-all-solaria.yml
-    needs: test-all-wasms
+  test-all-vms:
+    uses: ./.github/workflows/test-all-vms.yml
+    needs: test-all-vms
     # if: success()
     secrets: inherit
-  test-all-bsds:
-    uses: ./.github/workflows/test-all-bsds.yml
-    needs: test-all-solaria
-    # if: success()
-    secrets: inherit
-
