@@ -26,6 +26,7 @@ jobs:
       with:
         # envs: 'GITHUB_TOKEN'
         usesh: true
+        copyback: false
         prepare: |
           GO_VERSION="${{ env.GO_VERSION }}"
           pkg_version="${GO_VERSION//.}"
