@@ -8,6 +8,7 @@ import (
 	"os"
 	pathpkg "path"
 	"path/filepath"
+	"runtime"
 	"slices"
 	"testing"
 	"testing/fstest"
@@ -128,6 +129,21 @@ func TestWalkDir(t *testing.T) {
 }
 
 func TestWalkDirSymlink(t *testing.T) {
+	if compat.IsTinygo {
+		skip(t, "Skipping test: symlinks not supported on tinygo")
+		// link entry type = L---------; want d---------
+		// link/a visited 0 times; expected 1
+		// link/b visited 0 times; expected 1
+		// link/b/c visited 0 times; expected 1
+		// link/d visited 0 times; expected 1
+		return // tinygo doesn't support t.Skip
+	}
+	if compat.IsWasip1 {
+		// same error as above
+		skip(t, "Skipping test: symlinks not supported on "+runtime.GOOS)
+		return // tinygo doesn't support t.Skip
+	}
+
 	fsys := fstest.MapFS{
 		"link":    {Data: []byte("dir"), Mode: ModeSymlink},
 		"dir/a":   {},
