@@ -93,12 +93,11 @@ jobs:
     - name: go test (all targets but android and ios)
       run: |
         # go test ./...
-
-        printf "verbose_testing=%s\n" "${verbose_testing}"
-
-        TEST_OPTS=()
+        : "${verbose_testing:=true}"
+        join_by() { local IFS="$1"; shift; printf '%s' "$*"; }
+        TEST_OPTS_ARRAY=()
         if [[ "${verbose_testing}" == "true" ]]; then
-          TEST_OPTS+=(-v)
+          TEST_OPTS_ARRAY+=(-v)
         fi
-
-        go test "${TEST_OPTS[@]}" ./...
+        TEST_OPTS=$(join_by ' ' "${TEST_OPTS_ARRAY[@]}")
+        go test "${TEST_OPTS}" ./...

@@ -125,16 +125,16 @@ jobs:
       #     check-latest: true
       #     cache: false
 
-      - name: Set GOCACHE and GOMODCACHE env vars
+      - name: Set env vars (GOCACHE, GOMODCACHE and inputs)
         if: env.SHOULD_RUN
         run: |
-          # Set GOCACHE and GOMODCACHE env vars
+          # Set env vars (GOCACHE, GOMODCACHE and inputs)
           # printf 'GOVERSION=%s\n'  "$(go version | sed 's#^.*go##;s# .*##')" >>"${GITHUB_ENV}"
-          printf "${{ inputs.verbose_testing }}" == "true" ]]; then
+          printf "verbose_testing=%s\n" "${{ inputs.verbose_testing }}" >>"${GITHUB_ENV}"
           printf 'GOCACHE=%s\n'    "$(go env GOCACHE | tr '\\' '/')" >>"${GITHUB_ENV}"
           printf 'GOMODCACHE=%s\n' "$(go env GOMODCACHE | tr '\\' '/')" >>"${GITHUB_ENV}"
 
-      - name: Cache Go's build and mod caches
+      - name: USE actions/cache to save Go's build and mod caches
         if: env.SHOULD_RUN
         uses: actions/cache@v4
         with:
@@ -149,11 +149,14 @@ jobs:
         if: env.SHOULD_RUN
         run: |
           # make ci
+          : "${verbose_testing:=true}"
+          join_by() { local IFS="$1"; shift; printf '%s' "$*"; }
           TEST_OPTS_ARRAY=()
-          if [[ "${{ inputs.verbose_testing }}" == "true" ]]; then
+          if [[ "${verbose_testing}" == "true" ]]; then
             TEST_OPTS_ARRAY+=(-v)
           fi
-          export TEST_OPTS="${TEST_OPTS_ARRAY[*]}"
+          export TEST_OPTS=$(join_by ' ' "${TEST_OPTS_ARRAY[@]}")
+          printf 'TEST_OPTS="%s"\n' "${TEST_OPTS}"
           make ci TEST_OPTS="${TEST_OPTS}"
         env:
           # Dumps Windows ACLs on test failures
