@@ -5,7 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
-## [Unreleased](https://github.com/rasa/compat/compare/v0.5.1...HEAD)
+
+## [Unreleased](https://github.com/rasa/compat/compare/v0.5.2...HEAD)
+
+### Added
+
+### Fixed
+
+### Changed
+
+## [v0.5.2](https://github.com/rasa/compat/compare/v0.5.1...v0.5.2)
 
 ### Added
 
@@ -29,11 +38,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Changed
 
-- Renamed `DefaultFileMode()` to  `WithDefaultFileMode()`.
-- Renamed `Flag()` to  `WithFlags()`.
-- Renamed `KeepFileMode()` to  `WithKeepFileMode()`.
+- Rename `DefaultFileMode()` to  `WithDefaultFileMode()`.
+- Rename `Flag()` to  `WithFlags()`.
+- Rename `KeepFileMode()` to  `WithKeepFileMode()`.
 - Renamed `FileMode()` to  `WithFileMode()`. ***BREAKING CHANGE***
-- Renamed `FileOptions` to `Options`.
+- Rename `FileOptions` to `Options`.
 - Deprecate `DefaultFileMode()`, `Flag()`, `KeepFileMode()`, and `UseFileMode()`
   functions.
 - Deprecate `CreateEx()`, `CreateTempEx()` and `WriteFileEx()` functions.
