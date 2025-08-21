@@ -139,7 +139,7 @@ jobs:
           export CC="${NDK_PATH}/toolchains/llvm/prebuilt/linux-x86_64/bin/${dir}"
           go env
           export APK=uvk-${{ matrix.android_arch }}.apk
-          go build -o "${APK}" main.go
+          go build -trimpath -o "${APK}" main.go
           if [[ -f "${APK}" ]]; then
             go version -m "${APK}"
             ls -l "${APK}"
@@ -154,4 +154,4 @@ jobs:
       # yamllint disable-line
       #     export CC="${NDK_PATH}/toolchains/llvm/prebuilt/linux-x86_64/bin/${{ matrix.android_arch }}-linux-android${ABI_PREFIX}${ABI_VERSION}-clang"
       #     go env
-      #     go test -v ./...
+      #     go test -v .

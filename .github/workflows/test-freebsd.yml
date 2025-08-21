@@ -31,13 +31,13 @@ jobs:
         run: |
           go version
           rv=0
-          if go build ./...; then
+          if go build -trimpath ./...; then
             echo "::notice ::build succeeded"
           else
             rv=$?
             printf '::error ::build failed: error %s\n" "${rv}"
           fi
-          if go test -v ./...; then
+          if go test -v .; then
             echo "::notice ::tests succeeded"
           else
             rv=$?

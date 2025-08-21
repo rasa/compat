@@ -78,7 +78,7 @@ jobs:
           fi
           export GOARCH="${target#*/}"
           echo "Build ${builds}: ${target}"
-          if ! go build .; then
+          if ! go build -trimpath .; then
             echo "::warning ::Failed to build ${target}"
             ((fails++))
           fi
@@ -92,7 +92,7 @@ jobs:
 
     - name: go test (all targets but android and ios)
       run: |
-        # go test ./...
+        # go test .
         : "${verbose_testing:=true}"
         join_by() { local IFS="$1"; shift; printf '%s' "$*"; }
         TEST_OPTS_ARRAY=()
@@ -100,4 +100,4 @@ jobs:
           TEST_OPTS_ARRAY+=(-v)
         fi
         TEST_OPTS=$(join_by ' ' "${TEST_OPTS_ARRAY[@]}")
-        go test "${TEST_OPTS}" ./...
+        go test "${TEST_OPTS}" .

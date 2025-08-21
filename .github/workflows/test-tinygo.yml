@@ -40,4 +40,4 @@ jobs:
           tinygo-version: "${{ matrix.go-version.tiny }}"
           binaryen-version: "123"
 
-      - run: tinygo test -tags tinygo -v . ./
+      - run: tinygo test -tags tinygo -v .
