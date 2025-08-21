@@ -1,4 +1,4 @@
-name: test-wasip
+name: test-wasi
 
 # Inspired by:
 # https://github.com/zonedb/zonedb/blob/main/.github/workflows/go.yaml
@@ -12,8 +12,8 @@ permissions:
   contents: read
 
 jobs:
-  test-wasip: # act fails if tag ends with a '1'
-    name: test-wasip
+  test-wasi: # act fails if tag ends with a '1', so we aren't using test-wasip1
+    name: test-wasi
     runs-on: ubuntu-latest
     timeout-minutes: 15
 
