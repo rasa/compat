@@ -34,19 +34,19 @@ jobs:
           GO_VERSION="${{ env.GO_VERSION }}"
           PATH="/opt/ooce/go-${GO_VERSION}/bin:${PATH}"
           export PATH
+
           go version
           rv=0
           if go build -trimpath ./...; then
-            echo "::notice ::build succeeded"
+            echo '::notice ::build succeeded'
           else
             rv=$?
-            printf '::error ::build failed: error %s\n" "${rv}"
+            printf '::error ::build failed: error %s\n' "${rv}"
           fi
           if go test -v .; then
-            echo "::notice ::tests succeeded"
+            echo '::notice ::tests succeeded'
           else
             rv=$?
-            printf '::error ::tests failed: error %s\n" "${rv}"
+            printf '::error ::tests failed: error %s\n' "${rv}"
           fi
           exit "${rv}"
-

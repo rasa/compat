@@ -38,20 +38,22 @@ jobs:
           done
 
         run: |
-          export PATH="/usr/pkg/bin:${PATH}"
+          PATH="/usr/pkg/bin:${PATH}"
+          export PATH
           (cd /usr/pkg/bin ; ln -sf go??? go)
+
           go version
           rv=0
           if go build -trimpath ./...; then
-            echo "::notice ::build succeeded"
+            echo '::notice ::build succeeded'
           else
             rv=$?
-            printf '::error ::build failed: error %s\n" "${rv}"
+            printf '::error ::build failed: error %s\n' "${rv}"
           fi
           if go test -v .; then
-            echo "::notice ::tests succeeded"
+            echo '::notice ::tests succeeded'
           else
             rv=$?
-            printf '::error ::tests failed: error %s\n" "${rv}"
+            printf '::error ::tests failed: error %s\n' "${rv}"
           fi
           exit "${rv}"
