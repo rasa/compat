@@ -51,10 +51,10 @@ jobs:
 
       - run: go mod download
 
-      - run: printf '::notice ::%s\n' "$(go version)"
+      # - run: printf '::notice ::%s\n' "$(go version)"
 
       - run: |
-          # Add wasm to PATh
+          # Add wasm to PATH
           echo "$(go env GOROOT)/misc/wasm" >> "${GITHUB_PATH}"
           echo "$(go env GOROOT)/lib/wasm" >> "${GITHUB_PATH}"
 

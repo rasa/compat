@@ -96,9 +96,7 @@ jobs:
       - name: Set SHOULD_RUN var for ${{ inputs.runner }}
         run: |
           echo "SHOULD_RUN=yes" >> "${GITHUB_ENV}"
-          if [[ "${{ inputs.runner }}" =~ "^(top|all)" ]]; then
-            printf "::notice::inputs.runner=%s\n" "${{ inputs.runner }}"
-          fi
+          printf "::notice::inputs.runner=%s\n" "${{ inputs.runner }}"
         if: >
           matrix.os == inputs.runner ||
           inputs.runner == 'all' ||
@@ -130,11 +128,10 @@ jobs:
       #     check-latest: true
       #     cache: false
 
-      - name: Set Go cache variables
+      - name: Set GOCACHE and GOMODCACHE env vars
         if: env.SHOULD_RUN
         run: |
           # Set GOCACHE and GOMODCACHE env vars
-          # printf '::notice ::%s\n' "$(go version)"
           # printf 'GOVERSION=%s\n'  "$(go version | sed 's#^.*go##;s# .*##')" >>"${GITHUB_ENV}"
           printf 'GOCACHE=%s\n'    "$(go env GOCACHE | tr '\\' '/')" >>"${GITHUB_ENV}"
           printf 'GOMODCACHE=%s\n' "$(go env GOMODCACHE | tr '\\' '/')" >>"${GITHUB_ENV}"
@@ -159,8 +156,9 @@ jobs:
             TEST_OPTS_ARRAY+=(-v)
           fi
           export TEST_OPTS="${TEST_OPTS_ARRAY[*]}"
-          make ci TEST_OPTS="$TEST_OPTS"
+          make ci TEST_OPTS="${TEST_OPTS}"
         env:
+          # Dumps Windows ACLs on test failures
           COMPAT_DEBUG: 1
 
       - name: Upload coverage

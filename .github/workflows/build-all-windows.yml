@@ -15,6 +15,6 @@ jobs:
   build--all-windows:
     uses: ./.github/workflows/build.yml
     with:
-      runner: windows
+      runner: windows3
     secrets: inherit
-  
+

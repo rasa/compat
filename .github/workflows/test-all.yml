@@ -26,4 +26,4 @@ jobs:
     needs: test-all-solaria
     # if: success()
     secrets: inherit
-  
+

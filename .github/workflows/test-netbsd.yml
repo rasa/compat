@@ -22,7 +22,7 @@ jobs:
     - uses: vmactions/netbsd-vm@v1
       with:
         # envs: 'GITHUB_TOKEN'
-        # usesh: true
+        usesh: true
         # See https://github.com/fsnotify/fsnotify/blob/main/.github/workflows/test.yml
         prepare: |
           export PATH="/usr/pkg/bin:${PATH}"
@@ -38,18 +38,20 @@ jobs:
           done
 
         run: |
-            export PATH="/usr/pkg/bin:${PATH}"
-            (cd /usr/pkg/bin ; ln -sf go??? go)
-            # printf '::notice ::%s\n' "$(go version)"
-            go env
-            if go build ./...; then
-              echo "::notice ::build succeeded"
-            else
-              echo "::error ::build failed"
-            fi
-            if go test -v ./...; then
-              echo "::notice ::tests succeeded"
-            else
-              echo '::error ::tests failed"
-              exit 1
-            fi
+          export PATH="/usr/pkg/bin:${PATH}"
+          (cd /usr/pkg/bin ; ln -sf go??? go)
+          go version
+          rv=0
+          if go build ./...; then
+            echo "::notice ::build succeeded"
+          else
+            rv=$?
+            printf '::error ::build failed: error %s\n" "${rv}"
+          fi
+          if go test -v ./...; then
+            echo "::notice ::tests succeeded"
+          else
+            rv=$?
+            printf '::error ::tests failed: error %s\n" "${rv}"
+          fi
+          exit "${rv}"

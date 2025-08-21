@@ -31,18 +31,22 @@ jobs:
           pkg_version="${GO_VERSION//.}"
           pkg install "go-${pkg_version}"
         run: |
-          PATH="/opt/ooce/go-${{ env.GO_VERSION }}/bin:${PATH}"
+          GO_VERSION="${{ env.GO_VERSION }}"
+          PATH="/opt/ooce/go-${GO_VERSION}/bin:${PATH}"
           export PATH
-          # printf '::notice ::%s\n' "$(go version)"
-          go env
+          go version
+          rv=0
           if go build ./...; then
             echo "::notice ::build succeeded"
           else
-            echo "::error ::build failed"
+            rv=$?
+            printf '::error ::build failed: error %s\n" "${rv}"
           fi
           if go test -v ./...; then
             echo "::notice ::tests succeeded"
           else
-            echo '::error ::tests failed"
-            exit 1
+            rv=$?
+            printf '::error ::tests failed: error %s\n" "${rv}"
           fi
+          exit "${rv}"
+
