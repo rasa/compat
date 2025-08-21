@@ -18,6 +18,6 @@ jobs:
     secrets: inherit
   test-all-vms:
     uses: ./.github/workflows/test-all-vms.yml
-    needs: test-all-vms
+    needs: test-all-wasms
     # if: success()
     secrets: inherit
