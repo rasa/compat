@@ -22,21 +22,16 @@ on:
   workflow_call: # Required so this workflow can be called from another workflow
     inputs:
       verbose_testing:
-        type: string
         default: "false"
       runner:
-        type: string
         default: "ubuntu-24.04"
   workflow_dispatch: # Allows you to run this workflow manually from the Actions tab
     inputs:
       # checkov:skip=CKV_GHA_7: The build output cannot be affected by user parameters...
       verbose_testing:
         description: "Test with -v options."
-        type: choice
-        options:
-          - "false"
-          - "true"
-        default: "false"
+        type: boolean
+        default: false
       # checkov:skip=CKV_GHA_7: The build output cannot be affected by user parameters...
       runner:
         description: "GitHub runner to use"
@@ -133,6 +128,7 @@ jobs:
         run: |
           # Set GOCACHE and GOMODCACHE env vars
           # printf 'GOVERSION=%s\n'  "$(go version | sed 's#^.*go##;s# .*##')" >>"${GITHUB_ENV}"
+          printf "${{ inputs.verbose_testing }}" == "true" ]]; then
           printf 'GOCACHE=%s\n'    "$(go env GOCACHE | tr '\\' '/')" >>"${GITHUB_ENV}"
           printf 'GOMODCACHE=%s\n' "$(go env GOMODCACHE | tr '\\' '/')" >>"${GITHUB_ENV}"
 
