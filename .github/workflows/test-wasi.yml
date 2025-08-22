@@ -1,4 +1,4 @@
-name: test-wasip
+name: test-wasi
 
 # Inspired by:
 # https://github.com/zonedb/zonedb/blob/main/.github/workflows/go.yaml
@@ -11,9 +11,16 @@ on:
 permissions:
   contents: read
 
+env:
+  # See https://github.com/webassembly/binaryen/releases
+  binaryen_version: "123"
+  # https://github.com/bytecodealliance/wasmtime/releases
+  # include leading 'v'
+  wasmtime_version: v36.0.1
+
 jobs:
-  test-wasip: # act fails if tag ends with a '1'
-    name: test-wasip
+  test-wasi: # act fails if tag ends with a '1', so we aren't using test-wasip1
+    name: test-wasi
     runs-on: ubuntu-latest
     timeout-minutes: 15
 
@@ -25,7 +32,8 @@ jobs:
         go-version:
           # - big: "1.23.11"
           #   tiny: "0.36.0"
-          # cannot resolve packages: requires go version 1.19 through 1.24, got go1.25
+          - big: "1.25"
+            tiny: "0.39.0"
           - big: "1.24"
             tiny: "0.38.0"
         # FIXME: TinyGo needs to be manually bumped; it doesn't immediately
@@ -51,10 +59,10 @@ jobs:
 
       - run: go mod download
 
-      - run: printf '::notice ::%s\n' "$(go version)"
+      # - run: printf '::notice ::%s\n' "$(go version)"
 
       - run: |
-          # Add wasm to PATh
+          # Add wasm to PATH
           echo "$(go env GOROOT)/misc/wasm" >> "${GITHUB_PATH}"
           echo "$(go env GOROOT)/lib/wasm" >> "${GITHUB_PATH}"
 
@@ -63,17 +71,17 @@ jobs:
       - uses: acifani/setup-tinygo@v2.0.1
         with:
           tinygo-version: "${{ matrix.go-version.tiny }}"
-          binaryen-version: "123"
+          binaryen-version: "${{ env.binaryen_version }}"
 
       - run: wasm-opt --version
 
       - uses: bytecodealliance/actions/wasmtime/setup@v1.1.1
         with:
-          version: v35.0.0
+          version: "${{ env.wasmtime_version }}"
 
       # https://go.dev/blog/wasi#running-go-tests-with-wasip1
-      - run: GOOS=wasip1 GOARCH=wasm go test -v ./...
+      - run: GOOS=wasip1 GOARCH=wasm go test -v .
 
-      - run: tinygo test -target=wasip1 -tags tinygo -v . ./
+      - run: tinygo test -target=wasip1 -tags tinygo -v .
 
       # - run: tinygo test -bench -target=wasip1 -tags tinygo -v ./

@@ -11,8 +11,9 @@ permissions:
 jobs:
   test-freebsd:
     name: test-freebsd
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 10
+    # continue-on-error: true
     # env:
     #  GITHUB_TOKEN : ${{ secrets.GITHUB_TOKEN }}
     steps:
@@ -24,11 +25,23 @@ jobs:
         # arch: aarch64
         # envs: 'GITHUB_TOKEN'
         usesh: true
+        copyback: false
         prepare: |
           pkg update -f
           pkg install -y go
         run: |
-          printf '::notice ::%s\n' "$(go version)"
-          go env
-          go build ./...
-          go test -v
+          go version
+          rv=0
+          if go build -trimpath ./...; then
+            printf '::notice ::build succeeded: %s\n' "$(go version)"
+          else
+            rv=$?
+            printf '::error ::build failed: %s (error %s)\n' "$(go version)" "${rv}"
+          fi
+          if go test -v .; then
+            printf '::notice ::tests succeeded: %s\n' "$(go version)"
+          else
+            rv=$?
+            printf '::error ::tests failed: %s (error %s)\n' "$(go version)" "${rv}"
+          fi
+          exit "${rv}"

@@ -89,8 +89,10 @@ linters:
       - third_party$
       - builtin$
       - examples$
-      - golang/golang_.*\.go
+      - walk\.go$
+      - walk_test\.go$
       - cmd/updater/main\.go$
+      - golang/golang_.*\.go$
 
 formatters:
   enable:
@@ -106,5 +108,7 @@ formatters:
       - third_party$
       - builtin$
       - examples$
-      - golang/golang_.*\.go
+      - walk\.go$
+      - walk_test\.go$
       - cmd/updater/main\.go$
+      - golang/golang_.*\.go$

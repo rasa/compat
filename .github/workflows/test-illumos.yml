@@ -14,8 +14,9 @@ env:
 jobs:
   test-illumos:
     name: test-illumos (go 1.24)
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 10
+    # continue-on-error: true
     # env:
     #  GITHUB_TOKEN : ${{ secrets.GITHUB_TOKEN }}
     steps:
@@ -25,14 +26,28 @@ jobs:
       with:
         # envs: 'GITHUB_TOKEN'
         usesh: true
+        copyback: false
         prepare: |
           GO_VERSION="${{ env.GO_VERSION }}"
           pkg_version="${GO_VERSION//.}"
           pkg install "go-${pkg_version}"
         run: |
-          PATH="/opt/ooce/go-${{ env.GO_VERSION }}/bin:${PATH}"
+          GO_VERSION="${{ env.GO_VERSION }}"
+          PATH="/opt/ooce/go-${GO_VERSION}/bin:${PATH}"
           export PATH
-          printf '::notice ::%s\n' "$(go version)"
-          go env
-          go build ./...
-          go test -v
+
+          go version
+          rv=0
+          if go build -trimpath ./...; then
+            printf '::notice ::build succeeded: %s\n' "$(go version)"
+          else
+            rv=$?
+            printf '::error ::build failed: %s (error %s)\n' "$(go version)" "${rv}"
+          fi
+          if go test -v .; then
+            printf '::notice ::tests succeeded: %s\n' "$(go version)"
+          else
+            rv=$?
+            printf '::error ::tests failed: %s (error %s)\n' "$(go version)" "${rv}"
+          fi
+          exit "${rv}"

@@ -17,7 +17,8 @@ jobs:
       fail-fast: false
       matrix:
         go-version:
-          # cannot resolve packages: requires go version 1.19 through 1.24, got go1.25
+          - big: "1.25"
+            tiny: "0.39.0"
           - big: "1.24"
             tiny: "0.38.0"
 
@@ -39,4 +40,4 @@ jobs:
           tinygo-version: "${{ matrix.go-version.tiny }}"
           binaryen-version: "123"
 
-      - run: tinygo test -tags tinygo -v . ./
+      - run: tinygo test -tags tinygo -v .

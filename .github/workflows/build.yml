@@ -22,21 +22,18 @@ on:
   workflow_call: # Required so this workflow can be called from another workflow
     inputs:
       verbose_testing:
-        type: string
         default: "false"
+        type: string # required
       runner:
-        type: string
         default: "ubuntu-24.04"
+        type: string # required
   workflow_dispatch: # Allows you to run this workflow manually from the Actions tab
     inputs:
       # checkov:skip=CKV_GHA_7: The build output cannot be affected by user parameters...
       verbose_testing:
         description: "Test with -v options."
-        type: choice
-        options:
-          - "false"
-          - "true"
-        default: "false"
+        type: boolean
+        default: false
       # checkov:skip=CKV_GHA_7: The build output cannot be affected by user parameters...
       runner:
         description: "GitHub runner to use"
@@ -96,9 +93,7 @@ jobs:
       - name: Set SHOULD_RUN var for ${{ inputs.runner }}
         run: |
           echo "SHOULD_RUN=yes" >> "${GITHUB_ENV}"
-          if [[ "${{ inputs.runner }}" =~ "^(top|all)" ]]; then
-            printf "::notice::inputs.runner=%s\n" "${{ inputs.runner }}"
-          fi
+          printf "::notice::inputs.runner=%s\n" "${{ inputs.runner }}"
         if: >
           matrix.os == inputs.runner ||
           inputs.runner == 'all' ||
@@ -130,16 +125,16 @@ jobs:
       #     check-latest: true
       #     cache: false
 
-      - name: Set Go cache variables
+      - name: Set env vars (GOCACHE, GOMODCACHE and inputs)
         if: env.SHOULD_RUN
         run: |
-          # Set GOCACHE and GOMODCACHE env vars
-          # printf '::notice ::%s\n' "$(go version)"
+          # Set env vars (GOCACHE, GOMODCACHE and inputs)
           # printf 'GOVERSION=%s\n'  "$(go version | sed 's#^.*go##;s# .*##')" >>"${GITHUB_ENV}"
+          printf "verbose_testing=%s\n" "${{ inputs.verbose_testing }}" >>"${GITHUB_ENV}"
           printf 'GOCACHE=%s\n'    "$(go env GOCACHE | tr '\\' '/')" >>"${GITHUB_ENV}"
           printf 'GOMODCACHE=%s\n' "$(go env GOMODCACHE | tr '\\' '/')" >>"${GITHUB_ENV}"
 
-      - name: Cache Go's build and mod caches
+      - name: USE actions/cache to save Go's build and mod caches
         if: env.SHOULD_RUN
         uses: actions/cache@v4
         with:
@@ -154,13 +149,17 @@ jobs:
         if: env.SHOULD_RUN
         run: |
           # make ci
+          : "${verbose_testing:=true}"
+          join_by() { local IFS="$1"; shift; printf '%s' "$*"; }
           TEST_OPTS_ARRAY=()
-          if [[ "${{ inputs.verbose_testing }}" == "true" ]]; then
+          if [[ "${verbose_testing}" == "true" ]]; then
             TEST_OPTS_ARRAY+=(-v)
           fi
-          export TEST_OPTS="${TEST_OPTS_ARRAY[*]}"
-          make ci TEST_OPTS="$TEST_OPTS"
+          export TEST_OPTS=$(join_by ' ' "${TEST_OPTS_ARRAY[@]}")
+          printf 'TEST_OPTS="%s"\n' "${TEST_OPTS}"
+          make ci TEST_OPTS="${TEST_OPTS}"
         env:
+          # Dumps Windows ACLs on test failures
           COMPAT_DEBUG: 1
 
       - name: Upload coverage

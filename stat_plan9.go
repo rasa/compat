@@ -28,7 +28,7 @@ type fileStat struct {
 	sys    syscall.Dir
 	partID uint64
 	fileID uint64
-	links  uint64
+	links  uint
 	atime  time.Time
 	btime  time.Time
 	ctime  time.Time

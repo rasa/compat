@@ -4,6 +4,7 @@
 package compat
 
 import (
+	"io/fs"
 	"os"
 	"path/filepath"
 	"slices"
@@ -145,7 +146,19 @@ func osDirEntryToDirEntry(entry os.DirEntry, parent string) DirEntry {
 	}
 }
 
-func osFileInfoToDirEntry(info os.FileInfo, parent string) DirEntry {
+func fsDirEntryToDirEntry(entry fs.DirEntry, parent string) DirEntry {
+	if entry == nil {
+		return nil
+	}
+
+	return dirEntry{
+		parent: parent,
+		name:   entry.Name(),
+		typ:    entry.Type(),
+	}
+}
+
+func fsFileInfoToDirEntry(info fs.FileInfo, parent string) DirEntry {
 	if info == nil {
 		return nil
 	}

@@ -34,7 +34,7 @@ func stat(fi os.FileInfo, name string, _ bool) (FileInfo, error) {
 	}
 	fs.partID = uint64(fs.sys.Dev) //nolint:gosec,unconvert,nolintlint // intentional int32 → uint64 conversion
 	fs.fileID = fs.sys.Ino
-	fs.links = uint64(fs.sys.Nlink) //nolint:gosec,unconvert,nolintlint // intentional int32 → uint64 conversion
+	fs.links = uint(fs.sys.Nlink) //nolint:gosec,unconvert,nolintlint // intentional int32 → uint conversion
 	fs.uid = int(fs.sys.Uid)
 	fs.gid = int(fs.sys.Gid)
 	// https://github.com/golang/go/blob/5045fdd8/src/syscall/syscall_wasip1.go#L356

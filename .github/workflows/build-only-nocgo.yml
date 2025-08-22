@@ -6,19 +6,20 @@ name: build-only-nocgo
 on: # yamllint disable-line rule:truthy
   workflow_call: # Required so this workflow can be called from another workflow
     inputs:
-      cgo:
-        type: string
+      cgo_enabled:
         default: "0"
+        type: string # required
       goarches:
-        type: string
         default: default
+        type: string # required
       verbose_testing:
-        type: string
         default: "false"
+        type: string # required
   workflow_dispatch: # Allows you to run this workflow manually from the Actions tab
     inputs:
       # checkov:skip=CKV_GHA_7:The build output cannot be affected by user parameters...
-      cgo:
+      cgo_enabled:
+        description: "CGO_ENABLED"
         type: choice
         default: "0"
         options:
@@ -35,13 +36,11 @@ on: # yamllint disable-line rule:truthy
       # checkov:skip=CKV_GHA_7:The build output cannot be affected by user parameters...
       verbose_testing:
         description: "Test with -v options."
-        type: choice
-        options:
-          - "false"
-          - "true"
-        default: "false"
+        type: boolean
+        default: false
 
 env:
+  CGO_ENABLED: ${{ inputs.cgo_enabled }}
   goarches: ${{ inputs.goarches }}
   verbose_testing: ${{ inputs.verbose_testing }}
 
@@ -60,11 +59,11 @@ jobs:
     - run: printf '::notice ::%s\n' "$(go version)"
 
     - name: go build (all targets but android and ios)
-      env:
-        CGO_ENABLED: ${{ inputs.cgo }}
       run: |
         # go build (all targets but android and ios)
-        printf 'goarches=%s\n' "${{ inputs.goarches }}"
+        : "${goarches:=all}"
+        printf 'CGO_ENABLED=%s\n' "${CGO_ENABLED:-}"
+        printf 'goarches=%s\n' "${goarches:-}"
         mapfile -t targets < <(go tool dist list | grep -E -v '(android|ios)')
         set +e
         fails=0
@@ -73,31 +72,32 @@ jobs:
         for target in "${targets[@]}"; do
           export GOOS="${target%%/*}"
           if [[ -v seen["${GOOS}"] ]]; then
-            test "${{ inputs.goarches }}" == "all" || continue
+            if [[ "${goarches}" != "all" ]]; then
+              continue
+            fi
           fi
           export GOARCH="${target#*/}"
-          seen["${GOOS}"]=1
-          ((builds++))
           echo "Build ${builds}: ${target}"
-          if ! go build .; then
+          if ! go build -trimpath .; then
             echo "::warning ::Failed to build ${target}"
             ((fails++))
           fi
+          seen["${GOOS}"]=1
+          ((builds++))
         done
         if ((fails>0)); then
           echo "::warning ::${fails} of ${builds} builds failed"
         fi
         exit "${fails}"
 
-    - run: |
+    - name: go test (all targets but android and ios)
+      run: |
         # go test .
-
-        printf "verbose_testing=%s\n" "${verbose_testing:-}"
-        printf "inputs.verbose_testing=%s\n" "${{ inputs.verbose_testing }}"
-
-        TEST_OPTS=()
-        if [[ "${{ inputs.verbose_testing }}" == "true" ]]; then
-          TEST_OPTS+=(-v)
+        : "${verbose_testing:=true}"
+        join_by() { local IFS="$1"; shift; printf '%s' "$*"; }
+        TEST_OPTS_ARRAY=()
+        if [[ "${verbose_testing}" == "true" ]]; then
+          TEST_OPTS_ARRAY+=(-v)
         fi
-
-        go test "${TEST_OPTS[@]}" .
+        TEST_OPTS=$(join_by ' ' "${TEST_OPTS_ARRAY[@]}")
+        go test "${TEST_OPTS}" .

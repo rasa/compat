@@ -35,7 +35,7 @@ type fileStat struct {
 	sys    syscall.Win32FileAttributeData
 	partID uint64
 	fileID uint64
-	links  uint64
+	links  uint
 	atime  time.Time
 	btime  time.Time
 	ctime  time.Time
@@ -120,7 +120,7 @@ func stat(fi os.FileInfo, name string, followSymlinks bool) (FileInfo, error) {
 
 	fs.partID = uint64(i.VolumeSerialNumber)                             // uint32
 	fs.fileID = (uint64(i.FileIndexHigh) << 32) + uint64(i.FileIndexLow) //nolint:mnd // quiet linter
-	fs.links = uint64(i.NumberOfLinks)
+	fs.links = uint(i.NumberOfLinks)
 	fs.atime = time.Unix(0, fs.sys.LastAccessTime.Nanoseconds())
 	fs.btime = time.Unix(0, fs.sys.CreationTime.Nanoseconds())
 

@@ -11,8 +11,9 @@ permissions:
 jobs:
   test-netbsd:
     name: test-netbsd
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 10
+    # continue-on-error: true
     # env:
     #  GITHUB_TOKEN : ${{ secrets.GITHUB_TOKEN }}
     steps:
@@ -21,25 +22,47 @@ jobs:
     - uses: vmactions/netbsd-vm@v1
       with:
         # envs: 'GITHUB_TOKEN'
-        # usesh: true
+        usesh: true
+        copyback: false
         # See https://github.com/fsnotify/fsnotify/blob/main/.github/workflows/test.yml
         prepare: |
-          export PATH="/usr/pkg/bin:${PATH}"
-          attempts=9
-          delay=1
-          i=1
-          while [ "${i}" -le "${attempts}" ]; do
-            pkg_add go && break
-            echo "Attempt ${i} failed. Retrying in ${delay} seconds..."
-            sleep "${delay}"
-            delay=$(expr "${delay}" \* 2)
-            i=$(expr "${i}" + 1)
-          done
+          PATH="/usr/sbin:${PATH}"
+          export PATH
+          if ! command -v pkg_add; then
+            find / -name 'pkg_add' -type f 2>/dev/null || true
+          fi
+          pkg_add go
 
         run: |
-            export PATH="/usr/pkg/bin:${PATH}"
-            (cd /usr/pkg/bin ; ln -sf go??? go)
-            printf '::notice ::%s\n' "$(go version)"
-            go env
-            go build ./...
-            go test -v ./...
+          PATH="/usr/pkg/bin:${PATH}"
+          export PATH
+          (cd /usr/pkg/bin ; ln -sf go??? go)
+          ls -l /usr/pkg/bin
+          command -v go
+
+          go version
+          rv=0
+          if go build -trimpath ./...; then
+            printf '::notice ::build succeeded: %s\n' "$(go version)"
+          else
+            rv=$?
+            printf '::error ::build failed: %s (error %s)\n' "$(go version)" "${rv}"
+          fi
+          if go test -v .; then
+            printf '::notice ::tests succeeded: %s\n' "$(go version)"
+          else
+            rv=$?
+            printf '::error ::tests failed: %s (error %s)\n' "$(go version)" "${rv}"
+          fi
+          exit "${rv}"
+
+# attempts=4
+# delay=1
+# i=1
+# while [ "${i}" -le "${attempts}" ]; do
+#   pkg_add go && break
+#   echo "Attempt ${i} failed. Retrying in ${delay} seconds..."
+#   sleep "${delay}"
+#   delay=$(expr "${delay}" \* 2)
+#   i=$(expr "${i}" + 1)
+# done

@@ -4,17 +4,18 @@
 package compat
 
 import (
-	"errors"
 	"io/fs"
 	"path"
 )
 
-// Source: https://github.com/golang/go/blob/77f911e3/src/io/fs/walk.go#L12-l128
+type FS = fs.FS
 
 // The following code is:
 // Copyright 2020 The Go Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
+
+// Source: https://github.com/golang/go/blob/77f911e3/src/io/fs/walk.go#L12-L128
 
 // SkipDir is used as a return value from [WalkDirFunc] to indicate that
 // the directory named in the call is to be skipped. It is not returned
@@ -76,9 +77,9 @@ var SkipAll = fs.SkipAll
 type WalkDirFunc func(path string, d DirEntry, err error) error
 
 // walkDir recursively descends path, calling walkDirFn.
-func walkDir(fsys fs.FS, name string, d DirEntry, walkDirFn WalkDirFunc) error {
+func walkDir(fsys FS, name string, d DirEntry, walkDirFn WalkDirFunc) error {
 	if err := walkDirFn(name, d, nil); err != nil || !d.IsDir() {
-		if errors.Is(err, SkipDir) && d.IsDir() {
+		if err == SkipDir && d.IsDir() {
 			// Successfully skipped directory.
 			err = nil
 		}
@@ -90,7 +91,7 @@ func walkDir(fsys fs.FS, name string, d DirEntry, walkDirFn WalkDirFunc) error {
 		// Second call, to report ReadDir error.
 		err = walkDirFn(name, d, err)
 		if err != nil {
-			if errors.Is(err, SkipDir) && d.IsDir() {
+			if err == SkipDir && d.IsDir() {
 				err = nil
 			}
 			return err
@@ -99,9 +100,9 @@ func walkDir(fsys fs.FS, name string, d DirEntry, walkDirFn WalkDirFunc) error {
 
 	for _, d1 := range dirs {
 		name1 := path.Join(name, d1.Name())
-		dirEntry := osDirEntryToDirEntry(d1, name1)
+		dirEntry := fsDirEntryToDirEntry(d1, name1)
 		if err := walkDir(fsys, name1, dirEntry, walkDirFn); err != nil {
-			if errors.Is(err, SkipDir) {
+			if err == SkipDir {
 				break
 			}
 			return err
@@ -122,14 +123,14 @@ func walkDir(fsys fs.FS, name string, d DirEntry, walkDirFn WalkDirFunc) error {
 //
 // WalkDir does not follow symbolic links found in directories,
 // but if root itself is a symbolic link, its target will be walked.
-func WalkDir(fsys fs.FS, root string, fn WalkDirFunc) error {
+func WalkDir(fsys FS, root string, fn WalkDirFunc) error {
 	info, err := fs.Stat(fsys, root)
 	if err != nil {
 		err = fn(root, nil, err)
 	} else {
-		err = walkDir(fsys, root, osFileInfoToDirEntry(info, ""), fn)
+		err = walkDir(fsys, root, fsFileInfoToDirEntry(info, ""), fn)
 	}
-	if errors.Is(err, SkipDir) || errors.Is(err, SkipAll) {
+	if err == SkipDir || err == SkipAll {
 		return nil
 	}
 	return err
