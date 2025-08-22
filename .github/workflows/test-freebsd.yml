@@ -25,6 +25,7 @@ jobs:
         # arch: aarch64
         # envs: 'GITHUB_TOKEN'
         usesh: true
+        copyback: false
         prepare: |
           pkg update -f
           pkg install -y go
