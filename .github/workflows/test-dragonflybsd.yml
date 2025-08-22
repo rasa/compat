@@ -11,9 +11,9 @@ permissions:
 jobs:
   test-dragonflybsd:
     name: test-dragonflybsd
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 10
-    continue-on-error: true
+    # continue-on-error: true
     # env:
     #  GITHUB_TOKEN : ${{ secrets.GITHUB_TOKEN }}
     steps:
@@ -29,6 +29,7 @@ jobs:
           pkg install -y go
         run: |
           # NOTE: dragonflybsd requires -buildvcs=false
+
           go version
           rv=0
           if go build -buildvcs=false -trimpath ./...; then

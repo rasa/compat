@@ -11,9 +11,9 @@ permissions:
 jobs:
   test-solaris:
     name: test-solaris
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 10
-    continue-on-error: true
+    # continue-on-error: true
     # env:
     #  GITHUB_TOKEN : ${{ secrets.GITHUB_TOKEN }}
     steps:
