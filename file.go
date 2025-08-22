@@ -56,8 +56,12 @@ func Create(name string, opts ...Option) (*os.File, error) {
 		opt(&fopts)
 	}
 
-	if fopts.readOnlyMode != ReadOnlyModeSet {
-		fopts.flags |= O_NOROATTR
+	if IsWindows {
+		if fopts.readOnlyMode != ReadOnlyModeSet {
+			fopts.flags |= O_NOROATTR
+		}
+	} else {
+		fopts.flags &^= O_DELETE
 	}
 
 	return create(name, fopts.fileMode, fopts.flags)
@@ -81,8 +85,10 @@ func CreateTemp(dir, pattern string, opts ...Option) (*os.File, error) {
 		opt(&fopts)
 	}
 
-	if fopts.readOnlyMode != ReadOnlyModeSet {
-		fopts.flags |= O_NOROATTR
+	if IsWindows {
+		if fopts.readOnlyMode != ReadOnlyModeSet {
+			fopts.flags |= O_NOROATTR
+		}
 	}
 
 	return createTemp(dir, pattern, fopts.fileMode, fopts.flags)
@@ -141,11 +147,15 @@ func OpenFile(name string, flag int, perm os.FileMode, opts ...Option) (*os.File
 		opt(&fopts)
 	}
 
-	if fopts.readOnlyMode != ReadOnlyModeSet {
-		fopts.flags |= O_NOROATTR
+	if IsWindows {
+		if fopts.readOnlyMode != ReadOnlyModeSet {
+			fopts.flags |= O_NOROATTR
+		}
+	} else {
+		fopts.flags &^= O_DELETE
 	}
 
-	return openFile(name, flag, perm) // fopts.flags, fopts.fileMode)
+	return openFile(name, fopts.flags, fopts.fileMode)
 }
 
 // Remove removes the named file or directory.
@@ -191,8 +201,12 @@ func WriteFile(name string, data []byte, perm os.FileMode, opts ...Option) error
 		opt(&fopts)
 	}
 
-	if fopts.readOnlyMode != ReadOnlyModeSet {
-		fopts.flags |= O_NOROATTR
+	if IsWindows {
+		if fopts.readOnlyMode != ReadOnlyModeSet {
+			fopts.flags |= O_NOROATTR
+		}
+	} else {
+		fopts.flags &^= O_DELETE
 	}
 
 	return writeFile(name, data, fopts.fileMode, fopts.flags)
