@@ -26,7 +26,7 @@ jobs:
         copyback: false
         # See https://github.com/fsnotify/fsnotify/blob/main/.github/workflows/test.yml
         prepare: |
-          PATH="/usr/sbin:/usr/pkg/bin:/usr/pkg/sbin:${PATH}"
+          PATH="/usr/pkg/sbin:${PATH}"
           export PATH
           if ! command -v pkg_add; then
             find / -name 'pkg_add' -type f 2>/dev/null
@@ -50,15 +50,15 @@ jobs:
           go version
           rv=0
           if go build -trimpath ./...; then
-            echo '::notice ::build succeeded'
+            printf '::notice ::build succeeded: %s\n' "$(go version)"
           else
             rv=$?
-            printf '::error ::build failed: error %s\n' "${rv}"
+            printf '::error ::build failed: %s (error %s)\n' "$(go version)" "${rv}"
           fi
           if go test -v .; then
-            echo '::notice ::tests succeeded'
+            printf '::notice ::tests succeeded: %s\n' "$(go version)"
           else
             rv=$?
-            printf '::error ::tests failed: error %s\n' "${rv}"
+            printf '::error ::tests failed: %s (error %s)\n' "$(go version)" "${rv}"
           fi
           exit "${rv}"
