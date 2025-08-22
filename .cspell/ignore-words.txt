@@ -14,6 +14,8 @@
 ## is regenerated.
 ##
 
+wasi
+
 acifani          #  4 hits in  2 files
 adrg             #  2 hits in  1 file: cmd/updater/main.go
 antontroshin     #  2 hits in  1 file: .github/workflows/build.yml
