@@ -43,6 +43,7 @@ func supported(supportedType SupportedType) bool {
 }
 
 // Deprecated: Use UserIDSourceIsInt instead.
+// This may be removed in the future.
 const UserIDSourceIsNumeric = UserIDSourceIsInt
 
 // Deprecated: Use Create() instead, and pass perm and flag via Option array.
