@@ -39,6 +39,7 @@ gen: ## go generate
 
 .PHONY: build
 build: ## goreleaser build
+	-go version
 	go tool goreleaser build --clean --single-target --snapshot
 
 .PHONY: spell

@@ -65,15 +65,40 @@ const (
 )
 
 var tinygoThresholds = []struct {
-	tinygo string
-	goVer  string
+	tinygo   string
+	goMinVer string
+	goMaxVer string
 }{
-	{"0.27.0", "go1.20"},
-	{"0.29.0", "go1.21"},
-	{"0.31.0", "go1.22"},
-	{"0.33.0", "go1.23"},
-	{"0.36.0", "go1.24"},
-	{"0.39.0", "go1.25"},
+	// https://github.com/tinygo-org/tinygo/blob/v0.12.0/builder/config.go#L28
+	{"0.12.0", "go1.11", "go1.13"},
+	// https://github.com/tinygo-org/tinygo/blob/v0.14.0/builder/config.go#L28
+	{"0.14.0", "go1.11", "go1.14"},
+	// https://github.com/tinygo-org/tinygo/blob/v0.16.0/builder/config.go#L28
+	{"0.16.0", "go1.11", "go1.15"},
+	// https://github.com/tinygo-org/tinygo/blob/v0.17.0/builder/config.go#L28
+	{"0.17.0", "go1.11", "go1.16"},
+	// https://github.com/tinygo-org/tinygo/blob/v0.19.0/builder/config.go#L36
+	{"0.19.0", "go1.13", "go1.16"},
+	// https://github.com/tinygo-org/tinygo/blob/v0.22.0/builder/config.go#L36
+	{"0.22.0", "go1.15", "go1.17"},
+	// https://github.com/tinygo-org/tinygo/blob/v0.23.0/builder/config.go#L36
+	{"0.23.0", "go1.15", "go1.18"},
+	// https://github.com/tinygo-org/tinygo/blob/v0.25.0/builder/config.go#L36
+	{"0.25.0", "go1.16", "go1.19"},
+	// https://github.com/tinygo-org/tinygo/blob/v0.26.0/builder/config.go#L36
+	{"0.26.0", "go1.18", "go1.19"},
+	// https://github.com/tinygo-org/tinygo/blob/v0.27.0/builder/config.go#L36
+	{"0.27.0", "go1.18", "go1.20"},
+	// https://github.com/tinygo-org/tinygo/blob/v0.29.0/builder/config.go#L30
+	{"0.29.0", "go1.18", "go1.21"},
+	// https://github.com/tinygo-org/tinygo/blob/v0.31.0/builder/config.go#L30
+	{"0.31.0", "go1.18", "go1.22"},
+	// https://github.com/tinygo-org/tinygo/blob/v0.33.0/builder/config.go#L30
+	{"0.33.0", "go1.19", "go1.23"},
+	// https://github.com/tinygo-org/tinygo/blob/v0.36.0/builder/config.go#L28
+	{"0.36.0", "go1.19", "go1.24"},
+	// https://github.com/tinygo-org/tinygo/blob/v0.39.0/builder/config.go#L28
+	{"0.39.0", "go1.19", "go1.25"},
 }
 
 // UnderlyingGoVersion returns the effective Go toolchain version string ("goX.Y")
@@ -93,7 +118,7 @@ func UnderlyingGoVersion() string {
 	best := ""
 	for _, th := range tinygoThresholds {
 		if version.Compare(v, "go"+th.tinygo) >= 0 {
-			best = th.goVer
+			best = th.goMaxVer
 		}
 	}
 
