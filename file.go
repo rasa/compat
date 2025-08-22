@@ -60,8 +60,6 @@ func Create(name string, opts ...Option) (*os.File, error) {
 		if fopts.readOnlyMode != ReadOnlyModeSet {
 			fopts.flags |= O_NOROATTR
 		}
-	} else {
-		fopts.flags &^= O_DELETE
 	}
 
 	return create(name, fopts.fileMode, fopts.flags)
@@ -151,8 +149,6 @@ func OpenFile(name string, flag int, perm os.FileMode, opts ...Option) (*os.File
 		if fopts.readOnlyMode != ReadOnlyModeSet {
 			fopts.flags |= O_NOROATTR
 		}
-	} else {
-		fopts.flags &^= O_DELETE
 	}
 
 	return openFile(name, fopts.flags, fopts.fileMode)
@@ -205,8 +201,6 @@ func WriteFile(name string, data []byte, perm os.FileMode, opts ...Option) error
 		if fopts.readOnlyMode != ReadOnlyModeSet {
 			fopts.flags |= O_NOROATTR
 		}
-	} else {
-		fopts.flags &^= O_DELETE
 	}
 
 	return writeFile(name, data, fopts.fileMode, fopts.flags)
