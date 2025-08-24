@@ -27,7 +27,7 @@ clean: ## remove files created during build pipeline
 
 .PHONY: download
 download: ## go mod download
-	go mod download -x
+	go mod download
 
 .PHONY: mod
 mod: ## go mod tidy
