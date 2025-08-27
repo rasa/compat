@@ -45,11 +45,11 @@ func TestLstatStat(t *testing.T) { //nolint:dupl
 	perm := compat.CreateTempPerm
 	want := fixPerms(perm, false)
 	if got := fi.Mode().Perm(); got != want {
-		if compat.IsWindows {
-			t.Logf("Mode(): got 0o%o, want 0o%o", got, want)
-		} else {
-			t.Errorf("Mode(): got 0o%o, want 0o%o", got, want)
-		}
+		// if compat.IsWindows {
+		//	t.Logf("Mode(): got 0o%o, want 0o%o (ignoring for now)", got, want)
+		// } else {
+		t.Errorf("Mode(): got 0o%o, want 0o%o", got, want)
+		// }
 	}
 
 	if got := fi.Mode()&os.ModeSymlink == 0; got != true {
