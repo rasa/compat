@@ -28,7 +28,6 @@ const (
 var (
 	tempPath   string
 	tempSize   string
-	tempIsVHDX bool
 )
 
 type testVars struct {

@@ -1,23 +1,38 @@
-param (
-    [ValidatePattern("^[A-Za-z]$")]
-    [string]$DriveLetter = 'Z',
+# SPDX-FileCopyrightText: Copyright © 2025 Ross Smith II <ross@smithii.com>
+# SPDX-License-Identifier: MIT
 
-    [ValidatePattern("^\d+(MB|GB|TB)$")]
-    [string]$Size = "2GB",
+param (
+    [ValidatePattern("^[A-Za-z]?$")]
+    [string]$DriveLetter,   # optional, auto-picked if not supplied
 
     [ValidateSet("exFAT", "FAT", "FAT32", "NTFS", "ReFS")]
-    [string]$FileSystem = 'NTFS'
+    [string]$FileSystem = 'NTFS',
+
+    [ValidatePattern("^\d+(MB|GB|TB)$")]
+    [string]$Size = "2GB"
 )
+
 $ProgressPreference = 'SilentlyContinue'
-$DriveLetter = $DriveLetter.ToUpper()
-$Size = $Size.ToUpper()
+$Size       = $Size.ToUpper()
 $FileSystem = $FileSystem.ToUpper()
+
+Add-Type -AssemblyName System.Numerics
+
+function Convert-ToBase36 {
+    param([System.Numerics.BigInteger]$Value)
+    $chars = "0123456789abcdefghijklmnopqrstuvwxyz"
+    if ($Value -eq 0) { return "0" }
+    $result = ""
+    while ($Value -gt 0) {
+        $result = $chars[$Value % 36] + $result
+        $Value  = [System.Numerics.BigInteger]::Divide($Value, 36)
+    }
+    return $result
+}
 
 function Convert-ToBytes {
     param([Parameter(Mandatory)][string]$Value)
-    if ($Value -as [UInt64]) {
-        return [UInt64]$Value   # already numeric, e.g. "2147483648"
-    }
+    if ($Value -as [UInt64]) { return [UInt64]$Value }
     switch -regex ($Value.ToUpperInvariant()) {
         '^(\d+)MB$' { return [UInt64]$Matches[1] * 1MB }
         '^(\d+)GB$' { return [UInt64]$Matches[1] * 1GB }
@@ -26,30 +41,65 @@ function Convert-ToBytes {
     }
 }
 
+# Gather all currently used drive letters (local + network)
+$usedLetters = [System.IO.DriveInfo]::GetDrives().Name.TrimEnd('\') |
+    ForEach-Object { $_[0].ToString().ToUpper() }
+
+# If no drive letter supplied, auto-pick from Z down to A
+if (-not $DriveLetter) {
+    foreach ($letter in [char[]]([byte][char]'Z'..[byte][char]'A')) {
+        if ($usedLetters -notcontains $letter) {
+            $DriveLetter = $letter
+            Write-Host "Auto-selected drive letter $DriveLetter"
+            break
+        }
+    }
+    if (-not $DriveLetter) {
+        Write-Error "No available drive letters found (Z..D all in use)"
+        exit 1
+    }
+} else {
+    $DriveLetter = $DriveLetter.ToUpper()
+    if ($usedLetters -contains $DriveLetter) {
+        Write-Error "Drive letter $DriveLetter is already in use"
+        exit 1
+    }
+}
+
+# Convert size string to bytes
 $sizeBytes = Convert-ToBytes $Size
 
-$randHex = '{0:x8}' -f (Get-Random -Minimum 0 -Maximum 4294967295)
-$vhdfile = "$env:TEMP\~tmp_${DriveLetter}_${FileSystem}_${Size}_${randHex}.vhdx"
+# Generate random base36 suffix
+$rand36 = (Convert-ToBase36 (Get-Random -Minimum 0 -Maximum (
+    [System.Numerics.BigInteger]::Pow(36,8)))).PadLeft(8,'0')
 
+# Temp VHD path
+$vhdfile = "$env:TEMP\~compat_${DriveLetter}_${FileSystem}_${Size}_${rand36}.vhdx"
+
+# Create and mount
 New-VHD -Path $vhdfile -Dynamic -SizeBytes $sizeBytes | Out-Null
 Mount-VHD -Path $vhdfile | Out-Null
 Start-Sleep -Seconds 1
 
+# Find the newly mounted RAW disk
 $disk = Get-Disk | Where-Object { $_.PartitionStyle -eq 'RAW' }
 if (-not $disk) {
     Write-Error "Unable to locate newly mounted RAW disk for $vhdfile"
     exit 1
 }
 
-$partitionStyle = if ($FileSystem -in @("exFAT", "NTFS", "ReFS")) { "GPT" } else { "MBR" }
+# Decide partition style
+$partitionStyle = if ($FileSystem -in @("exFAT","NTFS","ReFS")) { "GPT" } else { "MBR" }
 
-Initialize-Disk -Number $disk.Number -PartitionStyle GPT -ErrorAction Stop
+Write-Host "Initializing disk $($disk.Number) as $partitionStyle with drive letter $DriveLetter"
+
+Initialize-Disk -Number $disk.Number -PartitionStyle $partitionStyle -ErrorAction Stop
 $part = New-Partition -DiskNumber $disk.Number -DriveLetter $DriveLetter -UseMaximumSize -ErrorAction Stop
 
+# Label & format
 $label = "${DriveLetter}${FileSystem}${Size}"
-# Attempt to format
-$null = Format-Volume -Partition $part -FileSystem $FileSystem `
-    -NewFileSystemLabel $label -Confirm:$false -ErrorAction Stop
+Format-Volume -Partition $part -FileSystem $FileSystem `
+    -NewFileSystemLabel $label -Confirm:$false -ErrorAction Stop | Out-Null
 
 # Verify FS type
 $vol = Get-Volume -DriveLetter $part.DriveLetter
@@ -57,7 +107,7 @@ if ($vol.FileSystem -ne $FileSystem) {
     Write-Error "Requested $FileSystem but got $($vol.FileSystem) on $($part.DriveLetter):"
     Dismount-VHD -Path $vhdfile -ErrorAction SilentlyContinue
     Remove-Item -Path $vhdfile -Force -ErrorAction SilentlyContinue
-    exit 1  # ensures %ERRORLEVEL% / $LASTEXITCODE is set
+    exit 1
 }
 
 Write-Output "Created a $Size $FileSystem drive $($part.DriveLetter): ($label) at $vhdfile"

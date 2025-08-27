@@ -1,11 +1,34 @@
+# SPDX-FileCopyrightText: Copyright © 2025 Ross Smith II <ross@smithii.com>
+# SPDX-License-Identifier: MIT
+
 param (
     [ValidatePattern("^[A-Za-z]$")]
-    [char]$DriveLetter = 'Z'
+    [string]$DriveLetter = ''
 )
+
 $ProgressPreference = 'SilentlyContinue'
-# Locate the temp VHDX file based on naming pattern
-$pattern = "$env:TEMP\~tmp_${DriveLetter}_*.vhdx"
-$vhds = Get-ChildItem -Path $pattern -ErrorAction SilentlyContinue
+
+if ($DriveLetter -eq "") {
+    # No drive letter provided → dismount all matching VHDX files
+    $pattern = "$env:TEMP\~compat_*.vhdx"
+    $vhds = Get-ChildItem -Path $pattern -ErrorAction SilentlyContinue
+} else {
+    # Specific drive letter → find matching VHD file by name OR by mount
+    $pattern = "$env:TEMP\~compat_${DriveLetter}_*.vhdx"
+    $vhds = Get-ChildItem -Path $pattern -ErrorAction SilentlyContinue
+
+    if (-not $vhds) {
+        # If no file matches, try to find the VHD by mounted drive letter
+        try {
+            $disk = Get-DiskImage | Where-Object {
+                $_.Attached -and ($_.DevicePath -match $DriveLetter + ":")
+            }
+            if ($disk) {
+                $vhds = @($disk)
+            }
+        } catch { }
+    }
+}
 
 if (-not $vhds) {
     Write-Error "No matching VHDX found for $pattern"
