@@ -27,6 +27,9 @@ on:
       runner:
         default: "ubuntu-24.04"
         type: string # required
+      sudo:
+        default: "false"
+        type: string # required
       verbose_testing:
         default: "false"
         type: string # required
@@ -64,6 +67,10 @@ on:
           - all # all of the above runners
         default: "ubuntu-24.04"
       # checkov:skip=CKV_GHA_7: The build output cannot be affected by user parameters...
+      sudo:
+        description: Use sudo.
+        type: boolean
+        default: false
       verbose_testing:
         description: "Test with -v options."
         type: boolean
@@ -140,6 +147,9 @@ jobs:
           # Set env vars (GOCACHE, GOMODCACHE and inputs)
           # printf 'GOVERSION=%s\n'  "$(go version | sed 's#^.*go##;s# .*##')" >>"${GITHUB_ENV}"
           printf "verbose_testing=%s\n" "${{ inputs.verbose_testing }}" >>"${GITHUB_ENV}"
+          if [[ "${{ inputs.sudo }}" == "true" ]]; then
+            printf "sudo=sudo\n" >>"${GITHUB_ENV}"
+          fi
           printf 'GOCACHE=%s\n'    "$(go env GOCACHE | tr '\\' '/')" >>"${GITHUB_ENV}"
           printf 'GOMODCACHE=%s\n' "$(go env GOMODCACHE | tr '\\' '/')" >>"${GITHUB_ENV}"
 
@@ -166,7 +176,7 @@ jobs:
           fi
           export TEST_OPTS=$(join_by ' ' "${TEST_OPTS_ARRAY[@]}")
           printf 'TEST_OPTS="%s"\n' "${TEST_OPTS}"
-          make ci TEST_OPTS="${TEST_OPTS}"
+          ${sudo:-} make ci TEST_OPTS="${TEST_OPTS}"
         env:
           COMPAT_DEBUG: ${{ inputs.compat_debug }}
 
