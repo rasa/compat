@@ -37,14 +37,18 @@ func TestLstatStat(t *testing.T) { //nolint:dupl
 		t.Errorf("Name(): got %v, want %v", got, base)
 	}
 
-	want := int64(len(helloBytes))
-	if got := fi.Size(); got != want {
-		t.Errorf("Size(): got %v, want %v", got, want)
+	size := int64(len(helloBytes))
+	if got := fi.Size(); got != size {
+		t.Errorf("Size(): got %v, want %v", got, size)
 	}
 
-	if !compat.IsWindows {
-		if got := fi.Mode().Perm(); got != compat.CreateTempPerm {
-			t.Errorf("Mode(): got 0o%o, want 0o%o", got, compat.CreateTempPerm)
+	perm := compat.CreateTempPerm
+	want := fixPerms(perm, false)
+	if got := fi.Mode().Perm(); got != want {
+		if compat.IsWindows {
+			t.Logf("Mode(): got 0o%o, want 0o%o", got, want)
+		} else {
+			t.Errorf("Mode(): got 0o%o, want 0o%o", got, want)
 		}
 	}
 
@@ -84,13 +88,15 @@ func TestLstatLstat(t *testing.T) { //nolint:dupl
 		t.Errorf("Name(): got %v, want %v", got, base)
 	}
 
-	want := int64(len(helloBytes))
-	if got := fi.Size(); got == want {
-		t.Errorf("Size(): got %v, want !%v", got, want)
+	size := int64(len(helloBytes))
+	if got := fi.Size(); got == size {
+		t.Errorf("Size(): got %v, want !%v", got, size)
 	}
 
-	if got := fi.Mode().Perm(); got == compat.CreateTempPerm {
-		t.Errorf("Mode(): got 0o%o, want !0o%o", got, compat.CreateTempPerm)
+	perm := compat.CreateTempPerm
+	want := fixPerms(perm, false)
+	if got := fi.Mode().Perm(); got == want {
+		t.Errorf("Mode(): got 0o%o, want !0o%o", got, want)
 	}
 
 	if got := fi.Mode()&os.ModeSymlink != 0; got != true {
