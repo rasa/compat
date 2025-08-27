@@ -27,34 +27,22 @@ clean: ## remove files created during build pipeline
 
 .PHONY: download
 download: ## go mod download
-	command -v go
-	go version
-	go mod download
-	command -v go
-	go version
-
-.PHONY: mod
-mod: ## go mod tidy
-	command -v go
-	go version
-	go mod tidy -x
-	command -v go
-	go version
-
-.PHONY: gen
-gen: ## go generate
-	command -v go
-	go version
-	go generate ./...
-	command -v go
-	go version
-
-.PHONY: build
-build: ## goreleaser build
+	-echo PATH="${PATH}"
 	-command -v go
 	-go version
 	-go env
-	echo PATH="${PATH}"
+	go mod download
+
+.PHONY: mod
+mod: ## go mod tidy
+	go mod tidy -x
+
+.PHONY: gen
+gen: ## go generate
+	go generate ./...
+
+.PHONY: build
+build: ## goreleaser build
 	go tool goreleaser build --clean --single-target --snapshot
 
 .PHONY: spell
