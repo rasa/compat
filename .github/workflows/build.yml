@@ -21,19 +21,22 @@ on:
   #     # - '.goreleaser.yml'
   workflow_call: # Required so this workflow can be called from another workflow
     inputs:
-      verbose_testing:
-        default: "false"
+      compat_debug:
+        default: "ACLS"
         type: string # required
       runner:
         default: "ubuntu-24.04"
         type: string # required
+      verbose_testing:
+        default: "false"
+        type: string # required
   workflow_dispatch: # Allows you to run this workflow manually from the Actions tab
     inputs:
       # checkov:skip=CKV_GHA_7: The build output cannot be affected by user parameters...
-      verbose_testing:
-        description: "Test with -v options."
-        type: boolean
-        default: false
+      compat_debug:
+        description: "COMPAT_DEBUG environmental variable."
+        default: "ACLS"
+        type: string
       # checkov:skip=CKV_GHA_7: The build output cannot be affected by user parameters...
       runner:
         description: "GitHub runner to use"
@@ -60,6 +63,11 @@ on:
           - macos3
           - all # all of the above runners
         default: "ubuntu-24.04"
+      # checkov:skip=CKV_GHA_7: The build output cannot be affected by user parameters...
+      verbose_testing:
+        description: "Test with -v options."
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -159,8 +167,7 @@ jobs:
           printf 'TEST_OPTS="%s"\n' "${TEST_OPTS}"
           make ci TEST_OPTS="${TEST_OPTS}"
         env:
-          # Dumps Windows ACLs on test failures
-          COMPAT_DEBUG: 1
+          COMPAT_DEBUG: ${{ inputs.compat_debug }}
 
       - name: Upload coverage
         if: env.SHOULD_RUN
