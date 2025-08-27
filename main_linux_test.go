@@ -22,13 +22,13 @@ const (
 
 var fsTests = []fsTest{
 	{nativeFS, testVars{}},
-	{"btrfs", testVars{}},
+	{"Btrfs", testVars{}},
 	{"ext2", testVars{}},
 	{"ext3", testVars{}},
 	{"ext4", testVars{}},
-	{"f2fs", testVars{false, false, false, 0, -1, 0, 0, -1, ""}},
-	{"reiserfs", testVars{false, false, false, 0, -1, 0, 0, -1, ""}},
-	{"xfs", testVars{}},
+	{"F2FS", testVars{false, false, false, 0, -1, 0, 0, -1, ""}},
+	{"ReiserFS", testVars{false, false, false, 0, -1, 0, 0, -1, ""}},
+	{"XFS", testVars{}},
 	//
 	{"exFAT", testVars{true, true, true, 2, 2, 2, 2, -1, ""}},
 	{"FAT32", testVars{true, true, true, 86400, 2, 2, 2, -1, ""}},
