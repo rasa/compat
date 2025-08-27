@@ -184,6 +184,9 @@ jobs:
           printf 'TEST_OPTS="%s"\n' "${TEST_OPTS}"
           # go env
           ${sudo:-} make ci TEST_OPTS="${TEST_OPTS}"
+          test -z "${sudo:-}" && exit 0
+          ${sudo:-} chown -R $USER ./dist
+          ${sudo:-} chmod -R a+rw ./dist
 
       - name: Upload coverage
         if: env.SHOULD_RUN
