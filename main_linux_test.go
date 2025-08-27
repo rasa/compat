@@ -33,7 +33,7 @@ var fsTests = []fsTest{
 	{"exFAT", testVars{true, true, true, 2, 2, 2, 2, -1, ""}},
 	{"FAT32", testVars{true, true, true, 86400, 2, 2, 2, -1, ""}},
 	{"FAT", testVars{true, true, true, 86400, 2, 2, 2, -1, ""}}, // aka FAT16
-	{"NTFS", testVars{false, false, false, 0, 0, 0, 0, -1, ""}}, // requires ntfs-3g/ntfsprogs
+	{"NTFS", testVars{true, false, false, 0, 0, 0, 0, -1, ""}}, // requires ntfs-3g/ntfsprogs
 }
 
 func testMain(m *testing.M, fsToTest, nativeFSType, fsPath string) int { //nolint:gocyclo
