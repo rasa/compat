@@ -149,7 +149,7 @@ jobs:
         run: |
           # Set env vars (COMPAT_DEBUG, GOCACHE, GOMODCACHE, inputs, etc.)
           if [[ "${{ inputs.sudo }}" == "true" ]]; then
-            if command -v sudo &>/dev/null; then
+            if builtin command -v sudo &>/dev/null; then
               if [[ ! "${OS:-}" =~ [Ww]indows ]]; then
                 sudo='sudo -E -n --preserve-env=PATH,COMPAT_DEBUG,TEST_OPTS'
               fi
