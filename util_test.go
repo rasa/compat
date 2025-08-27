@@ -194,7 +194,7 @@ func run(name string, args ...string) error { //nolint:unused
 	return cmd.Run()
 }
 
-func runCapture(name string, args ...string) (string, error) {
+func runCapture(name string, args ...string) (string, error) { //nolint:unused
 	log("Executing: " + name + " " + strings.Join(args, " "))
 	ctx := context.Background()
 	cmd := exec.CommandContext(ctx, name, args...) //nolint:gosec
