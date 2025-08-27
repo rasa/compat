@@ -132,6 +132,7 @@ jobs:
           cache: false
 
       - run: go version
+        if: env.SHOULD_RUN
 
       # Let's see if we see the same 80% speed improvement as mentioned in
       # https://github.com/elastic/apm-server/pull/15623#issuecomment-2648709041
