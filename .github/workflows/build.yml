@@ -189,7 +189,8 @@ jobs:
           # go env
           ${sudo:-} make ci TEST_OPTS="${TEST_OPTS}"
           test -z "${sudo:-}" && exit 0
-          ${sudo:-} chown -R "${USER}:${USER}" ./dist "${GOCACHE}" "${GOMODCACHE}"
+          # this works on linux and macos
+          ${sudo:-} chown -R "$(id -un)":"$(id -gn)" ./dist "${GOCACHE}" "${GOMODCACHE}"
 
       - name: Upload coverage
         if: env.SHOULD_RUN
