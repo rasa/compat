@@ -11,7 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 - Add support for running tests on ext2/3/4, exFAT, FAT32, F2FS, NTFS, ReiserFS
   and XFS filesystems on Linux (as root).
-- Add support for running tests on exFAT, FAT32, and ReFS filesystems on 
+- Add support for running tests on exFAT, FAT32, NTFS, and ReFS filesystems on 
   Windows.
 - Add `IsBSDLike` constant (`IsBSD` or `IsApple`).
 - Add `UnderlyingGoVersion()` to report go version under Tinygo compiler.
