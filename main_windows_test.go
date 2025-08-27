@@ -77,6 +77,7 @@ func testMain(m *testing.M, fsToTest, nativeFSType, fsPath string) int { //nolin
 		fmt.Printf("%d/%d: Testing on %v filesystem mounted on %v\n", i+1, len(fsTests), fsName, mountPath)
 
 		if fsTest.fsName == "Native" {
+			tempIsVHDX = false
 			code = m.Run()
 			if code != 0 {
 				return code
@@ -86,6 +87,7 @@ func testMain(m *testing.M, fsToTest, nativeFSType, fsPath string) int { //nolin
 		}
 
 		tempDrive := string(tempPath[0])
+		tempIsVHDX = true
 
 		exe := "powershell.exe"
 		exe, _ = exec.LookPath(exe)
