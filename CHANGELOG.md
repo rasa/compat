@@ -9,10 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Added
 
-- Add support for ext2/3/4, exFAT, FAT32, F2FS, NTFS, ReiserFS, ReFS and XFS
-  filesystems on Linux.
-- Add support for exFAT, FAT32, and ReFS filesystems on Windows.
-- Add running unit tests on all supported filesystems on Linux (as root) and
+- Add support for running tests on ext2/3/4, exFAT, FAT32, F2FS, NTFS, ReiserFS
+  and XFS filesystems on Linux (as root).
+- Add support for running tests on exFAT, FAT32, and ReFS filesystems on 
   Windows.
 - Add `IsBSDLike` constant (`IsBSD` or `IsApple`).
 - Add `UnderlyingGoVersion()` to report go version under Tinygo compiler.
@@ -20,6 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Fixed
 
+- Fix `IsRoot()` to check EUID == 0 on non-Windows systems.
 - Fix `SupportsSymlinks()` to return false on the Plan 9 OS.
 - Add -buildvcs=false to fix build on DragonflyBSD.
 
