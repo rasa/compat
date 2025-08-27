@@ -131,7 +131,7 @@ jobs:
           check-latest: true
           cache: false
 
-      - run: go version
+      - run: go env
         if: env.SHOULD_RUN
 
       # Let's see if we see the same 80% speed improvement as mentioned in
@@ -148,7 +148,7 @@ jobs:
         if: env.SHOULD_RUN
         run: |
           # Set env vars (COMPAT_DEBUG, GOCACHE, GOMODCACHE, inputs, etc.)
-          go version
+          go env
           test "${{ inputs.sudo }}" == "true" && sudo=sudo
           printf 'COMPAT_DEBUG=%s\n' "${{ inputs.compat_debug }}" >>"${GITHUB_ENV}"
           printf 'GOCACHE=%s\n'      "$(go env GOCACHE | tr '\\' '/')" >>"${GITHUB_ENV}"
@@ -181,6 +181,7 @@ jobs:
           fi
           export TEST_OPTS=$(join_by ' ' "${TEST_OPTS_ARRAY[@]}")
           printf 'TEST_OPTS="%s"\n' "${TEST_OPTS}"
+          go env
           ${sudo:-} make ci TEST_OPTS="${TEST_OPTS}"
 
       - name: Upload coverage
