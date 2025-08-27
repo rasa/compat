@@ -27,7 +27,7 @@ clean: ## remove files created during build pipeline
 
 .PHONY: download
 download: ## go mod download
-	go mod download -x
+	go mod download
 
 .PHONY: mod
 mod: ## go mod tidy
@@ -80,7 +80,7 @@ endif
 
 .PHONY: test
 test: ## go test
-	go test $(TEST_OPTS) -tags debug $(RACE_OPT) -covermode=atomic -coverprofile=coverage.tmp -coverpkg=.. .
+	go test $(TEST_OPTS) -tags debug $(RACE_OPT) -covermode=atomic -coverprofile=coverage.tmp -coverpkg=. .
 	grep -Ev '/(cmd|golang)/' coverage.tmp > coverage.out
 	go tool cover -html=coverage.out -o coverage.html
 	rm -f coverage.tmp
