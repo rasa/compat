@@ -1,0 +1,137 @@
+---
+# yaml-language-server: $schema https://json.schemastore.org/github-workflow.json
+
+name: build-root
+
+on:
+  workflow_call: # Required so this workflow can be called from another workflow
+    inputs:
+      compat_debug:
+        default: ""
+        type: string # required
+      image:
+        default: "24.04"
+        type: string # required
+      verbose_testing:
+        default: "false"
+        type: string # required
+  workflow_dispatch: # Allows you to run this workflow manually from the Actions tab
+    inputs:
+      # checkov:skip=CKV_GHA_7: The build output cannot be affected by user parameters...
+      compat_debug:
+        description: "COMPAT_DEBUG environmental variable."
+        default: ""
+        type: string
+      # checkov:skip=CKV_GHA_7: The build output cannot be affected by user parameters...
+      image:
+        description: "Ubuntu image to use"
+        type: choice
+        options:
+          - "24.04"
+          - "22.04"
+          - "all"
+        default: "24.04"
+      # checkov:skip=CKV_GHA_7: The build output cannot be affected by user parameters...
+      verbose_testing:
+        description: "Test with -v options."
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+jobs:
+  build-root:
+    name: build-root
+    strategy:
+      fail-fast: false
+      matrix:
+        image:
+          - "24.04"
+          - "22.04"
+
+    runs-on: ubuntu-24.04
+    container:
+      image: ubuntu:${{ matrix.image }}
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Set SHOULD_RUN var for ubuntu:${{ inputs.image }}
+        run: |
+          echo "SHOULD_RUN=yes" >> "${GITHUB_ENV}"
+          printf "::notice::inputs.image=%s\n" "${{ inputs.image }}"
+        if: >
+          (matrix.image == inputs.image || inputs.image == 'all') &&
+          !(contains(matrix.image, 'arm') && github.repository_visibility == 'public')
+
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        if: env.SHOULD_RUN
+
+      - uses: actions/setup-go@0aaccfd150d50ccaeb58ebd88d36e91967a5f35b # v5.4.0
+        if: env.SHOULD_RUN
+        # if: runner.os != 'Windows'
+        with:
+          go-version: '1.25'
+          check-latest: true
+          cache: false
+
+      - name: Set env vars (GOCACHE, GOMODCACHE and inputs)
+        if: env.SHOULD_RUN
+        run: |
+          # Set env vars (GOCACHE, GOMODCACHE and inputs)
+          # printf 'GOVERSION=%s\n'  "$(go version | sed 's#^.*go##;s# .*##')" >>"${GITHUB_ENV}"
+          printf "verbose_testing=%s\n" "${{ inputs.verbose_testing }}" >>"${GITHUB_ENV}"
+          printf 'GOCACHE=%s\n'    "$(go env GOCACHE | tr '\\' '/')" >>"${GITHUB_ENV}"
+          printf 'GOMODCACHE=%s\n' "$(go env GOMODCACHE | tr '\\' '/')" >>"${GITHUB_ENV}"
+
+      - name: USE actions/cache to save Go's build and mod caches
+        if: env.SHOULD_RUN
+        uses: actions/cache@v4
+        with:
+          path: |
+            ${{ env.GOCACHE }}
+            ${{ env.GOMODCACHE }}
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-
+
+      - name: go test
+        if: env.SHOULD_RUN
+        run: |
+          # go test
+          : "${verbose_testing:=true}"
+          join_by() { local IFS="$1"; shift; printf '%s' "$*"; }
+          TEST_OPTS=()
+          if [[ "${verbose_testing}" == "true" ]]; then
+            TEST_OPTS_ARRAY+=(-v)
+          fi
+          export TEST_OPTS=$(join_by ' ' "${TEST_OPTS_ARRAY[@]}")
+          printf 'TEST_OPTS="%s"\n' "${TEST_OPTS}"
+
+          apt-get update
+
+          apt-get install -y \
+            btrfs-progs \
+            dosfstools \
+            e2fsprogs \
+            exfatprogs \
+            f2fs-tools \
+            ntfs-3g \
+            reiserfsprogs \
+            xfsprogs \
+            util-linux
+
+          modprobe loop || true
+          modprobe btrfs || true
+          modprobe exfat || true
+          modprobe f2fs || true
+          modprobe ntfs3 || true
+          modprobe reiserfs || true
+          modprobe xfs || true
+
+          go version
+
+          go test "${TEST_OPTS[@]}" .
+        env:
+          COMPAT_DEBUG: ${{ inputs.compat_debug }}
