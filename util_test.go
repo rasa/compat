@@ -63,16 +63,6 @@ func compareNames(got string, want string) bool {
 	return false
 }
 
-func parseName(name string) (string, string) {
-	parts := strings.Split(name, `\`)
-	switch {
-	case len(parts) == 1:
-		return "", strings.ToLower(parts[0])
-	default:
-		return strings.ToLower(parts[0]), strings.ToLower(parts[1])
-	}
-}
-
 func compareTimes(a, b time.Time, granularity int) bool {
 	if granularity < 0 {
 		return a.IsZero()
@@ -181,6 +171,16 @@ func must(err error) { // nolint:unused
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "error: %v\n", err)
 		os.Exit(1)
+	}
+}
+
+func parseName(name string) (string, string) {
+	parts := strings.Split(name, `\`)
+	switch {
+	case len(parts) == 1:
+		return "", strings.ToLower(parts[0])
+	default:
+		return strings.ToLower(parts[0]), strings.ToLower(parts[1])
 	}
 }
 
