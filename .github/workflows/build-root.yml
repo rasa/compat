@@ -120,6 +120,7 @@ jobs:
             ntfs-3g \
             reiserfsprogs \
             xfsprogs \
+            kmod \
             util-linux
 
           modprobe loop || true
