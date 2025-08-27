@@ -44,7 +44,7 @@ type testVars struct {
 
 var testEnv = testVars{}
 
-type fsTest struct {
+type fsTest struct { //nolint:unused
 	fsName string
 	vars   testVars
 }
