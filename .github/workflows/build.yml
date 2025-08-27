@@ -131,8 +131,8 @@ jobs:
           check-latest: true
           cache: true
 
-      - run: go env
-        if: env.SHOULD_RUN
+      # - run: go env
+      #   if: env.SHOULD_RUN
 
       # Let's see if we see the same 80% speed improvement as mentioned in
       # https://github.com/elastic/apm-server/pull/15623#issuecomment-2648709041
@@ -148,14 +148,14 @@ jobs:
         if: env.SHOULD_RUN
         run: |
           # Set env vars (COMPAT_DEBUG, GOCACHE, GOMODCACHE, inputs, etc.)
-          go env
           test "${{ inputs.sudo }}" == "true" && sudo='sudo -E'
-          printf "COMPAT_DEBUG='%s'\n" "${{ inputs.compat_debug }}" >>"${GITHUB_ENV}"
-          printf "GOCACHE='%s'\n"      "$(go env GOCACHE | tr '\\' '/')" >>"${GITHUB_ENV}"
-          printf "GOMODCACHE='%s'\n"   "$(go env GOMODCACHE | tr '\\' '/')" >>"${GITHUB_ENV}"
-          printf "GOVERSION='%s'\n"    "$(go version | sed 's|^.*go||; s| .*||;')" >>"${GITHUB_ENV}"
-          printf "sudo='%s'\n"         "${sudo:-}" >>"${GITHUB_ENV}"
-          printf "verbose='%s'\n"      "${{ inputs.verbose }}" >>"${GITHUB_ENV}"
+          printf "COMPAT_DEBUG=%s\n" "${{ inputs.compat_debug }}" >>"${GITHUB_ENV}"
+          printf "GOCACHE=%s\n"      "$(go env GOCACHE | tr '\\' '/')" >>"${GITHUB_ENV}"
+          printf "GOMODCACHE=%s\n"   "$(go env GOMODCACHE | tr '\\' '/')" >>"${GITHUB_ENV}"
+          printf "GOVERSION=%s\n"    "$(go version | sed 's|^.*go||; s| .*||;')" >>"${GITHUB_ENV}"
+          printf "sudo=%s\n"         "${sudo:-}" >>"${GITHUB_ENV}"
+          printf "verbose=%s\n"      "${{ inputs.verbose }}" >>"${GITHUB_ENV}"
+          echo "${GITHUB_ENV}":
           cat "${GITHUB_ENV}"
 
       - name: USE actions/cache to save Go's build and mod caches
@@ -182,7 +182,7 @@ jobs:
           fi
           export TEST_OPTS=$(join_by ' ' "${TEST_OPTS_ARRAY[@]}")
           printf 'TEST_OPTS="%s"\n' "${TEST_OPTS}"
-          go env
+          # go env
           ${sudo:-} make ci TEST_OPTS="${TEST_OPTS}"
 
       - name: Upload coverage
