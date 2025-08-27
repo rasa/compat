@@ -100,12 +100,17 @@ func testMain(m *testing.M, fsToTest, nativeFSType, fsPath string) int { //nolin
 			code = 0
 			continue
 		}
+		missing := 0
 		for _, bin := range []string{"hdiutil", "diskutil", spec.tool} {
-			if _, err := exec.LookPath(bin); err != nil {
+			_, err = exec.LookPath(bin)
+			if err != nil {
 				fmt.Printf("Skipping testing on %v: missing tool %q\n", fsTest.fsName, bin)
-				code = 0
-				continue
+				missing++
 			}
+		}
+		if missing > 0 {
+			code = 0
+			continue
 		}
 
 		// Create sparse image (fs=none), attach (nomount) to get /dev/diskN[/s1],
@@ -155,7 +160,8 @@ func testMain(m *testing.M, fsToTest, nativeFSType, fsPath string) int { //nolin
 
 		// 4) Mount at our mount point
 		mntBase := defaultMountBase
-		if _, err := os.Stat(mntBase); err != nil {
+		_, err = os.Stat(mntBase)
+		if err != nil {
 			mntBase = workdir
 		}
 		mnt, err := os.MkdirTemp(mntBase, "mnt-*")
@@ -166,7 +172,8 @@ func testMain(m *testing.M, fsToTest, nativeFSType, fsPath string) int { //nolin
 			code = 0
 			continue
 		}
-		if _, err = runCapture("diskutil", "mount", "-mountPoint", mnt, dev); err != nil {
+		_, err = runCapture("diskutil", "mount", "-mountPoint", mnt, dev)
+		if err != nil {
 			_ = os.RemoveAll(mnt)
 			_ = run("hdiutil", "detach", dev)
 			_ = os.Remove(imgPath)

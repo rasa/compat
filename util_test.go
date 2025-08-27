@@ -184,7 +184,7 @@ func parseName(name string) (string, string) {
 	}
 }
 
-func run(name string, args ...string) error { //nolint:unused
+func run(name string, args ...string) error { //nolint:unparam,unused
 	log("Executing: " + name + " " + strings.Join(args, " "))
 	ctx := context.Background()
 	cmd := exec.CommandContext(ctx, name, args...) //nolint:gosec
