@@ -33,14 +33,15 @@ func TestStatStat(t *testing.T) {
 		t.Errorf("Name(): got %v, want %v", got, base)
 	}
 
-	want := int64(len(helloBytes))
-	if got := fi.Size(); got != want {
-		t.Errorf("Size(): got %v, want %v", got, want)
+	size := int64(len(helloBytes))
+	if got := fi.Size(); got != size {
+		t.Errorf("Size(): got %v, want %v", got, size)
 	}
 
-	perm := fixPerms(compat.CreateTempPerm, false)
-	if got := fi.Mode().Perm(); got != perm {
-		t.Errorf("Mode(): got 0o%o, want 0o%o", got, perm)
+	perm := compat.CreateTempPerm
+	want := fixPerms(perm, false)
+	if got := fi.Mode().Perm(); got != want {
+		t.Errorf("Mode(): got 0o%o, want 0o%o", got, want)
 	}
 
 	if got := fi.IsDir(); got != false {
