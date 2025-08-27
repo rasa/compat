@@ -13,8 +13,8 @@ import (
 	"github.com/OneOfOne/xxhash"
 )
 
-// Not supported: Links | BTime | CTime.
-const supports supportsType = supportsATime | supportsSymlinks
+// Not supported: Links | BTime | CTime | Symlinks
+const supports supportsType = supportsATime
 
 const userIDSource UserIDSourceType = UserIDSourceIsString
 

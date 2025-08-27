@@ -16,8 +16,25 @@ const (
 	// MkdirTempPerm is the FileMode used by MkdirTemp().
 	MkdirTempPerm os.FileMode = 0o700
 
+	// DefaultUnixDirPerm is the FileMode returned for directories by
+	// golang's os.Stat() function on non-Windows systems, or when a directory
+	// is on a filesystem that doesn't support Unix ACLs, such as exFAT, or FAT32.
+	DefaultUnixDirPerm os.FileMode = 0o777
+	// DefaultUnixFilePerm is the FileMode returned for files by
+	// golang's os.Stat() function on non-Windows systems, or when a file is on a
+	// filesystem that do not support Unix ACLs, such as exFAT, or FAT32.
+	DefaultUnixFilePerm os.FileMode = 0o777
+	// DefaultWindowsDirPerm is the FileMode returned for directories by
+	// golang's os.Stat() function on Windows, or when a directory is on a
+	// filesystem that do not support Windows ACLs, such as exFAT, or FAT32.
+	DefaultWindowsDirPerm os.FileMode = 0o777
+	// DefaultWindowsFilePerm is the FileMode returned for files by
+	// golang's os.Stat() function on Windows, or when a file is on a
+	// filesystem that do not support Windows ACLs, such as exFAT, or FAT32.
+	DefaultWindowsFilePerm os.FileMode = 0o666
+
 	// Verify we don't conflict with any of the values listed at
-	//  https://github.com/golang/go/blob/77f911e3/src/syscall/types_windows.go#L37-L55
+	// https://github.com/golang/go/blob/77f911e3/src/syscall/types_windows.go#L37-L55
 
 	// O_DELETE deletes the file when closed.
 	O_DELETE = 0x8000000

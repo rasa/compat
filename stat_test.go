@@ -8,19 +8,16 @@ import (
 	"os/user"
 	"path/filepath"
 	"runtime"
-	"strings"
 	"testing"
 	"time"
 
 	"github.com/rasa/compat"
 )
 
-const allowedTimeVariance = 1 * time.Second
-
 func TestStatStat(t *testing.T) {
 	now := time.Now()
 
-	name, err := createTemp(t)
+	name, err := createTempFile(t)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -41,27 +38,26 @@ func TestStatStat(t *testing.T) {
 		t.Errorf("Size(): got %v, want %v", got, want)
 	}
 
-	if got := fi.Mode().Perm(); got != compat.CreateTempPerm {
-		t.Errorf("Mode(): got 0o%o, want 0o%o", got, compat.CreateTempPerm)
+	perm := fixPerms(compat.CreateTempPerm, false)
+	if got := fi.Mode().Perm(); got != perm {
+		t.Errorf("Mode(): got 0o%o, want 0o%o", got, perm)
 	}
 
 	if got := fi.IsDir(); got != false {
 		t.Errorf("IsDir(): got %v, want %v", got, false)
 	}
 
-	if got := fi.ModTime(); !timesClose(got, now) {
-		t.Errorf("ModTime(): got %v, want %v", got, now)
+	if got := fi.ModTime(); !compareTimes(got, now, testEnv.mtimeGranularity) {
+		fatalTimes(t, "ModTime()", got, now, testEnv.mtimeGranularity)
 	}
 }
 
 func TestStatLinks(t *testing.T) {
-	if !compat.SupportsLinks() {
-		skip(t, "Skipping test: Links() not supported on "+runtime.GOOS)
-
-		return // tinygo doesn't support t.Skip
+	if !supportsHardLinks(t) {
+		return
 	}
 
-	name, err := createTemp(t)
+	name, err := createTempFile(t)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -119,7 +115,7 @@ func TestStatATime(t *testing.T) { //nolint:dupl // quiet linter
 
 	now := time.Now()
 
-	name, err := createTemp(t)
+	name, err := createTempFile(t)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -129,8 +125,8 @@ func TestStatATime(t *testing.T) { //nolint:dupl // quiet linter
 		t.Fatal(err)
 	}
 
-	if got := fi.ATime(); !timesClose(got, now) {
-		t.Fatalf("ATime(): got %v, want %v", got, now)
+	if got := fi.ATime(); !compareTimes(got, now, testEnv.atimeGranularity) {
+		fatalTimes(t, "ATime()", got, now, testEnv.atimeGranularity)
 	}
 
 	if compat.IsTinygo {
@@ -150,8 +146,8 @@ func TestStatATime(t *testing.T) { //nolint:dupl // quiet linter
 		t.Fatal(err)
 	}
 
-	if got := fi.ATime(); !timesClose(got, atime) {
-		t.Fatalf("ATime(): got %v, want %v", got, atime)
+	if got := fi.ATime(); !compareTimes(got, atime, testEnv.atimeGranularity) {
+		fatalTimes(t, "ATime()", got, now, testEnv.atimeGranularity)
 	}
 }
 
@@ -164,7 +160,7 @@ func TestStatBTime(t *testing.T) {
 
 	now := time.Now()
 
-	name, err := createTemp(t)
+	name, err := createTempFile(t)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -174,8 +170,8 @@ func TestStatBTime(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if got := fi.BTime(); !timesClose(got, now) {
-		t.Fatalf("BTime(): got %v, want %v", got, now)
+	if got := fi.BTime(); !compareTimes(got, now, testEnv.btimeGranularity) {
+		fatalTimes(t, "BTime()", got, now, testEnv.atimeGranularity)
 	}
 }
 
@@ -188,7 +184,7 @@ func TestStatCTime(t *testing.T) {
 
 	now := time.Now()
 
-	name, err := createTemp(t)
+	name, err := createTempFile(t)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -198,15 +194,15 @@ func TestStatCTime(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if got := fi.CTime(); !timesClose(got, now) {
-		t.Fatalf("CTime(): got %v, want %v", got, now)
+	if got := fi.CTime(); !compareTimes(got, now, testEnv.ctimeGranularity) {
+		fatalTimes(t, "CTime()", got, now, testEnv.ctimeGranularity)
 	}
 }
 
 func TestStatMTime(t *testing.T) { //nolint:dupl // quiet linter
 	now := time.Now()
 
-	name, err := createTemp(t)
+	name, err := createTempFile(t)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -216,8 +212,8 @@ func TestStatMTime(t *testing.T) { //nolint:dupl // quiet linter
 		t.Fatal(err)
 	}
 
-	if got := fi.MTime(); !timesClose(got, now) {
-		t.Fatalf("MTime(): got %v, want %v", got, now)
+	if got := fi.MTime(); !compareTimes(got, now, testEnv.mtimeGranularity) {
+		fatalTimes(t, "MTime()", got, now, testEnv.mtimeGranularity)
 	}
 
 	if compat.IsTinygo {
@@ -237,13 +233,13 @@ func TestStatMTime(t *testing.T) { //nolint:dupl // quiet linter
 		t.Fatal(err)
 	}
 
-	if got := fi.MTime(); !timesClose(got, mtime) {
-		t.Fatalf("MTime(): got %v, want %v", got, mtime)
+	if got := fi.MTime(); !compareTimes(got, mtime, testEnv.mtimeGranularity) {
+		fatalTimes(t, "MTime()", got, now, testEnv.mtimeGranularity)
 	}
 }
 
 func TestStatUID(t *testing.T) {
-	name, err := createTemp(t)
+	name, err := createTempFile(t)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -256,7 +252,7 @@ func TestStatUID(t *testing.T) {
 	got := fi.UID()
 
 	if compat.IsWindows {
-		if got == compat.UnknownID {
+		if !testEnv.noACLs && got == compat.UnknownID {
 			t.Fatalf("UID(): got %v", got)
 		}
 
@@ -270,7 +266,7 @@ func TestStatUID(t *testing.T) {
 }
 
 func TestStatGID(t *testing.T) {
-	name, err := createTemp(t)
+	name, err := createTempFile(t)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -283,7 +279,7 @@ func TestStatGID(t *testing.T) {
 	got := fi.GID()
 
 	if compat.IsWindows {
-		if got == compat.UnknownID {
+		if !testEnv.noACLs && got == compat.UnknownID {
 			t.Fatalf("GID(): got %v", got)
 		}
 
@@ -304,7 +300,7 @@ func TestStatUser(t *testing.T) {
 		return // tinygo doesn't support t.Skip
 	}
 
-	name, err := createTemp(t)
+	name, err := createTempFile(t)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -334,7 +330,7 @@ func TestStatGroup(t *testing.T) {
 		return // tinygo doesn't support t.Skip
 	}
 
-	name, err := createTemp(t)
+	name, err := createTempFile(t)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -363,7 +359,7 @@ func TestStatGroup(t *testing.T) {
 }
 
 func TestStatSamePartition(t *testing.T) {
-	name, err := createTemp(t)
+	name, err := createTempFile(t)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -384,7 +380,7 @@ func TestStatSamePartition(t *testing.T) {
 }
 
 func TestStatSamePartitions(t *testing.T) {
-	name, err := createTemp(t)
+	name, err := createTempFile(t)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -395,7 +391,7 @@ func TestStatSamePartitions(t *testing.T) {
 }
 
 func TestStatSameFile(t *testing.T) {
-	name, err := createTemp(t)
+	name, err := createTempFile(t)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -416,7 +412,7 @@ func TestStatSameFile(t *testing.T) {
 }
 
 func TestStatSameFiles(t *testing.T) {
-	name, err := createTemp(t)
+	name, err := createTempFile(t)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -427,12 +423,12 @@ func TestStatSameFiles(t *testing.T) {
 }
 
 func TestStatDiffFile(t *testing.T) {
-	name1, err := createTemp(t)
+	name1, err := createTempFile(t)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	name2, err := createTemp(t)
+	name2, err := createTempFile(t)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -453,12 +449,12 @@ func TestStatDiffFile(t *testing.T) {
 }
 
 func TestStatDiffFiles(t *testing.T) {
-	name1, err := createTemp(t)
+	name1, err := createTempFile(t)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	name2, err := createTemp(t)
+	name2, err := createTempFile(t)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -468,10 +464,10 @@ func TestStatDiffFiles(t *testing.T) {
 	}
 }
 
-func createTemp(t *testing.T) (string, error) {
+func createTempFile(t *testing.T) (string, error) {
 	t.Helper()
 
-	f, err := compat.CreateTemp(t.TempDir(), "*")
+	f, err := compat.CreateTemp(tempDir(t), "*")
 	if err != nil {
 		return "", err
 	}
@@ -492,43 +488,4 @@ func createTemp(t *testing.T) (string, error) {
 	}
 
 	return name, nil
-}
-
-func timesClose(a, b time.Time) bool {
-	return a.Sub(b).Abs() < allowedTimeVariance
-}
-
-func compareNames(got string, want string) bool {
-	if compat.IsWasip1 {
-		if got == "" && want == "daemon" {
-			return true
-		}
-	}
-
-	if !compat.IsWindows {
-		return got == want
-	}
-
-	if got == "" || want == "" {
-		return false
-	}
-	gotDomain, gotName := parseName(got)
-	wantDomain, wantName := parseName(want)
-	if gotName == wantName {
-		if gotDomain == wantDomain || gotDomain == "" || wantDomain == "" {
-			return true
-		}
-	}
-
-	return false
-}
-
-func parseName(name string) (string, string) {
-	parts := strings.Split(name, `\`)
-	switch {
-	case len(parts) == 1:
-		return "", strings.ToLower(parts[0])
-	default:
-		return strings.ToLower(parts[0]), strings.ToLower(parts[1])
-	}
 }

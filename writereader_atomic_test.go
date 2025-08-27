@@ -16,7 +16,7 @@ import (
 )
 
 func TestWriteReaderAtomic(t *testing.T) {
-	dir := t.TempDir()
+	dir := tempDir(t)
 	file := filepath.Join(dir, "foo.txt")
 	content := bytes.NewBufferString("foo")
 
@@ -34,6 +34,7 @@ func TestWriteReaderAtomic(t *testing.T) {
 	}
 
 	want := compat.CreateTempPerm // 0o600
+	want = fixPerms(want, false)
 
 	got := fi.Mode().Perm()
 
@@ -43,7 +44,7 @@ func TestWriteReaderAtomic(t *testing.T) {
 }
 
 func TestWriteReaderAtomicDefaultFileMode(t *testing.T) {
-	dir := t.TempDir()
+	dir := tempDir(t)
 	file := filepath.Join(dir, "bar.txt")
 	content := bytes.NewBufferString("bar")
 
@@ -66,7 +67,7 @@ func TestWriteReaderAtomicDefaultFileMode(t *testing.T) {
 		t.Fatalf("Failed to stat file: %q: %v", file, err)
 	}
 
-	want := fixPerms(perm644)
+	want := fixPerms(perm644, false)
 	if compat.IsTinygo && compat.IsWasip1 {
 		want = perm600
 	}
@@ -91,7 +92,7 @@ func TestWriteReaderAtomicDefaultFileMode(t *testing.T) {
 		t.Fatalf("Failed to stat file: %q: %v", file, err)
 	}
 
-	want = perm600
+	want = fixPerms(perm600, false)
 
 	got = fi.Mode().Perm()
 
@@ -101,7 +102,7 @@ func TestWriteReaderAtomicDefaultFileMode(t *testing.T) {
 }
 
 func TestWriteReaderAtomicMode(t *testing.T) {
-	dir := t.TempDir()
+	dir := tempDir(t)
 	file := filepath.Join(dir, "baz.txt")
 	content := bytes.NewBufferString("baz")
 
@@ -122,7 +123,7 @@ func TestWriteReaderAtomicMode(t *testing.T) {
 		t.Fatalf("Failed to stat file: %q: %v", file, err)
 	}
 
-	want := fixPerms(perm644)
+	want := fixPerms(perm644, false)
 	if compat.IsTinygo && compat.IsWasip1 {
 		want = perm600
 	}

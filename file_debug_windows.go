@@ -23,7 +23,7 @@ func init() {
 }
 
 func dumpMasks(perm os.FileMode, ownerMask uint32, groupMask uint32, worldMask uint32) { //nolint:unused // quiet linter
-	if !testing.Verbose() || os.Getenv("COMPAT_DEBUG") == "" {
+	if !strings.Contains(compatDebug, "DUMP") {
 		return
 	}
 	omask := aMask(ownerMask)

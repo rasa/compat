@@ -9,16 +9,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Added
 
+- Add support for ext2/3/4, exFAT, FAT32, F2FS, NTFS, ReiserFS, ReFS and XFS
+  filesystems on Linux.
+- Add support for exFAT, FAT32, and ReFS filesystems on Windows.
+- Add running unit tests on all supported filesystems on Linux (as root) and
+  Windows.
 - Add `IsBSDLike` constant (`IsBSD` or `IsApple`).
 - Add `UnderlyingGoVersion()` to report go version under Tinygo compiler.
 - Add `cmd/updater` to build binaries.
 
 ### Fixed
 
+- Fix `SupportsSymlinks()` to return false on the Plan 9 OS.
 - Add -buildvcs=false to fix build on DragonflyBSD.
 
 ### Changed
 
+- (Temporarily) removed support for mode 0o000 on Windows. ***BREAKING CHANGE***
 - Change `Links()` from a uint64 to a uint (to align with APIs). ***BREAKING CHANGE***
 - Bump Tinygo to 0.39.0 (uses go1.25).
 - Bump Wasitime to 36.0.1.

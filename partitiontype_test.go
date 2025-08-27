@@ -14,7 +14,7 @@ import (
 )
 
 func TestPartitionType(t *testing.T) {
-	f, err := os.CreateTemp(t.TempDir(), "")
+	f, err := os.CreateTemp(tempDir(t), "")
 	if err != nil {
 		t.Error(err)
 

@@ -6,10 +6,12 @@
 package compat_test
 
 import (
+	"context"
 	"fmt"
 	"os"
 	"runtime"
 	"runtime/debug"
+	"strings"
 	"testing"
 
 	"github.com/davecgh/go-spew/spew"
@@ -17,10 +19,60 @@ import (
 	"github.com/rasa/compat"
 )
 
+const (
+	nativeFS        = "Native"
+	allFS           = "All"
+	defaultTempSize = "2GB"
+)
+
+var (
+	tempPath string
+	tempSize string
+)
+
+type testVars struct {
+	noACLs                  bool
+	noSymlinks              bool
+	noHardLinks             bool
+	atimeGranularity        int // seconds
+	btimeGranularity        int
+	ctimeGranularity        int
+	mtimeGranularity        int
+	btimeSymlinkGranularity int
+	fsType                  string
+}
+
+var testEnv = testVars{}
+
+type fsTest struct {
+	fsName string
+	vars   testVars
+}
+
 func TestMain(m *testing.M) {
-	code := m.Run()
+	fsToTest := os.Getenv("COMPAT_DEBUG_FS")
+
+	tempSize = defaultTempSize
+	fsSize := os.Getenv("COMPAT_DEBUG_FS_SIZE")
+	if fsSize != "" {
+		tempSize = fsSize
+	}
+
+	nativeFSType, _ := compat.PartitionType(context.Background(), os.TempDir())
+	if nativeFSType == "" {
+		nativeFSType = "Unknown"
+	}
+
+	fsPath := os.Getenv("COMPAT_DEBUG_FS_PATH")
+
+	code := testMain(m, fsToTest, nativeFSType, fsPath)
+
 	if code == 0 {
 		os.Exit(0)
+	}
+
+	if !strings.Contains(compatDebug, "DEBUG") {
+		os.Exit(code)
 	}
 
 	fmt.Println("Tests failed")

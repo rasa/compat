@@ -15,10 +15,8 @@ import (
 )
 
 func TestLstatStat(t *testing.T) { //nolint:dupl // quiet linter
-	if !compat.SupportsSymlinks() {
-		skip(t, "Skipping test: symlinks are not supported on "+runtime.GOOS)
-
-		return // tinygo doesn't support t.Skip
+	if !supportsSymlinks(t) {
+		return
 	}
 
 	now := time.Now()
@@ -58,16 +56,14 @@ func TestLstatStat(t *testing.T) { //nolint:dupl // quiet linter
 		t.Errorf("IsDir(): got %v, want %v", got, false)
 	}
 
-	if got := fi.ModTime(); !timesClose(got, now) {
+	if got := fi.ModTime(); !compareTimes(got, now, testEnv.mtimeGranularity) {
 		t.Errorf("ModTime(): got %v, want %v", got, now)
 	}
 }
 
 func TestLstatLstat(t *testing.T) { //nolint:dupl // quiet linter
-	if !compat.SupportsSymlinks() {
-		skip(t, "Skipping test: symlinks are not supported on "+runtime.GOOS)
-
-		return // tinygo doesn't support t.Skip
+	if !supportsSymlinks(t) {
+		return
 	}
 
 	now := time.Now()
@@ -105,22 +101,18 @@ func TestLstatLstat(t *testing.T) { //nolint:dupl // quiet linter
 		t.Errorf("IsDir(): got %v, want %v", got, false)
 	}
 
-	if got := fi.ModTime(); !timesClose(got, now) {
+	if got := fi.ModTime(); !compareTimes(got, now, testEnv.mtimeGranularity) {
 		t.Errorf("ModTime(): got %v, want %v", got, now)
 	}
 }
 
 func TestLstatLinks(t *testing.T) {
-	if !compat.SupportsLinks() {
-		skip(t, "Skipping test: Links() not supported on "+runtime.GOOS)
-
-		return // tinygo doesn't support t.Skip
+	if !supportsHardLinks(t) {
+		return
 	}
 
-	if !compat.SupportsSymlinks() {
-		skip(t, "Skipping test: symlinks are not supported on "+runtime.GOOS)
-
-		return // tinygo doesn't support t.Skip
+	if !supportsSymlinks(t) {
+		return
 	}
 
 	_, name, err := createTempSymlink(t)
@@ -181,13 +173,11 @@ func TestLstatATime(t *testing.T) { //nolint:dupl // quiet linter
 	if !compat.SupportsATime() {
 		skip(t, "Skipping test: ATime() not supported on "+runtime.GOOS)
 
-		return // tinygo doesn't support t.Skip
+		return
 	}
 
-	if !compat.SupportsSymlinks() {
-		skip(t, "Skipping test: symlinks are not supported on "+runtime.GOOS)
-
-		return // tinygo doesn't support t.Skip
+	if !supportsSymlinks(t) {
+		return
 	}
 
 	now := time.Now()
@@ -202,7 +192,7 @@ func TestLstatATime(t *testing.T) { //nolint:dupl // quiet linter
 		t.Fatal(err)
 	}
 
-	if got := fi.ATime(); !timesClose(got, now) {
+	if got := fi.ATime(); !compareTimes(got, now, testEnv.atimeGranularity) {
 		t.Fatalf("ATime(): got %v, want %v", got, now)
 	}
 
@@ -223,7 +213,7 @@ func TestLstatATime(t *testing.T) { //nolint:dupl // quiet linter
 		t.Fatal(err)
 	}
 
-	if got := fi.ATime(); !timesClose(got, now) {
+	if got := fi.ATime(); !compareTimes(got, now, testEnv.atimeGranularity) {
 		t.Fatalf("ATime(): got %v, want %v", got, now)
 	}
 
@@ -232,7 +222,7 @@ func TestLstatATime(t *testing.T) { //nolint:dupl // quiet linter
 		t.Fatal(err)
 	}
 
-	if got := fi.ATime(); !timesClose(got, atime) {
+	if got := fi.ATime(); !compareTimes(got, atime, testEnv.atimeGranularity) {
 		t.Fatalf("ATime(): got %v, want %v", got, atime)
 	}
 }
@@ -241,13 +231,11 @@ func TestLstatBTime(t *testing.T) {
 	if !compat.SupportsBTime() {
 		skip(t, "Skipping test: BTime() not supported on "+runtime.GOOS)
 
-		return // tinygo doesn't support t.Skip
+		return
 	}
 
-	if !compat.SupportsSymlinks() {
-		skip(t, "Skipping test: symlinks are not supported on "+runtime.GOOS)
-
-		return // tinygo doesn't support t.Skip
+	if !supportsSymlinks(t) {
+		return
 	}
 
 	now := time.Now()
@@ -262,7 +250,7 @@ func TestLstatBTime(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if got := fi.BTime(); !timesClose(got, now) {
+	if got := fi.BTime(); !compareTimes(got, now, testEnv.btimeSymlinkGranularity) {
 		t.Fatalf("BTime(): got %v, want %v", got, now)
 	}
 }
@@ -271,13 +259,11 @@ func TestLstatCTime(t *testing.T) {
 	if !compat.SupportsCTime() {
 		skip(t, "Skipping test: CTime() not supported on "+runtime.GOOS)
 
-		return // tinygo doesn't support t.Skip
+		return
 	}
 
-	if !compat.SupportsSymlinks() {
-		skip(t, "Skipping test: symlinks are not supported on "+runtime.GOOS)
-
-		return // tinygo doesn't support t.Skip
+	if !supportsSymlinks(t) {
+		return
 	}
 
 	now := time.Now()
@@ -292,16 +278,14 @@ func TestLstatCTime(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if got := fi.CTime(); !timesClose(got, now) {
+	if got := fi.CTime(); !compareTimes(got, now, testEnv.ctimeGranularity) {
 		t.Fatalf("CTime(): got %v, want %v", got, now)
 	}
 }
 
 func TestLstatMTime(t *testing.T) { //nolint:dupl // quiet linter
-	if !compat.SupportsSymlinks() {
-		skip(t, "Skipping test: symlinks are not supported on "+runtime.GOOS)
-
-		return // tinygo doesn't support t.Skip
+	if !supportsSymlinks(t) {
+		return
 	}
 
 	now := time.Now()
@@ -316,7 +300,7 @@ func TestLstatMTime(t *testing.T) { //nolint:dupl // quiet linter
 		t.Fatal(err)
 	}
 
-	if got := fi.MTime(); !timesClose(got, now) {
+	if got := fi.MTime(); !compareTimes(got, now, testEnv.mtimeGranularity) {
 		t.Fatalf("MTime(): got %v, want %v", got, now)
 	}
 
@@ -337,7 +321,7 @@ func TestLstatMTime(t *testing.T) { //nolint:dupl // quiet linter
 		t.Fatal(err)
 	}
 
-	if got := fi.MTime(); !timesClose(got, now) {
+	if got := fi.MTime(); !compareTimes(got, now, testEnv.mtimeGranularity) {
 		t.Fatalf("MTime(): got %v, want %v", got, now)
 	}
 
@@ -346,16 +330,14 @@ func TestLstatMTime(t *testing.T) { //nolint:dupl // quiet linter
 		t.Fatal(err)
 	}
 
-	if got := fi.MTime(); !timesClose(got, mtime) {
+	if got := fi.MTime(); !compareTimes(got, mtime, testEnv.mtimeGranularity) {
 		t.Fatalf("MTime(): got %v, want %v", got, mtime)
 	}
 }
 
 func TestLstatUID(t *testing.T) {
-	if !compat.SupportsSymlinks() {
-		skip(t, "Skipping test: symlinks are not supported on "+runtime.GOOS)
-
-		return // tinygo doesn't support t.Skip
+	if !supportsSymlinks(t) {
+		return
 	}
 
 	_, name, err := createTempSymlink(t)
@@ -385,10 +367,8 @@ func TestLstatUID(t *testing.T) {
 }
 
 func TestLstatGID(t *testing.T) {
-	if !compat.SupportsSymlinks() {
-		skip(t, "Skipping test: symlinks are not supported on "+runtime.GOOS)
-
-		return // tinygo doesn't support t.Skip
+	if !supportsSymlinks(t) {
+		return
 	}
 
 	_, name, err := createTempSymlink(t)
@@ -418,24 +398,22 @@ func TestLstatGID(t *testing.T) {
 }
 
 func TestLstatUser(t *testing.T) {
-	if !compat.SupportsSymlinks() {
-		skip(t, "Skipping test: symlinks are not supported on "+runtime.GOOS)
-
-		return // tinygo doesn't support t.Skip
+	if !supportsSymlinks(t) {
+		return
 	}
 
 	if compat.IsTinygo {
 		// tinygo: Current requires cgo or $USER, $HOME set in environment
 		skip(t, "Skipping test: User() not supported on tinygo")
 
-		return // tinygo doesn't support t.Skip
+		return
 	}
 
 	if compat.IsWindows {
 		// tinygo: Current requires cgo or $USER, $HOME set in environment
 		skip(t, "Skipping test: User() will be indeterminate on Windows")
 
-		return // tinygo doesn't support t.Skip
+		return
 	}
 
 	_, name, err := createTempSymlink(t)
@@ -462,17 +440,15 @@ func TestLstatUser(t *testing.T) {
 }
 
 func TestLstatUserSetOwner(t *testing.T) {
-	if !compat.SupportsSymlinks() {
-		skip(t, "Skipping test: symlinks are not supported on "+runtime.GOOS)
-
-		return // tinygo doesn't support t.Skip
+	if !supportsSymlinks(t) {
+		return
 	}
 
 	if !compat.IsWindows {
 		// tinygo: Current requires cgo or $USER, $HOME set in environment
 		skip(t, "Skipping test: Windows only test")
 
-		return // tinygo doesn't support t.Skip
+		return
 	}
 
 	_, name, err := createTempSymlink(t, compat.WithSetSymlinkOwner(true))
@@ -499,16 +475,14 @@ func TestLstatUserSetOwner(t *testing.T) {
 }
 
 func TestLstatGroup(t *testing.T) {
-	if !compat.SupportsSymlinks() {
-		skip(t, "Skipping test: symlinks are not supported on "+runtime.GOOS)
-
-		return // tinygo doesn't support t.Skip
+	if !supportsSymlinks(t) {
+		return
 	}
 
 	if compat.IsTinygo {
 		skip(t, "Skipping test: Group() not supported on tinygo")
 
-		return // tinygo doesn't support t.Skip
+		return
 	}
 
 	_, name, err := createTempSymlink(t)
@@ -540,16 +514,14 @@ func TestLstatGroup(t *testing.T) {
 }
 
 func TestLstatGroupSetOwner(t *testing.T) {
-	if !compat.SupportsSymlinks() {
-		skip(t, "Skipping test: symlinks are not supported on "+runtime.GOOS)
-
-		return // tinygo doesn't support t.Skip
+	if !supportsSymlinks(t) {
+		return
 	}
 
 	if compat.IsTinygo {
 		skip(t, "Skipping test: Group() not supported on tinygo")
 
-		return // tinygo doesn't support t.Skip
+		return
 	}
 
 	_, name, err := createTempSymlink(t, compat.WithSetSymlinkOwner(true))
@@ -581,10 +553,8 @@ func TestLstatGroupSetOwner(t *testing.T) {
 }
 
 func TestLstatSamePartition(t *testing.T) {
-	if !compat.SupportsSymlinks() {
-		skip(t, "Skipping test: symlinks are not supported on "+runtime.GOOS)
-
-		return // tinygo doesn't support t.Skip
+	if !supportsSymlinks(t) {
+		return
 	}
 
 	_, name, err := createTempSymlink(t)
@@ -608,10 +578,8 @@ func TestLstatSamePartition(t *testing.T) {
 }
 
 func TestLstatSamePartitions(t *testing.T) {
-	if !compat.SupportsSymlinks() {
-		skip(t, "Skipping test: symlinks are not supported on "+runtime.GOOS)
-
-		return // tinygo doesn't support t.Skip
+	if !supportsSymlinks(t) {
+		return
 	}
 
 	_, name, err := createTempSymlink(t)
@@ -625,10 +593,8 @@ func TestLstatSamePartitions(t *testing.T) {
 }
 
 func TestLstatSameFile(t *testing.T) {
-	if !compat.SupportsSymlinks() {
-		skip(t, "Skipping test: symlinks are not supported on "+runtime.GOOS)
-
-		return // tinygo doesn't support t.Skip
+	if !supportsSymlinks(t) {
+		return
 	}
 
 	_, name, err := createTempSymlink(t)
@@ -652,10 +618,8 @@ func TestLstatSameFile(t *testing.T) {
 }
 
 func TestLstatSameFiles(t *testing.T) {
-	if !compat.SupportsSymlinks() {
-		skip(t, "Skipping test: symlinks are not supported on "+runtime.GOOS)
-
-		return // tinygo doesn't support t.Skip
+	if !supportsSymlinks(t) {
+		return
 	}
 
 	_, name, err := createTempSymlink(t)
@@ -669,10 +633,8 @@ func TestLstatSameFiles(t *testing.T) {
 }
 
 func TestLstatDiffFile(t *testing.T) {
-	if !compat.SupportsSymlinks() {
-		skip(t, "Skipping test: symlinks are not supported on "+runtime.GOOS)
-
-		return // tinygo doesn't support t.Skip
+	if !supportsSymlinks(t) {
+		return
 	}
 
 	_, name1, err := createTempSymlink(t)
@@ -701,10 +663,8 @@ func TestLstatDiffFile(t *testing.T) {
 }
 
 func TestLstatDiffFiles(t *testing.T) {
-	if !compat.SupportsSymlinks() {
-		skip(t, "Skipping test: symlinks are not supported on "+runtime.GOOS)
-
-		return // tinygo doesn't support t.Skip
+	if !supportsSymlinks(t) {
+		return
 	}
 
 	_, name1, err := createTempSymlink(t)
@@ -725,7 +685,7 @@ func TestLstatDiffFiles(t *testing.T) {
 func createTempSymlink(t *testing.T, opts ...compat.Option) (string, string, error) {
 	t.Helper()
 
-	f, err := compat.CreateTemp(t.TempDir(), "*")
+	f, err := compat.CreateTemp(tempDir(t), "*")
 	if err != nil {
 		return "", "", err
 	}
