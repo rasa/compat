@@ -98,6 +98,11 @@ jobs:
 
       - name: go test
         if: env.SHOULD_RUN
+        env:
+          COMPAT_DEBUG: ${{ inputs.compat_debug }}
+          DEBIAN_FRONTEND: noninteractive
+          TERM: dumb
+          TZ: UTC
         run: |
           # go test
           : "${verbose_testing:=true}"
@@ -134,5 +139,3 @@ jobs:
           go version
 
           go test "${TEST_OPTS[@]}" .
-        env:
-          COMPAT_DEBUG: ${{ inputs.compat_debug }}
