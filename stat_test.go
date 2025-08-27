@@ -288,7 +288,7 @@ func TestStatGID(t *testing.T) {
 	}
 
 	isRoot, _ := compat.IsRoot()
-	
+
 	want := os.Getegid()
 	if got != want {
 		if compat.IsApple && isRoot {
