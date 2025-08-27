@@ -148,9 +148,11 @@ jobs:
         if: env.SHOULD_RUN
         run: |
           # Set env vars (COMPAT_DEBUG, GOCACHE, GOMODCACHE, inputs, etc.)
-          if [[ "${{ inputs.sudo }}" == "true" && command -v sudo ]]; then
-            sudo='sudo -E -n --preserve-env=PATH,COMPAT_DEBUG,TEST_OPTS'
-          fi &>/dev/null
+          if [[ "${{ inputs.sudo }}" == "true" ]]; then
+            if command -v sudo &>/dev/null; then
+              sudo='sudo -E -n --preserve-env=PATH,COMPAT_DEBUG,TEST_OPTS'
+            fi
+          fi
           printf "COMPAT_DEBUG=%s\n" "${{ inputs.compat_debug }}" >>"${GITHUB_ENV}"
           printf "GOCACHE=%s\n"      "$(go env GOCACHE | tr '\\' '/')" >>"${GITHUB_ENV}"
           printf "GOMODCACHE=%s\n"   "$(go env GOMODCACHE | tr '\\' '/')" >>"${GITHUB_ENV}"
