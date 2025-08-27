@@ -52,6 +52,10 @@ func testMain(m *testing.M, fsToTest, nativeFSType, fsPath string) int { //nolin
 			continue
 		}
 
+		if testing.Short() && code != -1 {
+			break
+		}
+
 		fsName := fsTest.fsName
 		if fsTest.fsName == nativeFS {
 			fsTest.vars.fsType = testEnv.fsType
@@ -86,10 +90,6 @@ func testMain(m *testing.M, fsToTest, nativeFSType, fsPath string) int { //nolin
 			continue
 		}
 
-		if testing.Short() && code != -1 {
-			break
-		}
-	
 		tempDrive := string(tempPath[0])
 		tempIsVHDX = true
 

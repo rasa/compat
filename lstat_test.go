@@ -45,15 +45,15 @@ func TestLstatStat(t *testing.T) { //nolint:dupl
 	perm := compat.CreateTempPerm
 	want := fixPerms(perm, false)
 	if got := fi.Mode().Perm(); got != want {
-		if tempIsVHDX {
-			t.Logf("Mode(): got 0o%o, want 0o%o (ignoring as we are on a VHDX)", got, want)
+		if compat.IsWindows {
+			t.Logf("Mode(): got 0o%o, want 0o%o (ignoring as we are on Windows)", got, want)
 		} else {
 			t.Errorf("Mode(): got 0o%o, want 0o%o", got, want)
 		}
 	}
 
-	if got := fi.Mode()&os.ModeSymlink == 0; got != true {
-		t.Errorf("Mode()&os.ModeSymlink==0: got %v, want %v", got, true)
+	if got := fi.Mode().Type(); got != 0 {
+		t.Errorf("Mode().Type(): got %v (0o%o), want 0o%o", got, got, 0)
 	}
 
 	if got := fi.IsDir(); got != false {
@@ -61,7 +61,7 @@ func TestLstatStat(t *testing.T) { //nolint:dupl
 	}
 
 	if got := fi.ModTime(); !compareTimes(got, now, testEnv.mtimeGranularity) {
-		t.Errorf("ModTime(): got %v, want %v", got, now)
+		fatalTimes(t, "ModTime()", got, now, testEnv.mtimeGranularity)
 	}
 }
 
@@ -103,8 +103,8 @@ func TestLstatLstat(t *testing.T) { //nolint:dupl
 		}
 	}
 
-	if got := fi.Mode()&os.ModeSymlink != 0; got != true {
-		t.Errorf("Mode()&os.ModeSymlink!=0: got %v, want %v", got, true)
+	if got := fi.Mode().Type(); got != os.ModeSymlink {
+		t.Errorf("Mode().Type(): got %v (0o%o), want %v (0o%o)", got, got, os.ModeSymlink, os.ModeSymlink)
 	}
 
 	if got := fi.IsDir(); got != false {
@@ -112,7 +112,7 @@ func TestLstatLstat(t *testing.T) { //nolint:dupl
 	}
 
 	if got := fi.ModTime(); !compareTimes(got, now, testEnv.mtimeGranularity) {
-		t.Errorf("ModTime(): got %v, want %v", got, now)
+		fatalTimes(t, "ModTime()", got, now, testEnv.mtimeGranularity)
 	}
 }
 
@@ -203,7 +203,7 @@ func TestLstatATime(t *testing.T) { //nolint:dupl
 	}
 
 	if got := fi.ATime(); !compareTimes(got, now, testEnv.atimeGranularity) {
-		t.Fatalf("ATime(): got %v, want %v", got, now)
+		fatalTimes(t, "ATime()", got, now, testEnv.atimeGranularity)
 	}
 
 	if compat.IsTinygo {
@@ -224,7 +224,7 @@ func TestLstatATime(t *testing.T) { //nolint:dupl
 	}
 
 	if got := fi.ATime(); !compareTimes(got, now, testEnv.atimeGranularity) {
-		t.Fatalf("ATime(): got %v, want %v", got, now)
+		fatalTimes(t, "ATime()", got, now, testEnv.atimeGranularity)
 	}
 
 	fi, err = compat.Lstat(target)
@@ -233,7 +233,7 @@ func TestLstatATime(t *testing.T) { //nolint:dupl
 	}
 
 	if got := fi.ATime(); !compareTimes(got, atime, testEnv.atimeGranularity) {
-		t.Fatalf("ATime(): got %v, want %v", got, atime)
+		fatalTimes(t, "ATime()", got, atime, testEnv.atimeGranularity)
 	}
 }
 
@@ -261,7 +261,7 @@ func TestLstatBTime(t *testing.T) {
 	}
 
 	if got := fi.BTime(); !compareTimes(got, now, testEnv.btimeSymlinkGranularity) {
-		t.Fatalf("BTime(): got %v, want %v", got, now)
+		fatalTimes(t, "BTime()", got, now, testEnv.btimeSymlinkGranularity)
 	}
 }
 
@@ -289,7 +289,7 @@ func TestLstatCTime(t *testing.T) {
 	}
 
 	if got := fi.CTime(); !compareTimes(got, now, testEnv.ctimeGranularity) {
-		t.Fatalf("CTime(): got %v, want %v", got, now)
+		fatalTimes(t, "CTime()", got, now, testEnv.ctimeGranularity)
 	}
 }
 
@@ -311,7 +311,7 @@ func TestLstatMTime(t *testing.T) { //nolint:dupl
 	}
 
 	if got := fi.MTime(); !compareTimes(got, now, testEnv.mtimeGranularity) {
-		t.Fatalf("MTime(): got %v, want %v", got, now)
+		fatalTimes(t, "MTime()", got, now, testEnv.mtimeGranularity)
 	}
 
 	if compat.IsTinygo {
@@ -332,7 +332,7 @@ func TestLstatMTime(t *testing.T) { //nolint:dupl
 	}
 
 	if got := fi.MTime(); !compareTimes(got, now, testEnv.mtimeGranularity) {
-		t.Fatalf("MTime(): got %v, want %v", got, now)
+		fatalTimes(t, "MTime()", got, now, testEnv.mtimeGranularity)
 	}
 
 	fi, err = compat.Lstat(target)
@@ -341,7 +341,7 @@ func TestLstatMTime(t *testing.T) { //nolint:dupl
 	}
 
 	if got := fi.MTime(); !compareTimes(got, mtime, testEnv.mtimeGranularity) {
-		t.Fatalf("MTime(): got %v, want %v", got, mtime)
+		fatalTimes(t, "MTime()", got, mtime, testEnv.mtimeGranularity)
 	}
 }
 

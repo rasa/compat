@@ -26,8 +26,8 @@ const (
 )
 
 var (
-	tempPath string
-	tempSize string
+	tempPath   string
+	tempSize   string
 	tempIsVHDX bool
 )
 

@@ -44,6 +44,10 @@ func TestStatStat(t *testing.T) {
 		t.Errorf("Mode(): got 0o%o, want 0o%o", got, want)
 	}
 
+	if got := fi.Mode().Type(); got != 0 {
+		t.Errorf("fi.Mode().Type(): got 0o%o, want 0o%o", got, 0)
+	}
+
 	if got := fi.IsDir(); got != false {
 		t.Errorf("IsDir(): got %v, want %v", got, false)
 	}
@@ -148,7 +152,7 @@ func TestStatATime(t *testing.T) { //nolint:dupl
 	}
 
 	if got := fi.ATime(); !compareTimes(got, atime, testEnv.atimeGranularity) {
-		fatalTimes(t, "ATime()", got, now, testEnv.atimeGranularity)
+		fatalTimes(t, "ATime()", got, atime, testEnv.atimeGranularity)
 	}
 }
 
@@ -235,7 +239,7 @@ func TestStatMTime(t *testing.T) { //nolint:dupl
 	}
 
 	if got := fi.MTime(); !compareTimes(got, mtime, testEnv.mtimeGranularity) {
-		fatalTimes(t, "MTime()", got, now, testEnv.mtimeGranularity)
+		fatalTimes(t, "MTime()", got, mtime, testEnv.mtimeGranularity)
 	}
 }
 
