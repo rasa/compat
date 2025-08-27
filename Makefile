@@ -1,3 +1,7 @@
+#!/usr/bin/env make
+# SPDX-FileCopyrightText: Copyright © 2025 Ross Smith II <ross@smithii.com>
+# SPDX-License-Identifier: MIT
+
 SHELL := /bin/bash
 
 .DEFAULT_GOAL := all
@@ -27,10 +31,6 @@ clean: ## remove files created during build pipeline
 
 .PHONY: download
 download: ## go mod download
-	-echo PATH="${PATH}"
-	-command -v go
-	-go version
-	-go env
 	go mod download
 
 .PHONY: mod
