@@ -14,7 +14,7 @@ import (
 	"github.com/rasa/compat"
 )
 
-func TestLstatStat(t *testing.T) { //nolint:dupl // quiet linter
+func TestLstatStat(t *testing.T) { //nolint:dupl
 	if !supportsSymlinks(t) {
 		return
 	}
@@ -61,7 +61,7 @@ func TestLstatStat(t *testing.T) { //nolint:dupl // quiet linter
 	}
 }
 
-func TestLstatLstat(t *testing.T) { //nolint:dupl // quiet linter
+func TestLstatLstat(t *testing.T) { //nolint:dupl
 	if !supportsSymlinks(t) {
 		return
 	}
@@ -169,7 +169,7 @@ func TestLstatLinks(t *testing.T) {
 	}
 }
 
-func TestLstatATime(t *testing.T) { //nolint:dupl // quiet linter
+func TestLstatATime(t *testing.T) { //nolint:dupl
 	if !compat.SupportsATime() {
 		skip(t, "Skipping test: ATime() not supported on "+runtime.GOOS)
 
@@ -283,7 +283,7 @@ func TestLstatCTime(t *testing.T) {
 	}
 }
 
-func TestLstatMTime(t *testing.T) { //nolint:dupl // quiet linter
+func TestLstatMTime(t *testing.T) { //nolint:dupl
 	if !supportsSymlinks(t) {
 		return
 	}

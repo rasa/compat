@@ -1,4 +1,4 @@
-//nolint:all // quiet linter
+//nolint:all
 // SPDX-FileCopyrightText: Copyright © 2025 Ross Smith II <ross@smithii.com>
 // SPDX-License-Identifier: MIT
 

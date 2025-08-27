@@ -30,7 +30,7 @@ type fileStat struct {
 	user   string
 	group  string
 	path   string
-	btimed bool //nolint:unused // quiet linter
+	btimed bool //nolint:unused
 	// ctimed bool // unused
 	usered         bool
 	grouped        bool

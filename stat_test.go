@@ -106,7 +106,7 @@ func TestStatLinks(t *testing.T) {
 	}
 }
 
-func TestStatATime(t *testing.T) { //nolint:dupl // quiet linter
+func TestStatATime(t *testing.T) { //nolint:dupl
 	if !compat.SupportsATime() {
 		skip(t, "Skipping test: ATime() not supported on "+runtime.GOOS)
 
@@ -199,7 +199,7 @@ func TestStatCTime(t *testing.T) {
 	}
 }
 
-func TestStatMTime(t *testing.T) { //nolint:dupl // quiet linter
+func TestStatMTime(t *testing.T) { //nolint:dupl
 	now := time.Now()
 
 	name, err := createTempFile(t)

@@ -19,7 +19,7 @@ import (
 // the write fully succeeds, otherwise the existing file is unmodified).
 // Additional option arguments can be used to change the default configuration
 // for the target file.
-func WriteReaderAtomic(filename string, r io.Reader, opts ...Option) (err error) { //nolint:funlen,gocyclo // quiet linter
+func WriteReaderAtomic(filename string, r io.Reader, opts ...Option) (err error) { //nolint:funlen,gocyclo
 	// original behavior is to preserve the mode of an existing file.
 	fopts := Options{
 		keepFileMode: true,

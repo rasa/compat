@@ -39,7 +39,7 @@ func loadPerms() {
 	for u := 7; u >= 0; u-- {
 		for g := 7; g >= 0; g-- {
 			for o := 7; o >= 0; o-- {
-				mode := os.FileMode(u<<0o6 | g<<0o3 | o) //nolint:gosec // quiet linter
+				mode := os.FileMode(u<<0o6 | g<<0o3 | o) //nolint:gosec
 				// @TODO(rasa) support 0o0 perms on Windows
 				if mode == perm000 {
 					break
@@ -337,7 +337,7 @@ func logOutput(t *testing.T, exe string, args []string) error {
 		return err
 	}
 
-	cmd := exec.Command(exe, args...) //nolint:noctx // quiet linter
+	cmd := exec.Command(exe, args...) //nolint:noctx
 	out, err := cmd.CombinedOutput()
 	if err != nil {
 		t.Logf("Error running %v: %v", exe, err)

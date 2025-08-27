@@ -104,7 +104,7 @@ func mkdir(name string, perm os.FileMode) error {
 		return err
 	}
 
-	return golang.Mkdir(name, 0o700, sa) //nolint:mnd // quiet linter
+	return golang.Mkdir(name, 0o700, sa) //nolint:mnd
 }
 
 func mkdirAll(name string, perm os.FileMode) error {
@@ -113,7 +113,7 @@ func mkdirAll(name string, perm os.FileMode) error {
 		return err
 	}
 
-	return golang.MkdirAll(name, 0o700, sa) //nolint:mnd // quiet linter
+	return golang.MkdirAll(name, 0o700, sa) //nolint:mnd
 }
 
 func mkdirTemp(dir, pattern string, perm os.FileMode) (string, error) {
@@ -181,7 +181,7 @@ func saFromPerm(perm os.FileMode, create bool) (*syscall.SecurityAttributes, err
 		return &sa, nil
 	}
 
-	perm &^= os.FileMode(GetUmask()) //nolint:gosec // quiet linter
+	perm &^= os.FileMode(GetUmask()) //nolint:gosec
 	sd, err := sdFromPerm(perm)
 	if err != nil {
 		return nil, err
@@ -195,7 +195,7 @@ func saFromPerm(perm os.FileMode, create bool) (*syscall.SecurityAttributes, err
 
 // siFromPerm converts a perm (FileMode) to an *si (*securityInfo).
 func siFromPerm(perm os.FileMode) (*securityInfo, error) {
-	perm &^= os.FileMode(GetUmask()) //nolint:gosec // quiet linter
+	perm &^= os.FileMode(GetUmask()) //nolint:gosec
 
 	// Get current user's SID
 	token := windows.Token(0)
@@ -236,10 +236,10 @@ func siFromPerm(perm os.FileMode) (*securityInfo, error) {
 
 	var ea [3]windows.EXPLICIT_ACCESS
 
-	ownerMask := accessMask(perm, 6) //nolint:mnd // quiet linter
+	ownerMask := accessMask(perm, 6) //nolint:mnd
 	setExplicitAccess(&ea[0], ownerSid, ownerMask, windows.TRUSTEE_IS_USER)
 
-	groupMask := accessMask(perm, 3) //nolint:mnd // quiet linter
+	groupMask := accessMask(perm, 3) //nolint:mnd
 	setExplicitAccess(&ea[1], groupSid, groupMask, windows.TRUSTEE_IS_GROUP)
 
 	worldMask := accessMask(perm, 0)
@@ -308,13 +308,13 @@ func accessMask(mode os.FileMode, shift int) uint32 {
 
 	var mask uint32
 
-	if perm&(0o4<<shift) == (0o4 << shift) { //nolint:mnd // quiet linter
+	if perm&(0o4<<shift) == (0o4 << shift) { //nolint:mnd
 		mask |= windows.GENERIC_READ
 	}
-	if perm&(0o2<<shift) == (0o2 << shift) { //nolint:mnd // quiet linter
+	if perm&(0o2<<shift) == (0o2 << shift) { //nolint:mnd
 		mask |= windows.GENERIC_WRITE | windows.DELETE
 	}
-	if perm&(0o1<<shift) == (0o1 << shift) { //nolint:mnd // quiet linter
+	if perm&(0o1<<shift) == (0o1 << shift) { //nolint:mnd
 		mask |= windows.GENERIC_EXECUTE
 	}
 

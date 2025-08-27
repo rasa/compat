@@ -46,9 +46,9 @@ const (
 	// The following constants are not used by the compat library, but are
 	// provided to make code migration easier.
 
-	O_RDONLY = os.O_RDONLY // open the file read-only. //nolint:revive // quiet linter
-	O_WRONLY = os.O_WRONLY // open the file write-only. //nolint:revive // quiet linter
-	O_RDWR   = os.O_RDWR   // open the file read-write. //nolint:revive // quiet linter
+	O_RDONLY = os.O_RDONLY // open the file read-only. //nolint:revive
+	O_WRONLY = os.O_WRONLY // open the file write-only. //nolint:revive
+	O_RDWR   = os.O_RDWR   // open the file read-write. //nolint:revive
 	// The remaining values may be or'ed in to control behavior.
 	O_APPEND = os.O_APPEND // append data to the file when writing.
 	O_CREATE = os.O_CREATE // create a new file if none exists.

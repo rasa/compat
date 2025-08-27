@@ -84,7 +84,7 @@ func compareTimes(a, b time.Time, granularity int) bool {
 	return a.Sub(b).Abs() < time.Duration(granularity)*time.Second
 }
 
-func errno(err error) uint32 { //nolint:unused // quiet linter
+func errno(err error) uint32 { //nolint:unused
 	if err == nil {
 		return 0
 	}
@@ -96,7 +96,7 @@ func errno(err error) uint32 { //nolint:unused // quiet linter
 	return ^uint32(0)
 }
 
-func fatal(t *testing.T, msg any) { //nolint:unused // quiet linter
+func fatal(t *testing.T, msg any) { //nolint:unused
 	t.Helper()
 
 	s := fmt.Sprint(msg)
@@ -111,12 +111,12 @@ func fatal(t *testing.T, msg any) { //nolint:unused // quiet linter
 	t.Fatal(s)
 }
 
-func fatalf(t *testing.T, format string, a ...any) { //nolint:unused // quiet linter
+func fatalf(t *testing.T, format string, a ...any) { //nolint:unused
 	t.Helper()
 	fatal(t, fmt.Sprintf(format, a...))
 }
 
-func fatalTimes(t *testing.T, prefix string, got, want time.Time, granularity int) { //nolint:unused // quiet linter
+func fatalTimes(t *testing.T, prefix string, got, want time.Time, granularity int) { //nolint:unused
 	t.Helper()
 
 	diff := got.Sub(want).Abs().Seconds()
@@ -177,7 +177,7 @@ func logf(format string, a ...any) { //nolint:unused
 	}
 }
 
-func must(err error) { // nolint:unused // quiet linter
+func must(err error) { // nolint:unused
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "error: %v\n", err)
 		os.Exit(1)

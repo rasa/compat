@@ -8,5 +8,5 @@ package compat
 // BuildBits returns the number of CPU bits for the build target.
 // For 386, arm, mips, and mipsle, it's 32. For all other targets, it's 64.
 func BuildBits() int {
-	return 64 //nolint:mnd // quiet linter
+	return 64 //nolint:mnd
 }

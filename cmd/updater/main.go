@@ -1,4 +1,4 @@
-//nolint:mnd // quiet linter
+//nolint:mnd
 // SPDX-FileCopyrightText: Copyright © 2025 Ross Smith II <ross@smithii.com>
 // SPDX-License-Identifier: MIT
 
@@ -225,7 +225,7 @@ var (
 // SnipThem finds in "them" the region most similar to the base snippet and writes *.them.
 // If an exact substring match exists, it is used; otherwise, choose the best window by
 // minimal normalized edit distance.
-func SnipThem(snips []Snip) error { //nolint:gocyclo // quiet linter
+func SnipThem(snips []Snip) error { //nolint:gocyclo
 	for i, s := range snips {
 		snip_id := i + 1
 		log.Printf("[them] Creating snip %2d/%2d: %v@%d", snip_id, len(snips), s.Path, s.StartLine)
@@ -555,7 +555,7 @@ func httpGet(url string) ([]byte, error) {
 	return io.ReadAll(res.Body)
 }
 
-func writeFileAtomic(path string, data []byte, mode os.FileMode) error { //nolint:unparam // quiet linter
+func writeFileAtomic(path string, data []byte, mode os.FileMode) error { //nolint:unparam
 	tmp := path + ".tmp"
 	if err := os.MkdirAll(filepath.Dir(path), 0o755); err != nil {
 		return err

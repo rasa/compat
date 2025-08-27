@@ -94,7 +94,7 @@ func stat(fi os.FileInfo, name string, followSymlinks bool) (FileInfo, error) {
 	if err != nil {
 		return nil, &os.PathError{Op: "stat", Path: name, Err: err}
 	}
-	defer windows.CloseHandle(h) //nolint:errcheck // quiet linter
+	defer windows.CloseHandle(h) //nolint:errcheck
 	var i windows.ByHandleFileInformation
 	err = windows.GetFileInformationByHandle(h, &i)
 	if err != nil {
@@ -114,7 +114,7 @@ func stat(fi os.FileInfo, name string, followSymlinks bool) (FileInfo, error) {
 	fs.sys = *sys
 
 	fs.partID = uint64(i.VolumeSerialNumber)                             // uint32
-	fs.fileID = (uint64(i.FileIndexHigh) << 32) + uint64(i.FileIndexLow) //nolint:mnd // quiet linter
+	fs.fileID = (uint64(i.FileIndexHigh) << 32) + uint64(i.FileIndexLow) //nolint:mnd
 	fs.links = uint(i.NumberOfLinks)
 	fs.atime = time.Unix(0, fs.sys.LastAccessTime.Nanoseconds())
 	fs.btime = time.Unix(0, fs.sys.CreationTime.Nanoseconds())
@@ -161,7 +161,7 @@ func (fs *fileStat) CTime() time.Time {
 
 		return fs.ctime
 	}
-	defer windows.CloseHandle(h) //nolint:errcheck // quiet linter
+	defer windows.CloseHandle(h) //nolint:errcheck
 
 	var bi golang.FILE_BASIC_INFO
 	err = windows.GetFileInformationByHandleEx(h, windows.FileBasicInfo, (*byte)(unsafe.Pointer(&bi)), uint32(unsafe.Sizeof(bi)))

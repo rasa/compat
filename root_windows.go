@@ -20,7 +20,7 @@ func IsRoot() (bool, error) {
 	// See https://docs.microsoft.com/en-us/windows/desktop/api/securitybaseapi/nf-securitybaseapi-checktokenmembership
 	err := windows.AllocateAndInitializeSid(
 		&windows.SECURITY_NT_AUTHORITY,
-		2, //nolint:mnd // quiet linter
+		2, //nolint:mnd
 		windows.SECURITY_BUILTIN_DOMAIN_RID,
 		windows.DOMAIN_ALIAS_RID_ADMINS,
 		0, 0, 0, 0, 0, 0,
@@ -28,7 +28,7 @@ func IsRoot() (bool, error) {
 	if err != nil {
 		return false, err
 	}
-	defer windows.FreeSid(sid) //nolint:errcheck // quiet linter
+	defer windows.FreeSid(sid) //nolint:errcheck
 
 	// This appears to cast a null pointer so I'm not sure why this
 	// works, but this guy says it does and it Works for Me™:

@@ -68,7 +68,7 @@ var (
 	CreateFile         = syscall.CreateFile
 	Ftruncate          = syscall.Ftruncate
 	GetFileAttributes  = syscall.GetFileAttributes
-	Syscall9           = syscall.Syscall9 //nolint:staticcheck // quiet linter
+	Syscall9           = syscall.Syscall9 //nolint:staticcheck
 	UTF16PtrFromString = syscall.UTF16PtrFromString
 )
 
@@ -92,7 +92,7 @@ func isWindowsAtLeast(major, minor, build uint32) bool {
 }
 
 func init() {
-	canUseLongPaths = isWindowsAtLeast(10, 0, 15063) //nolint:mnd // quiet linter
+	canUseLongPaths = isWindowsAtLeast(10, 0, 15063) //nolint:mnd
 }
 
 func fixAttributesAndShareMode(flag int, attrs uint32, sharemode uint32) (uint32, uint32) {
