@@ -287,9 +287,15 @@ func TestStatGID(t *testing.T) {
 		return
 	}
 
+	isRoot, _ := compat.IsRoot()
+	
 	want := os.Getegid()
 	if got != want {
-		t.Fatalf("GID(): got %v, want %v", got, want)
+		if compat.IsApple && isRoot {
+			t.Logf("GID(): got %v, want %v (ignoring as we are root on %v)", got, want, runtime.GOOS)
+		} else {
+			t.Fatalf("GID(): got %v, want %v", got, want)
+		}
 	}
 }
 
