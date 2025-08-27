@@ -96,7 +96,11 @@ func TestLstatLstat(t *testing.T) { //nolint:dupl
 	perm := compat.CreateTempPerm
 	want := fixPerms(perm, false)
 	if got := fi.Mode().Perm(); got == want {
-		t.Errorf("Mode(): got 0o%o, want !0o%o", got, want)
+		if testEnv.noACLs {
+			t.Logf("Mode(): got 0o%o, want !0o%o", got, want)
+		} else {
+			t.Errorf("Mode(): got 0o%o, want !0o%o", got, want)
+		}
 	}
 
 	if got := fi.Mode()&os.ModeSymlink != 0; got != true {
