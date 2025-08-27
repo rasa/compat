@@ -40,6 +40,8 @@ gen: ## go generate
 .PHONY: build
 build: ## goreleaser build
 	-go version
+	-go env
+	echo PATH="${PATH}"
 	go tool goreleaser build --clean --single-target --snapshot
 
 .PHONY: spell
