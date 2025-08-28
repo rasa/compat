@@ -12,9 +12,10 @@ import (
 	"golang.org/x/sys/windows"
 )
 
-// Getuid returns the User ID for the current user. On Windows, the user's SID is
-// converted to its POSIX equivalent, which is compatible with Cygwin and
-// Git for Windows. On Plan9, Getuid returns a 32-bit hash of the user's name.
+// Getuid returns the User ID for the current user.
+// On Windows, the user's SID is converted to its POSIX equivalent, which is
+// compatible with Cygwin, Git for Windows, MSYS2, etc.
+// On Plan9, Getuid returns a 32-bit hash of the user's name.
 func Getuid() (int, error) {
 	var token windows.Token
 	err := windows.OpenProcessToken(windows.CurrentProcess(), windows.TOKEN_QUERY, &token)
@@ -42,10 +43,11 @@ func Getuid() (int, error) {
 	return uid, nil
 }
 
-// Getgid returns the default Group ID for the current user. On Windows, the
-// user's primary group's SID is converted to its POSIX equivalent, which is
-// compatible with Cygwin and Git for Windows. On Plan9, Getuid returns a
-// 32-bit hash of the user's group's name, as provided by golang's os/user package.
+// Getgid returns the default Group ID for the current user.
+// On Windows, the user's primary group's SID is converted to its POSIX
+// equivalent, which is compatible with Cygwin, Git for Windows, MSYS2, etc.
+// On Plan9, Getgid returns a 32-bit hash of the user's group's name, as
+// provided by golang's os/user package.
 func Getgid() (int, error) {
 	primaryDomainSID, err := getPrimaryDomainSID()
 	if err != nil {
@@ -63,6 +65,23 @@ func Getgid() (int, error) {
 	}
 
 	return gid, nil
+}
+
+// Geteuid returns the effective User ID for the current user.
+// On Windows, the user's SID is converted to its POSIX equivalent, which is
+// compatible with Cygwin, Git for Windows, MSYS2, etc.
+// On Plan9, Geteuid returns a 32-bit hash of the user's name.
+func Geteuid() (int, error) {
+	return Getuid()
+}
+
+// Getegid returns the effective default Group ID for the current user.
+// On Windows, the user's primary group's SID is converted to its POSIX
+// equivalent, which is compatible with Cygwin, Git for Windows, MSYS2, etc.
+// On Plan9, Getegid returns a 32-bit hash of the user's group's name, as
+// provided by golang's os/user package.
+func Getegid() (int, error) {
+	return Getgid()
 }
 
 func getPrimaryGroupSID() (*windows.SID, error) {
