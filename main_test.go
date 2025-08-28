@@ -25,25 +25,6 @@ const (
 	defaultTempSize = "2GB"
 )
 
-var (
-	tempPath string
-	tempSize string
-)
-
-type testVars struct {
-	noACLs                  bool
-	noSymlinks              bool
-	noHardLinks             bool
-	atimeGranularity        int // seconds
-	btimeGranularity        int
-	ctimeGranularity        int
-	mtimeGranularity        int
-	btimeSymlinkGranularity int
-	fsType                  string
-}
-
-var testEnv = testVars{}
-
 type fsTest struct { //nolint:unused
 	fsName string
 	vars   testVars

@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: Copyright © 2025 Ross Smith II <ross@smithii.com>
 // SPDX-License-Identifier: MIT
 
-//go:build !android && !darwin && !linux && !windows && !tinygo
+//go:build (!darwin && !linux && !windows && !tinygo) || android
 
 package compat_test
 
