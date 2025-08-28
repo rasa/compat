@@ -37,14 +37,14 @@ if (-not $vhds) {
 
 foreach ($vhd in $vhds) {
     try {
-        Write-Host "Dismounting VHD: $($vhd.FullName)"
+        Write-Output "Dismounting VHD: $($vhd.FullName)"
         Dismount-VHD -Path $vhd.FullName -ErrorAction Stop
     } catch {
         Write-Warning "Failed to dismount $($vhd.FullName): $_"
     }
 
     try {
-        Write-Host "Deleting VHD file: $($vhd.FullName)"
+        Write-Output "Deleting VHD file: $($vhd.FullName)"
         Remove-Item -Path $vhd.FullName -Force -ErrorAction Stop
     } catch {
         Write-Warning "Failed to delete $($vhd.FullName): $_"

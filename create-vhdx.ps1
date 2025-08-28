@@ -50,7 +50,7 @@ if (-not $DriveLetter) {
     foreach ($letter in [char[]]([byte][char]'Z'..[byte][char]'A')) {
         if ($usedLetters -notcontains $letter) {
             $DriveLetter = $letter
-            Write-Host "Auto-selected drive letter $DriveLetter"
+            Write-Output "Auto-selected drive letter $DriveLetter"
             break
         }
     }
@@ -91,7 +91,7 @@ if (-not $disk) {
 # Decide partition style
 $partitionStyle = if ($FileSystem -in @("exFAT","NTFS","ReFS")) { "GPT" } else { "MBR" }
 
-Write-Host "Initializing disk $($disk.Number) as $partitionStyle with drive letter $DriveLetter"
+Write-Output "Initializing disk $($disk.Number) as $partitionStyle with drive letter $DriveLetter"
 
 Initialize-Disk -Number $disk.Number -PartitionStyle $partitionStyle -ErrorAction Stop
 $part = New-Partition -DiskNumber $disk.Number -DriveLetter $DriveLetter -UseMaximumSize -ErrorAction Stop
