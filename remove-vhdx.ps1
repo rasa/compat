@@ -44,8 +44,7 @@ foreach ($vhd in $vhds) {
     }
 
     try {
-        Write-Output 
-        "Deleting VHD file: $($vhd.FullName)"
+        Write-Output "Deleting VHD file: $($vhd.FullName)"
         Remove-Item -Path $vhd.FullName -Force -ErrorAction Stop
     } catch {
         Write-Warning "Failed to delete $($vhd.FullName): $_"
