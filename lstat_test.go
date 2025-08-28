@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: Copyright © 2025 Ross Smith II <ross@smithii.com>
+// SPDX-FileCopyrightText: Copyright (c) 2025 Ross Smith II <ross@smithii.com>
 // SPDX-License-Identifier: MIT
 
 package compat_test
@@ -46,7 +46,7 @@ func TestLstatStat(t *testing.T) { //nolint:dupl
 	want := fixPerms(perm, false)
 	if got := fi.Mode().Perm(); got != want {
 		if compat.IsWindows {
-			t.Logf("Mode(): got 0o%o, want 0o%o (ignoring as we are on Windows)", got, want)
+			t.Logf("Mode(): got 0o%o, want 0o%o (ignoring: on Windows)", got, want)
 		} else {
 			t.Errorf("Mode(): got 0o%o, want 0o%o", got, want)
 		}
@@ -406,7 +406,7 @@ func TestLstatGID(t *testing.T) {
 	want := os.Getegid()
 	if got != want {
 		if compat.IsApple && isRoot {
-			t.Logf("GID(): got %v, want %v (ignoring as we are root on %v)", got, want, runtime.GOOS)
+			t.Logf("GID(): got %v, want %v (ignoring: root on %v)", got, want, runtime.GOOS)
 		} else {
 			t.Fatalf("GID(): got %v, want %v", got, want)
 		}
@@ -528,7 +528,7 @@ func TestLstatGroup(t *testing.T) {
 	want := g.Name
 	if !compareNames(got, want) {
 		if compat.IsApple && isRoot {
-			t.Logf("Group(): got %v, want %v (ignoring as we are root on %v)", got, want, runtime.GOOS)
+			t.Logf("Group(): got %v, want %v (ignoring: root on %v)", got, want, runtime.GOOS)
 		} else {
 			t.Fatalf("Group(): got %v, want %v", got, want)
 		}

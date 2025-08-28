@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: Copyright © 2025 Ross Smith II <ross@smithii.com>
+// SPDX-FileCopyrightText: Copyright (c) 2025 Ross Smith II <ross@smithii.com>
 // SPDX-License-Identifier: MIT
 
 package compat_test
@@ -115,28 +115,35 @@ func fatalTimes(t *testing.T, prefix string, got, want time.Time, granularity in
 }
 
 func fixPerms(perm os.FileMode, isDir bool) os.FileMode {
-	if testEnv.noACLs {
-		if isDir {
-			if compat.IsWindows {
-				return compat.DefaultWindowsDirPerm
-			} else {
-				return compat.DefaultUnixDirPerm
-			}
-		} else {
-			if compat.IsWindows {
-				return compat.DefaultWindowsFilePerm
-			} else {
-				return compat.DefaultUnixFilePerm
-			}
-		}
-	}
-
 	if compat.IsWasip1 {
 		if compat.IsTinygo {
 			// Tinygo's os.Stat() returns mode 0o000
 			return os.FileMode(0o000)
 		} else {
 			return perm & 0o700
+		}
+	}
+
+	if testEnv.noACLs {
+		if isDir {
+			switch {
+			case compat.IsWindows:
+				return compat.DefaultWindowsDirPerm
+			case compat.IsApple:
+				return os.FileMode(0o700)
+			default:
+
+				return compat.DefaultUnixDirPerm
+			}
+		} else {
+			switch {
+			case compat.IsWindows:
+				return compat.DefaultWindowsFilePerm
+			case compat.IsApple:
+				return os.FileMode(0o700)
+			default:
+				return compat.DefaultUnixFilePerm
+			}
 		}
 	}
 

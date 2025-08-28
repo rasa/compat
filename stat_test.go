@@ -1,9 +1,10 @@
-// SPDX-FileCopyrightText: Copyright © 2025 Ross Smith II <ross@smithii.com>
+// SPDX-FileCopyrightText: Copyright (c) 2025 Ross Smith II <ross@smithii.com>
 // SPDX-License-Identifier: MIT
 
 package compat_test
 
 import (
+	"context"
 	"os"
 	"os/user"
 	"path/filepath"
@@ -264,9 +265,15 @@ func TestStatUID(t *testing.T) {
 		return
 	}
 
+	partType, _ := compat.PartitionType(context.Background(), name)
+
 	want := os.Geteuid()
 	if got != want {
-		t.Fatalf("UID(): got %v, want %v", got, want)
+		if compat.IsApple && (partType == "exfat" || partType == "msdos") {
+			t.Logf("UID(): got %v, want %v (ignoring: %v on %v)", got, want, partType, runtime.GOOS)
+		} else {
+			t.Fatalf("UID(): got %v, want %v", got, want)
+		}
 	}
 }
 
@@ -296,7 +303,7 @@ func TestStatGID(t *testing.T) {
 	want := os.Getegid()
 	if got != want {
 		if compat.IsApple && isRoot {
-			t.Logf("GID(): got %v, want %v (ignoring as we are root on %v)", got, want, runtime.GOOS)
+			t.Logf("GID(): got %v, want %v (ignoring: root on %v)", got, want, runtime.GOOS)
 		} else {
 			t.Fatalf("GID(): got %v, want %v", got, want)
 		}
@@ -329,8 +336,14 @@ func TestStatUser(t *testing.T) {
 	}
 	want := u.Username
 
+	partType, _ := compat.PartitionType(context.Background(), name)
+
 	if !compareNames(got, want) {
-		t.Fatalf("User(): got %v, want %v", got, want)
+		if compat.IsApple && (partType == "exfat" || partType == "msdos") {
+			t.Logf("User(): got %v, want %v (ignoring: %v on %v)", got, want, partType, runtime.GOOS)
+		} else {
+			t.Fatalf("User(): got %v, want %v", got, want)
+		}
 	}
 }
 
@@ -368,7 +381,7 @@ func TestStatGroup(t *testing.T) {
 	want := g.Name
 	if !compareNames(got, want) {
 		if compat.IsApple && isRoot {
-			t.Logf("Group(): got %v, want %v (ignoring as we are root on %v)", got, want, runtime.GOOS)
+			t.Logf("Group(): got %v, want %v (ignoring: root on %v)", got, want, runtime.GOOS)
 		} else {
 			t.Fatalf("Group(): got %v, want %v", got, want)
 		}
