@@ -260,7 +260,7 @@ func mkfsSpecFor(fsName string) (mkSpec, bool) {
 	case "xfs":
 		return mkSpec{tool: "mkfs.xfs", args: []string{"-f"}, fstype: "xfs"}, true
 
-	case "exfat":
+	case "exfat": //nolint:goconst
 		return mkSpec{tool: "mkfs.exfat", args: nil, fstype: "exfat"}, true
 	case "fat":
 		return mkSpec{tool: "mkfs.vfat", args: []string{"-F", "16"}, fstype: "vfat"}, true
