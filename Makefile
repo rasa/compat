@@ -6,10 +6,8 @@ SHELL := /bin/bash
 export NO_COLOR := 1
 export TERM := dumb
 
-TOOL_OPTS :=
-
 ifneq ($(wildcard go.tool.mod),)
-TOOL_OPTS := -modfile=go.tool.mod
+TOOL_OPTS += -modfile=go.tool.mod
 endif
 
 export TOOL_OPTS
