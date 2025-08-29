@@ -3,6 +3,8 @@
 # SPDX-License-Identifier: MIT
 
 SHELL := /bin/bash
+export NO_COLOR := 1
+export TERM := dumb
 
 .DEFAULT_GOAL := all
 
@@ -43,6 +45,7 @@ gen: ## go generate
 
 .PHONY: build
 build: ## goreleaser build
+	-go tool goreleaser --version
 	go tool goreleaser build --clean --single-target --snapshot
 
 .PHONY: spell
