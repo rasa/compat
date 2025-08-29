@@ -116,6 +116,7 @@ func fixPerms(perm os.FileMode, isDir bool) os.FileMode {
 		if compat.IsTinygo {
 			return perm600
 		} else {
+			// only the user-bit is used
 			return perm & 0o700
 		}
 	}
@@ -126,7 +127,7 @@ func fixPerms(perm os.FileMode, isDir bool) os.FileMode {
 			case compat.IsWindows:
 				return compat.DefaultWindowsDirPerm
 			case compat.IsApple:
-				return perm700
+				return compat.DefaultAppleDirPerm
 			default:
 
 				return compat.DefaultUnixDirPerm
@@ -136,7 +137,7 @@ func fixPerms(perm os.FileMode, isDir bool) os.FileMode {
 			case compat.IsWindows:
 				return compat.DefaultWindowsFilePerm
 			case compat.IsApple:
-				return perm700
+				return compat.DefaultAppleFilePerm
 			default:
 				return compat.DefaultUnixFilePerm
 			}

@@ -9,28 +9,46 @@ import (
 )
 
 const (
-	// CreatePerm is the FileMode used by Create().
+	// CreatePerm is the FileMode used by os.Create() (and compat.Create()).
 	CreatePerm os.FileMode = 0o666
-	// CreateTempPerm is the FileMode used by CreateTemp().
+	// CreateTempPerm is the FileMode used by os.CreateTemp() (and
+	// compat.CreateTemp()).
 	CreateTempPerm os.FileMode = 0o600
-	// MkdirTempPerm is the FileMode used by MkdirTemp().
+	// MkdirTempPerm is the FileMode used by os.MkdirTemp() (and
+	// compat.MkdirTemp()).
 	MkdirTempPerm os.FileMode = 0o700
 
+	// DefaultAppleDirPerm is the FileMode returned for directories by
+	// golang's os.Stat() function on Apple based systems
+	// when the directory is on a filesystem that doesn't support
+	// macOS/iOS permissions, such as exFAT, or FAT32.
+	DefaultAppleDirPerm os.FileMode = 0o700
+	// DefaultAppleFilePerm is the FileMode returned for files by
+	// golang's os.Stat() function on Apple based systems
+	// when the file is on a filesystem that doesn't support
+	// macOS/iOS permissions, such as exFAT, or FAT32.
+	DefaultAppleFilePerm os.FileMode = 0o700
+
 	// DefaultUnixDirPerm is the FileMode returned for directories by
-	// golang's os.Stat() function on non-Windows systems, or when a directory
-	// is on a filesystem that doesn't support Unix ACLs, such as exFAT, or FAT32.
+	// golang's os.Stat() function on non-Apple/non-Windows based systems
+	// when the directory is on a filesystem that doesn't support
+	// Unix permissions, such as exFAT, or FAT32.
 	DefaultUnixDirPerm os.FileMode = 0o777
 	// DefaultUnixFilePerm is the FileMode returned for files by
-	// golang's os.Stat() function on non-Windows systems, or when a file is on a
-	// filesystem that do not support Unix ACLs, such as exFAT, or FAT32.
+	// golang's os.Stat() function on non-Apple/non-Windows based systems
+	// when the file is on a filesystem that doesn't support
+	// Unix permissions, such as exFAT, or FAT32.
 	DefaultUnixFilePerm os.FileMode = 0o777
+
 	// DefaultWindowsDirPerm is the FileMode returned for directories by
-	// golang's os.Stat() function on Windows, or when a directory is on a
-	// filesystem that do not support Windows ACLs, such as exFAT, or FAT32.
+	// golang's os.Stat() function on Windows based systems
+	// when the directory is on a filesystem that doesn't support Windows'
+	// Access Control Lists (ACLS), such as exFAT, or FAT32.
 	DefaultWindowsDirPerm os.FileMode = 0o777
 	// DefaultWindowsFilePerm is the FileMode returned for files by
-	// golang's os.Stat() function on Windows, or when a file is on a
-	// filesystem that do not support Windows ACLs, such as exFAT, or FAT32.
+	// golang's os.Stat() function on Windows based systems
+	// when the file is on a filesystem that doesn't support Windows'
+	// Access Control Lists (ACLS), such as exFAT, or FAT32.
 	DefaultWindowsFilePerm os.FileMode = 0o666
 
 	// Verify we don't conflict with any of the values listed at
