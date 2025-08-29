@@ -177,7 +177,7 @@ func must(err error) { // nolint:unused
 	}
 }
 
-func normalizeSize(s string) string {
+func normalizeSize(s string) string { //nolint:unused
 	r := strings.ToUpper(strings.TrimSpace(s))
 	r = strings.ReplaceAll(r, "BYTES", "B")
 	r = strings.ReplaceAll(r, "IB", "I")
@@ -203,7 +203,7 @@ func parseName(name string) (string, string) {
 	}
 }
 
-func randomBase36String(n int) string {
+func randomBase36String(n int) string { //nolint:unused
 	const base36 = "0123456789abcdefghijklmnopqrstuvwxyz"
 	out := make([]byte, n)
 	for i := range out {
