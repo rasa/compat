@@ -6,19 +6,27 @@ package compat_test
 import (
 	"bytes"
 	"context"
-	"errors"
 	"flag"
 	"fmt"
 	"io"
+	"math/rand/v2"
 	"os"
 	"os/exec"
 	"runtime"
 	"strings"
-	"syscall"
 	"testing"
 	"time"
 
 	"github.com/rasa/compat"
+)
+
+const (
+	perm000 = os.FileMode(0)
+	perm555 = os.FileMode(0o555)
+	perm644 = os.FileMode(0o644)
+	perm600 = os.FileMode(0o600)
+	perm700 = os.FileMode(0o700)
+	perm777 = os.FileMode(0o777)
 )
 
 var (
@@ -27,6 +35,7 @@ var (
 )
 
 func init() {
+	// Needed for testing.Verbose() and testing.Short() to be available.
 	testing.Init()
 	flag.Parse()
 
@@ -74,18 +83,6 @@ func compareTimes(a, b time.Time, granularity int) bool {
 	return a.Sub(b).Abs() < time.Duration(granularity)*time.Second
 }
 
-func errno(err error) uint32 { //nolint:unused
-	if err == nil {
-		return 0
-	}
-	var errno syscall.Errno
-	if errors.As(err, &errno) {
-		return uint32(errno)
-	}
-
-	return ^uint32(0)
-}
-
 func fatal(t *testing.T, msg any) { //nolint:unused
 	t.Helper()
 
@@ -117,8 +114,7 @@ func fatalTimes(t *testing.T, prefix string, got, want time.Time, granularity in
 func fixPerms(perm os.FileMode, isDir bool) os.FileMode {
 	if compat.IsWasip1 {
 		if compat.IsTinygo {
-			// Tinygo's os.Stat() returns mode 0o000
-			return os.FileMode(0o000)
+			return perm600
 		} else {
 			return perm & 0o700
 		}
@@ -130,7 +126,7 @@ func fixPerms(perm os.FileMode, isDir bool) os.FileMode {
 			case compat.IsWindows:
 				return compat.DefaultWindowsDirPerm
 			case compat.IsApple:
-				return os.FileMode(0o700)
+				return perm700
 			default:
 
 				return compat.DefaultUnixDirPerm
@@ -140,7 +136,7 @@ func fixPerms(perm os.FileMode, isDir bool) os.FileMode {
 			case compat.IsWindows:
 				return compat.DefaultWindowsFilePerm
 			case compat.IsApple:
-				return os.FileMode(0o700)
+				return perm700
 			default:
 				return compat.DefaultUnixFilePerm
 			}
@@ -181,6 +177,22 @@ func must(err error) { // nolint:unused
 	}
 }
 
+func normalizeSize(s string) string {
+	r := strings.ToUpper(strings.TrimSpace(s))
+	r = strings.ReplaceAll(r, "BYTES", "B")
+	r = strings.ReplaceAll(r, "IB", "I")
+	r = strings.ReplaceAll(r, "KIB", "K")
+	r = strings.ReplaceAll(r, "MIB", "M")
+	r = strings.ReplaceAll(r, "GIB", "G")
+	r = strings.ReplaceAll(r, "TIB", "T")
+	r = strings.ReplaceAll(r, "KB", "K")
+	r = strings.ReplaceAll(r, "MB", "M")
+	r = strings.ReplaceAll(r, "GB", "G")
+	r = strings.ReplaceAll(r, "TB", "T")
+
+	return r
+}
+
 func parseName(name string) (string, string) {
 	parts := strings.Split(name, `\`)
 	switch {
@@ -189,6 +201,15 @@ func parseName(name string) (string, string) {
 	default:
 		return strings.ToLower(parts[0]), strings.ToLower(parts[1])
 	}
+}
+
+func randomBase36String(n int) string {
+	const base36 = "0123456789abcdefghijklmnopqrstuvwxyz"
+	out := make([]byte, n)
+	for i := range out {
+		out[i] = base36[rand.IntN(len(base36))] //nolint:gosec
+	}
+	return string(out)
 }
 
 func run(name string, args ...string) error { //nolint:unparam,unused

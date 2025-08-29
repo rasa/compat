@@ -52,9 +52,6 @@ func TestWriteFileAtomicDefaultFileMode(t *testing.T) {
 		_ = os.Remove(file)
 	})
 
-	perm644 := os.FileMode(0o644)
-	perm600 := os.FileMode(0o600)
-
 	err := compat.WriteFileAtomic(file, content, compat.WithDefaultFileMode(perm644))
 	if err != nil {
 		t.Fatalf("Failed to write file: %q: %v", file, err)
@@ -68,9 +65,9 @@ func TestWriteFileAtomicDefaultFileMode(t *testing.T) {
 	}
 
 	want := fixPerms(perm644, false)
-	if compat.IsTinygo && compat.IsWasip1 {
-		want = 0o600
-	}
+	// if compat.IsTinygo && compat.IsWasip1 {
+	// 	want = perm600
+	// }
 
 	got := fi.Mode().Perm()
 	if got != want {
@@ -110,9 +107,6 @@ func TestWriteFileAtomicMode(t *testing.T) {
 		_ = os.Remove(file)
 	})
 
-	perm644 := os.FileMode(0o644)
-	perm600 := os.FileMode(0o600)
-
 	err := compat.WriteFileAtomic(file, content, compat.WithFileMode(perm644))
 	if err != nil {
 		t.Fatalf("Failed to write file: %q: %v", file, err)
@@ -124,9 +118,9 @@ func TestWriteFileAtomicMode(t *testing.T) {
 	}
 
 	want := fixPerms(perm644, false)
-	if compat.IsTinygo && compat.IsWasip1 {
-		want = perm600
-	}
+	// if compat.IsTinygo && compat.IsWasip1 {
+	// 	want = perm600
+	// }
 
 	got := fi.Mode().Perm()
 	if got != want {

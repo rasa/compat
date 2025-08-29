@@ -7,7 +7,6 @@ package compat_test
 
 import (
 	"fmt"
-	"math/rand/v2"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -201,32 +200,6 @@ func getMountPoint() string {
 	}
 
 	return filepath.Join(base, "compat-fs-"+randomBase36String(8)) + "/"
-}
-
-func randomBase36String(n int) string {
-	const base36 = "0123456789abcdefghijklmnopqrstuvwxyz"
-	out := make([]byte, n)
-	for i := range out {
-		out[i] = base36[rand.IntN(len(base36))] //nolint: gosec
-	}
-
-	return string(out)
-}
-
-func normalizeSize(s string) string {
-	r := strings.ToUpper(strings.TrimSpace(s))
-	r = strings.ReplaceAll(r, "BYTES", "B")
-	r = strings.ReplaceAll(r, "IB", "I")
-	r = strings.ReplaceAll(r, "KIB", "K")
-	r = strings.ReplaceAll(r, "MIB", "M")
-	r = strings.ReplaceAll(r, "GIB", "G")
-	r = strings.ReplaceAll(r, "TIB", "T")
-	r = strings.ReplaceAll(r, "KB", "K")
-	r = strings.ReplaceAll(r, "MB", "M")
-	r = strings.ReplaceAll(r, "GB", "G")
-	r = strings.ReplaceAll(r, "TB", "T")
-
-	return r
 }
 
 func allocateImage(path, size string) error {

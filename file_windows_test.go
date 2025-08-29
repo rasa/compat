@@ -6,12 +6,14 @@
 package compat_test
 
 import (
+	"errors"
 	"flag"
 	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"strings"
+	"syscall"
 	"testing"
 
 	"github.com/rasa/compat"
@@ -26,9 +28,6 @@ func init() {
 }
 
 func loadPerms() {
-	const perm555 = os.FileMode(0o555)
-	const perm000 = os.FileMode(0)
-
 	if testing.Short() {
 		perms = []os.FileMode{perm555}
 		return
@@ -208,7 +207,7 @@ func TestFileWindowsRemove(t *testing.T) {
 			t.Fatalf("Chmod(%04o) failed: %v", perm, err)
 		}
 
-		perm = os.FileMode(0o777)
+		perm = perm777
 		err = compat.Chmod(name, perm)
 		checkPerm(t, name, perm, false)
 		if err != nil {
@@ -346,4 +345,16 @@ func logOutput(t *testing.T, exe string, args []string) error {
 	t.Log(s)
 
 	return nil
+}
+
+func errno(err error) uint32 { //nolint:unused
+	if err == nil {
+		return 0
+	}
+	var errno syscall.Errno
+	if errors.As(err, &errno) {
+		return uint32(errno)
+	}
+
+	return ^uint32(0)
 }
