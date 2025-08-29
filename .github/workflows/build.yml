@@ -30,8 +30,8 @@ on:
       sudo:
         default: ""
         type: string # required
-      verbose:
-        default: "false"
+      test_opts:
+        default: ""
         type: string # required
   workflow_dispatch: # Allows you to run this workflow manually from the Actions tab
     inputs:
@@ -68,16 +68,22 @@ on:
         default: "ubuntu-24.04"
       # checkov:skip=CKV_GHA_7: The build output cannot be affected by user parameters...
       sudo:
-        description: Use sudo.
+        description: "Run tests via sudo"
         type: boolean
         default: false
-      verbose:
-        description: "Test with -v options."
-        type: boolean
-        default: false
+      # checkov:skip=CKV_GHA_7: The build output cannot be affected by user parameters...
+      test_opts:
+        description: "Options to pass to go test command (-v, -short, -run TestX, etc.)"
+        type: string
+        default: ""
 
 permissions:
   contents: read
+
+env:
+  COMPAT_DEBUG: ${{ inputs.compat_debug }}
+  RUNNER: ${{ inputs.runner }}
+  TEST_OPTS: ${{ inputs.test_opts }}
 
 jobs:
   build:
@@ -144,10 +150,10 @@ jobs:
       #     check-latest: true
       #     cache: false
 
-      - name: Set env vars (COMPAT_DEBUG, GOCACHE, GOMODCACHE, inputs, etc.)
+      - name: Set env vars (GOCACHE, GOMODCACHE, sudo, etc.)
         if: env.SHOULD_RUN
         run: |
-          # Set env vars (COMPAT_DEBUG, GOCACHE, GOMODCACHE, inputs, etc.)
+          # Set env vars (GOCACHE, GOMODCACHE, sudo, etc.)
           if [[ "${{ inputs.sudo }}" == "true" ]]; then
             if builtin command -v sudo &>/dev/null; then
               if [[ ! "${OS:-}" =~ [Ww]indows ]]; then
@@ -155,13 +161,11 @@ jobs:
               fi
             fi
           fi
-          printf "COMPAT_DEBUG=%s\n" "${{ inputs.compat_debug }}" >>"${GITHUB_ENV}"
           printf "GOCACHE=%s\n"      "$(go env GOCACHE | tr '\\' '/')" >>"${GITHUB_ENV}"
           printf "GOMODCACHE=%s\n"   "$(go env GOMODCACHE | tr '\\' '/')" >>"${GITHUB_ENV}"
           printf "GOVERSION=%s\n"    "$(go version | sed 's|^.*go||; s| .*||;')" >>"${GITHUB_ENV}"
           printf "sudo=%s\n"         "${sudo:-}" >>"${GITHUB_ENV}"
-          printf "verbose=%s\n"      "${{ inputs.verbose }}" >>"${GITHUB_ENV}"
-          echo "${GITHUB_ENV}":
+          # echo "${GITHUB_ENV}":
           cat "${GITHUB_ENV}"
 
       - name: USE actions/cache to save Go's build and mod caches
@@ -178,17 +182,10 @@ jobs:
       - name: make ci
         if: env.SHOULD_RUN
         run: |
-          # make ci
+          # make ci TEST_OPTS="${TEST_OPTS}"
           set -x
-          : "${verbose:=true}"
-          join_by() { local IFS="$1"; shift; printf '%s' "$*"; }
-          TEST_OPTS_ARRAY=()
-          if [[ "${verbose}" == "true" ]]; then
-            TEST_OPTS_ARRAY+=(-v)
-          fi
-          export TEST_OPTS=$(join_by ' ' "${TEST_OPTS_ARRAY[@]}")
+          : "${TEST_OPTS:=}"
           printf 'TEST_OPTS="%s"\n' "${TEST_OPTS}"
-          # go env
           ${sudo:-} make ci TEST_OPTS="${TEST_OPTS}"
           test -z "${sudo:-}" && exit 0
           # this works on linux and macos
@@ -203,7 +200,11 @@ jobs:
         # env:
         #  CGO_ENABLED: ${{ contains(matrix.os, 'windows') && '0' || '1' }}
 
-      - run: go tool goreleaser release --clean --snapshot
+      - run: |
+          if [[ -f go.tool.mod ]]; then
+            export GOFLAGS="${GOFLAGS:-} -modfile=go.tool.mod"
+          fi
+          go tool goreleaser release --clean --snapshot
         if: runner.os == 'Linux' && env.SHOULD_RUN
 
       - name: Upload dist

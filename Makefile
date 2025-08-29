@@ -6,6 +6,14 @@ SHELL := /bin/bash
 export NO_COLOR := 1
 export TERM := dumb
 
+TOOL_OPTS :=
+
+ifneq ($(wildcard go.tool.mod),)
+TOOL_OPTS := -modfile=go.tool.mod
+endif
+
+export TOOL_OPTS
+
 .DEFAULT_GOAL := all
 
 .PHONY: all
@@ -34,10 +42,12 @@ clean: ## remove files created during build pipeline
 .PHONY: download
 download: ## go mod download
 	go mod download
+	test -f go.tool.mod && go mod download -modfile=go.tool.mod
 
 .PHONY: mod
 mod: ## go mod tidy
-	go mod tidy -x
+	go mod tidy -xg
+	test -f go.tool.mod && go mod tidy -modfile=go.tool.mod -x
 
 .PHONY: gen
 gen: ## go generate
@@ -45,24 +55,24 @@ gen: ## go generate
 
 .PHONY: build
 build: ## goreleaser build
-	-go tool goreleaser --version
-	go tool goreleaser build --clean --single-target --snapshot
+	-go tool $(TOOL_OPTS) goreleaser --version
+	go tool $(TOOL_OPTS) goreleaser build --clean --single-target --snapshot
 
 .PHONY: spell
 spell: ## misspell
-	go tool misspell -error -locale=US -w **.md
+	go tool $(TOOL_OPTS) misspell -error -locale=US -w **.md
 
 .PHONY: lint
 lint: ## golangci-lint
-	go tool golangci-lint run --fix
+	go tool $(TOOL_OPTS) golangci-lint run --fix
 
 .PHONY: fix
 fix: ## gofumpt
-	go tool gofumpt -w .
+	go tool $(TOOL_OPTS) gofumpt -w .
 
 .PHONY: vuln
 vuln: ## govulncheck
-	go tool govulncheck ./...
+	go tool $(TOOL_OPTS) govulncheck ./...
 
 RACE_OPT := -race
 
