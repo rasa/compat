@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: Copyright © 2025 Ross Smith II <ross@smithii.com>
+# SPDX-FileCopyrightText: Copyright (c) 2025 Ross Smith II <ross@smithii.com>
 # SPDX-License-Identifier: MIT
 
 param (
