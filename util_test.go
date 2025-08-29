@@ -147,6 +147,14 @@ func fixPerms(perm os.FileMode, isDir bool) os.FileMode {
 }
 
 func fixPosixPerms(perm os.FileMode, isDir bool) os.FileMode {
+	if compat.IsWasip1 {
+		if compat.IsTinygo {
+			return perm000
+		} else {
+			return perm & 0o700
+		}
+	}
+
 	if compat.IsWindows {
 		if isDir {
 			return compat.DefaultWindowsDirPerm
