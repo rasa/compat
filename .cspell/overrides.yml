@@ -4,10 +4,11 @@
 
 # Manually curated list of paths/files to not spellcheck
 ignorePaths:
-  - '**/go.mod'
-  - '**/go.sum'
-  - '**/*.wip/**'
-  - '**/*.wip.*/**'
+  - '**/go*.mod'
+  - '**/go*.sum'
+  - '**/.env/**'
+  - '**/.history/**'
+  - '**/*.out/**'
 
 # Manually curated list of words to treat as incorrectly spelled
 flagWords:
