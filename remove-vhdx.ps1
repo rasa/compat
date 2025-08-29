@@ -9,11 +9,11 @@ param (
 $ProgressPreference = 'SilentlyContinue'
 
 if ($DriveLetter -eq "") {
-    # No drive letter provided → dismount all matching VHDX files
+    # No drive letter provided -> dismount all matching VHDX files
     $pattern = "$env:TEMP\~compat_*.vhdx"
     $vhds = Get-ChildItem -Path $pattern -ErrorAction SilentlyContinue
 } else {
-    # Specific drive letter → find matching VHD file by name OR by mount
+    # Specific drive letter -> find matching VHD file by name OR by mount
     $pattern = "$env:TEMP\~compat_${DriveLetter}_*.vhdx"
     $vhds = Get-ChildItem -Path $pattern -ErrorAction SilentlyContinue
 
