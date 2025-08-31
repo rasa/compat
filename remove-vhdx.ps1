@@ -27,13 +27,13 @@ if ($DriveLetter -eq "") {
                 $vhds = @($disk)
             }
         } catch {
-            Write-Error "No matching VHDX found for $pattern"
+            Write-Output "No matching VHDX found for $pattern"
         }
     }
 }
 
 if (-not $vhds) {
-    Write-Error "No matching VHDX found for $pattern"
+    Write-Output "No matching VHDX found for $pattern"
     exit 0
 }
 
