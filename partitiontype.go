@@ -14,8 +14,10 @@ import (
 	"github.com/shirou/gopsutil/v4/disk"
 )
 
-// PartitionType returns the filesystem type (e.g., "ext4", "NTFS", "FAT32", etc.)
-// for the disk partition that contains path.
+// PartitionType returns the filesystem type (e.g., "apfs", "btrfs", "exfat",
+// "ext4", "f2fs", "fat32", "hfs+", "ntfs", "refs", "udf", "xfs", etc.)
+// for the disk partition that contains path. The value returned is always
+// lower case.
 func PartitionType(ctx context.Context, path string) (string, error) {
 	var err error
 
