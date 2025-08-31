@@ -121,6 +121,27 @@ func TestFileWindowsCreateTemp(t *testing.T) {
 	}
 }
 
+func TestFileWindowsFchmod(t *testing.T) {
+	for _, perm := range perms {
+		name, err := tempFile(t)
+		if err != nil {
+			t.Fatal(err)
+		}
+		f, err := os.Open(name)
+		if err != nil {
+			t.Fatal(err)
+		}
+		defer func() { _ = f.Close() }()
+
+		err = compat.Fchmod(f, perm)
+
+		checkPerm(t, name, perm, false)
+		if err != nil {
+			t.Fatalf("Chmod(%04o) failed: %v", perm, err)
+		}
+	}
+}
+
 func TestFileWindowsMkdir(t *testing.T) {
 	for _, perm := range perms {
 		name, err := tempName(t)

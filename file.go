@@ -92,6 +92,18 @@ func CreateTemp(dir, pattern string, opts ...Option) (*os.File, error) {
 	return createTemp(dir, pattern, fopts.fileMode, fopts.flags)
 }
 
+// Fchmod changes the mode of the file to mode.
+// If there is an error, it will be of type [*PathError].
+func Fchmod(f *os.File, mode os.FileMode, opts ...Option) error {
+	fopts := Options{}
+
+	for _, opt := range opts {
+		opt(&fopts)
+	}
+
+	return fchmod(f, mode, fopts.readOnlyMode)
+}
+
 // Mkdir creates a new directory with the specified name and perm's permission
 // bits (before umask).
 // If there is an error, it will be of type [*PathError].
