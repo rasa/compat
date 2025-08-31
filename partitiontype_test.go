@@ -26,7 +26,7 @@ func TestPartitionType(t *testing.T) {
 	partitionType, err := compat.PartitionType(ctx, name)
 	if err != nil {
 		if strings.Contains(err.Error(), "not implemented") {
-			skip(t, "Skipping test on "+runtime.GOOS+"/"+runtime.GOARCH+": "+err.Error())
+			skipf(t, "Skipping test on %v/%v: %v", runtime.GOOS, runtime.GOARCH, err)
 
 			return
 		}
@@ -35,5 +35,12 @@ func TestPartitionType(t *testing.T) {
 
 		return
 	}
-	t.Logf("partitionType=%v (path=%v)", partitionType, name)
+	if testEnv.fsType == "" || testEnv.fsType == nativeFS {
+		return
+	}
+	fsType := strings.ToLower(testEnv.fsType)
+	if !strings.Contains(partitionType, fsType) {
+		// @TODO change this to Errorf eventually
+		t.Logf("PartitionType(): got %v, want %v", partitionType, fsType)
+	}
 }
