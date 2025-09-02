@@ -8,12 +8,9 @@ on:
 permissions:
   contents: read
 
-env:
-  GO_VERSION: "1.24"
-
 jobs:
   test-illumos:
-    name: test-illumos (go 1.24)
+    name: test-illumos
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     # continue-on-error: true
@@ -28,15 +25,13 @@ jobs:
         usesh: true
         copyback: false
         prepare: |
-          GO_VERSION="${{ env.GO_VERSION }}"
-          pkg_version="${GO_VERSION//.}"
-          pkg install "go-${pkg_version}"
+          pkg install developer/gcc14 web/curl util/jq archiver/gnu-tar
+          godist=$(curl 'https://go.dev/dl/?mode=json' | jq '[ .[] | select(.stable == true) ][0] | .files[] | select(.os == "illumos" and .arch == "amd64") | .filename')
+          curl "https://go.dev/dl/$godist" | gtar xzf -
         run: |
-          GO_VERSION="${{ env.GO_VERSION }}"
-          PATH="/opt/ooce/go-${GO_VERSION}/bin:${PATH}"
-          export PATH
-
+          export PATH="$PWD/go/bin:$PATH"
           go version
+
           rv=0
           if go build -trimpath ./...; then
             printf '::notice ::build succeeded: %s\n' "$(go version)"
