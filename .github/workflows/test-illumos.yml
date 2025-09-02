@@ -25,9 +25,13 @@ jobs:
         usesh: true
         copyback: false
         prepare: |
-          pkg install developer/gcc14 web/curl util/jq archiver/gnu-tar
+          pkg install developer/gcc14 web/curl util/jq archiver/gnu-tar system/coreutils
           godist=$(curl 'https://go.dev/dl/?mode=json' | jq '[ .[] | select(.stable == true) ][0] | .files[] | select(.os == "illumos" and .arch == "amd64") | .filename')
-          curl "https://go.dev/dl/$godist" | gtar xzf -
+          curl -o "$godist" "https://go.dev/dl/$godist"
+          ls -l
+          sha256sum "$godist"
+          gtar xzf "$godist"
+          ls -l
         run: |
           export PATH="$PWD/go/bin:$PATH"
           go version
