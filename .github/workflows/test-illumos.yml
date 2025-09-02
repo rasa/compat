@@ -27,9 +27,13 @@ jobs:
         prepare: |
           pkg install developer/gcc14 web/curl util/jq archiver/gnu-tar # system/coreutils
           godist=$(curl 'https://go.dev/dl/?mode=json' | jq '[ .[] | select(.stable == true) ][0] | .files[] | select(.os == "illumos" and .arch == "amd64") | .filename')
-          curl -o "$godist" "https://go.dev/dl/$godist"
+          sha256=$(curl 'https://go.dev/dl/?mode=json' | jq '[ .[] | select(.stable == true) ][0] | .files[] | select(.os == "illumos" and .arch == "amd64") | .sha256')
+          echo godist=$godist
+          echo sha256=$sha256
+          curl -L -v -i -o "$godist" "https://go.dev/dl/$godist"
           ls -l
           sha256sum "$godist" || true
+          file "$godist"
           gtar xzf "$godist"
           ls -l
         run: |
