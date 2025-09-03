@@ -6,7 +6,7 @@
 package compat
 
 import (
-  "errors"
+	"errors"
 	"os"
 
 	"github.com/rasa/compat/golang"
