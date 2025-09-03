@@ -126,7 +126,6 @@ func fchmod(f *os.File, mode os.FileMode, mask ReadOnlyMode) error {
 	pathString := syscall.UTF16ToString(path)
 
 	return chmod(pathString, mode, mask)
-
 }
 
 // Source: https://github.com/golang/go/blob/77f911e3/src/syscall/syscall_windows.go#L183
