@@ -6,7 +6,6 @@
 package compat_test
 
 import (
-	"errors"
 	"os"
 	"testing"
 
