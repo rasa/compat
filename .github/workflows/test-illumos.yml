@@ -25,20 +25,19 @@ jobs:
         usesh: true
         copyback: false
         prepare: |
-          pkg install developer/gcc14 web/curl util/jq archiver/gnu-tar
+          pkg install web/curl util/jq archiver/gnu-tar # developer/gcc14 
         run: |
-          godist=$(curl -L 'https://go.dev/dl/?mode=json' | jq -r '[ .[] | select(.stable == true) ][0] | .files[] | select(.os == "illumos" and .arch == "amd64") | .filename')
-          sha256=$(curl -L 'https://go.dev/dl/?mode=json' | jq -r '[ .[] | select(.stable == true) ][0] | .files[] | select(.os == "illumos" and .arch == "amd64") | .sha256')
-          size=$(curl -L 'https://go.dev/dl/?mode=json' | jq -r '[ .[] | select(.stable == true) ][0] | .files[] | select(.os == "illumos" and .arch == "amd64") | .size')
+          godist=$(curl -L -q 'https://go.dev/dl/?mode=json' | jq -r '[ .[] | select(.stable == true) ][0] | .files[] | select(.os == "illumos" and .arch == "amd64") | .filename')
+          sha256=$(curl -L -q 'https://go.dev/dl/?mode=json' | jq -r '[ .[] | select(.stable == true) ][0] | .files[] | select(.os == "illumos" and .arch == "amd64") | .sha256')
+          size=$(curl -L -q 'https://go.dev/dl/?mode=json' | jq -r '[ .[] | select(.stable == true) ][0] | .files[] | select(.os == "illumos" and .arch == "amd64") | .size')
           printf "godist: '%s'\n" "$godist"
-          curl -L -v -i -o "$godist" "https://go.dev/dl/$godist"
           printf "size  : '%s'\n" "$size"
-          ls -l
           printf "sha256: '%s'\n" "$sha256"
-          sha256sum "$godist" || true
-          file "$godist"
+          curl -L -o "$godist" "https://go.dev/dl/$godist"
+          printf "%s %s\n" "$sha256" "$godist" >SHA256SUMS
+          sha256sum -c SHA256SUMS
           gtar xzf "$godist"
-          ls -l
+          rm -fr "$godist" SHA256SUMS
           export PATH="$GITHUB_WORKSPACE/go/bin:$PATH"
           go version
 
