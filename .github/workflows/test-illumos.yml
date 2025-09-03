@@ -27,7 +27,8 @@ jobs:
         prepare: |
           pkg install web/curl util/jq archiver/gnu-tar # developer/gcc14 
         run: |
-          pushd ..
+          printf '$0=%s\n' "$0"
+          cd ..
           set | grep '='
           godist=$(curl -L -q 'https://go.dev/dl/?mode=json' | jq -r '[ .[] | select(.stable == true) ][0] | .files[] | select(.os == "illumos" and .arch == "amd64") | .filename')
           sha256=$(curl -L -q 'https://go.dev/dl/?mode=json' | jq -r '[ .[] | select(.stable == true) ][0] | .files[] | select(.os == "illumos" and .arch == "amd64") | .sha256')
@@ -41,7 +42,7 @@ jobs:
           gtar xzf "${godist}"
           rm -f "${godist}" SHA256SUMS
           export PATH="${PWD}/go/bin:${PATH}"
-          popd
+          cd "${GITHUB_WORKSPACE}"
           go env
 
           rv=0
