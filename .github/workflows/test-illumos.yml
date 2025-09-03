@@ -27,13 +27,14 @@ jobs:
         prepare: |
           pkg install developer/gcc14 web/curl util/jq archiver/gnu-tar
         run: |
-          godist=$(curl -L 'https://go.dev/dl/?mode=json' | jq '[ .[] | select(.stable == true) ][0] | .files[] | select(.os == "illumos" and .arch == "amd64") | .filename')
-          sha256=$(curl -L 'https://go.dev/dl/?mode=json' | jq '[ .[] | select(.stable == true) ][0] | .files[] | select(.os == "illumos" and .arch == "amd64") | .sha256')
-          size=$(curl -L 'https://go.dev/dl/?mode=json' | jq '[ .[] | select(.stable == true) ][0] | .files[] | select(.os == "illumos" and .arch == "amd64") | .size')
+          godist=$(curl -L 'https://go.dev/dl/?mode=json' | jq -r '[ .[] | select(.stable == true) ][0] | .files[] | select(.os == "illumos" and .arch == "amd64") | .filename')
+          sha256=$(curl -L 'https://go.dev/dl/?mode=json' | jq -r '[ .[] | select(.stable == true) ][0] | .files[] | select(.os == "illumos" and .arch == "amd64") | .sha256')
+          size=$(curl -L 'https://go.dev/dl/?mode=json' | jq -r '[ .[] | select(.stable == true) ][0] | .files[] | select(.os == "illumos" and .arch == "amd64") | .size')
+          printf "godist: '%s'\n" "$godist"
           curl -L -v -i -o "$godist" "https://go.dev/dl/$godist"
-          echo "size=$size"
+          printf "size  : '%s'\n" "$size"
           ls -l
-          echo "sha256=$sha256"
+          printf "sha256: '%s'\n" "$sha256"
           sha256sum "$godist" || true
           file "$godist"
           gtar xzf "$godist"
