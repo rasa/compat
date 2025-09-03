@@ -29,20 +29,20 @@ jobs:
         run: |
           godist=$(curl -L -q 'https://go.dev/dl/?mode=json' | jq -r '[ .[] | select(.stable == true) ][0] | .files[] | select(.os == "illumos" and .arch == "amd64") | .filename')
           sha256=$(curl -L -q 'https://go.dev/dl/?mode=json' | jq -r '[ .[] | select(.stable == true) ][0] | .files[] | select(.os == "illumos" and .arch == "amd64") | .sha256')
-          size=$(curl -L -q 'https://go.dev/dl/?mode=json' | jq -r '[ .[] | select(.stable == true) ][0] | .files[] | select(.os == "illumos" and .arch == "amd64") | .size')
+          size=$(  curl -L -q 'https://go.dev/dl/?mode=json' | jq -r '[ .[] | select(.stable == true) ][0] | .files[] | select(.os == "illumos" and .arch == "amd64") | .size')
           printf "godist: '%s'\n" "$godist"
-          printf "size  : '%s'\n" "$size"
           printf "sha256: '%s'\n" "$sha256"
-          curl -L -o "$godist" "https://go.dev/dl/$godist"
+          printf "size  : '%s'\n" "$size"
+          curl -L -q -o "$godist" "https://go.dev/dl/$godist"
           printf "%s %s\n" "$sha256" "$godist" >SHA256SUMS
           sha256sum -c SHA256SUMS
           gtar xzf "$godist"
-          rm -fr "$godist" SHA256SUMS
+          rm -vfr "$godist" SHA256SUMS
           export PATH="$GITHUB_WORKSPACE/go/bin:$PATH"
-          go version
+          go env
 
           rv=0
-          if go build -trimpath ./...; then
+          if go build -trimpath .; then
             printf '::notice ::build succeeded: %s\n' "$(go version)"
           else
             rv=$?
