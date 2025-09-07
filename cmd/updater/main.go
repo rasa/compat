@@ -31,6 +31,11 @@ import (
 	dmp "github.com/sergi/go-diff/diffmatchpatch"
 )
 
+const (
+	perm644 = os.FileMode(0o644)
+	perm755 = os.FileMode(0o755)
+)
+
 type Snip struct {
 	// Raw GitHub URL found in the source file comment.
 	URL string
@@ -70,10 +75,10 @@ func main() {
 	snipDir = rootDir + "/snip"
 	meldDir = rootDir + "/meld"
 
-	must(os.MkdirAll(baseDir, 0o755))
-	must(os.MkdirAll(themDir, 0o755))
-	must(os.MkdirAll(snipDir, 0o755))
-	must(os.MkdirAll(meldDir, 0o755))
+	must(os.MkdirAll(baseDir, perm755))
+	must(os.MkdirAll(themDir, perm755))
+	must(os.MkdirAll(snipDir, perm755))
+	must(os.MkdirAll(meldDir, perm755))
 
 	for _, dir := range dirs {
 		entries, err := os.ReadDir(dir)
@@ -135,7 +140,8 @@ func DownloadBase(snips []Snip) error {
 		if err != nil {
 			return fmt.Errorf("DownloadBase %s: %w", rawURL, err)
 		}
-		if err := writeFileAtomic(dst, body, 0o644); err != nil {
+		err = writeFileAtomic(dst, body, perm644)
+		if err != nil {
 			return err
 		}
 	}
@@ -164,7 +170,7 @@ func DownloadThem(snips []Snip) ([]Snip, error) {
 		if err != nil {
 			return snips, fmt.Errorf("DownloadThem %s: %w", rawURL, err)
 		}
-		err = writeFileAtomic(dst, body, 0o644)
+		err = writeFileAtomic(dst, body, perm644)
 		if err != nil {
 			return snips, err
 		}
@@ -183,7 +189,7 @@ func SnipOurs(snips []Snip) error {
 			continue
 		}
 
-		err := writeFileAtomic(p, s.Ours, 0o644)
+		err := writeFileAtomic(p, s.Ours, perm644)
 		if err != nil {
 			return err
 		}
@@ -209,7 +215,7 @@ func SnipBase(snips []Snip) error {
 		if fileExists(out) {
 			continue
 		}
-		err = writeFileAtomic(out, part, 0o644)
+		err = writeFileAtomic(out, part, perm644)
 		if err != nil {
 			return err
 		}
@@ -241,10 +247,11 @@ func SnipThem(snips []Snip) error { //nolint:gocyclo
 		}
 
 		// Try exact match first.
-		if idx := bytes.Index(themContent, baseContent); idx >= 0 {
+		idx := bytes.Index(themContent, baseContent)
+		if idx >= 0 {
 			out := snipName(snipDir, "them", s)
 			if !fileExists(out) {
-				err = writeFileAtomic(out, baseContent, 0o644)
+				err = writeFileAtomic(out, baseContent, perm644)
 				if err != nil {
 					return err
 				}
@@ -293,7 +300,7 @@ func SnipThem(snips []Snip) error { //nolint:gocyclo
 		out := snipName(snipDir, "them", s)
 		if !fileExists(out) {
 			// log.Printf("[them] Created snip %2d/%2d: %v (%d bytes)", snip_id, len(snips), out, len(best))
-			err = writeFileAtomic(out, best, 0o644)
+			err = writeFileAtomic(out, best, perm644)
 			if err != nil {
 				return err
 			}
@@ -336,7 +343,7 @@ func Meld(snips []Snip) error {
 
 		log.Printf("[meld] snip %2d/%2d: %sWriting %v", snip_id, len(snips), conflicts, meldPath)
 
-		must(writeFileAtomic(meldPath, out, 0o644))
+		must(writeFileAtomic(meldPath, out, perm644))
 		if exit == 1 {
 			// conflicts present, extract rejects
 			rej := extractRejects(out)
@@ -346,7 +353,7 @@ func Meld(snips []Snip) error {
 				rej = out
 			}
 			log.Printf("[meld] snip %2d/%2d: REJECTS: Writing %v", snip_id, len(snips), rejPath)
-			err := writeFileAtomic(rejPath, rej, 0o644)
+			err := writeFileAtomic(rejPath, rej, perm644)
 			if err != nil {
 				return err
 			}
@@ -476,7 +483,7 @@ func parseGitHubURL(u string) (urlMeta, error) {
 		return m, fmt.Errorf("bad start line in %q: %w", frag, err)
 	}
 	end := start
-	if len(segs) == 2 {
+	if len(segs) == 2 { //nolint:mnd
 		if !strings.HasPrefix(segs[1], "L") {
 			return m, fmt.Errorf("bad end fragment %q", segs[1])
 		}
@@ -494,7 +501,8 @@ func joinPathForName(repoPath string) string {
 	// Prefer trimming up to and including "src/" if present (per examples),
 	// then join remaining components with underscores.
 	p := repoPath
-	if idx := strings.Index(p, "/src/"); idx >= 0 {
+	idx := strings.Index(p, "/src/")
+	if idx >= 0 {
 		p = p[idx+len("/src/"):]
 	}
 	parts := strings.Split(p, "/")
@@ -523,7 +531,8 @@ func extractLines(content []byte, start, end int) ([]byte, error) {
 		buf.Write(sc.Bytes())
 		buf.WriteByte('\n')
 	}
-	if err := sc.Err(); err != nil {
+	err := sc.Err()
+	if err != nil {
 		return nil, err
 	}
 	return bytes.TrimRight(buf.Bytes(), "\n"), nil
@@ -535,7 +544,7 @@ func fileExists(p string) bool {
 }
 
 func httpGet(url string) ([]byte, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second) //nolint:mnd
 	defer cancel()
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 	if err != nil {
@@ -549,7 +558,7 @@ func httpGet(url string) ([]byte, error) {
 	}
 	defer res.Body.Close()
 	if res.StatusCode != http.StatusOK {
-		b, _ := io.ReadAll(io.LimitReader(res.Body, 4<<10))
+		b, _ := io.ReadAll(io.LimitReader(res.Body, 4<<10)) //nolint:mnd
 		return nil, fmt.Errorf("GET %s: %s: %s", url, res.Status, string(b))
 	}
 	return io.ReadAll(res.Body)
@@ -557,10 +566,12 @@ func httpGet(url string) ([]byte, error) {
 
 func writeFileAtomic(path string, data []byte, mode os.FileMode) error { //nolint:unparam
 	tmp := path + ".tmp"
-	if err := os.MkdirAll(filepath.Dir(path), 0o755); err != nil {
+	err := os.MkdirAll(filepath.Dir(path), perm755)
+	if err != nil {
 		return err
 	}
-	if err := os.WriteFile(tmp, data, mode); err != nil {
+	err = os.WriteFile(tmp, data, mode)
+	if err != nil {
 		return err
 	}
 	return os.Rename(tmp, path)
@@ -578,8 +589,8 @@ func splitLinesBytes(s []byte) [][]byte {
 }
 
 func runGitMergeFile(ours, them, base string) ([]byte, int, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel() // always cancel to release resources
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second) //nolint:mnd
+	defer cancel()                                                          // always cancel to release resources
 	// Use -p to print to stdout so we can capture it. Label streams for clarity.
 	cmd := exec.CommandContext(ctx, "git", "merge-file", "-p",
 		"-L", "ours", "-L", "base", "-L", "them",
@@ -653,18 +664,20 @@ func synthesizeConflict(ours, them, _ string) []byte {
 		readOrEmpty(ours), readOrEmpty(them)))
 }
 
+const shaLen = 8
+
 func cacheName(dir string, s Snip) string {
 	sha8 := s.BaseRef
-	if len(sha8) > 8 {
-		sha8 = sha8[:8]
+	if len(sha8) > shaLen {
+		sha8 = sha8[:shaLen]
 	}
 	return filepath.Join(dir, sha8, s.Joined)
 }
 
 func cacheNameThem(dir string, s Snip) string {
 	sha8 := s.ThemRef
-	if len(sha8) > 8 {
-		sha8 = sha8[:8]
+	if len(sha8) > shaLen {
+		sha8 = sha8[:shaLen]
 	}
 	return filepath.Join(dir, sha8, s.Joined)
 }
@@ -697,7 +710,8 @@ func getDefaultBranch(owner, repo string) (string, error) {
 		return branch, nil
 	}
 	var info repoInfo
-	if err := ghJSON(fmt.Sprintf("https://api.github.com/repos/%s/%s", owner, repo), &info); err != nil {
+	err := ghJSON(fmt.Sprintf("https://api.github.com/repos/%s/%s", owner, repo), &info)
+	if err != nil {
 		return "", err
 	}
 	branches[key] = info.DefaultBranch
@@ -714,7 +728,8 @@ func getCommitSHA(owner, repo, ref string) (string, error) {
 		return sha, nil
 	}
 	var c commitInfo
-	if err := ghJSON(fmt.Sprintf("https://api.github.com/repos/%s/%s/commits/%s", owner, repo, ref), &c); err != nil {
+	err := ghJSON(fmt.Sprintf("https://api.github.com/repos/%s/%s/commits/%s", owner, repo, ref), &c)
+	if err != nil {
 		return "", err
 	}
 	shas[key] = c.SHA
@@ -722,14 +737,15 @@ func getCommitSHA(owner, repo, ref string) (string, error) {
 }
 
 func addAuth(req *http.Request) {
-	if tok := os.Getenv("GITHUB_TOKEN"); tok != "" {
+	tok := os.Getenv("GITHUB_TOKEN")
+	if tok != "" {
 		req.Header.Set("Authorization", "Bearer "+tok)
 	}
 }
 
 func ghJSON(u string, out any) error {
-	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
-	defer cancel() // always cancel to release resources
+	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second) //nolint:mnd
+	defer cancel()                                                           // always cancel to release resources
 	req, _ := http.NewRequestWithContext(ctx, http.MethodGet, u, nil)
 	req.Header.Set("Accept", "application/vnd.github+json")
 	addAuth(req)
