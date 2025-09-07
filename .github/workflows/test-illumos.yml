@@ -13,14 +13,17 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     # continue-on-error: true
-    # env:
-    #  GITHUB_TOKEN : ${{ secrets.GITHUB_TOKEN }}
+    env:
+      GOOS: "illumos"
+      GOARCH: "amd64"
+      # GITHUB_TOKEN : ${{ secrets.GITHUB_TOKEN }}
+
     steps:
     - uses: actions/checkout@v5
 
     - uses: vmactions/omnios-vm@v1
       with:
-        # envs: 'GITHUB_TOKEN'
+        envs: 'GOOS GOARCH' # GITHUB_TOKEN
         usesh: true
         copyback: false
         prepare: |
@@ -29,24 +32,24 @@ jobs:
           # even though SHELL=bash we are in sh
           printf '$0=%s\n' "$0"
           set | grep '='
-
-          cd ..
+  
           tmp1=$(mktemp)
           curl -L -q -o "${tmp1}" 'https://go.dev/dl/?mode=json' 
-          GOOS="illumos"
-          GOARCH="amd64"
           jqcmd="[ .[] | select(.stable == true) ][0] | .files[] | select(.os == '${GOOS}' and .arch == '${GOARCH}') "
-          godist=$(jq -r "${jqcmd} | .filename" <<<"${tmp1}")
-          sha256=$(jq -r "${jqcmd} | .sha256"   <<<"${tmp1}")
-          size=$(  jq -r "${jqcmd} | .size"     <<<"${tmp1}")
+          printf "jqcmd='%s'\n" "${jqcmd}"
+          set -vx
+          godist=$(jq -r "${jqcmd} | .filename" "${tmp1}")
+          sha256=$(jq -r "${jqcmd} | .sha256"   "${tmp1}")
+          sizeui=$(jq -r "${jqcmd} | .size"     "${tmp1}")
           printf "godist: '%s'\n" "${godist}"
           printf "sha256: '%s'\n" "${sha256}"
-          printf "size  : '%s'\n" "${size}"
+          printf "sizeui: '%s'\n" "${sizeui}"
+          cd ..
           curl -L -q -o "${godist}" "https://go.dev/dl/${godist}"
           printf "%s %s\n" "${sha256}" "${godist}" >SHA256SUMS
           sha256sum -c SHA256SUMS
           gtar xzf "${godist}"
-          rm -f "${godist}" SHA256SUMS
+          rm -f "${godist}" SHA256SUMS "${tmp1}"
           export PATH="${PWD}/go/bin:${PATH}"
           cd "${GITHUB_WORKSPACE}"
           # go env
