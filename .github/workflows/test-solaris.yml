@@ -26,9 +26,17 @@ jobs:
         copyback: false
         prepare: |
           pkg refresh --full
-          pkg install --accept --licenses developer/go
-          pkg install --accept --licenses web/curl util/jq archiver/gnu-tar || true
+          pkg install --accept developer/go
+          pkg install --accept web/curl archiver/gnu-tar || true
+          pkgadd -d http://get.opencsw.org/now
+          export PATH="/opt/csw/bin/:${PATH}"
+          /opt/csw/bin/pkgutil -i jq
         run: |
+          set -x
+          export PATH="/opt/csw/bin/:${PATH}"
+          which curl
+          which jq
+          which gtar
           go version
           rv=0
           if go build -trimpath ./...; then
