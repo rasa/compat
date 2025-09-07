@@ -35,7 +35,8 @@ jobs:
   
           tmp1=$(mktemp)
           curl -L -q -o "${tmp1}" 'https://go.dev/dl/?mode=json' 
-          printf "[ .[] | select(.stable == true) ][0] | .files[] | select(.os == \"${GOOS}\" and .arch == \"${GOARCH}\") | .filename"
+          jqcmd="[ .[] | select(.stable == true) ][0] | .files[] | select(.os == \"${GOOS}\" and .arch == \"${GOARCH}\")"
+          printf "jqcmd='%s'\n" "${jqcmd}"
           godist=$(jq -r "${jqcmd} | .filename" "${tmp1}")
           sha256=$(jq -r "${jqcmd} | .sha256"   "${tmp1}")
           sizeui=$(jq -r "${jqcmd} | .size"     "${tmp1}")
