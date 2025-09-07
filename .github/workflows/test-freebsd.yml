@@ -29,6 +29,7 @@ jobs:
         prepare: |
           pkg update -f
           pkg install -y go
+          pkg install -y curl jq gtar || true
         run: |
           go version
           rv=0

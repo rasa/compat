@@ -26,16 +26,12 @@ jobs:
         copyback: false
         # See https://github.com/fsnotify/fsnotify/blob/main/.github/workflows/test.yml
         prepare: |
-          PATH="/usr/sbin:${PATH}"
-          export PATH
-          if ! command -v pkg_add; then
-            find / -name 'pkg_add' -type f 2>/dev/null || true
-          fi
+          export PATH="/usr/sbin:${PATH}"
           pkg_add go
+          pkg_add curl jq gtar || true
 
         run: |
-          PATH="/usr/pkg/bin:${PATH}"
-          export PATH
+          export PATH="/usr/pkg/bin:${PATH}"
           (cd /usr/pkg/bin ; ln -sf go??? go)
           ls -l /usr/pkg/bin
           command -v go
@@ -55,14 +51,3 @@ jobs:
             printf '::error ::tests failed: %s (error %s)\n' "$(go version)" "${rv}"
           fi
           exit "${rv}"
-
-# attempts=4
-# delay=1
-# i=1
-# while [ "${i}" -le "${attempts}" ]; do
-#   pkg_add go && break
-#   echo "Attempt ${i} failed. Retrying in ${delay} seconds..."
-#   sleep "${delay}"
-#   delay=$(expr "${delay}" \* 2)
-#   i=$(expr "${i}" + 1)
-# done

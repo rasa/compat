@@ -26,6 +26,7 @@ jobs:
         copyback: false
         prepare: |
           pkg_add go
+          pkg_add curl jq gtar || true
         run: |
           go version
           rv=0

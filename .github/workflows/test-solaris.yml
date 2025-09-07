@@ -27,6 +27,7 @@ jobs:
         prepare: |
           pkg refresh --full
           pkg install --accept --licenses developer/go
+          pkg install --accept --licenses web/curl util/jq archiver/gnu-tar || true
         run: |
           go version
           rv=0
