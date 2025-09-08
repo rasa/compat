@@ -28,7 +28,7 @@ jobs:
         copyback: false
         prepare: |
           pkg_add go
-          pkg_add coreutils curl gtar- jq || true
+          pkg_add coreutils curl gtar-- jq || true
         run: |
           which curl gtar gsha256sum jq sha256sum tar || true
 
