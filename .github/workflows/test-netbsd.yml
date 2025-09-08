@@ -33,6 +33,9 @@ jobs:
           pkg_add coreutils curl gtar jq || true
 
         run: |
+          echo "PATH="
+          echo "${PATH}" | tr ':' '\n'
+
           export PATH="/usr/pkg/bin:${PATH}"
           (cd /usr/pkg/bin ; ln -sf go??? go)
           ls -l /usr/pkg/bin

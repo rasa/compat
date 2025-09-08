@@ -33,6 +33,8 @@ jobs:
 
         # NOTE: dragonflybsd requires -buildvcs=false
         run: |
+          echo "PATH="
+          echo "${PATH}" | tr ':' '\n'
           which curl gtar gsha256sum jq sha256sum tar || true
 
           go version

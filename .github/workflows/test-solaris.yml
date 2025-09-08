@@ -31,6 +31,8 @@ jobs:
           pkg install --accept developer/go
           pkg install --accept coreutils web/curl archiver/gnu-tar text/jq || true
         run: |
+          echo "PATH="
+          echo "${PATH}" | tr ':' '\n'
           which curl gtar gsha256sum jq sha256sum tar || true
 
           go version

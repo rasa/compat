@@ -29,6 +29,8 @@ jobs:
         prepare: |
           pkg install web/curl archiver/gnu-tar util/jq # developer/gcc14 
         run: |
+          echo "PATH="
+          echo "${PATH}" | tr ':' '\n'
           which curl gtar gsha256sum jq sha256sum tar || true
 
           # even though SHELL=bash we are in sh
