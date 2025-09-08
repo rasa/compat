@@ -43,7 +43,9 @@ jobs:
           try="${tries}"
           delay=1
           while true; do
-            pkg_add coreutils curl gtar jq && break
+            which curl gtar gsha256sum jq && break
+            pkg_add coreutils curl gtar jq || true
+            which curl gtar gsha256sum jq && break
             try=$((try - 1))
             if [ "${try}" -le 0 ]; then
               printf "pkg_add failed all %s attempts" "${tries}"
@@ -60,4 +62,5 @@ jobs:
         # (cd /usr/pkg/bin ; ln -sf go??? go)
         # ls -l /usr/pkg/bin
         run: |
+          which curl gtar gsha256sum jq sha256sum tar || true
           ./download-build-test.sh
