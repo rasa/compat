@@ -13,9 +13,11 @@ jobs:
     name: test-dragonflybsd
     runs-on: ubuntu-24.04
     timeout-minutes: 10
+    env:
+      GOOS: "dragonfly"
+      GOARCH: "amd64"
+      # GITHUB_TOKEN : ${{ secrets.GITHUB_TOKEN }}
     # continue-on-error: true
-    # env:
-    #  GITHUB_TOKEN : ${{ secrets.GITHUB_TOKEN }}
     steps:
     - uses: actions/checkout@v5
 
@@ -28,10 +30,17 @@ jobs:
           pkg update -f
           pkg install -y go
           pkg install -y curl jq gtar || true
+
+        # NOTE: dragonflybsd requires -buildvcs=false
         run: |
-          # NOTE: dragonflybsd requires -buildvcs=false
+          which curl
+          which jq
+          which gtar
+          which sha256sum
 
           go version
+          go env
+
           rv=0
           if go build -buildvcs=false -trimpath ./...; then
             printf '::notice ::build succeeded: %s\n' "$(go version)"

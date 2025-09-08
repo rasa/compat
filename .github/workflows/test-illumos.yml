@@ -51,7 +51,8 @@ jobs:
           rm -f "${godist}" SHA256SUMS "${tmp1}"
           export PATH="${PWD}/go/bin:${PATH}"
           cd "${GITHUB_WORKSPACE}"
-          # go env
+          go version
+          go env
 
           rv=0
           if go build -trimpath .; then

@@ -13,9 +13,11 @@ jobs:
     name: test-solaris
     runs-on: ubuntu-24.04
     timeout-minutes: 10
+    env:
+      GOOS: "solaris"
+      GOARCH: "amd64"
+      # GITHUB_TOKEN : ${{ secrets.GITHUB_TOKEN }}
     # continue-on-error: true
-    # env:
-    #  GITHUB_TOKEN : ${{ secrets.GITHUB_TOKEN }}
     steps:
     - uses: actions/checkout@v5
 
@@ -29,11 +31,14 @@ jobs:
           pkg install --accept developer/go
           pkg install --accept web/curl text/jq archiver/gnu-tar || true
         run: |
-          set -x
           which curl
           which jq
           which gtar
+          which sha256sum
+
           go version
+          go env
+
           rv=0
           if go build -trimpath ./...; then
             printf '::notice ::build succeeded: %s\n' "$(go version)"

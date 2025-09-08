@@ -13,9 +13,11 @@ jobs:
     name: test-openbsd
     runs-on: ubuntu-24.04
     timeout-minutes: 10
+    env:
+      GOOS: "openbsd"
+      GOARCH: "amd64"
+      # GITHUB_TOKEN : ${{ secrets.GITHUB_TOKEN }}
     # continue-on-error: true
-    # env:
-    #  GITHUB_TOKEN : ${{ secrets.GITHUB_TOKEN }}
     steps:
     - uses: actions/checkout@v5
 
@@ -28,7 +30,14 @@ jobs:
           pkg_add go
           pkg_add curl jq gtar- || true
         run: |
+          which curl
+          which jq
+          which gtar
+          which sha256sum
+
           go version
+          go env
+
           rv=0
           if go build -trimpath ./...; then
             printf '::notice ::build succeeded: %s\n' "$(go version)"
