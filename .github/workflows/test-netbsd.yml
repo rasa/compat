@@ -29,11 +29,29 @@ jobs:
         usesh: true
         copyback: false
         # See https://github.com/fsnotify/fsnotify/blob/main/.github/workflows/test.yml
+        # default PATH:
+        # /usr/bin
+        # /bin
+        # /usr/pkg/bin
+        # /usr/local/bin
         prepare: |
           echo 'PATH='
           echo "${PATH}" | tr ':' '\n'
           export PATH="/usr/sbin:${PATH}"
-          pkg_add coreutils curl gtar jq
+          tries=9
+          try="${tries}"
+          delay=1
+          while true; do
+            pkg_add coreutils curl gtar jq && break
+            try=$((try - 1))
+            if [ "${try}" -le 0 ]; then
+              printf "pkg_add failed all %s attempts" "${tries}"
+              exit 1
+            fi
+            printf "Sleeping %s seconds, %s tries remaining...\n" "${delay}" "${try}"
+            sleep "${delay}"
+            delay=$((delay * 2))
+          done
           cd /usr/pkg/bin && ln -sf gsha256sum sha256sum 
           # pkg_add go
         run: |
