@@ -33,17 +33,10 @@ jobs:
           # ignore error 4, which is returned when there's nothing to do
           # See https://github.com/vmactions/solaris-builder/blob/cda522c7/hooks/postBuild.sh#L55
           pkg refresh --full
-          pkg install --accept developer/go
-          pkg install --accept web/curl
-          pkg install --accept archiver/gnu-tar
-          echo EXEC: pkg install --accept text/jq
+          pkg install --accept developer/go || true
+          pkg install --accept web/curl || true
+          pkg install --accept archiver/gnu-tar || true
           pkg install --accept text/jq || true
-          echo EXEC: pkg search -r jq
-          pkg search -r jq || true
-          echo EXEC: pkg info text/jq
-          pkg info text/jq || true
-          echo EXEC: pkg contents -r text/jq
-          pkg contents -r text/jq | grep jq || true
           exit 0
         # /usr/bin/sha256sum
         run: |

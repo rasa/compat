@@ -31,46 +31,4 @@ jobs:
         # /opt/ooce/bin/jq
         # /usr/bin/sha256sum
         run: |
-          # echo "PATH="
-          # echo "${PATH}" | tr ':' '\n'
-          # which curl gtar gsha256sum jq sha256sum tar || true
-
-          # even though SHELL=bash we are in sh
-          printf '$0=%s\n' "$0"
-          set | grep '='
-  
-          tmp1=$(mktemp)
-          curl -L -q -o "${tmp1}" 'https://go.dev/dl/?mode=json' 
-          jqcmd="[ .[] | select(.stable == true) ][0] | .files[] | select(.os == \"${GOOS}\" and .arch == \"${GOARCH}\")"
-          printf "jqcmd='%s'\n" "${jqcmd}"
-          godist=$(jq -r "${jqcmd} | .filename" "${tmp1}")
-          sha256=$(jq -r "${jqcmd} | .sha256"   "${tmp1}")
-          sizeui=$(jq -r "${jqcmd} | .size"     "${tmp1}")
-          printf "godist: '%s'\n" "${godist}"
-          printf "sha256: '%s'\n" "${sha256}"
-          printf "sizeui: '%s'\n" "${sizeui}"
-          cd ..
-          curl -L -q -o "${godist}" "https://go.dev/dl/${godist}"
-          printf "%s %s\n" "${sha256}" "${godist}" >SHA256SUMS
-          sha256sum -c SHA256SUMS
-          gtar xzf "${godist}"
-          rm -f "${godist}" SHA256SUMS "${tmp1}"
-          export PATH="${PWD}/go/bin:${PATH}"
-          cd "${GITHUB_WORKSPACE}"
-          go version
-          go env
-
-          rv=0
-          if go build -trimpath .; then
-            printf '::notice ::build succeeded: %s\n' "$(go version)"
-          else
-            rv=$?
-            printf '::error ::build failed: %s (error %s)\n' "$(go version)" "${rv}"
-          fi
-          if go test -v .; then
-            printf '::notice ::tests succeeded: %s\n' "$(go version)"
-          else
-            rv=$?
-            printf '::error ::tests failed: %s (error %s)\n' "$(go version)" "${rv}"
-          fi
-          exit "${rv}"
+          ./download-build-test.sh
