@@ -29,17 +29,22 @@ jobs:
         usesh: true
         copyback: false
         prepare: |
-          set -vx
-          # ignore error 4, which is returned when there's nothing to do
           set +e
+          # ignore error 4, which is returned when there's nothing to do
+          # See https://github.com/vmactions/solaris-builder/blob/cda522c7/hooks/postBuild.sh#L55
           pkg refresh --full
           pkg install --accept developer/go
           pkg install --accept web/curl
           pkg install --accept archiver/gnu-tar
-          pkg install --accept text/jq
-          pkg search -r jq
-          pkg info text/jq
-          pkg contents -r text/jq | grep jq
+          echo EXEC: pkg install --accept text/jq
+          pkg install --accept text/jq || true
+          echo EXEC: pkg search -r jq
+          pkg search -r jq || true
+          echo EXEC: pkg info text/jq
+          pkg info text/jq || true
+          echo EXEC: pkg contents -r text/jq
+          pkg contents -r text/jq | grep jq || true
+          exit 0
         # /usr/bin/sha256sum
         run: |
           echo "PATH="
