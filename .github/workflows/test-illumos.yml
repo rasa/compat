@@ -14,12 +14,14 @@ jobs:
     timeout-minutes: 20
     # continue-on-error: true
     env:
-      GOOS: "illumos"
-      GOARCH: "amd64"
+      GOOS: illumos
+      GOARCH: amd64
       # GITHUB_TOKEN : ${{ secrets.GITHUB_TOKEN }}
 
     steps:
     - uses: actions/checkout@v5
+      with:
+        show-progress: false
 
     - uses: vmactions/omnios-vm@v1
       with:
@@ -27,8 +29,7 @@ jobs:
         usesh: true
         copyback: false
         prepare: |
-          pkg install web/curl archiver/gnu-tar util/jq # developer/gcc14 
-        # /opt/ooce/bin/jq
-        # /usr/bin/sha256sum
+          pkg install web/curl archiver/gnu-tar util/jq
+          # add developer/gcc14 for CGO
         run: |
           ./download-build-test.sh

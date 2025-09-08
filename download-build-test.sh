@@ -41,12 +41,12 @@ gtar xzf "${name}"
 rm -f "${name}" "${tmp1}"
 export PATH="${PWD}/go/bin:${PATH}"
 cd "${GITHUB_WORKSPACE}" || exit
-# go version
-# go env
 
 GOVERSION=$(go version || true)
+printf "gover:  %s\n" "${GOVERSION}"
 
 rv=0
+# NOTE: dragonflybsd requires -buildvcs=false
 if go build -buildvcs=false -trimpath ./...; then
   printf '::notice ::build succeeded: %s\n' "${GOVERSION}"
 else

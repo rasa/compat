@@ -14,47 +14,30 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     env:
-      GOOS: "netbsd"
-      GOARCH: "amd64"
+      GOOS: netbsd
+      GOARCH: amd64
       # GITHUB_TOKEN : ${{ secrets.GITHUB_TOKEN }}
     # continue-on-error: true
     steps:
     - uses: actions/checkout@v5
+      with:
+        show-progress: false
 
     - uses: vmactions/netbsd-vm@v1
       with:
-        # envs: 'GOOS GOARCH' # GITHUB_TOKEN'
+        envs: 'GOOS GOARCH' # GITHUB_TOKEN'
         usesh: true
         copyback: false
         # See https://github.com/fsnotify/fsnotify/blob/main/.github/workflows/test.yml
         prepare: |
-          echo "PATH="
+          echo 'PATH='
           echo "${PATH}" | tr ':' '\n'
           export PATH="/usr/sbin:${PATH}"
-          pkg_add coreutils curl gtar jq || true
-          which curl gtar gsha256sum jq sha256sum tar || true
-          pkg_add go
+          pkg_add coreutils curl gtar jq
           cd /usr/pkg/bin && ln -sf gsha256sum sha256sum 
+          # pkg_add go
         run: |
-          # unneeded:
-          # export PATH="/usr/pkg/bin:${PATH}"
-          (cd /usr/pkg/bin ; ln -sf go??? go)
-          ls -l /usr/pkg/bin
+          ./download-build-test.sh
 
-          go version
-          go env
-
-          rv=0
-          if go build -trimpath ./...; then
-            printf '::notice ::build succeeded: %s\n' "$(go version)"
-          else
-            rv=$?
-            printf '::error ::build failed: %s (error %s)\n' "$(go version)" "${rv}"
-          fi
-          if go test -v .; then
-            printf '::notice ::tests succeeded: %s\n' "$(go version)"
-          else
-            rv=$?
-            printf '::error ::tests failed: %s (error %s)\n' "$(go version)" "${rv}"
-          fi
-          exit "${rv}"
+          # (cd /usr/pkg/bin ; ln -sf go??? go)
+          # ls -l /usr/pkg/bin
