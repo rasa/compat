@@ -29,14 +29,11 @@ jobs:
         prepare: |
           pkg update -f
           pkg install -y go
-          pkg install -y curl jq gtar || true
+          pkg install -y coreutils curl gtar jq || true
 
         # NOTE: dragonflybsd requires -buildvcs=false
         run: |
-          which curl
-          which jq
-          which gtar
-          which sha256sum
+          which curl gtar gsha256sum jq sha256sum tar || true
 
           go version
           go env
@@ -55,4 +52,3 @@ jobs:
             printf '::error ::tests failed: %s (error %s)\n' "$(go version)" "${rv}"
           fi
           exit "${rv}"
-

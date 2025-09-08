@@ -28,12 +28,9 @@ jobs:
         copyback: false
         prepare: |
           pkg_add go
-          pkg_add curl jq gtar- || true
+          pkg_add coreutils curl gtar- jq || true
         run: |
-          which curl
-          which jq
-          which gtar
-          which sha256sum
+          which curl gtar gsha256sum jq sha256sum tar || true
 
           go version
           go env

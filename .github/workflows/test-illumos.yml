@@ -27,8 +27,10 @@ jobs:
         usesh: true
         copyback: false
         prepare: |
-          pkg install web/curl util/jq archiver/gnu-tar # developer/gcc14 
+          pkg install web/curl archiver/gnu-tar util/jq # developer/gcc14 
         run: |
+          which curl gtar gsha256sum jq sha256sum tar || true
+
           # even though SHELL=bash we are in sh
           printf '$0=%s\n' "$0"
           set | grep '='

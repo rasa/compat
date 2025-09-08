@@ -29,12 +29,9 @@ jobs:
         prepare: |
           pkg refresh --full
           pkg install --accept developer/go
-          pkg install --accept web/curl text/jq archiver/gnu-tar || true
+          pkg install --accept coreutils web/curl archiver/gnu-tar text/jq || true
         run: |
-          which curl
-          which jq
-          which gtar
-          which sha256sum
+          which curl gtar gsha256sum jq sha256sum tar || true
 
           go version
           go env
