@@ -29,12 +29,13 @@ jobs:
         usesh: true
         copyback: false
         prepare: |
-          set -x
+          set -vx
+          # ignore error 4, which is returned when there's nothing to do
+          set +e
           pkg refresh --full
           pkg install --accept developer/go
           pkg install --accept web/curl
           pkg install --accept archiver/gnu-tar
-          set +e
           pkg install --accept text/jq
           pkg search -r jq
           pkg info text/jq
