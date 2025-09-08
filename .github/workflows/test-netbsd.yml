@@ -34,9 +34,10 @@ jobs:
           pkg_add coreutils curl gtar jq || true
           which curl gtar gsha256sum jq sha256sum tar || true
           pkg_add go
-        # /usr/local/bin/gsha256sum
+          cd /usr/pkg/bin && ln -sf gsha256sum sha256sum 
         run: |
-          export PATH="/usr/pkg/bin:${PATH}"
+          # unneeded:
+          # export PATH="/usr/pkg/bin:${PATH}"
           (cd /usr/pkg/bin ; ln -sf go??? go)
           ls -l /usr/pkg/bin
 

@@ -31,7 +31,7 @@ jobs:
         prepare: |
           pkg update -f
           pkg install -y go
-          pkg install -ycurl gtar jq || true
+          pkg install -y curl gtar jq || true
         # /sbin/sha256sum
         run: |
           # echo "PATH="

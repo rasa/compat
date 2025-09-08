@@ -30,7 +30,7 @@ jobs:
           pkg update -f
           pkg install -y go
           pkg install -y coreutils curl gtar jq || true
-          cd /usr/local/bin && ln -s gsha256sum sha256sum
+          cd /usr/local/bin && ln -sf gsha256sum sha256sum
         # NOTE: dragonflybsd requires -buildvcs=false
         run: |
           # echo "PATH="
