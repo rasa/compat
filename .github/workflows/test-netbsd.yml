@@ -38,6 +38,7 @@ jobs:
           echo 'PATH='
           echo "${PATH}" | tr ':' '\n'
           export PATH="/usr/sbin:${PATH}"
+          which curl gtar gsha256sum jq sha256sum tar || true
           tries=9
           try="${tries}"
           delay=1
@@ -52,10 +53,11 @@ jobs:
             sleep "${delay}"
             delay=$((delay * 2))
           done
-          cd /usr/pkg/bin && ln -sf gsha256sum sha256sum 
+          cd /usr/pkg/bin && ln -sf gsha256sum sha256sum
+          which curl gtar gsha256sum jq sha256sum tar || true
           # pkg_add go
+        # if we are using: pkg_add go
+        # (cd /usr/pkg/bin ; ln -sf go??? go)
+        # ls -l /usr/pkg/bin
         run: |
           ./download-build-test.sh
-
-          # (cd /usr/pkg/bin ; ln -sf go??? go)
-          # ls -l /usr/pkg/bin
