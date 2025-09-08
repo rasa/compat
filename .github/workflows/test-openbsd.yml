@@ -29,6 +29,7 @@ jobs:
         prepare: |
           pkg_add go
           pkg_add coreutils curl gtar-- jq || true
+          cd /usr/local/bin && ln -s gsha256sum sha256sum
         run: |
           echo "PATH="
           echo "${PATH}" | tr ':' '\n'

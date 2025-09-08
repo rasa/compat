@@ -29,11 +29,14 @@ jobs:
         prepare: |
           pkg refresh --full
           pkg install --accept developer/go
-          pkg install --accept coreutils web/curl archiver/gnu-tar text/jq || true
+          pkg install --accept web/curl
+          pkg install --accept archiver/gnu-tar
+          pkg install --accept text/jq || true
+        # /usr/bin/sha256sum
         run: |
           echo "PATH="
           echo "${PATH}" | tr ':' '\n'
-          which curl gtar gsha256sum jq sha256sum tar || true
+          which curl gtar jq sha256sum tar || true
 
           go version
           go env

@@ -28,10 +28,12 @@ jobs:
         copyback: false
         prepare: |
           pkg install web/curl archiver/gnu-tar util/jq # developer/gcc14 
+        # /opt/ooce/bin/jq
+        # /usr/bin/sha256sum
         run: |
-          echo "PATH="
-          echo "${PATH}" | tr ':' '\n'
-          which curl gtar gsha256sum jq sha256sum tar || true
+          # echo "PATH="
+          # echo "${PATH}" | tr ':' '\n'
+          # which curl gtar gsha256sum jq sha256sum tar || true
 
           # even though SHELL=bash we are in sh
           printf '$0=%s\n' "$0"

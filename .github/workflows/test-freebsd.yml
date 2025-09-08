@@ -31,11 +31,12 @@ jobs:
         prepare: |
           pkg update -f
           pkg install -y go
-          pkg install -y coreutils curl gtar jq || true
+          pkg install -ycurl gtar jq || true
+        # /sbin/sha256sum
         run: |
-          echo "PATH="
-          echo "${PATH}" | tr ':' '\n'
-          which curl gtar gsha256sum jq sha256sum tar || true
+          # echo "PATH="
+          # echo "${PATH}" | tr ':' '\n'
+          # which curl gtar gsha256sum jq sha256sum tar || true
 
           go version
           go env
