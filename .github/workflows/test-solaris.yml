@@ -12,7 +12,7 @@ jobs:
   test-solaris:
     name: test-solaris
     runs-on: ubuntu-24.04
-    timeout-minutes: 10
+    timeout-minutes: 20
     env:
       GOOS: "solaris"
       GOARCH: "amd64"
@@ -20,10 +20,12 @@ jobs:
     # continue-on-error: true
     steps:
     - uses: actions/checkout@v5
+      with:
+        show-progress: false
 
     - uses: vmactions/solaris-vm@v1
       with:
-        # envs: 'GITHUB_TOKEN'
+        # envs: 'GOOS GOARCH' # GITHUB_TOKEN'
         usesh: true
         copyback: false
         prepare: |
