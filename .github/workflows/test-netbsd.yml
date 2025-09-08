@@ -12,7 +12,7 @@ jobs:
   test-netbsd:
     name: test-netbsd
     runs-on: ubuntu-24.04
-    timeout-minutes: 10
+    timeout-minutes: 20
     env:
       GOOS: "netbsd"
       GOARCH: "amd64"
@@ -23,7 +23,7 @@ jobs:
 
     - uses: vmactions/netbsd-vm@v1
       with:
-        # envs: 'GITHUB_TOKEN'
+        # envs: 'GOOS GOARCH' # GITHUB_TOKEN'
         usesh: true
         copyback: false
         # See https://github.com/fsnotify/fsnotify/blob/main/.github/workflows/test.yml

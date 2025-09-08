@@ -12,7 +12,7 @@ jobs:
   test-openbsd:
     name: test-openbsd
     runs-on: ubuntu-24.04
-    timeout-minutes: 10
+    timeout-minutes: 20
     env:
       GOOS: "openbsd"
       GOARCH: "amd64"
@@ -23,7 +23,7 @@ jobs:
 
     - uses: vmactions/openbsd-vm@v1
       with:
-        # envs: 'GITHUB_TOKEN'
+        # envs: 'GOOS GOARCH' # GITHUB_TOKEN'
         usesh: true
         copyback: false
         prepare: |

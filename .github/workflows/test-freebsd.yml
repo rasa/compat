@@ -12,7 +12,7 @@ jobs:
   test-freebsd:
     name: test-freebsd
     runs-on: ubuntu-24.04
-    timeout-minutes: 10
+    timeout-minutes: 20
     env:
       GOOS: "freebsd"
       GOARCH: "amd64"
@@ -25,7 +25,7 @@ jobs:
       with:
         # release: "15.0"
         # arch: aarch64
-        # envs: 'GITHUB_TOKEN'
+        # envs: 'GOOS GOARCH' # GITHUB_TOKEN'
         usesh: true
         copyback: false
         prepare: |
