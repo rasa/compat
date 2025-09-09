@@ -3,6 +3,8 @@
 
 package compat_test
 
+const nativeFS = "Native"
+
 var (
 	tempPath string
 	tempSize string
