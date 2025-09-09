@@ -193,7 +193,7 @@ var procGetFinalPathNameByHandleW = modkernel32.NewProc("GetFinalPathNameByHandl
 // Source: https://github.com/golang/go/blob/77f911e3/src/syscall/zsyscall_windows.go#L783-790
 
 func GetFinalPathNameByHandle(file Handle, filePath *uint16, filePathSize uint32, flags uint32) (n uint32, err error) {
-	r0, _, e1 := syscall.Syscall6(procGetFinalPathNameByHandleW.Addr(), 4, uintptr(file), uintptr(unsafe.Pointer(filePath)), uintptr(filePathSize), uintptr(flags), 0, 0)
+	r0, _, e1 := syscall.Syscall6(procGetFinalPathNameByHandleW.Addr(), 4, uintptr(file), uintptr(unsafe.Pointer(filePath)), uintptr(filePathSize), uintptr(flags), 0, 0) //nolint:gosec
 	n = uint32(r0)
 	if n == 0 || n >= filePathSize {
 		err = errnoErr(e1)

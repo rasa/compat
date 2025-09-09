@@ -140,7 +140,7 @@ func fdpath(fd syscall.Handle, buf []uint16) ([]uint16, error) {
 		VOLUME_NAME_DOS      = 0
 	)
 	for {
-		n, err := golang.GetFinalPathNameByHandle(fd, &buf[0], uint32(len(buf)), FILE_NAME_NORMALIZED|VOLUME_NAME_DOS)
+		n, err := golang.GetFinalPathNameByHandle(fd, &buf[0], uint32(len(buf)), FILE_NAME_NORMALIZED|VOLUME_NAME_DOS) //nolint:gosec
 		if err == nil {
 			buf = buf[:n]
 			break
@@ -148,7 +148,7 @@ func fdpath(fd syscall.Handle, buf []uint16) ([]uint16, error) {
 		if err != _ERROR_NOT_ENOUGH_MEMORY {
 			return nil, err
 		}
-		buf = append(buf, make([]uint16, n-uint32(len(buf)))...)
+		buf = append(buf, make([]uint16, n-uint32(len(buf)))...) //nolint:gosec
 	}
 	return buf, nil
 }
