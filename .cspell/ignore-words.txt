@@ -17,11 +17,12 @@
 acifani          #  4 hits in  2 files
 adrg             #  2 hits in  1 file: cmd/updater/main.go
 antontroshin     #  2 hits in  1 file: .github/workflows/build.yml
+archiver         #  2 hits in  1 file: .github/workflows/test-illumos.yml
 armv             #  2 hits in  1 file: .github/workflows/build-only-android.yml
 asasalint        #  2 hits in  1 file: .golangci.yml
 bbwe             #  2 hits in  1 file: .github/workflows/debug-matrix.yml
 binaryen         #  8 hits in  2 files
-btrfs            # 10 hits in  2 files
+btrfs            # 12 hits in  3 files
 Btrfs            #  2 hits in  1 file: main_linux_test.go
 bytecodealliance #  2 hits in  1 file: .github/workflows/test-wasi.yml
 capnspacehook    #  8 hits in  4 files
@@ -60,6 +61,7 @@ gochecknoinits   #  2 hits in  1 file: .golangci.yml
 goconst          #  4 hits in  2 files
 gocritic         #  8 hits in  3 files
 gocyclo          # 18 hits in  8 files
+godist           # 10 hits in  1 file: .github/workflows/test-illumos.yml
 gofmt            #  2 hits in  1 file: .github/linters/.golangci.yml
 gofumpt          #  6 hits in  2 files
 goprintffuncname #  2 hits in  1 file: .golangci.yml
@@ -69,6 +71,7 @@ gosimple         #  2 hits in  1 file: .github/linters/.golangci.yml
 goupdater        #  2 hits in  1 file: cmd/updater/main.go
 govet            # 10 hits in  4 files
 govulncheck      #  4 hits in  1 file: Makefile
+gtar             #  2 hits in  1 file: .github/workflows/test-illumos.yml
 ineffassign      #  6 hits in  3 files
 infoed           #  6 hits in  1 file: dir.go
 innounp          #  2 hits in  1 file: .github/workflows/debug-matrix.yml
@@ -76,6 +79,7 @@ interfacebloat   #  2 hits in  1 file: .golangci.yml
 irthed           #  2 hits in  1 file: README.md
 JHFS             # 12 hits in  2 files
 Joblint          #  4 hits in  1 file: .github/linters/.vale.ini
+jqcmd            #  8 hits in  1 file: .github/workflows/test-illumos.yml
 JSONLINT         #  2 hits in  1 file: .github/mega-linter-shared.yml
 KICS             #  4 hits in  2 files
 lessmsi          #  2 hits in  1 file: .github/workflows/debug-matrix.yml
@@ -100,7 +104,6 @@ nolintlint       # 14 hits in  4 files
 NOROATTR         # 22 hits in  3 files
 ntfsprogs        #  4 hits in  1 file: main_linux_test.go
 OEXFAT           #  2 hits in  1 file: .github/workflows/debug-matrix.yml
-ooce             #  2 hits in  1 file: .github/workflows/test-illumos.yml
 paralleltest     #  2 hits in  1 file: .golangci.yml
 Partitionl       #  4 hits in  1 file: cmd/demo/main.go
 perfsprint       #  2 hits in  1 file: .golangci.yml
@@ -146,6 +149,8 @@ xlarge           # 12 hits in  2 files
 #   cmd/updater/main.go: 2 hits
 # antontroshin    :  2 hits in  1 file
 #   .github/workflows/build.yml: 2 hits
+# archiver        :  2 hits in  1 file
+#   .github/workflows/test-illumos.yml: 2 hits
 # armv            :  2 hits in  1 file
 #   .github/workflows/build-only-android.yml: 2 hits
 # asasalint       :  2 hits in  1 file
@@ -155,9 +160,10 @@ xlarge           # 12 hits in  2 files
 # binaryen        :  8 hits in  2 files
 #   .github/workflows/test-tinygo.yml: 2 hits
 #   .github/workflows/test-wasi.yml: 6 hits
-# btrfs           : 10 hits in  2 files
+# btrfs           : 12 hits in  3 files
 #   .github/workflows/build-root.yml: 4 hits
 #   main_linux_test.go: 6 hits
+#   partitiontype.go: 2 hits
 # Btrfs           :  2 hits in  1 file
 #   main_linux_test.go: 2 hits
 # bytecodealliance:  2 hits in  1 file
@@ -262,6 +268,8 @@ xlarge           # 12 hits in  2 files
 #   runtime_test.go: 2 hits
 #   stat_acls_windows.go: 2 hits
 #   writereader_atomic.go: 2 hits
+# godist          : 10 hits in  1 file
+#   .github/workflows/test-illumos.yml: 10 hits
 # gofmt           :  2 hits in  1 file
 #   .github/linters/.golangci.yml: 2 hits
 # gofumpt         :  6 hits in  2 files
@@ -292,6 +300,8 @@ xlarge           # 12 hits in  2 files
 #   stat_acls_windows.go: 2 hits
 # govulncheck     :  4 hits in  1 file
 #   Makefile: 4 hits
+# gtar            :  2 hits in  1 file
+#   .github/workflows/test-illumos.yml: 2 hits
 # ineffassign     :  6 hits in  3 files
 #   .github/linters/.golangci.yml: 2 hits
 #   .golangci.yml: 2 hits
@@ -309,6 +319,8 @@ xlarge           # 12 hits in  2 files
 #   main_darwin_test.go: 8 hits
 # Joblint         :  4 hits in  1 file
 #   .github/linters/.vale.ini: 4 hits
+# jqcmd           :  8 hits in  1 file
+#   .github/workflows/test-illumos.yml: 8 hits
 # JSONLINT        :  2 hits in  1 file
 #   .github/mega-linter-shared.yml: 2 hits
 # KICS            :  4 hits in  2 files
@@ -407,8 +419,6 @@ xlarge           # 12 hits in  2 files
 #   main_linux_test.go: 4 hits
 # OEXFAT          :  2 hits in  1 file
 #   .github/workflows/debug-matrix.yml: 2 hits
-# ooce            :  2 hits in  1 file
-#   .github/workflows/test-illumos.yml: 2 hits
 # paralleltest    :  2 hits in  1 file
 #   .golangci.yml: 2 hits
 # Partitionl      :  4 hits in  1 file
