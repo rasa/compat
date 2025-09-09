@@ -89,11 +89,11 @@ linters:
       - third_party$
       - builtin$
       - examples$
+      # don't lint upstream code:
       - walk\.go$
       - walk_test\.go$
-      - cmd/updater/main\.go$
       - golang/golang_.*\.go$
-
+      
 formatters:
   enable:
     - gofumpt
@@ -108,7 +108,7 @@ formatters:
       - third_party$
       - builtin$
       - examples$
+      # don't lint upstream code:
       - walk\.go$
       - walk_test\.go$
-      - cmd/updater/main\.go$
       - golang/golang_.*\.go$
