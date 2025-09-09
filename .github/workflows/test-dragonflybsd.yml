@@ -11,22 +11,25 @@ permissions:
 jobs:
   test-dragonflybsd:
     name: test-dragonflybsd
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    # env:
-    #  GITHUB_TOKEN : ${{ secrets.GITHUB_TOKEN }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      GOOS: dragonfly
+      GOARCH: amd64
+      # GITHUB_TOKEN : ${{ secrets.GITHUB_TOKEN }}
+    # continue-on-error: true
     steps:
     - uses: actions/checkout@v5
 
     - uses: vmactions/dragonflybsd-vm@v1
       with:
-        # envs: 'GITHUB_TOKEN'
+        envs: 'GOOS GOARCH' # GITHUB_TOKEN'
         usesh: true
+        copyback: false
         prepare: |
           pkg update -f
-          pkg install -y go
+          pkg install -y coreutils curl gtar jq
+          cd /usr/local/bin && ln -sf gsha256sum sha256sum
+          # pkg install -y go
         run: |
-          printf '::notice ::%s\n' "$(go version)"
-          go env
-          go build ./...
-          go test -v
+          ./download-build-test.sh

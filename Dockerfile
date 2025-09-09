@@ -9,5 +9,5 @@
 # AVD-DS-0026 (LOW):  Add HEALTHCHECK instruction in your Dockerfile
 
 FROM scratch
-COPY compat /
-ENTRYPOINT ["/compat"]
+COPY demo /
+ENTRYPOINT ["/demo"]

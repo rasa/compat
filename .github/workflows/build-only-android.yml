@@ -9,6 +9,7 @@ on: # yamllint disable-line rule:truthy
   workflow_dispatch:
     inputs:
       # See https://developer.android.com/studio#command-tools
+      # Last checked 2025-08-21
       # checkov:skip=CKV_GHA_7: The build output cannot be affected by user parameters...
       ANDROID_SDK_URL:
         default: "https://dl.google.com/android/repository/commandlinetools-linux-13114758_latest.zip"
@@ -17,19 +18,20 @@ on: # yamllint disable-line rule:truthy
         type: string
       # See https://developer.android.com/ndk/downloads
       ANDROID_NDK_URL:
-        default: "https://dl.google.com/android/repository/android-ndk-r28b-linux.zip"
+        default: "https://dl.google.com/android/repository/android-ndk-r28c-linux.zip"
         description: "Android NDK URL"
+        required: false
+        type: string
+      # See https://developer.android.com/ndk/downloads
+      NDK_VERSION:
+        default: "28.2.13676358"
+        description: "Android NDK Version"
         required: false
         type: string
       # See https://apilevels.com/
       ABI_VERSION:
         default: "21"
         description: "ABI Version (21-36)"
-        required: false
-        type: string
-      NDK_VERSION:
-        default: "28.1.13356709"
-        description: "Android NDK Version"
         required: false
         type: string
 
@@ -44,10 +46,10 @@ env:
     }}
   ANDROID_NDK_URL: ${{
     inputs.ANDROID_NDK_URL ||
-    'https://dl.google.com/android/repository/android-ndk-r28b-linux.zip'
+    'https://dl.google.com/android/repository/android-ndk-r28c-linux.zip'
     }}
+  NDK_VERSION: ${{ inputs.NDK_VERSION || '28.2.13676358' }}
   ABI_VERSION: ${{ inputs.ABI_VERSION || '21' }}
-  NDK_VERSION: ${{ inputs.NDK_VERSION || '28.1.13356709' }}
   ANDROID_SDK_ROOT: '/usr/local/android-sdk'
   CGO_ENABLED: '1'
   GOOS: 'android'
@@ -84,7 +86,7 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
-      - uses: actions/setup-go@v5
+      - uses: actions/setup-go@v6
         with:
           go-version: '1.25'
           check-latest: true
@@ -137,7 +139,7 @@ jobs:
           export CC="${NDK_PATH}/toolchains/llvm/prebuilt/linux-x86_64/bin/${dir}"
           go env
           export APK=uvk-${{ matrix.android_arch }}.apk
-          go build -o "${APK}" main.go
+          go build -trimpath -o "${APK}" main.go
           if [[ -f "${APK}" ]]; then
             go version -m "${APK}"
             ls -l "${APK}"
@@ -152,4 +154,4 @@ jobs:
       # yamllint disable-line
       #     export CC="${NDK_PATH}/toolchains/llvm/prebuilt/linux-x86_64/bin/${{ matrix.android_arch }}-linux-android${ABI_PREFIX}${ABI_VERSION}-clang"
       #     go env
-      #     go test -v ./...
+      #     go test -v .

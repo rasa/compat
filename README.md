@@ -62,16 +62,16 @@ which, on Linux, produces:
 Name:   hello.txt
 Size:   11
 Mode:   0o654 (-rw-r-xr--)
-ModTime:2025-08-14 09:25:27.190602462 -0700 PDT
-IsDir:  false
-PartID: 64512                                   // unique device ID
-FileID: 18756713                                // unique file ID on the partition
-Links:  1                                       // number of hard links
+ModTime:2025-08-14 09:25:27.190602462 -0700 PDT // last Modified
 ATime:  2025-08-14 09:25:27.190602462 -0700 PDT // last Accessed
 BTime:  2025-08-14 09:25:27.190602462 -0700 PDT // Birthed/created
 CTime:  2025-08-14 09:25:27.190602462 -0700 PDT // metadata last Changed
+IsDir:  false
+Links:  1                                       // number of hard links
 UID:    1000 (ross)                             // user ID
 GID:    1000 (ross)                             // group ID
+PartID: 64512                                   // unique partition (device) ID
+FileID: 18756713                                // unique file ID on the partition
 ```
 and on Windows, produces:
 ```text
@@ -79,15 +79,15 @@ Name:   hello.txt
 Size:   11
 Mode:   0o654 (-rw-r-xr--)
 ModTime:2025-08-14 09:28:50.4214934 -0700 PDT
-IsDir:  false
-PartID: 8
-FileID: 844424931319952
-Links:  1
 ATime:  2025-08-14 09:28:50.4214934 -0700 PDT
 BTime:  2025-08-14 09:28:50.4209614 -0700 PDT
 CTime:  2025-08-14 09:28:50.4214934 -0700 PDT
+IsDir:  false
+Links:  1
 UID:    197609 (domain\ross)
 GID:    197121 (domain\None)
+PartID: 8
+FileID: 844424931319952
 ```
 icacls shows:
 ```

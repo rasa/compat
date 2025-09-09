@@ -56,8 +56,10 @@ func Create(name string, opts ...Option) (*os.File, error) {
 		opt(&fopts)
 	}
 
-	if fopts.readOnlyMode != ReadOnlyModeSet {
-		fopts.flags |= O_NOROATTR
+	if IsWindows {
+		if fopts.readOnlyMode != ReadOnlyModeSet {
+			fopts.flags |= O_NOROATTR
+		}
 	}
 
 	return create(name, fopts.fileMode, fopts.flags)
@@ -81,11 +83,25 @@ func CreateTemp(dir, pattern string, opts ...Option) (*os.File, error) {
 		opt(&fopts)
 	}
 
-	if fopts.readOnlyMode != ReadOnlyModeSet {
-		fopts.flags |= O_NOROATTR
+	if IsWindows {
+		if fopts.readOnlyMode != ReadOnlyModeSet {
+			fopts.flags |= O_NOROATTR
+		}
 	}
 
 	return createTemp(dir, pattern, fopts.fileMode, fopts.flags)
+}
+
+// Fchmod changes the mode of the file to mode.
+// If there is an error, it will be of type [*PathError].
+func Fchmod(f *os.File, mode os.FileMode, opts ...Option) error {
+	fopts := Options{}
+
+	for _, opt := range opts {
+		opt(&fopts)
+	}
+
+	return fchmod(f, mode, fopts.readOnlyMode)
 }
 
 // Mkdir creates a new directory with the specified name and perm's permission
@@ -141,11 +157,13 @@ func OpenFile(name string, flag int, perm os.FileMode, opts ...Option) (*os.File
 		opt(&fopts)
 	}
 
-	if fopts.readOnlyMode != ReadOnlyModeSet {
-		fopts.flags |= O_NOROATTR
+	if IsWindows {
+		if fopts.readOnlyMode != ReadOnlyModeSet {
+			fopts.flags |= O_NOROATTR
+		}
 	}
 
-	return openFile(name, flag, perm) // fopts.flags, fopts.fileMode)
+	return openFile(name, fopts.flags, fopts.fileMode)
 }
 
 // Remove removes the named file or directory.
@@ -191,8 +209,10 @@ func WriteFile(name string, data []byte, perm os.FileMode, opts ...Option) error
 		opt(&fopts)
 	}
 
-	if fopts.readOnlyMode != ReadOnlyModeSet {
-		fopts.flags |= O_NOROATTR
+	if IsWindows {
+		if fopts.readOnlyMode != ReadOnlyModeSet {
+			fopts.flags |= O_NOROATTR
+		}
 	}
 
 	return writeFile(name, data, fopts.fileMode, fopts.flags)

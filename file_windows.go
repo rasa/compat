@@ -56,8 +56,10 @@ func chmod(name string, perm os.FileMode, mask ReadOnlyMode) error {
 		return nil
 	}
 
-	if mask == ReadOnlyModeReset && !got {
-		return nil
+	if mask == ReadOnlyModeReset {
+		if !got {
+			return nil
+		}
 		want = false
 	}
 
@@ -96,13 +98,68 @@ func createTemp(dir, pattern string, perm os.FileMode, flag int) (*os.File, erro
 	return golang.CreateTemp(dir, pattern, flag, sa)
 }
 
+func fchmod(f *os.File, mode os.FileMode, mask ReadOnlyMode) error {
+	if f == nil {
+		return errors.New("nil file pointer")
+	}
+	fd := syscall.Handle(f.Fd())
+
+	// Source: https://github.com/golang/go/blob/77f911e3/src/syscall/syscall_windows.go#L1294-L1310
+
+	var buf [syscall.MAX_PATH + 1]uint16
+	path, err := fdpath(fd, buf[:])
+	if err != nil {
+		return err
+	}
+	// When using VOLUME_NAME_DOS, the path is always prefixed by "\\?\".
+	// That prefix tells the Windows APIs to disable all string parsing and to send
+	// the string that follows it straight to the file system.
+	// Although SetCurrentDirectory and GetCurrentDirectory do support the "\\?\" prefix,
+	// some other Windows APIs don't. If the prefix is not removed here, it will leak
+	// to Getwd, and we don't want such a general-purpose function to always return a
+	// path with the "\\?\" prefix after Fchdir is called.
+	// The downside is that APIs that do support it will parse the path and try to normalize it,
+	// when it's already normalized.
+	if len(path) >= 4 && path[0] == '\\' && path[1] == '\\' && path[2] == '?' && path[3] == '\\' {
+		path = path[4:]
+	}
+	pathString := syscall.UTF16ToString(path)
+
+	return chmod(pathString, mode, mask)
+}
+
+// Source: https://github.com/golang/go/blob/77f911e3/src/syscall/syscall_windows.go#L183
+
+const _ERROR_NOT_ENOUGH_MEMORY = syscall.Errno(8)
+
+// Source: https://github.com/golang/go/blob/77f911e3/src/syscall/syscall_windows.go#L1274-L1291
+
+func fdpath(fd syscall.Handle, buf []uint16) ([]uint16, error) {
+	const (
+		FILE_NAME_NORMALIZED = 0
+		VOLUME_NAME_DOS      = 0
+	)
+	for {
+		n, err := golang.GetFinalPathNameByHandle(fd, &buf[0], uint32(len(buf)), FILE_NAME_NORMALIZED|VOLUME_NAME_DOS)
+		if err == nil {
+			buf = buf[:n]
+			break
+		}
+		if err != _ERROR_NOT_ENOUGH_MEMORY {
+			return nil, err
+		}
+		buf = append(buf, make([]uint16, n-uint32(len(buf)))...)
+	}
+	return buf, nil
+}
+
 func mkdir(name string, perm os.FileMode) error {
 	sa, err := saFromPerm(perm, true)
 	if err != nil {
 		return err
 	}
 
-	return golang.Mkdir(name, 0o700, sa) //nolint:mnd // quiet linter
+	return golang.Mkdir(name, 0o700, sa) //nolint:mnd
 }
 
 func mkdirAll(name string, perm os.FileMode) error {
@@ -111,7 +168,7 @@ func mkdirAll(name string, perm os.FileMode) error {
 		return err
 	}
 
-	return golang.MkdirAll(name, 0o700, sa) //nolint:mnd // quiet linter
+	return golang.MkdirAll(name, 0o700, sa) //nolint:mnd
 }
 
 func mkdirTemp(dir, pattern string, perm os.FileMode) (string, error) {
@@ -179,7 +236,7 @@ func saFromPerm(perm os.FileMode, create bool) (*syscall.SecurityAttributes, err
 		return &sa, nil
 	}
 
-	perm &^= os.FileMode(GetUmask()) //nolint:gosec // quiet linter
+	perm &^= os.FileMode(GetUmask()) //nolint:gosec
 	sd, err := sdFromPerm(perm)
 	if err != nil {
 		return nil, err
@@ -193,7 +250,7 @@ func saFromPerm(perm os.FileMode, create bool) (*syscall.SecurityAttributes, err
 
 // siFromPerm converts a perm (FileMode) to an *si (*securityInfo).
 func siFromPerm(perm os.FileMode) (*securityInfo, error) {
-	perm &^= os.FileMode(GetUmask()) //nolint:gosec // quiet linter
+	perm &^= os.FileMode(GetUmask()) //nolint:gosec
 
 	// Get current user's SID
 	token := windows.Token(0)
@@ -234,10 +291,10 @@ func siFromPerm(perm os.FileMode) (*securityInfo, error) {
 
 	var ea [3]windows.EXPLICIT_ACCESS
 
-	ownerMask := accessMask(perm, 6) //nolint:mnd // quiet linter
+	ownerMask := accessMask(perm, 6) //nolint:mnd
 	setExplicitAccess(&ea[0], ownerSid, ownerMask, windows.TRUSTEE_IS_USER)
 
-	groupMask := accessMask(perm, 3) //nolint:mnd // quiet linter
+	groupMask := accessMask(perm, 3) //nolint:mnd
 	setExplicitAccess(&ea[1], groupSid, groupMask, windows.TRUSTEE_IS_GROUP)
 
 	worldMask := accessMask(perm, 0)
@@ -306,13 +363,13 @@ func accessMask(mode os.FileMode, shift int) uint32 {
 
 	var mask uint32
 
-	if perm&(0o4<<shift) == (0o4 << shift) { //nolint:mnd // quiet linter
+	if perm&(0o4<<shift) == (0o4 << shift) { //nolint:mnd
 		mask |= windows.GENERIC_READ
 	}
-	if perm&(0o2<<shift) == (0o2 << shift) { //nolint:mnd // quiet linter
+	if perm&(0o2<<shift) == (0o2 << shift) { //nolint:mnd
 		mask |= windows.GENERIC_WRITE | windows.DELETE
 	}
-	if perm&(0o1<<shift) == (0o1 << shift) { //nolint:mnd // quiet linter
+	if perm&(0o1<<shift) == (0o1 << shift) { //nolint:mnd
 		mask |= windows.GENERIC_EXECUTE
 	}
 

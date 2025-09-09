@@ -20,6 +20,8 @@ import (
 	"github.com/rasa/compat/golang"
 )
 
+const perm000 = os.FileMode(0o0)
+
 const supports supportsType = supportsLinks | supportsATime | supportsBTime | supportsCTime | supportsSymlinks
 
 const userIDSource UserIDSourceType = UserIDSourceIsSID
@@ -35,7 +37,7 @@ type fileStat struct {
 	sys    syscall.Win32FileAttributeData
 	partID uint64
 	fileID uint64
-	links  uint64
+	links  uint
 	atime  time.Time
 	btime  time.Time
 	ctime  time.Time
@@ -50,7 +52,7 @@ type fileStat struct {
 	// grouped bool unused
 	followSymlinks bool
 	err            error
-	mux            sync.Mutex // only on Windows
+	mux            sync.Mutex // Windows only
 }
 
 // Portions of the following code is:
@@ -92,7 +94,7 @@ func stat(fi os.FileInfo, name string, followSymlinks bool) (FileInfo, error) {
 	if err != nil {
 		return nil, &os.PathError{Op: "stat", Path: name, Err: err}
 	}
-	defer windows.CloseHandle(h) //nolint:errcheck // quiet linter
+	defer windows.CloseHandle(h) //nolint:errcheck
 	var i windows.ByHandleFileInformation
 	err = windows.GetFileInformationByHandle(h, &i)
 	if err != nil {
@@ -111,18 +113,18 @@ func stat(fi os.FileInfo, name string, followSymlinks bool) (FileInfo, error) {
 	}
 	fs.sys = *sys
 
-	perm, err := _stat(name)
+	fs.partID = uint64(i.VolumeSerialNumber)                             // uint32
+	fs.fileID = (uint64(i.FileIndexHigh) << 32) + uint64(i.FileIndexLow) //nolint:mnd
+	fs.links = uint(i.NumberOfLinks)
+	fs.atime = time.Unix(0, fs.sys.LastAccessTime.Nanoseconds())
+	fs.btime = time.Unix(0, fs.sys.CreationTime.Nanoseconds())
+
+	perm, err := fs.stat()
 	if err != nil {
 		return nil, &os.PathError{Op: "stat", Path: name, Err: err}
 	}
-	fs.mode &= os.FileMode(^uint32(0o777)) //nolint:mnd // quiet
+	fs.mode &^= ModePerm // os.FileMode(^uint32(0o777)) //nolint:mnd // quiet
 	fs.mode |= perm.Perm()
-
-	fs.partID = uint64(i.VolumeSerialNumber)                             // uint32
-	fs.fileID = (uint64(i.FileIndexHigh) << 32) + uint64(i.FileIndexLow) //nolint:mnd // quiet linter
-	fs.links = uint64(i.NumberOfLinks)
-	fs.atime = time.Unix(0, fs.sys.LastAccessTime.Nanoseconds())
-	fs.btime = time.Unix(0, fs.sys.CreationTime.Nanoseconds())
 
 	return &fs, nil
 }
@@ -156,14 +158,21 @@ func (fs *fileStat) CTime() time.Time {
 	h, err := windows.CreateFile(pathp, 0, 0, nil, windows.OPEN_EXISTING, attrs, 0)
 	if err != nil {
 		fs.err = &os.PathError{Op: "stat", Path: fs.path, Err: err}
+
 		return fs.ctime
 	}
-	defer windows.CloseHandle(h) //nolint:errcheck // quiet linter
+	defer windows.CloseHandle(h) //nolint:errcheck
 
 	var bi golang.FILE_BASIC_INFO
 	err = windows.GetFileInformationByHandleEx(h, windows.FileBasicInfo, (*byte)(unsafe.Pointer(&bi)), uint32(unsafe.Sizeof(bi)))
 	if err != nil {
 		fs.err = &os.PathError{Op: "stat", Path: fs.path, Err: err}
+
+		return fs.ctime
+	}
+
+	if bi.ChangedTime == 0 {
+		// exFAT returns 0
 		return fs.ctime
 	}
 
@@ -230,6 +239,35 @@ func (fs *fileStat) Group() string {
 	return fs.group
 }
 
-func _stat(name string) (os.FileMode, error) {
-	return acl.GetExplicitFileAccessMode(name)
+func (fs *fileStat) stat() (os.FileMode, error) {
+	b, err := supportsACLsCached(fs)
+	if err == nil && !b {
+		if fs.mode.IsDir() {
+			return DefaultWindowsDirPerm, nil
+		} else {
+			return DefaultWindowsFilePerm, nil
+		}
+	}
+
+	perm, err := acl.GetExplicitFileAccessMode(fs.path)
+	if err != nil {
+		fs.err = err
+		return perm, err
+	}
+	if perm == perm000 {
+		b, err = supportsACLs(fs.path)
+		if err != nil {
+			fs.err = err
+			return perm, err
+		}
+		if !b {
+			if fs.mode.IsDir() {
+				return DefaultWindowsDirPerm, nil
+			} else {
+				return DefaultWindowsFilePerm, nil
+			}
+		}
+	}
+
+	return perm, nil
 }

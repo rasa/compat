@@ -1,17 +1,249 @@
-// SPDX-FileCopyrightText: Copyright © 2025 Ross Smith II <ross@smithii.com>
+// SPDX-FileCopyrightText: Copyright (c) 2025 Ross Smith II <ross@smithii.com>
 // SPDX-License-Identifier: MIT
 
 package compat_test
 
 import (
-	"errors"
+	"bytes"
+	"context"
+	"flag"
 	"fmt"
+	"io"
+	"math/rand/v2"
+	"os"
+	"os/exec"
 	"runtime"
-	"syscall"
+	"strings"
 	"testing"
+	"time"
 
 	"github.com/rasa/compat"
 )
+
+const (
+	perm000 = os.FileMode(0)
+	perm555 = os.FileMode(0o555)
+	perm644 = os.FileMode(0o644)
+	perm600 = os.FileMode(0o600)
+	perm700 = os.FileMode(0o700)
+	perm777 = os.FileMode(0o777)
+)
+
+var (
+	compatDebug = strings.ToUpper(os.Getenv("COMPAT_DEBUG"))
+	helloBytes  = []byte("hello")
+)
+
+func init() {
+	// Needed for testing.Verbose() and testing.Short() to be available.
+	testing.Init()
+	flag.Parse()
+
+	// @TODO(rasa): test different umask settings
+	compat.Umask(0)
+}
+
+func compareNames(got string, want string) bool {
+	if compat.IsWasip1 {
+		if got == "" && want == "daemon" {
+			return true
+		}
+	}
+
+	if !compat.IsWindows {
+		return got == want
+	}
+
+	if testEnv.noACLs {
+		return true
+	}
+
+	if got == "" || want == "" {
+		return false
+	}
+	gotDomain, gotName := parseName(got)
+	wantDomain, wantName := parseName(want)
+	if gotName == wantName {
+		if gotDomain == wantDomain || gotDomain == "" || wantDomain == "" {
+			return true
+		}
+	}
+
+	return false
+}
+
+func compareTimes(a, b time.Time, granularity int) bool {
+	if granularity < 0 {
+		return a.IsZero()
+	}
+	if granularity == 0 {
+		granularity = 1
+	}
+
+	return a.Sub(b).Abs() < time.Duration(granularity)*time.Second
+}
+
+func fatal(t *testing.T, msg any) { //nolint:unused
+	t.Helper()
+
+	s := fmt.Sprint(msg)
+	if compat.IsTinygo {
+		s = "Skipping test: fatal error: " + s
+		s += " (" + runtime.GOOS + "/tinygo" + ")"
+		t.Log(s)
+
+		return
+	}
+
+	t.Fatal(s)
+}
+
+func fatalf(t *testing.T, format string, a ...any) { //nolint:unused
+	t.Helper()
+	fatal(t, fmt.Sprintf(format, a...))
+}
+
+func fatalTimes(t *testing.T, prefix string, got, want time.Time, granularity int) { //nolint:unused
+	t.Helper()
+
+	diff := got.Sub(want).Abs().Seconds()
+
+	t.Fatalf("%v: got %.2fs difference, want <%ds (%v vs %v)", prefix, diff, granularity, got, want)
+}
+
+func fixPerms(perm os.FileMode, isDir bool) os.FileMode {
+	if compat.IsWasip1 {
+		if compat.IsTinygo {
+			return perm600
+		} else {
+			// only the user-bit is used
+			return perm & 0o700
+		}
+	}
+
+	if testEnv.noACLs {
+		if isDir {
+			switch {
+			case compat.IsWindows:
+				return compat.DefaultWindowsDirPerm
+			case compat.IsApple:
+				return compat.DefaultAppleDirPerm
+			default:
+
+				return compat.DefaultUnixDirPerm
+			}
+		} else {
+			switch {
+			case compat.IsWindows:
+				return compat.DefaultWindowsFilePerm
+			case compat.IsApple:
+				return compat.DefaultAppleFilePerm
+			default:
+				return compat.DefaultUnixFilePerm
+			}
+		}
+	}
+
+	return perm
+}
+
+func fixPosixPerms(perm os.FileMode, isDir bool) os.FileMode {
+	if compat.IsWasip1 {
+		if compat.IsTinygo {
+			return perm000
+		} else {
+			return perm & 0o700
+		}
+	}
+
+	if compat.IsWindows {
+		if isDir {
+			return compat.DefaultWindowsDirPerm
+		} else {
+			return compat.DefaultWindowsFilePerm
+		}
+	}
+
+	return fixPerms(perm, isDir)
+}
+
+func log(msg string) { //nolint:unused
+	if testing.Verbose() {
+		fmt.Println(msg)
+	}
+}
+
+func logf(format string, a ...any) { //nolint:unused
+	if testing.Verbose() {
+		fmt.Printf(format, a...)
+	}
+}
+
+func must(err error) { // nolint:unused
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "error: %v\n", err)
+		os.Exit(1)
+	}
+}
+
+func normalizeSize(s string) string { //nolint:unused
+	r := strings.ToUpper(strings.TrimSpace(s))
+	r = strings.ReplaceAll(r, "BYTES", "B")
+	r = strings.ReplaceAll(r, "IB", "I")
+	r = strings.ReplaceAll(r, "KIB", "K")
+	r = strings.ReplaceAll(r, "MIB", "M")
+	r = strings.ReplaceAll(r, "GIB", "G")
+	r = strings.ReplaceAll(r, "TIB", "T")
+	r = strings.ReplaceAll(r, "KB", "K")
+	r = strings.ReplaceAll(r, "MB", "M")
+	r = strings.ReplaceAll(r, "GB", "G")
+	r = strings.ReplaceAll(r, "TB", "T")
+
+	return r
+}
+
+func parseName(name string) (string, string) {
+	parts := strings.Split(name, `\`)
+	switch {
+	case len(parts) == 1:
+		return "", strings.ToLower(parts[0])
+	default:
+		return strings.ToLower(parts[0]), strings.ToLower(parts[1])
+	}
+}
+
+func randomBase36String(n int) string { //nolint:unused
+	const base36 = "0123456789abcdefghijklmnopqrstuvwxyz"
+	out := make([]byte, n)
+	for i := range out {
+		out[i] = base36[rand.IntN(len(base36))] //nolint:gosec
+	}
+	return string(out)
+}
+
+func run(name string, args ...string) error { //nolint:unparam,unused
+	log("Executing: " + name + " " + strings.Join(args, " "))
+	ctx := context.Background()
+	cmd := exec.CommandContext(ctx, name, args...) //nolint:gosec
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	cmd.Stdin = io.NopCloser(bytes.NewReader(nil))
+	return cmd.Run()
+}
+
+func runCapture(name string, args ...string) (string, error) { //nolint:unused
+	log("Executing: " + name + " " + strings.Join(args, " "))
+	ctx := context.Background()
+	cmd := exec.CommandContext(ctx, name, args...) //nolint:gosec
+	var out, errb bytes.Buffer
+	cmd.Stdout = &out
+	cmd.Stderr = &errb
+	cmd.Stdin = io.NopCloser(bytes.NewReader(nil))
+	if err := cmd.Run(); err != nil {
+		return "", fmt.Errorf("%s %v: %w\nstderr:\n%s", name, args, err, errb.String())
+	}
+	return out.String(), nil
+}
 
 func skip(t *testing.T, msg any) {
 	t.Helper()
@@ -35,34 +267,82 @@ func skipf(t *testing.T, format string, a ...any) {
 	skip(t, fmt.Sprintf(format, a...))
 }
 
-func fatal(t *testing.T, msg any) { //nolint:unused // quiet linter
+func supportsHardLinks(t *testing.T) bool {
 	t.Helper()
 
-	s := fmt.Sprint(msg)
-	if compat.IsTinygo {
-		s = "Skipping test: fatal error: " + s
-		s += " (" + runtime.GOOS + "/tinygo" + ")"
-		t.Log(s)
+	if !compat.SupportsLinks() {
+		skip(t, "Skipping test: Links() not supported on "+runtime.GOOS)
 
-		return
+		return false // tinygo doesn't support t.Skip
 	}
 
-	t.Fatal(s)
+	if testEnv.noHardLinks {
+		skipf(t, "Skipping test: hard links are not supported on a %v filesystem", testEnv.fsType)
+
+		return false // tinygo doesn't support t.Skip
+	}
+
+	return true
 }
 
-func fatalf(t *testing.T, format string, a ...any) { //nolint:unused // quiet linter
+func supportsSymlinks(t *testing.T) bool {
 	t.Helper()
-	fatal(t, fmt.Sprintf(format, a...))
+
+	if !compat.SupportsSymlinks() {
+		skipf(t, "Skipping test: symlinks are not supported on %v", runtime.GOOS)
+
+		return false // tinygo doesn't support t.Skip
+	}
+
+	if testEnv.noSymlinks {
+		skipf(t, "Skipping test: symlinks are not supported on a %v filesystem", testEnv.fsType)
+
+		return false // tinygo doesn't support t.Skip
+	}
+
+	return true
 }
 
-func errno(err error) uint32 { //nolint:unused // quiet linter
-	if err == nil {
-		return 0
-	}
-	var errno syscall.Errno
-	if errors.As(err, &errno) {
-		return uint32(errno)
+func tempFile(t *testing.T) (string, error) {
+	t.Helper()
+
+	f, err := compat.CreateTemp(tempDir(t), "")
+	if err != nil {
+		return "", err
 	}
 
-	return ^uint32(0)
+	name := f.Name()
+
+	err = f.Close()
+	if err != nil {
+		return "", err
+	}
+
+	return name, nil
+}
+
+func tempName(t *testing.T) (string, error) {
+	t.Helper()
+
+	name, err := tempFile(t)
+	if err != nil {
+		return "", err
+	}
+
+	err = os.Remove(name)
+	if err != nil {
+		return "", err
+	}
+
+	return name, nil
+}
+
+func tempDir(t *testing.T) string {
+	t.Helper()
+
+	if tempPath != "" {
+		return tempPath
+	}
+
+	return t.TempDir()
 }

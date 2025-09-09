@@ -12,3 +12,11 @@ func Getuid() (int, error) {
 func Getgid() (int, error) {
 	// this will intentionally not compile to alert us to a new build platform.
 }
+
+func Geteuid() (int, error) {
+	// this will intentionally not compile to alert us to a new build platform.
+}
+
+func Getegid() (int, error) {
+	// this will intentionally not compile to alert us to a new build platform.
+}

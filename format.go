@@ -13,7 +13,7 @@ package compat
 //	- hello.go
 func FormatDirEntry(dir DirEntry) string {
 	name := dir.Name()
-	b := make([]byte, 0, 5+len(name)) //nolint:mnd // quiet linter
+	b := make([]byte, 0, 5+len(name)) //nolint:mnd
 
 	// The Type method does not return any permission bits,
 	// so strip them from the string.

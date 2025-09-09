@@ -4,6 +4,7 @@
 package compat
 
 import (
+	"io/fs"
 	"os"
 	"path/filepath"
 	"slices"
@@ -64,7 +65,7 @@ func (d dirEntry) Info() (FileInfo, error) {
 	if d.infoed {
 		return d.info, d.err
 	}
-	d.infoed = true //nolint:staticcheck // quiet linter
+	d.infoed = true //nolint:staticcheck
 	path := d.name
 	if d.parent != "" {
 		path = filepath.Join(d.parent, d.name)
@@ -80,7 +81,7 @@ func (d dirEntry) Info() (FileInfo, error) {
 	if d.err != nil {
 		return nil, d.err
 	}
-	d.typ = d.info.Mode().Type() //nolint:govet,staticcheck // quiet linter
+	d.typ = d.info.Mode().Type() //nolint:govet,staticcheck
 
 	return d.info, nil
 }
@@ -145,7 +146,19 @@ func osDirEntryToDirEntry(entry os.DirEntry, parent string) DirEntry {
 	}
 }
 
-func osFileInfoToDirEntry(info os.FileInfo, parent string) DirEntry {
+func fsDirEntryToDirEntry(entry fs.DirEntry, parent string) DirEntry {
+	if entry == nil {
+		return nil
+	}
+
+	return dirEntry{
+		parent: parent,
+		name:   entry.Name(),
+		typ:    entry.Type(),
+	}
+}
+
+func fsFileInfoToDirEntry(info fs.FileInfo, parent string) DirEntry {
 	if info == nil {
 		return nil
 	}

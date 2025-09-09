@@ -1,6 +1,5 @@
-// Copyright 2023 The Go Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file.
+// SPDX-FileCopyrightText: Copyright © 2025 Ross Smith II <ross@smithii.com>
+// SPDX-License-Identifier: MIT
 
 package compat_test
 
@@ -11,6 +10,11 @@ import (
 
 	"github.com/rasa/compat"
 )
+
+// The following code is:
+// Copyright 2023 The Go Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file.
 
 // Source: https://github.com/golang/go/blob/77f911e3/src/io/fs/format_test.go#L13
 
@@ -56,17 +60,17 @@ func (fs *formatTest) Info() (os.FileInfo, error) {
 	return fs, nil
 }
 
-func (fs *formatTest) PartitionID() uint64 { return 0 }
-func (fs *formatTest) FileID() uint64      { return 0 }
-func (fs *formatTest) Links() uint64       { return 1 }
 func (fs *formatTest) ATime() time.Time    { return time.Time{} }
 func (fs *formatTest) BTime() time.Time    { return time.Time{} }
 func (fs *formatTest) CTime() time.Time    { return time.Time{} }
 func (fs *formatTest) MTime() time.Time    { return fs.modTime }
+func (fs *formatTest) Links() uint         { return 1 }
 func (fs *formatTest) UID() int            { return 0 }
 func (fs *formatTest) GID() int            { return 0 }
 func (fs *formatTest) User() string        { return "" }
 func (fs *formatTest) Group() string       { return "" }
+func (fs *formatTest) PartitionID() uint64 { return 0 }
+func (fs *formatTest) FileID() uint64      { return 0 }
 func (fs *formatTest) Error() error        { return nil }
 func (fs *formatTest) String() string      { return "" }
 

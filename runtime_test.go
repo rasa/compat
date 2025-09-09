@@ -48,7 +48,7 @@ var arches = []string{
 	"wasm",
 }
 
-func TestRuntime(t *testing.T) { //nolint:funlen,gocyclo // quiet linter
+func TestRuntime(t *testing.T) { //nolint:funlen,gocyclo
 	goExe, err := exec.LookPath("go")
 	if err != nil {
 		if compat.IsTinygo || compat.IsWasm {
@@ -62,7 +62,7 @@ func TestRuntime(t *testing.T) { //nolint:funlen,gocyclo // quiet linter
 		return
 	}
 
-	out, err := exec.Command(goExe, "tool", "dist", "list").Output() //nolint:noctx // quiet linter
+	out, err := exec.Command(goExe, "tool", "dist", "list").Output() //nolint:noctx
 	if err != nil {
 		if compat.IsTinygo || compat.IsWasm {
 			skipf(t, "Skipping test: %v", err)

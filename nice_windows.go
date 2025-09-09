@@ -16,8 +16,8 @@ var niceMap = map[uint32]int{
 	windows.HIGH_PRIORITY_CLASS:         -15,
 	windows.ABOVE_NORMAL_PRIORITY_CLASS: -5,
 	windows.NORMAL_PRIORITY_CLASS:       0,
-	windows.BELOW_NORMAL_PRIORITY_CLASS: 5,  //nolint:mnd // quiet linter
-	windows.IDLE_PRIORITY_CLASS:         19, //nolint:mnd // quiet linter
+	windows.BELOW_NORMAL_PRIORITY_CLASS: 5,  //nolint:mnd
+	windows.IDLE_PRIORITY_CLASS:         19, //nolint:mnd
 }
 
 // Nice gets the CPU process priority. The return value is in a range from

@@ -21,7 +21,7 @@ type fileStat struct {
 	sys    syscall.Stat_t
 	partID uint64
 	fileID uint64
-	links  uint64
+	links  uint
 	atime  time.Time
 	btime  time.Time
 	ctime  time.Time
@@ -30,7 +30,7 @@ type fileStat struct {
 	user   string
 	group  string
 	path   string
-	btimed bool //nolint:unused // quiet linter
+	btimed bool //nolint:unused
 	// ctimed bool // unused
 	usered         bool
 	grouped        bool

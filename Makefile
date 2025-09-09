@@ -1,4 +1,16 @@
+#!/usr/bin/env make
+# SPDX-FileCopyrightText: Copyright © 2025 Ross Smith II <ross@smithii.com>
+# SPDX-License-Identifier: MIT
+
 SHELL := /bin/bash
+export NO_COLOR := 1
+export TERM := dumb
+
+ifneq ($(wildcard go.tool.mod),)
+TOOL_OPTS += -modfile=go.tool.mod
+endif
+
+export TOOL_OPTS
 
 .DEFAULT_GOAL := all
 
@@ -27,11 +39,13 @@ clean: ## remove files created during build pipeline
 
 .PHONY: download
 download: ## go mod download
-	go mod download -x
+	go mod download
+	test -f go.tool.mod && go mod download -modfile=go.tool.mod
 
 .PHONY: mod
 mod: ## go mod tidy
-	go mod tidy -x
+	go mod tidy -xg
+	test -f go.tool.mod && go mod tidy -modfile=go.tool.mod -x
 
 .PHONY: gen
 gen: ## go generate
@@ -39,23 +53,24 @@ gen: ## go generate
 
 .PHONY: build
 build: ## goreleaser build
-	go tool goreleaser build --clean --single-target --snapshot
+	-go tool $(TOOL_OPTS) goreleaser --version
+	go tool $(TOOL_OPTS) goreleaser build --clean --single-target --snapshot
 
 .PHONY: spell
 spell: ## misspell
-	go tool misspell -error -locale=US -w **.md
+	go tool $(TOOL_OPTS) misspell -error -locale=US -w **.md
 
 .PHONY: lint
 lint: ## golangci-lint
-	go tool golangci-lint run --fix
+	go tool $(TOOL_OPTS) golangci-lint run --fix
 
 .PHONY: fix
 fix: ## gofumpt
-	go tool gofumpt -w .
+	go tool $(TOOL_OPTS) gofumpt -w .
 
 .PHONY: vuln
 vuln: ## govulncheck
-	go tool govulncheck ./...
+	go tool $(TOOL_OPTS) govulncheck ./...
 
 RACE_OPT := -race
 
@@ -79,8 +94,10 @@ endif
 
 .PHONY: test
 test: ## go test
-	go test $(TEST_OPTS) -tags debug $(RACE_OPT) -covermode=atomic -coverprofile=coverage.out -coverpkg=./... ./...
+	go test $(TEST_OPTS) -tags debug $(RACE_OPT) -covermode=atomic -coverprofile=coverage.tmp -coverpkg=. .
+	grep -Ev '/(cmd|golang)/' coverage.tmp > coverage.out
 	go tool cover -html=coverage.out -o coverage.html
+	rm -f coverage.tmp
 
 .PHONY: diff
 diff: ## git diff

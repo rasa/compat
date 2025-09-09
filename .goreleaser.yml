@@ -6,15 +6,28 @@ before:
   hooks:
     - go mod download
 builds:
-  - env:
+  - &common_build
+    env:
       - CGO_ENABLED=0
-    main: ./cmd/demo/main.go
     goos:
       - darwin
       - linux
       - windows
     goarch:
       - amd64
+    flags:
+      - -trimpath
+    ldflags:
+      - -s -w
+    id: demo
+    main: ./cmd/demo
+    binary: demo
+
+  - <<: *common_build
+    id: updater
+    main: ./cmd/updater
+    binary: updater
+
 archives:
   - format_overrides:
       - goos: windows

@@ -36,8 +36,8 @@ func CPUBits() (int, error) {
 	arch := strings.TrimSpace(string(machine))
 
 	if strings.HasSuffix(arch, "64") {
-		return 64, nil //nolint:mnd // quiet linter
+		return 64, nil //nolint:mnd
 	}
 
-	return 32, nil //nolint:mnd // quiet linter
+	return 32, nil //nolint:mnd
 }

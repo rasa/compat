@@ -9,5 +9,5 @@ import (
 	"os"
 )
 
-func dumpMasks(_ os.FileMode, _ uint32, _ uint32, _ uint32) { //nolint:nolintlint,unused // quiet linter
+func dumpMasks(_ os.FileMode, _ uint32, _ uint32, _ uint32) { //nolint:nolintlint,unused
 }

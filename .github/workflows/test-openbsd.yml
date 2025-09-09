@@ -11,21 +11,27 @@ permissions:
 jobs:
   test-openbsd:
     name: test-openbsd
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    # env:
-    #  GITHUB_TOKEN : ${{ secrets.GITHUB_TOKEN }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      GOOS: openbsd
+      GOARCH: amd64
+      # GITHUB_TOKEN : ${{ secrets.GITHUB_TOKEN }}
+    # continue-on-error: true
     steps:
     - uses: actions/checkout@v5
+      with:
+        show-progress: false
 
     - uses: vmactions/openbsd-vm@v1
       with:
-        # envs: 'GITHUB_TOKEN'
+        envs: 'GOOS GOARCH' # GITHUB_TOKEN'
         usesh: true
+        copyback: false
         prepare: |
-          pkg_add go
+          # the double dashes are needed to avoid "ambiguous" warning.
+          pkg_add coreutils curl gtar-- jq
+          cd /usr/local/bin && ln -sf gsha256sum sha256sum
+          # pkg_add go
         run: |
-          printf '::notice ::%s\n' "$(go version)"
-          go env
-          go build ./...
-          go test -v
+          ./download-build-test.sh

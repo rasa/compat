@@ -13,8 +13,8 @@ import (
 	"github.com/OneOfOne/xxhash"
 )
 
-// Not supported: Links | BTime | CTime.
-const supports supportsType = supportsATime | supportsSymlinks
+// Not supported: Links | BTime | CTime | Symlinks
+const supports supportsType = supportsATime
 
 const userIDSource UserIDSourceType = UserIDSourceIsString
 
@@ -28,7 +28,7 @@ type fileStat struct {
 	sys    syscall.Dir
 	partID uint64
 	fileID uint64
-	links  uint64
+	links  uint
 	atime  time.Time
 	btime  time.Time
 	ctime  time.Time
