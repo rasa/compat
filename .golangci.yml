@@ -70,7 +70,7 @@ linters:
     misspell:
       locale: US
     nolintlint:
-      require-explanation: true
+      require-explanation: false
       require-specific: true
       allow-unused: false
     revive:

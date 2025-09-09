@@ -84,6 +84,7 @@ lint: ## golangci-lint
 .PHONY: fix
 fix: ## gofumpt
 	go tool $(TOOL_OPTS) gofumpt -w .
+	git restore walk.go walk_test.go golang/golang_*.go
 
 .PHONY: vuln
 vuln: ## govulncheck
