@@ -198,5 +198,5 @@ func GetFinalPathNameByHandle(file Handle, filePath *uint16, filePathSize uint32
 	if n == 0 || n >= filePathSize {
 		err = errnoErr(e1)
 	}
-	return
+	return n, err
 }
