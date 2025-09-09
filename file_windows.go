@@ -99,58 +99,12 @@ func createTemp(dir, pattern string, perm os.FileMode, flag int) (*os.File, erro
 }
 
 func fchmod(f *os.File, mode os.FileMode, mask ReadOnlyMode) error {
-	if f == nil {
-		return errors.New("nil file pointer")
-	}
-	fd := syscall.Handle(f.Fd())
-
-	// Source: https://github.com/golang/go/blob/77f911e3/src/syscall/syscall_windows.go#L1294-L1310
-
-	var buf [syscall.MAX_PATH + 1]uint16
-	path, err := fdpath(fd, buf[:])
+	path, err := golang.Filepath(f)
 	if err != nil {
 		return err
 	}
-	// When using VOLUME_NAME_DOS, the path is always prefixed by "\\?\".
-	// That prefix tells the Windows APIs to disable all string parsing and to send
-	// the string that follows it straight to the file system.
-	// Although SetCurrentDirectory and GetCurrentDirectory do support the "\\?\" prefix,
-	// some other Windows APIs don't. If the prefix is not removed here, it will leak
-	// to Getwd, and we don't want such a general-purpose function to always return a
-	// path with the "\\?\" prefix after Fchdir is called.
-	// The downside is that APIs that do support it will parse the path and try to normalize it,
-	// when it's already normalized.
-	if len(path) >= 4 && path[0] == '\\' && path[1] == '\\' && path[2] == '?' && path[3] == '\\' {
-		path = path[4:]
-	}
-	pathString := syscall.UTF16ToString(path)
 
-	return chmod(pathString, mode, mask)
-}
-
-// Source: https://github.com/golang/go/blob/77f911e3/src/syscall/syscall_windows.go#L183
-
-const _ERROR_NOT_ENOUGH_MEMORY = syscall.Errno(8)
-
-// Source: https://github.com/golang/go/blob/77f911e3/src/syscall/syscall_windows.go#L1274-L1291
-
-func fdpath(fd syscall.Handle, buf []uint16) ([]uint16, error) {
-	const (
-		FILE_NAME_NORMALIZED = 0
-		VOLUME_NAME_DOS      = 0
-	)
-	for {
-		n, err := golang.GetFinalPathNameByHandle(fd, &buf[0], uint32(len(buf)), FILE_NAME_NORMALIZED|VOLUME_NAME_DOS) //nolint:gosec
-		if err == nil {
-			buf = buf[:n]
-			break
-		}
-		if err != _ERROR_NOT_ENOUGH_MEMORY {
-			return nil, err
-		}
-		buf = append(buf, make([]uint16, n-uint32(len(buf)))...) //nolint:gosec
-	}
-	return buf, nil
+	return chmod(path, mode, mask)
 }
 
 func mkdir(name string, perm os.FileMode) error {
@@ -385,6 +339,11 @@ func setExplicitAccess(ea *windows.EXPLICIT_ACCESS, sid *windows.SID, mask uint3
 	ea.Trustee.TrusteeValue = windows.TrusteeValueFromSID(sid)
 }
 
+var (
+	seTakeOwnershipPrivilegeW, _ = windows.UTF16PtrFromString("SeTakeOwnershipPrivilege")
+	seRestorePrivilegeW, _       = windows.UTF16PtrFromString("SeRestorePrivilege")
+)
+
 func setOwnerToCurrentUser(path string) error {
 	var tok windows.Token
 	err := windows.OpenProcessToken(
@@ -455,8 +414,3 @@ func enablePrivilege(tok windows.Token, name *uint16) error {
 
 	return nil
 }
-
-var (
-	seTakeOwnershipPrivilegeW, _ = windows.UTF16PtrFromString("SeTakeOwnershipPrivilege")
-	seRestorePrivilegeW, _       = windows.UTF16PtrFromString("SeRestorePrivilege")
-)
