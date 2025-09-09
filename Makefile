@@ -41,11 +41,28 @@ clean: ## remove files created during build pipeline
 download: ## go mod download
 	go mod download
 	test -f go.tool.mod && go mod download -modfile=go.tool.mod
+	make mod
+
+.PHONY: get
+get: ## go get -u
+	go get -u
+	test -f go.tool.mod && go get -u -modfile=go.tool.mod
+	make mod
+
+.PHONY: tools
+tools: ## freshen tools to latest versions
+	test -f go.tool.mod && export GOFLAGS="$(GOFLAGS) -modfile=go.tool.mod" ;\
+	go get github.com/client9/misspell/cmd/misspell@latest ;\
+	go get github.com/golangci/golangci-lint/v2/cmd/golangci-lint@latest ;\
+	go get github.com/goreleaser/goreleaser/v2@latest ;\
+	go get golang.org/x/vuln/cmd/govulncheck@latest ;\
+	go get mvdan.cc/gofumpt@latest
+	make mod
 
 .PHONY: mod
 mod: ## go mod tidy
-	go mod tidy -xg
-	test -f go.tool.mod && go mod tidy -modfile=go.tool.mod -x
+	go mod tidy
+	test -f go.tool.mod && go mod tidy -modfile=go.tool.mod
 
 .PHONY: gen
 gen: ## go generate
@@ -67,6 +84,7 @@ lint: ## golangci-lint
 .PHONY: fix
 fix: ## gofumpt
 	go tool $(TOOL_OPTS) gofumpt -w .
+	git restore walk.go walk_test.go golang/golang_*.go
 
 .PHONY: vuln
 vuln: ## govulncheck
