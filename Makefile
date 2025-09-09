@@ -51,7 +51,7 @@ get: ## go get -u
 
 .PHONY: tools
 tools: ## freshen tools to latest versions
-	test -f go.tool.mod && export GOFLAGS="-modfile=go.tool.mod" ;\
+	test -f go.tool.mod && export GOFLAGS="$(GOFLAGS) -modfile=go.tool.mod" ;\
 	go get github.com/client9/misspell/cmd/misspell@latest ;\
 	go get github.com/golangci/golangci-lint/v2/cmd/golangci-lint@latest ;\
 	go get github.com/goreleaser/goreleaser/v2@latest ;\
@@ -61,8 +61,8 @@ tools: ## freshen tools to latest versions
 
 .PHONY: mod
 mod: ## go mod tidy
-	go mod tidy -x
-	test -f go.tool.mod && go mod tidy -modfile=go.tool.mod -x
+	go mod tidy
+	test -f go.tool.mod && go mod tidy -modfile=go.tool.mod
 
 .PHONY: gen
 gen: ## go generate
