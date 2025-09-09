@@ -41,11 +41,13 @@ clean: ## remove files created during build pipeline
 download: ## go mod download
 	go mod download
 	test -f go.tool.mod && go mod download -modfile=go.tool.mod
+	make mod
 
 .PHONY: get
 get: ## go get -u
 	go get -u
 	test -f go.tool.mod && go get -u -modfile=go.tool.mod
+	make mod
 
 .PHONY: tools
 tools: ## freshen tools to latest versions
@@ -55,6 +57,7 @@ tools: ## freshen tools to latest versions
 	go get github.com/goreleaser/goreleaser/v2@latest ;\
 	go get golang.org/x/vuln/cmd/govulncheck@latest ;\
 	go get mvdan.cc/gofumpt@latest
+	make mod
 
 .PHONY: mod
 mod: ## go mod tidy
