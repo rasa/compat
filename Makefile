@@ -44,7 +44,7 @@ download: ## go mod download
 
 .PHONY: mod
 mod: ## go mod tidy
-	go mod tidy -xg
+	go mod tidy -x
 	test -f go.tool.mod && go mod tidy -modfile=go.tool.mod -x
 
 .PHONY: gen
