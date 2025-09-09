@@ -12,57 +12,54 @@ jobs:
   test-netbsd:
     name: test-netbsd
     runs-on: ubuntu-24.04
-    timeout-minutes: 10
+    timeout-minutes: 20
+    env:
+      GOOS: netbsd
+      GOARCH: amd64
+      # GITHUB_TOKEN : ${{ secrets.GITHUB_TOKEN }}
     # continue-on-error: true
-    # env:
-    #  GITHUB_TOKEN : ${{ secrets.GITHUB_TOKEN }}
     steps:
     - uses: actions/checkout@v5
+      with:
+        show-progress: false
 
     - uses: vmactions/netbsd-vm@v1
       with:
-        # envs: 'GITHUB_TOKEN'
+        envs: 'GOOS GOARCH' # GITHUB_TOKEN'
         usesh: true
         copyback: false
         # See https://github.com/fsnotify/fsnotify/blob/main/.github/workflows/test.yml
+        # default PATH:
+        # /usr/bin
+        # /bin
+        # /usr/pkg/bin
+        # /usr/local/bin
         prepare: |
-          PATH="/usr/sbin:${PATH}"
-          export PATH
-          if ! command -v pkg_add; then
-            find / -name 'pkg_add' -type f 2>/dev/null || true
-          fi
-          pkg_add go
-
+          export PATH="/usr/sbin:${PATH}"
+          tries=9
+          left="${tries}"
+          delay=1
+          while true; do
+            pkg_add coreutils curl gtar jq || true
+            if which curl gtar gsha256sum jq; then
+              echo All dependencies have been installed
+              break
+            fi
+            echo One or more dependencies have not yet been installed
+            left=$((left - 1))
+            if [ "${left}" -le 0 ]; then
+              printf 'FAIL: pkg_add failed all %s attempts\n' "${tries}"
+              exit 1
+            fi
+            tried=$((tries - left + 1))
+            printf 'Attempting %s of %s tries in %s seconds...\n' "${tried}" "${tries}" "${delay}"
+            sleep "${delay}"
+            delay=$((delay * 2))
+          done
+          cd /usr/pkg/bin && ln -sf gsha256sum sha256sum
+          # pkg_add go
+        # if we are using: pkg_add go
+        # (cd /usr/pkg/bin ; ln -sf go??? go)
+        # ls -l /usr/pkg/bin
         run: |
-          PATH="/usr/pkg/bin:${PATH}"
-          export PATH
-          (cd /usr/pkg/bin ; ln -sf go??? go)
-          ls -l /usr/pkg/bin
-          command -v go
-
-          go version
-          rv=0
-          if go build -trimpath ./...; then
-            printf '::notice ::build succeeded: %s\n' "$(go version)"
-          else
-            rv=$?
-            printf '::error ::build failed: %s (error %s)\n' "$(go version)" "${rv}"
-          fi
-          if go test -v .; then
-            printf '::notice ::tests succeeded: %s\n' "$(go version)"
-          else
-            rv=$?
-            printf '::error ::tests failed: %s (error %s)\n' "$(go version)" "${rv}"
-          fi
-          exit "${rv}"
-
-# attempts=4
-# delay=1
-# i=1
-# while [ "${i}" -le "${attempts}" ]; do
-#   pkg_add go && break
-#   echo "Attempt ${i} failed. Retrying in ${delay} seconds..."
-#   sleep "${delay}"
-#   delay=$(expr "${delay}" \* 2)
-#   i=$(expr "${i}" + 1)
-# done
+          ./download-build-test.sh

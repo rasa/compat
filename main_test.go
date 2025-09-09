@@ -20,7 +20,6 @@ import (
 )
 
 const (
-	nativeFS        = "Native"
 	allFS           = "All"
 	defaultTempSize = "2GB"
 )

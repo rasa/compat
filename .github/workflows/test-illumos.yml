@@ -1,4 +1,3 @@
-
 name: test-illumos
 
 on:
@@ -12,50 +11,25 @@ jobs:
   test-illumos:
     name: test-illumos
     runs-on: ubuntu-24.04
-    timeout-minutes: 10
+    timeout-minutes: 20
     # continue-on-error: true
-    # env:
-    #  GITHUB_TOKEN : ${{ secrets.GITHUB_TOKEN }}
+    env:
+      GOOS: illumos
+      GOARCH: amd64
+      # GITHUB_TOKEN : ${{ secrets.GITHUB_TOKEN }}
+
     steps:
     - uses: actions/checkout@v5
+      with:
+        show-progress: false
 
     - uses: vmactions/omnios-vm@v1
       with:
-        # envs: 'GITHUB_TOKEN'
+        envs: 'GOOS GOARCH' # GITHUB_TOKEN
         usesh: true
         copyback: false
         prepare: |
-          pkg install web/curl util/jq archiver/gnu-tar # developer/gcc14 
+          pkg install web/curl archiver/gnu-tar util/jq
+          # add developer/gcc14 for CGO
         run: |
-          # printf '$0=%s\n' "$0"
-          cd ..
-          # set | grep '='
-          godist=$(curl -L -q 'https://go.dev/dl/?mode=json' | jq -r '[ .[] | select(.stable == true) ][0] | .files[] | select(.os == "illumos" and .arch == "amd64") | .filename')
-          sha256=$(curl -L -q 'https://go.dev/dl/?mode=json' | jq -r '[ .[] | select(.stable == true) ][0] | .files[] | select(.os == "illumos" and .arch == "amd64") | .sha256')
-          # size=$(curl -L -q 'https://go.dev/dl/?mode=json' | jq -r '[ .[] | select(.stable == true) ][0] | .files[] | select(.os == "illumos" and .arch == "amd64") | .size')
-          # printf "godist: '%s'\n" "${godist}"
-          # printf "sha256: '%s'\n" "${sha256}"
-          # printf "size  : '%s'\n" "${size}"
-          curl -L -q -o "${godist}" "https://go.dev/dl/${godist}"
-          printf "%s %s\n" "${sha256}" "${godist}" >SHA256SUMS
-          sha256sum -c SHA256SUMS
-          gtar xzf "${godist}"
-          rm -f "${godist}" SHA256SUMS
-          export PATH="${PWD}/go/bin:${PATH}"
-          cd "${GITHUB_WORKSPACE}"
-          # go env
-
-          rv=0
-          if go build -trimpath .; then
-            printf '::notice ::build succeeded: %s\n' "$(go version)"
-          else
-            rv=$?
-            printf '::error ::build failed: %s (error %s)\n' "$(go version)" "${rv}"
-          fi
-          if go test -v .; then
-            printf '::notice ::tests succeeded: %s\n' "$(go version)"
-          else
-            rv=$?
-            printf '::error ::tests failed: %s (error %s)\n' "$(go version)" "${rv}"
-          fi
-          exit "${rv}"
+          ./download-build-test.sh
