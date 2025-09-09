@@ -30,7 +30,7 @@ func init() {
 		ui64, err := strconv.ParseInt(umask, 8, 32)
 		if err == nil {
 			// ignore errors
-			startingUmask = uint32(ui64) & permMask //nolint:gosec // quiet linter
+			startingUmask = uint32(ui64) & permMask //nolint:gosec
 		}
 	}
 	currentUmask.Store(startingUmask)
@@ -42,7 +42,7 @@ func init() {
 // `set UMASK=002`. Leading zeros and 'o's are allowed, and ignored.
 // On Plan9 and Wasip1, the function does nothing, and always returns zero.
 func Umask(newMask int) int {
-	old := currentUmask.Swap(uint32(newMask) & permMask) //nolint:gosec // quiet linter
+	old := currentUmask.Swap(uint32(newMask) & permMask) //nolint:gosec
 	return int(old)
 }
 

@@ -1,4 +1,3 @@
-
 name: test-illumos
 
 on:
@@ -8,46 +7,29 @@ on:
 permissions:
   contents: read
 
-env:
-  GO_VERSION: "1.24"
-
 jobs:
   test-illumos:
-    name: test-illumos (go 1.24)
+    name: test-illumos
     runs-on: ubuntu-24.04
-    timeout-minutes: 10
+    timeout-minutes: 20
     # continue-on-error: true
-    # env:
-    #  GITHUB_TOKEN : ${{ secrets.GITHUB_TOKEN }}
+    env:
+      GOOS: illumos
+      GOARCH: amd64
+      # GITHUB_TOKEN : ${{ secrets.GITHUB_TOKEN }}
+
     steps:
     - uses: actions/checkout@v5
+      with:
+        show-progress: false
 
     - uses: vmactions/omnios-vm@v1
       with:
-        # envs: 'GITHUB_TOKEN'
+        envs: 'GOOS GOARCH' # GITHUB_TOKEN
         usesh: true
         copyback: false
         prepare: |
-          GO_VERSION="${{ env.GO_VERSION }}"
-          pkg_version="${GO_VERSION//.}"
-          pkg install "go-${pkg_version}"
+          pkg install web/curl archiver/gnu-tar util/jq
+          # add developer/gcc14 for CGO
         run: |
-          GO_VERSION="${{ env.GO_VERSION }}"
-          PATH="/opt/ooce/go-${GO_VERSION}/bin:${PATH}"
-          export PATH
-
-          go version
-          rv=0
-          if go build -trimpath ./...; then
-            printf '::notice ::build succeeded: %s\n' "$(go version)"
-          else
-            rv=$?
-            printf '::error ::build failed: %s (error %s)\n' "$(go version)" "${rv}"
-          fi
-          if go test -v .; then
-            printf '::notice ::tests succeeded: %s\n' "$(go version)"
-          else
-            rv=$?
-            printf '::error ::tests failed: %s (error %s)\n' "$(go version)" "${rv}"
-          fi
-          exit "${rv}"
+          ./download-build-test.sh

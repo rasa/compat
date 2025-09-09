@@ -16,3 +16,4 @@ pylintrc
 textlintrc
 tinygo
 vhdx
+wasi

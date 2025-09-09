@@ -9,15 +9,50 @@ import (
 )
 
 const (
-	// CreatePerm is the FileMode used by Create().
+	// CreatePerm is the FileMode used by os.Create() (and compat.Create()).
 	CreatePerm os.FileMode = 0o666
-	// CreateTempPerm is the FileMode used by CreateTemp().
+	// CreateTempPerm is the FileMode used by os.CreateTemp() (and
+	// compat.CreateTemp()).
 	CreateTempPerm os.FileMode = 0o600
-	// MkdirTempPerm is the FileMode used by MkdirTemp().
+	// MkdirTempPerm is the FileMode used by os.MkdirTemp() (and
+	// compat.MkdirTemp()).
 	MkdirTempPerm os.FileMode = 0o700
 
+	// DefaultAppleDirPerm is the FileMode returned for directories by
+	// golang's os.Stat() function on Apple based systems
+	// when the directory is on a filesystem that doesn't support
+	// macOS/iOS permissions, such as exFAT, or FAT32.
+	DefaultAppleDirPerm os.FileMode = 0o700
+	// DefaultAppleFilePerm is the FileMode returned for files by
+	// golang's os.Stat() function on Apple based systems
+	// when the file is on a filesystem that doesn't support
+	// macOS/iOS permissions, such as exFAT, or FAT32.
+	DefaultAppleFilePerm os.FileMode = 0o700
+
+	// DefaultUnixDirPerm is the FileMode returned for directories by
+	// golang's os.Stat() function on non-Apple/non-Windows based systems
+	// when the directory is on a filesystem that doesn't support
+	// Unix permissions, such as exFAT, or FAT32.
+	DefaultUnixDirPerm os.FileMode = 0o777
+	// DefaultUnixFilePerm is the FileMode returned for files by
+	// golang's os.Stat() function on non-Apple/non-Windows based systems
+	// when the file is on a filesystem that doesn't support
+	// Unix permissions, such as exFAT, or FAT32.
+	DefaultUnixFilePerm os.FileMode = 0o777
+
+	// DefaultWindowsDirPerm is the FileMode returned for directories by
+	// golang's os.Stat() function on Windows based systems
+	// when the directory is on a filesystem that doesn't support Windows'
+	// Access Control Lists (ACLS), such as exFAT, or FAT32.
+	DefaultWindowsDirPerm os.FileMode = 0o777
+	// DefaultWindowsFilePerm is the FileMode returned for files by
+	// golang's os.Stat() function on Windows based systems
+	// when the file is on a filesystem that doesn't support Windows'
+	// Access Control Lists (ACLS), such as exFAT, or FAT32.
+	DefaultWindowsFilePerm os.FileMode = 0o666
+
 	// Verify we don't conflict with any of the values listed at
-	//  https://github.com/golang/go/blob/77f911e3/src/syscall/types_windows.go#L37-L55
+	// https://github.com/golang/go/blob/77f911e3/src/syscall/types_windows.go#L37-L55
 
 	// O_DELETE deletes the file when closed.
 	O_DELETE = 0x8000000
@@ -29,9 +64,9 @@ const (
 	// The following constants are not used by the compat library, but are
 	// provided to make code migration easier.
 
-	O_RDONLY = os.O_RDONLY // open the file read-only. //nolint:revive // quiet linter
-	O_WRONLY = os.O_WRONLY // open the file write-only. //nolint:revive // quiet linter
-	O_RDWR   = os.O_RDWR   // open the file read-write. //nolint:revive // quiet linter
+	O_RDONLY = os.O_RDONLY // open the file read-only. //nolint:revive
+	O_WRONLY = os.O_WRONLY // open the file write-only. //nolint:revive
+	O_RDWR   = os.O_RDWR   // open the file read-write. //nolint:revive
 	// The remaining values may be or'ed in to control behavior.
 	O_APPEND = os.O_APPEND // append data to the file when writing.
 	O_CREATE = os.O_CREATE // create a new file if none exists.

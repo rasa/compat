@@ -9,7 +9,9 @@ import (
 	"os"
 )
 
-// IsRoot returns true if the user is root, or has Windows administrator rights.
+// IsRoot returns true if the user is (effectively) root on a non-Windows
+// system, or is running with elevated privileges (administrator rights) on a
+// Windows system.
 func IsRoot() (bool, error) {
-	return os.Getuid() == 0, nil
+	return os.Geteuid() == 0, nil
 }

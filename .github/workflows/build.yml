@@ -21,19 +21,25 @@ on:
   #     # - '.goreleaser.yml'
   workflow_call: # Required so this workflow can be called from another workflow
     inputs:
-      verbose_testing:
-        default: "false"
+      compat_debug:
+        default: "ACLS"
         type: string # required
       runner:
         default: "ubuntu-24.04"
         type: string # required
+      sudo:
+        default: ""
+        type: string # required
+      test_opts:
+        default: ""
+        type: string # required
   workflow_dispatch: # Allows you to run this workflow manually from the Actions tab
     inputs:
       # checkov:skip=CKV_GHA_7: The build output cannot be affected by user parameters...
-      verbose_testing:
-        description: "Test with -v options."
-        type: boolean
-        default: false
+      compat_debug:
+        description: "COMPAT_DEBUG environmental variable."
+        default: "ACLS"
+        type: string
       # checkov:skip=CKV_GHA_7: The build output cannot be affected by user parameters...
       runner:
         description: "GitHub runner to use"
@@ -60,9 +66,24 @@ on:
           - macos3
           - all # all of the above runners
         default: "ubuntu-24.04"
+      # checkov:skip=CKV_GHA_7: The build output cannot be affected by user parameters...
+      sudo:
+        description: "Run tests via sudo"
+        type: boolean
+        default: false
+      # checkov:skip=CKV_GHA_7: The build output cannot be affected by user parameters...
+      test_opts:
+        description: "Options to pass to go test command (-v, -short, -run TestX, etc.)"
+        type: string
+        default: ""
 
 permissions:
   contents: read
+
+env:
+  COMPAT_DEBUG: ${{ inputs.compat_debug }}
+  RUNNER: ${{ inputs.runner }}
+  TEST_OPTS: ${{ inputs.test_opts }}
 
 jobs:
   build:
@@ -95,25 +116,29 @@ jobs:
           echo "SHOULD_RUN=yes" >> "${GITHUB_ENV}"
           printf "::notice::inputs.runner=%s\n" "${{ inputs.runner }}"
         if: >
-          matrix.os == inputs.runner ||
-          inputs.runner == 'all' ||
-          (inputs.runner == 'top3'     && contains(fromJSON('["ubuntu-24.04","windows-2025", "macos-15"]'), matrix.os)) ||
-          (inputs.runner == 'top6'     && contains(fromJSON('["ubuntu-24.04","windows-2025", "windows-2022", "windows-11-arm", "macos-15", "macos-13"]'), matrix.os)) &&
-          (inputs.runner == 'ubuntu3'  && contains(fromJSON('["ubuntu-24.04","ubuntu-24.04-arm", "ubuntu-22.04"]'), matrix.os)) ||
-          (inputs.runner == 'windows3' && contains(fromJSON('["windows-2025","windows-2022", "windows-11-arm"]'), matrix.os)) ||
-          (inputs.runner == 'macos3'   && contains(fromJSON('["macos-15", "macos-14", "macos-13"]'), matrix.os)) &&
-          !(contains(matrix.os, 'arm') && github.repository_visibility == 'public')
+          (
+            matrix.os == inputs.runner ||
+            inputs.runner == 'all' ||
+            (inputs.runner == 'top3'     && contains(fromJSON('["ubuntu-24.04","windows-2025","macos-15"]'), matrix.os)) ||
+            (inputs.runner == 'top6'     && contains(fromJSON('["ubuntu-24.04","windows-2025","windows-2022","windows-11-arm","macos-15","macos-13"]'), matrix.os)) ||
+            (inputs.runner == 'ubuntu3'  && contains(fromJSON('["ubuntu-24.04","ubuntu-24.04-arm","ubuntu-22.04"]'), matrix.os)) ||
+            (inputs.runner == 'windows3' && contains(fromJSON('["windows-2025","windows-2022","windows-11-arm"]'), matrix.os)) ||
+            (inputs.runner == 'macos3'   && contains(fromJSON('["macos-15","macos-14","macos-13"]'), matrix.os))
+          ) && !(contains(matrix.os, 'arm') && github.repository_visibility != 'public')
 
       - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
         if: env.SHOULD_RUN
 
-      - uses: actions/setup-go@0aaccfd150d50ccaeb58ebd88d36e91967a5f35b # v5.4.0
+      - uses: actions/setup-go@44694675825211faa026b3c33043df3e48a5fa00 # v6.0.0
         if: env.SHOULD_RUN
         # if: runner.os != 'Windows'
         with:
           go-version: '1.25'
           check-latest: true
-          cache: false
+          cache: true
+
+      # - run: go env
+      #   if: env.SHOULD_RUN
 
       # Let's see if we see the same 80% speed improvement as mentioned in
       # https://github.com/elastic/apm-server/pull/15623#issuecomment-2648709041
@@ -125,17 +150,26 @@ jobs:
       #     check-latest: true
       #     cache: false
 
-      - name: Set env vars (GOCACHE, GOMODCACHE and inputs)
+      - name: Set env vars (GOCACHE, GOMODCACHE, sudo, etc.)
         if: env.SHOULD_RUN
         run: |
-          # Set env vars (GOCACHE, GOMODCACHE and inputs)
-          # printf 'GOVERSION=%s\n'  "$(go version | sed 's#^.*go##;s# .*##')" >>"${GITHUB_ENV}"
-          printf "verbose_testing=%s\n" "${{ inputs.verbose_testing }}" >>"${GITHUB_ENV}"
-          printf 'GOCACHE=%s\n'    "$(go env GOCACHE | tr '\\' '/')" >>"${GITHUB_ENV}"
-          printf 'GOMODCACHE=%s\n' "$(go env GOMODCACHE | tr '\\' '/')" >>"${GITHUB_ENV}"
+          # Set env vars (GOCACHE, GOMODCACHE, sudo, etc.)
+          if [[ "${{ inputs.sudo }}" == "true" ]]; then
+            if builtin command -v sudo &>/dev/null; then
+              if [[ ! "${OS:-}" =~ [Ww]indows ]]; then
+                sudo='sudo -E -n --preserve-env=PATH,COMPAT_DEBUG,TEST_OPTS'
+              fi
+            fi
+          fi
+          printf "GOCACHE=%s\n"      "$(go env GOCACHE | tr '\\' '/')" >>"${GITHUB_ENV}"
+          printf "GOMODCACHE=%s\n"   "$(go env GOMODCACHE | tr '\\' '/')" >>"${GITHUB_ENV}"
+          printf "GOVERSION=%s\n"    "$(go version | sed 's|^.*go||; s| .*||;')" >>"${GITHUB_ENV}"
+          printf "sudo=%s\n"         "${sudo:-}" >>"${GITHUB_ENV}"
+          # echo "${GITHUB_ENV}":
+          cat "${GITHUB_ENV}"
 
       - name: USE actions/cache to save Go's build and mod caches
-        if: env.SHOULD_RUN
+        if: false # env.SHOULD_RUN # switch to setup-go's cache (for testing)
         uses: actions/cache@v4
         with:
           path: |
@@ -148,19 +182,14 @@ jobs:
       - name: make ci
         if: env.SHOULD_RUN
         run: |
-          # make ci
-          : "${verbose_testing:=true}"
-          join_by() { local IFS="$1"; shift; printf '%s' "$*"; }
-          TEST_OPTS_ARRAY=()
-          if [[ "${verbose_testing}" == "true" ]]; then
-            TEST_OPTS_ARRAY+=(-v)
-          fi
-          export TEST_OPTS=$(join_by ' ' "${TEST_OPTS_ARRAY[@]}")
+          # make ci TEST_OPTS="${TEST_OPTS}"
+          set -x
+          : "${TEST_OPTS:=}"
           printf 'TEST_OPTS="%s"\n' "${TEST_OPTS}"
-          make ci TEST_OPTS="${TEST_OPTS}"
-        env:
-          # Dumps Windows ACLs on test failures
-          COMPAT_DEBUG: 1
+          ${sudo:-} make ci TEST_OPTS="${TEST_OPTS}"
+          test -z "${sudo:-}" && exit 0
+          # this works on linux and macos
+          ${sudo:-} chown -R "$(id -un)":"$(id -gn)" ./dist "${GOCACHE}" "${GOMODCACHE}"
 
       - name: Upload coverage
         if: env.SHOULD_RUN
@@ -171,7 +200,11 @@ jobs:
         # env:
         #  CGO_ENABLED: ${{ contains(matrix.os, 'windows') && '0' || '1' }}
 
-      - run: go tool goreleaser release --clean --snapshot
+      - run: |
+          if [[ -f go.tool.mod ]]; then
+            export GOFLAGS="${GOFLAGS:-} -modfile=go.tool.mod"
+          fi
+          go tool goreleaser release --clean --snapshot
         if: runner.os == 'Linux' && env.SHOULD_RUN
 
       - name: Upload dist

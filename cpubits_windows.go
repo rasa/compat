@@ -30,8 +30,8 @@ func CPUBits() (int, error) {
 		return 0, errors.New("IsWow64Process call failed")
 	}
 	if isWow64 != 0 {
-		return 64, nil //nolint:mnd // quiet linter
+		return 64, nil //nolint:mnd
 	}
 
-	return 32, nil //nolint:mnd // quiet linter
+	return 32, nil //nolint:mnd
 }

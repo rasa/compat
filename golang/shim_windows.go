@@ -68,7 +68,7 @@ var (
 	CreateFile         = syscall.CreateFile
 	Ftruncate          = syscall.Ftruncate
 	GetFileAttributes  = syscall.GetFileAttributes
-	Syscall9           = syscall.Syscall9 //nolint:staticcheck // quiet linter
+	Syscall9           = syscall.Syscall9 //nolint:staticcheck
 	UTF16PtrFromString = syscall.UTF16PtrFromString
 )
 
@@ -92,7 +92,7 @@ func isWindowsAtLeast(major, minor, build uint32) bool {
 }
 
 func init() {
-	canUseLongPaths = isWindowsAtLeast(10, 0, 15063) //nolint:mnd // quiet linter
+	canUseLongPaths = isWindowsAtLeast(10, 0, 15063) //nolint:mnd
 }
 
 func fixAttributesAndShareMode(flag int, attrs uint32, sharemode uint32) (uint32, uint32) {
@@ -176,7 +176,7 @@ func Remove(path string) error {
 	return err
 }
 
-// Source: https://github.com/golang/go/blob/77f911e31c243a8302c086d64dbef340b0c999b8/src/syscall/syscall_windows.go#L357-L362
+// Source: https://github.com/golang/go/blob/77f911e3/src/syscall/syscall_windows.go#L357-L362
 
 func makeInheritSa(sa *SecurityAttributes) *SecurityAttributes {
 	if sa == nil {
@@ -186,4 +186,17 @@ func makeInheritSa(sa *SecurityAttributes) *SecurityAttributes {
 	sa.InheritHandle = 1
 
 	return sa
+}
+
+var procGetFinalPathNameByHandleW = modkernel32.NewProc("GetFinalPathNameByHandleW")
+
+// Source: https://github.com/golang/go/blob/77f911e3/src/syscall/zsyscall_windows.go#L783-790
+
+func GetFinalPathNameByHandle(file Handle, filePath *uint16, filePathSize uint32, flags uint32) (n uint32, err error) {
+	r0, _, e1 := syscall.Syscall6(procGetFinalPathNameByHandleW.Addr(), 4, uintptr(file), uintptr(unsafe.Pointer(filePath)), uintptr(filePathSize), uintptr(flags), 0, 0)
+	n = uint32(r0)
+	if n == 0 || n >= filePathSize {
+		err = errnoErr(e1)
+	}
+	return
 }

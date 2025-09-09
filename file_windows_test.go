@@ -6,11 +6,14 @@
 package compat_test
 
 import (
+	"errors"
 	"flag"
 	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strings"
+	"syscall"
 	"testing"
 
 	"github.com/rasa/compat"
@@ -18,14 +21,13 @@ import (
 
 var perms []os.FileMode
 
-const perm555 = os.FileMode(0o555)
-
 func init() {
-	// @TODO(rasa): test different umask settings
-	compat.Umask(0)
-
 	testing.Init()
 	flag.Parse()
+	loadPerms()
+}
+
+func loadPerms() {
 	if testing.Short() {
 		perms = []os.FileMode{perm555}
 		return
@@ -36,7 +38,11 @@ func init() {
 	for u := 7; u >= 0; u-- {
 		for g := 7; g >= 0; g-- {
 			for o := 7; o >= 0; o-- {
-				mode := os.FileMode(u<<0o6 | g<<0o3 | o) //nolint:gosec // quiet linter
+				mode := os.FileMode(u<<0o6 | g<<0o3 | o) //nolint:gosec
+				// @TODO(rasa) support 0o0 perms on Windows
+				if mode == perm000 {
+					break
+				}
 				perms = append(perms, mode)
 			}
 		}
@@ -44,14 +50,14 @@ func init() {
 }
 
 func TestFileWindowsChmod(t *testing.T) {
-	name, err := tmpfile(t)
+	name, err := tempFile(t)
 	if err != nil {
 		t.Fatal(err)
 	}
 
 	for _, perm := range perms {
 		err = compat.Chmod(name, perm)
-		checkPerm(t, name, perm)
+		checkPerm(t, name, perm, false)
 		if err != nil {
 			t.Fatalf("Chmod(%04o) failed: %v", perm, err)
 		}
@@ -59,19 +65,19 @@ func TestFileWindowsChmod(t *testing.T) {
 }
 
 func TestFileWindowsCreate(t *testing.T) {
-	name, err := tmpname(t)
+	name, err := tempName(t)
 	if err != nil {
 		t.Fatal(err)
 	}
 	perm := compat.CreatePerm
 	fh, err := compat.Create(name)
-	checkPerm(t, name, perm)
+	checkPerm(t, name, perm, false)
 	if err != nil {
 		t.Fatal(err)
 	}
 	_ = fh.Close()
 	err = compat.Remove(name)
-	checkDeleted(t, name, err)
+	checkDeleted(t, name, perm, err)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -79,56 +85,76 @@ func TestFileWindowsCreate(t *testing.T) {
 
 func TestFileWindowsCreateEx(t *testing.T) {
 	for _, perm := range perms {
-		t.Logf("perm=%3o (%v)", perm, perm)
-		name, err := tmpname(t)
+		name, err := tempName(t)
 		if err != nil {
-			t.Fatal(err)
+			t.Fatalf("perm=%3o (%v): %v", perm, perm, err)
 		}
 		fh, err := compat.CreateEx(name, perm, 0)
-		checkPerm(t, name, perm)
+		checkPerm(t, name, perm, false)
 		if err != nil {
-			t.Fatal(err)
+			t.Fatalf("perm=%3o (%v): %v", perm, perm, err)
 		}
 		_ = fh.Close()
 		err = compat.Remove(name)
-		checkDeleted(t, name, err)
+		checkDeleted(t, name, perm, err)
 		if err != nil {
-			t.Fatal(err)
+			t.Fatalf("perm=%3o (%v): %v", perm, perm, err)
 		}
 	}
 }
 
 func TestFileWindowsCreateTemp(t *testing.T) {
-	dir := t.TempDir()
+	dir := tempDir(t)
 	fh, err := compat.CreateTemp(dir, "")
 	perm := compat.CreateTempPerm
-	checkPerm(t, "", perm)
+	checkPerm(t, "", perm, false)
 	if err != nil {
 		t.Fatal(err)
 	}
 	name := fh.Name()
-	checkPerm(t, name, perm)
+	checkPerm(t, name, perm, false)
 	_ = fh.Close()
 	err = compat.Remove(name)
-	checkDeleted(t, name, err)
+	checkDeleted(t, name, perm, err)
 	if err != nil {
 		t.Fatal(err)
 	}
 }
 
+func TestFileWindowsFchmod(t *testing.T) {
+	for _, perm := range perms {
+		name, err := tempFile(t)
+		if err != nil {
+			t.Fatal(err)
+		}
+		f, err := os.Open(name)
+		if err != nil {
+			t.Fatal(err)
+		}
+		defer func() { _ = f.Close() }()
+
+		err = compat.Fchmod(f, perm)
+
+		checkPerm(t, name, perm, false)
+		if err != nil {
+			t.Fatalf("Chmod(%04o) failed: %v", perm, err)
+		}
+	}
+}
+
 func TestFileWindowsMkdir(t *testing.T) {
 	for _, perm := range perms {
-		name, err := tmpname(t)
+		name, err := tempName(t)
 		if err != nil {
 			t.Fatal(err)
 		}
 		err = compat.Mkdir(name, perm)
-		checkPerm(t, name, perm)
+		checkPerm(t, name, perm, true)
 		if err != nil {
 			t.Fatal(err)
 		}
 		err = compat.Remove(name)
-		checkDeleted(t, name, err)
+		checkDeleted(t, name, perm, err)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -137,17 +163,17 @@ func TestFileWindowsMkdir(t *testing.T) {
 
 func TestFileWindowsMkdirAll(t *testing.T) {
 	for _, perm := range perms {
-		name, err := tmpname(t)
+		name, err := tempName(t)
 		if err != nil {
 			t.Fatal(err)
 		}
 		err = compat.MkdirAll(name, perm)
-		checkPerm(t, name, perm)
+		checkPerm(t, name, perm, true)
 		if err != nil {
 			t.Fatal(err)
 		}
 		err = compat.Remove(name)
-		checkDeleted(t, name, err)
+		checkDeleted(t, name, perm, err)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -155,15 +181,15 @@ func TestFileWindowsMkdirAll(t *testing.T) {
 }
 
 func TestFileWindowsMkdirTemp(t *testing.T) {
-	dir := t.TempDir()
+	dir := tempDir(t)
 	name, err := compat.MkdirTemp(dir, "")
 	perm := compat.MkdirTempPerm
-	checkPerm(t, name, perm)
+	checkPerm(t, name, perm, true)
 	if err != nil {
 		t.Fatal(err)
 	}
 	err = compat.Remove(name)
-	checkDeleted(t, name, err)
+	checkDeleted(t, name, perm, err)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -171,18 +197,18 @@ func TestFileWindowsMkdirTemp(t *testing.T) {
 
 func TestFileWindowsOpenFile(t *testing.T) {
 	for _, perm := range perms {
-		name, err := tmpname(t)
+		name, err := tempName(t)
 		if err != nil {
 			t.Fatal(err)
 		}
 		fh, err := compat.OpenFile(name, os.O_CREATE, perm)
-		checkPerm(t, name, perm)
+		checkPerm(t, name, perm, false)
 		if err != nil {
 			t.Fatal(err)
 		}
 		_ = fh.Close()
 		err = compat.Remove(name)
-		checkDeleted(t, name, err)
+		checkDeleted(t, name, perm, err)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -191,26 +217,25 @@ func TestFileWindowsOpenFile(t *testing.T) {
 
 func TestFileWindowsRemove(t *testing.T) {
 	for _, perm := range perms {
-		name, err := tmpfile(t)
+		name, err := tempFile(t)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		t.Logf("%v (%03o): %v", perm, perm, name)
 		err = compat.Chmod(name, perm)
-		checkPerm(t, name, perm)
+		checkPerm(t, name, perm, false)
 		if err != nil {
 			t.Fatalf("Chmod(%04o) failed: %v", perm, err)
 		}
 
-		perm = os.FileMode(0o777) // CreatePerm
+		perm = perm777
 		err = compat.Chmod(name, perm)
-		checkPerm(t, name, perm)
+		checkPerm(t, name, perm, false)
 		if err != nil {
 			t.Fatalf("Chmod(%04o) failed: %v", perm, err)
 		}
 		err = compat.Remove(name)
-		checkDeleted(t, name, err)
+		checkDeleted(t, name, perm, err)
 		if err != nil {
 			t.Fatalf("Remove failed: %v: %v", name, err)
 		}
@@ -219,17 +244,17 @@ func TestFileWindowsRemove(t *testing.T) {
 
 func TestFileWindowsWriteFile(t *testing.T) {
 	for _, perm := range perms {
-		name, err := tmpname(t)
+		name, err := tempName(t)
 		if err != nil {
 			t.Fatal(err)
 		}
 		err = compat.WriteFile(name, helloBytes, perm)
-		checkPerm(t, name, perm)
+		checkPerm(t, name, perm, false)
 		if err != nil {
 			t.Fatal(err)
 		}
 		err = compat.Remove(name)
-		checkDeleted(t, name, err)
+		checkDeleted(t, name, perm, err)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -238,52 +263,54 @@ func TestFileWindowsWriteFile(t *testing.T) {
 
 func TestFileWindowsWriteFileEx(t *testing.T) {
 	for _, perm := range perms {
-		name, err := tmpname(t)
+		name, err := tempName(t)
 		if err != nil {
 			t.Fatal(err)
 		}
 		err = compat.WriteFileEx(name, helloBytes, perm, 0)
-		checkPerm(t, name, perm)
+		checkPerm(t, name, perm, false)
 		if err != nil {
 			t.Fatal(err)
 		}
 		err = compat.Remove(name)
-		checkDeleted(t, name, err)
+		checkDeleted(t, name, perm, err)
 		if err != nil {
 			t.Fatal(err)
 		}
 	}
 }
 
-func checkPerm(t *testing.T, name string, perm os.FileMode) {
+func checkPerm(t *testing.T, name string, perm os.FileMode, isDir bool) {
 	t.Helper()
 
 	if name == "" {
 		return
 	}
 
-	got, err := compat.ExportStat(name) // acl.GetExplicitFileAccessMode(name)
+	fi, err := compat.Stat(name)
 	if err != nil {
-		t.Fatalf("Stat(%v) failed: %v (%x)", name, err, errno(err))
+		t.Fatalf("Stat() failed: perm=%03o (%v): error %x: %v", perm, perm, errno(err), err)
 	}
 
-	if got != perm {
+	got := fi.Mode().Perm()
+	want := fixPerms(perm, isDir)
+	if got != want {
 		logACLs(t, name, false)
-		t.Fatalf("got 0o%03o (%v), want 0o%03o (%v)", got, got, perm, perm)
+		t.Fatalf("got 0o%03o (%v), want 0o%03o (%v): %v", got, got, want, want, name)
 		return
 	}
 }
 
-func checkDeleted(t *testing.T, name string, err error) {
+func checkDeleted(t *testing.T, name string, perm os.FileMode, err error) {
 	t.Helper()
 
 	if name == "" || err == nil {
 		return
 	}
 
-	_, err = compat.ExportStat(name) // acl.GetExplicitFileAccessMode(name)
+	_, err = compat.Stat(name)
 	if err != nil {
-		t.Logf("Stat(%v) failed: %v (%x)", name, err, errno(err))
+		t.Fatalf("Stat() failed: perm=%03o (%v): error %x: %v", perm, perm, errno(err), err)
 	}
 
 	logACLs(t, name, false)
@@ -291,6 +318,10 @@ func checkDeleted(t *testing.T, name string, err error) {
 
 func logACLs(t *testing.T, name string, doDir bool) {
 	t.Helper()
+
+	if !strings.Contains(compatDebug, "ACLS") {
+		return
+	}
 
 	args := []string{name}
 	_ = logOutput(t, "attrib.exe", args)
@@ -326,7 +357,7 @@ func logOutput(t *testing.T, exe string, args []string) error {
 		return err
 	}
 
-	cmd := exec.Command(exe, args...) //nolint:noctx // quiet linter
+	cmd := exec.Command(exe, args...) //nolint:noctx
 	out, err := cmd.CombinedOutput()
 	if err != nil {
 		t.Logf("Error running %v: %v", exe, err)
@@ -335,4 +366,16 @@ func logOutput(t *testing.T, exe string, args []string) error {
 	t.Log(s)
 
 	return nil
+}
+
+func errno(err error) uint32 { //nolint:unused
+	if err == nil {
+		return 0
+	}
+	var errno syscall.Errno
+	if errors.As(err, &errno) {
+		return uint32(errno)
+	}
+
+	return ^uint32(0)
 }

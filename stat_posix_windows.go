@@ -91,7 +91,7 @@ func getPrimaryDomainSID() (*windows.SID, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer procLsaClose.Call(uintptr(handle)) //nolint:errcheck // quiet linter
+	defer procLsaClose.Call(uintptr(handle)) //nolint:errcheck
 
 	var buffer uintptr
 	r0, _, _ := procLsaQueryInformationPolicy.Call(
@@ -102,7 +102,7 @@ func getPrimaryDomainSID() (*windows.SID, error) {
 	if r0 != 0 {
 		return nil, fmt.Errorf("LsaQueryInformationPolicy failed: %w", syscall.Errno(r0))
 	}
-	defer procLsaFreeMemory.Call(buffer) //nolint:errcheck // quiet linter
+	defer procLsaFreeMemory.Call(buffer) //nolint:errcheck
 
 	info := (*LSA_POLICY_ACCOUNT_DOMAIN_INFO)(unsafe.Pointer(buffer))
 
@@ -137,23 +137,23 @@ func sidToPOSIXID(sid *windows.SID, primaryDomainSid *windows.SID) (int, error) 
 
 	switch {
 	case strings.HasPrefix(sidStr, "S-1-5-5-"):
-		return 0xFFF, nil //nolint:mnd // quiet linter
+		return 0xFFF, nil //nolint:mnd
 	case strings.HasPrefix(sidStr, "S-1-5-32-"):
 		rid, err := getRID(sid)
 		if err != nil {
 			return UnknownID, err
 		}
-		return 0x20000 + rid, nil //nolint:mnd // quiet linter
+		return 0x20000 + rid, nil //nolint:mnd
 	case strings.HasPrefix(sidStr, "S-1-5-21-"):
 		rid, err := getRID(sid)
 		if err != nil {
 			return UnknownID, err
 		}
 		if isSameDomainSID(sid, primaryDomainSid) {
-			return 0x40000 + rid, nil //nolint:mnd // quiet linter
+			return 0x40000 + rid, nil //nolint:mnd
 		}
 
-		return 0x30000 + rid, nil //nolint:mnd // quiet linter
+		return 0x30000 + rid, nil //nolint:mnd
 	default:
 
 		return UnknownID, fmt.Errorf("unsupported SID: %s", sidStr)
@@ -161,10 +161,10 @@ func sidToPOSIXID(sid *windows.SID, primaryDomainSid *windows.SID) (int, error) 
 }
 
 func nameFromSID(sid *windows.SID) (string, error) {
-	name16 := make([]uint16, 256)      //nolint:mnd // quiet linter
-	domain16 := make([]uint16, 256)    //nolint:mnd // quiet linter
-	nameLen := uint32(len(name16))     //nolint:gosec // quiet linter
-	domainLen := uint32(len(domain16)) //nolint:gosec // quiet linter
+	name16 := make([]uint16, 256)      //nolint:mnd
+	domain16 := make([]uint16, 256)    //nolint:mnd
+	nameLen := uint32(len(name16))     //nolint:gosec
+	domainLen := uint32(len(domain16)) //nolint:gosec
 	var sidUse uint32
 
 	err := windows.LookupAccountSid(

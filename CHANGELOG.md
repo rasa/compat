@@ -5,20 +5,40 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
-## [Unreleased](https://github.com/rasa/compat/compare/v0.5.2...HEAD)
+## [Unreleased](https://github.com/rasa/compat/compare/v0.5.3...HEAD)
 
 ### Added
 
+- Add `Fchmod()` function.
+
+### Fixed
+
+### Changed
+
+## [v0.5.3](https://github.com/rasa/compat/compare/v0.5.2...v0.5.3)
+
+### Added
+
+- Add support for running tests on APFS, ExFAT, FAT32, HFS+, HFS+J, HFSX, JHFS+,
+  JHFS+X, and UDF filesystems on macOS (as root).
+- Add support for running tests on ext2, ext3, ext4, exFAT, FAT32, F2FS, NTFS,
+  ReiserFS and XFS filesystems on Linux (as root).
+- Add support for running tests on exFAT, FAT32, NTFS, and ReFS filesystems on
+  Windows. Not all systems support ReFS.
+- Add `Geteuid()` and `Getegid()` functions.
 - Add `IsBSDLike` constant (`IsBSD` or `IsApple`).
 - Add `UnderlyingGoVersion()` to report go version under Tinygo compiler.
 - Add `cmd/updater` to build binaries.
 
 ### Fixed
 
+- Fix `IsRoot()` to check EUID == 0 on non-Windows systems.
+- Fix `SupportsSymlinks()` to return false on the Plan 9 OS.
 - Add -buildvcs=false to fix build on DragonflyBSD.
 
 ### Changed
 
+- (Temporarily) removed support for mode 0o000 on Windows. ***BREAKING CHANGE***
 - Change `Links()` from a uint64 to a uint (to align with APIs). ***BREAKING CHANGE***
 - Bump Tinygo to 0.39.0 (uses go1.25).
 - Bump Wasitime to 36.0.1.

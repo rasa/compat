@@ -15,7 +15,7 @@ import (
 )
 
 func TestWriteFileAtomic(t *testing.T) {
-	dir := t.TempDir()
+	dir := tempDir(t)
 	file := filepath.Join(dir, "foo.txt")
 	content := []byte("foo")
 
@@ -35,6 +35,7 @@ func TestWriteFileAtomic(t *testing.T) {
 	}
 
 	want := compat.CreateTempPerm // 0o600
+	want = fixPerms(want, false)
 
 	got := fi.Mode().Perm()
 	if got != want {
@@ -43,16 +44,13 @@ func TestWriteFileAtomic(t *testing.T) {
 }
 
 func TestWriteFileAtomicDefaultFileMode(t *testing.T) {
-	dir := t.TempDir()
+	dir := tempDir(t)
 	file := filepath.Join(dir, "bar.txt")
 	content := []byte("bar")
 
 	t.Cleanup(func() {
 		_ = os.Remove(file)
 	})
-
-	perm644 := os.FileMode(0o644)
-	perm600 := os.FileMode(0o600)
 
 	err := compat.WriteFileAtomic(file, content, compat.WithDefaultFileMode(perm644))
 	if err != nil {
@@ -66,10 +64,10 @@ func TestWriteFileAtomicDefaultFileMode(t *testing.T) {
 		t.Fatalf("Failed to stat file: %q: %v", file, err)
 	}
 
-	want := fixPerms(perm644)
-	if compat.IsTinygo && compat.IsWasip1 {
-		want = 0o600
-	}
+	want := fixPerms(perm644, false)
+	// if compat.IsTinygo && compat.IsWasip1 {
+	// 	want = perm600
+	// }
 
 	got := fi.Mode().Perm()
 	if got != want {
@@ -91,7 +89,7 @@ func TestWriteFileAtomicDefaultFileMode(t *testing.T) {
 		t.Fatalf("Failed to stat file: %q: %v", file, err)
 	}
 
-	want = perm600
+	want = fixPerms(perm600, false)
 
 	got = fi.Mode().Perm()
 
@@ -101,16 +99,13 @@ func TestWriteFileAtomicDefaultFileMode(t *testing.T) {
 }
 
 func TestWriteFileAtomicMode(t *testing.T) {
-	dir := t.TempDir()
+	dir := tempDir(t)
 	file := filepath.Join(dir, "baz.txt")
 	content := []byte("baz")
 
 	t.Cleanup(func() {
 		_ = os.Remove(file)
 	})
-
-	perm644 := os.FileMode(0o644)
-	perm600 := os.FileMode(0o600)
 
 	err := compat.WriteFileAtomic(file, content, compat.WithFileMode(perm644))
 	if err != nil {
@@ -122,10 +117,10 @@ func TestWriteFileAtomicMode(t *testing.T) {
 		t.Fatalf("Failed to stat file: %q: %v", file, err)
 	}
 
-	want := fixPerms(perm644)
-	if compat.IsTinygo && compat.IsWasip1 {
-		want = perm600
-	}
+	want := fixPerms(perm644, false)
+	// if compat.IsTinygo && compat.IsWasip1 {
+	// 	want = perm600
+	// }
 
 	got := fi.Mode().Perm()
 	if got != want {

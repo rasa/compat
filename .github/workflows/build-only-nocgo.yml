@@ -12,8 +12,8 @@ on: # yamllint disable-line rule:truthy
       goarches:
         default: default
         type: string # required
-      verbose_testing:
-        default: "false"
+      test_opts:
+        default: ""
         type: string # required
   workflow_dispatch: # Allows you to run this workflow manually from the Actions tab
     inputs:
@@ -33,16 +33,16 @@ on: # yamllint disable-line rule:truthy
           - default
           - all
         default: default
-      # checkov:skip=CKV_GHA_7:The build output cannot be affected by user parameters...
-      verbose_testing:
-        description: "Test with -v options."
-        type: boolean
-        default: false
+       # checkov:skip=CKV_GHA_7: The build output cannot be affected by user parameters...
+      test_opts:
+        description: "Options to pass to go test command (-v, -short, -run TestX, etc.)"
+        type: string
+        default: ""
 
 env:
   CGO_ENABLED: ${{ inputs.cgo_enabled }}
   goarches: ${{ inputs.goarches }}
-  verbose_testing: ${{ inputs.verbose_testing }}
+  TEST_OPTS: ${{ inputs.test_opts }}
 
 jobs:
   build-only-nocgo:
@@ -51,7 +51,7 @@ jobs:
     steps:
     - uses: actions/checkout@v5
 
-    - uses: actions/setup-go@v5
+    - uses: actions/setup-go@v6
       with:
         go-version: '1.25'
         check-latest: true
@@ -90,14 +90,8 @@ jobs:
         fi
         exit "${fails}"
 
-    - name: go test (all targets but android and ios)
+    - name: go test .
       run: |
-        # go test .
-        : "${verbose_testing:=true}"
-        join_by() { local IFS="$1"; shift; printf '%s' "$*"; }
-        TEST_OPTS_ARRAY=()
-        if [[ "${verbose_testing}" == "true" ]]; then
-          TEST_OPTS_ARRAY+=(-v)
-        fi
-        TEST_OPTS=$(join_by ' ' "${TEST_OPTS_ARRAY[@]}")
-        go test "${TEST_OPTS}" .
+        # go test ${TEST_OPTS} .
+        : "${TEST_OPTS:=}"
+        go test ${TEST_OPTS} .

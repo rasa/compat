@@ -12,34 +12,30 @@ jobs:
   test-solaris:
     name: test-solaris
     runs-on: ubuntu-24.04
-    timeout-minutes: 10
+    timeout-minutes: 20
+    env:
+      GOOS: solaris
+      GOARCH: amd64
+      # GITHUB_TOKEN : ${{ secrets.GITHUB_TOKEN }}
     # continue-on-error: true
-    # env:
-    #  GITHUB_TOKEN : ${{ secrets.GITHUB_TOKEN }}
     steps:
     - uses: actions/checkout@v5
+      with:
+        show-progress: false
 
     - uses: vmactions/solaris-vm@v1
       with:
-        # envs: 'GITHUB_TOKEN'
+        envs: 'GOOS GOARCH' # GITHUB_TOKEN'
         usesh: true
         copyback: false
         prepare: |
+          set +e
+          # ignore error 4, which is returned when there's nothing to do
+          # See https://github.com/vmactions/solaris-builder/blob/cda522c7/hooks/postBuild.sh#L55
           pkg refresh --full
-          pkg install --accept --licenses developer/go
+          pkg install --accept web/curl || true
+          pkg install --accept archiver/gnu-tar || true
+          pkg install --accept text/jq || true
+          # pkg install --accept developer/go || true
         run: |
-          go version
-          rv=0
-          if go build -trimpath ./...; then
-            printf '::notice ::build succeeded: %s\n' "$(go version)"
-          else
-            rv=$?
-            printf '::error ::build failed: %s (error %s)\n' "$(go version)" "${rv}"
-          fi
-          if go test -v .; then
-            printf '::notice ::tests succeeded: %s\n' "$(go version)"
-          else
-            rv=$?
-            printf '::error ::tests failed: %s (error %s)\n' "$(go version)" "${rv}"
-          fi
-          exit "${rv}"
+          ./download-build-test.sh

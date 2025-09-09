@@ -44,3 +44,39 @@ func TestGetgid(t *testing.T) {
 		t.Fatalf("Getgid: got %v (UnknownID), want a valid ID", compat.UnknownID)
 	}
 }
+
+func TestGeteuid(t *testing.T) {
+	uid, err := compat.Geteuid()
+	if err != nil {
+		t.Errorf("Geteuid: got %v, want nil", err)
+
+		return // tinygo doesn't support t.Fatal
+	}
+
+	if compat.IsWasip1 {
+		// Wasip1 returns -1 for UID
+		return
+	}
+
+	if uid == compat.UnknownID {
+		t.Fatalf("Geteuid: got %v (UnknownID), want a valid ID", compat.UnknownID)
+	}
+}
+
+func TestGetegid(t *testing.T) {
+	gid, err := compat.Getegid()
+	if err != nil {
+		t.Errorf("Getegid: got %v, want nil", err)
+
+		return // tinygo doesn't support t.Fatal
+	}
+
+	if compat.IsWasip1 {
+		// Wasip1 returns -1 for GID
+		return
+	}
+
+	if gid == compat.UnknownID {
+		t.Fatalf("Getegid: got %v (UnknownID), want a valid ID", compat.UnknownID)
+	}
+}

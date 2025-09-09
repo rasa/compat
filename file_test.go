@@ -11,52 +11,11 @@ import (
 	"github.com/rasa/compat"
 )
 
-var (
-	wantCreatePerm     = compat.CreatePerm     // 0o666
-	wantCreateTempPerm = compat.CreateTempPerm // 0o600
-	wantMkdirTempPerm  = compat.MkdirTempPerm  // 0o700
-
-	helloBytes = []byte("hello")
-)
-
-func init() {
-	// @TODO(rasa): test different umask settings
-	compat.Umask(0)
-
-	wantCreatePerm = fixPosixPerms(wantCreatePerm, false)
-	wantCreateTempPerm = fixPosixPerms(wantCreateTempPerm, false)
-	wantMkdirTempPerm = fixPosixPerms(wantMkdirTempPerm, true)
-}
-
-func fixPerms(perm os.FileMode) os.FileMode {
-	if compat.IsWasip1 {
-		if compat.IsTinygo {
-			// Tinygo's os.Stat() returns mode 0o000
-			return os.FileMode(0o000)
-		} else {
-			return perm & 0o700
-		}
-	}
-
-	return perm
-}
-
-func fixPosixPerms(perm os.FileMode, isDir bool) os.FileMode {
-	if compat.IsWindows {
-		if isDir {
-			return os.FileMode(0o777)
-		} else {
-			return os.FileMode(0o666)
-		}
-	}
-	return fixPerms(perm)
-}
-
 func TestFilePosixChmod(t *testing.T) {
 	perm := os.FileMode(0o644)
 	want := fixPosixPerms(perm, false)
 
-	name, err := tmpfile(t)
+	name, err := tempFile(t)
 	if err != nil {
 		t.Fatal(err)
 
@@ -86,9 +45,9 @@ func TestFilePosixChmod(t *testing.T) {
 }
 
 func TestFilePosixCreate(t *testing.T) {
-	want := wantCreatePerm
+	want := fixPosixPerms(compat.CreatePerm, false) // 0o666
 
-	name, err := tmpname(t)
+	name, err := tempName(t)
 	if err != nil {
 		t.Fatal(err)
 
@@ -128,7 +87,7 @@ func TestFilePosixCreateEx(t *testing.T) {
 	perm := compat.CreatePerm
 	want := fixPosixPerms(perm, false)
 
-	name, err := tmpname(t)
+	name, err := tempName(t)
 	if err != nil {
 		t.Fatal(err)
 
@@ -165,7 +124,7 @@ func TestFilePosixCreateEx(t *testing.T) {
 }
 
 func TestFilePosixCreateExDelete(t *testing.T) {
-	name, err := tmpname(t)
+	name, err := tempName(t)
 	if err != nil {
 		t.Fatal(err)
 
@@ -195,9 +154,9 @@ func TestFilePosixCreateExDelete(t *testing.T) {
 }
 
 func TestFilePosixCreateTemp(t *testing.T) {
-	want := wantCreateTempPerm
+	want := fixPosixPerms(compat.CreateTempPerm, false) // 0o600
 
-	dir := t.TempDir()
+	dir := tempDir(t)
 
 	fh, err := compat.CreateTemp(dir, "")
 	if err != nil {
@@ -231,9 +190,9 @@ func TestFilePosixCreateTemp(t *testing.T) {
 }
 
 func TestFilePosixCreateTempEx(t *testing.T) {
-	want := wantCreateTempPerm
+	want := fixPosixPerms(compat.CreateTempPerm, false) // 0o600
 
-	dir := t.TempDir()
+	dir := tempDir(t)
 
 	fh, err := compat.CreateTempEx(dir, "", 0)
 	if err != nil {
@@ -267,7 +226,7 @@ func TestFilePosixCreateTempEx(t *testing.T) {
 }
 
 func TestFilePosixCreateTempExDelete(t *testing.T) {
-	dir := t.TempDir()
+	dir := tempDir(t)
 
 	fh, err := compat.CreateTempEx(dir, "", compat.O_DELETE)
 	if err != nil {
@@ -297,7 +256,7 @@ func TestFilePosixMkdir(t *testing.T) {
 	perm := os.FileMode(0o777)
 	want := fixPosixPerms(perm, true)
 
-	name, err := tmpname(t)
+	name, err := tempName(t)
 	if err != nil {
 		t.Fatal(err)
 
@@ -330,7 +289,7 @@ func TestFilePosixMkdirAll(t *testing.T) {
 	perm := os.FileMode(0o777)
 	want := fixPosixPerms(perm, true)
 
-	name, err := tmpname(t)
+	name, err := tempName(t)
 	if err != nil {
 		t.Fatal(err)
 
@@ -360,8 +319,8 @@ func TestFilePosixMkdirAll(t *testing.T) {
 }
 
 func TestFilePosixMkdirTemp(t *testing.T) {
-	want := wantMkdirTempPerm
-	dir := t.TempDir()
+	want := fixPosixPerms(compat.MkdirTempPerm, true) // 0o700
+	dir := tempDir(t)
 	pattern := ""
 
 	name, err := compat.MkdirTemp(dir, pattern)
@@ -390,7 +349,7 @@ func TestFilePosixOpenFile(t *testing.T) {
 	perm := os.FileMode(0o666)
 	want := fixPosixPerms(perm, false)
 
-	name, err := tmpname(t)
+	name, err := tempName(t)
 	if err != nil {
 		t.Fatal(err)
 
@@ -427,7 +386,7 @@ func TestFilePosixOpenFile(t *testing.T) {
 }
 
 func TestFilePosixOpenFileDelete(t *testing.T) {
-	name, err := tmpname(t)
+	name, err := tempName(t)
 	if err != nil {
 		t.Fatal(err)
 
@@ -466,7 +425,7 @@ func TestFilePosixWriteFile(t *testing.T) {
 	perm := os.FileMode(0o666)
 	want := fixPosixPerms(perm, false)
 
-	name, err := tmpname(t)
+	name, err := tempName(t)
 	if err != nil {
 		t.Fatal(err)
 
@@ -499,7 +458,7 @@ func TestFilePosixWriteFileEx(t *testing.T) {
 	perm := os.FileMode(0o666)
 	want := fixPosixPerms(perm, false)
 
-	name, err := tmpname(t)
+	name, err := tempName(t)
 	if err != nil {
 		t.Fatal(err)
 
@@ -526,34 +485,4 @@ func TestFilePosixWriteFileEx(t *testing.T) {
 
 		return
 	}
-}
-
-func tmpfile(t *testing.T) (string, error) {
-	f, err := compat.CreateTemp(t.TempDir(), "")
-	if err != nil {
-		return "", err
-	}
-
-	name := f.Name()
-
-	err = f.Close()
-	if err != nil {
-		return "", err
-	}
-
-	return name, nil
-}
-
-func tmpname(t *testing.T) (string, error) {
-	name, err := tmpfile(t)
-	if err != nil {
-		return "", err
-	}
-
-	err = os.Remove(name)
-	if err != nil {
-		return "", err
-	}
-
-	return name, nil
 }

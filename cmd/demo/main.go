@@ -65,7 +65,7 @@ func samePartitionl() {
 
 	fi1, err := compat.Lstat(link)
 	if err != nil {
-		log.Fatal(err) //nolint:gocritic // quiet linter
+		log.Fatal(err) //nolint:gocritic
 	}
 
 	fi2, err := compat.Lstat(link)
@@ -108,7 +108,7 @@ func sameFilel() {
 
 	fi1, err := compat.Lstat(link)
 	if err != nil {
-		log.Fatal(err) //nolint:gocritic // quiet linter
+		log.Fatal(err) //nolint:gocritic
 	}
 
 	fi2, err := compat.Lstat(link)

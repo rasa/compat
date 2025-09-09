@@ -12,33 +12,26 @@ jobs:
   test-openbsd:
     name: test-openbsd
     runs-on: ubuntu-24.04
-    timeout-minutes: 10
+    timeout-minutes: 20
+    env:
+      GOOS: openbsd
+      GOARCH: amd64
+      # GITHUB_TOKEN : ${{ secrets.GITHUB_TOKEN }}
     # continue-on-error: true
-    # env:
-    #  GITHUB_TOKEN : ${{ secrets.GITHUB_TOKEN }}
     steps:
     - uses: actions/checkout@v5
+      with:
+        show-progress: false
 
     - uses: vmactions/openbsd-vm@v1
       with:
-        # envs: 'GITHUB_TOKEN'
+        envs: 'GOOS GOARCH' # GITHUB_TOKEN'
         usesh: true
         copyback: false
         prepare: |
-          pkg_add go
+          # the double dashes are needed to avoid "ambiguous" warning.
+          pkg_add coreutils curl gtar-- jq
+          cd /usr/local/bin && ln -sf gsha256sum sha256sum
+          # pkg_add go
         run: |
-          go version
-          rv=0
-          if go build -trimpath ./...; then
-            printf '::notice ::build succeeded: %s\n' "$(go version)"
-          else
-            rv=$?
-            printf '::error ::build failed: %s (error %s)\n' "$(go version)" "${rv}"
-          fi
-          if go test -v .; then
-            printf '::notice ::tests succeeded: %s\n' "$(go version)"
-          else
-            rv=$?
-            printf '::error ::tests failed: %s (error %s)\n' "$(go version)" "${rv}"
-          fi
-          exit "${rv}"
+          ./download-build-test.sh
