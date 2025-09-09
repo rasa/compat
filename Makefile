@@ -42,6 +42,20 @@ download: ## go mod download
 	go mod download
 	test -f go.tool.mod && go mod download -modfile=go.tool.mod
 
+.PHONY: get
+get: ## go get -u
+	go get -u
+	test -f go.tool.mod && go get -u -modfile=go.tool.mod
+
+.PHONY: tools
+tools: ## freshen tools to latest versions
+	test -f go.tool.mod && export GOFLAGS="-modfile=go.tool.mod" ;\
+	go get github.com/client9/misspell/cmd/misspell@latest ;\
+	go get github.com/golangci/golangci-lint/v2/cmd/golangci-lint@latest ;\
+	go get github.com/goreleaser/goreleaser/v2@latest ;\
+	go get golang.org/x/vuln/cmd/govulncheck@latest ;\
+	go get mvdan.cc/gofumpt@latest
+
 .PHONY: mod
 mod: ## go mod tidy
 	go mod tidy -x
