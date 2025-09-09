@@ -6,6 +6,7 @@
 package golang
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"syscall"
@@ -193,10 +194,65 @@ var procGetFinalPathNameByHandleW = modkernel32.NewProc("GetFinalPathNameByHandl
 // Source: https://github.com/golang/go/blob/77f911e3/src/syscall/zsyscall_windows.go#L783-790
 
 func GetFinalPathNameByHandle(file Handle, filePath *uint16, filePathSize uint32, flags uint32) (n uint32, err error) {
-	r0, _, e1 := syscall.Syscall6(procGetFinalPathNameByHandleW.Addr(), 4, uintptr(file), uintptr(unsafe.Pointer(filePath)), uintptr(filePathSize), uintptr(flags), 0, 0)
+	r0, _, e1 := syscall.Syscall6(procGetFinalPathNameByHandleW.Addr(), 4, uintptr(file), uintptr(unsafe.Pointer(filePath)), uintptr(filePathSize), uintptr(flags), 0, 0) //nolint:gosec,mnd,staticcheck
 	n = uint32(r0)
 	if n == 0 || n >= filePathSize {
 		err = errnoErr(e1)
 	}
-	return
+	return n, err
+}
+
+// Source: https://github.com/golang/go/blob/77f911e3/src/syscall/syscall_windows.go#L183
+
+const _ERROR_NOT_ENOUGH_MEMORY = syscall.Errno(8)
+
+// Source: https://github.com/golang/go/blob/77f911e3/src/syscall/syscall_windows.go#L1274-L1291
+
+func fdpath(fd syscall.Handle, buf []uint16) ([]uint16, error) {
+	const (
+		FILE_NAME_NORMALIZED = 0
+		VOLUME_NAME_DOS      = 0
+	)
+	for {
+		n, err := GetFinalPathNameByHandle(fd, &buf[0], uint32(len(buf)), FILE_NAME_NORMALIZED|VOLUME_NAME_DOS) //nolint:gosec
+		if err == nil {
+			buf = buf[:n]
+			break
+		}
+		if !errors.Is(err, _ERROR_NOT_ENOUGH_MEMORY) { // compat: was if err != _ERROR_NOT_ENOUGH_MEMORY {
+			return nil, err
+		}
+		buf = append(buf, make([]uint16, n-uint32(len(buf)))...) //nolint:gosec
+	}
+	return buf, nil
+}
+
+func Filepath(f *os.File) (string, error) {
+	if f == nil {
+		return "", errors.New("nil file pointer")
+	}
+	fd := syscall.Handle(f.Fd())
+
+	// Source: https://github.com/golang/go/blob/77f911e3/src/syscall/syscall_windows.go#L1294-L1310
+
+	var buf [syscall.MAX_PATH + 1]uint16
+	path, err := fdpath(fd, buf[:])
+	if err != nil {
+		return "", err
+	}
+	// When using VOLUME_NAME_DOS, the path is always prefixed by "\\?\".
+	// That prefix tells the Windows APIs to disable all string parsing and to send
+	// the string that follows it straight to the file system.
+	// Although SetCurrentDirectory and GetCurrentDirectory do support the "\\?\" prefix,
+	// some other Windows APIs don't. If the prefix is not removed here, it will leak
+	// to Getwd, and we don't want such a general-purpose function to always return a
+	// path with the "\\?\" prefix after Fchdir is called.
+	// The downside is that APIs that do support it will parse the path and try to normalize it,
+	// when it's already normalized.
+	if len(path) >= 4 && path[0] == '\\' && path[1] == '\\' && path[2] == '?' && path[3] == '\\' {
+		path = path[4:]
+	}
+	pathString := syscall.UTF16ToString(path)
+
+	return pathString, nil
 }
