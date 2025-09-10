@@ -366,12 +366,12 @@ func setOwnerToCurrentUser(path string) error {
 	// Enable SeTakeOwnershipPrivilege (required to take ownership when you don't own it)
 	err = enablePrivilege(tok, seTakeOwnershipPrivilegeW)
 	if err != nil {
-		return fmt.Errorf("enable SeTakeOwnershipPrivilege: %w", err)
+		return fmt.Errorf("failed to take ownership privilege: %w", err)
 	}
 	// Optional, sometimes helpful
 	err = enablePrivilege(tok, seRestorePrivilegeW)
 	if err != nil {
-		return fmt.Errorf("seRestorePrivilegeW: %w", err)
+		return fmt.Errorf("failed to restore privileges: %w", err)
 	}
 
 	// Set owner by name (affects target if path is a symlink)
@@ -381,7 +381,7 @@ func setOwnerToCurrentUser(path string) error {
 		windows.OWNER_SECURITY_INFORMATION,
 		userSID, nil, nil, nil)
 	if err != nil {
-		return fmt.Errorf("SetNamedSecurityInfo: %w", err)
+		return fmt.Errorf("failed to set named security info: %w", err)
 	}
 
 	return nil
@@ -391,7 +391,7 @@ func enablePrivilege(tok windows.Token, name *uint16) error {
 	var luid windows.LUID
 	err := windows.LookupPrivilegeValue(nil, name, &luid)
 	if err != nil {
-		return fmt.Errorf("LookupPrivilegeValue: %w", err)
+		return fmt.Errorf("failed to lookup privilege: %w", err)
 	}
 
 	tp := windows.Tokenprivileges{
@@ -405,11 +405,11 @@ func enablePrivilege(tok windows.Token, name *uint16) error {
 	// Must be called on a real token handle opened with TOKEN_ADJUST_PRIVILEGES.
 	err = windows.AdjustTokenPrivileges(tok, false, &tp, 0, nil, nil)
 	if err != nil {
-		return fmt.Errorf("AdjustTokenPrivileges: %w", err)
+		return fmt.Errorf("failed to adjust token privileges: %w", err)
 	}
 	// AdjustTokenPrivileges can "succeed" but not assign; check last error.
 	if le := windows.GetLastError(); errors.Is(le, windows.ERROR_NOT_ALL_ASSIGNED) {
-		return fmt.Errorf("privilege not held: %w", le)
+		return fmt.Errorf("failed to hold privilege: %w", le)
 	}
 
 	return nil

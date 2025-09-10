@@ -65,7 +65,7 @@ func getFileOwnerAndGroupSIDs(name string) (*windows.SID, *windows.SID, error) {
 		0, 0, 0,
 	)
 	if r0 != 0 {
-		return nil, nil, fmt.Errorf("GetNamedSecurityInfo failed: %w", syscall.Errno(r0))
+		return nil, nil, fmt.Errorf("failed to get named security info: %w", syscall.Errno(r0))
 	}
 
 	return owner, group, nil
@@ -80,7 +80,7 @@ func lsaOpenPolicy(systemName *uint16, access uint32) (handle syscall.Handle, er
 		uintptr(unsafe.Pointer(&handle)),
 	)
 	if r0 != 0 {
-		return syscall.InvalidHandle, fmt.Errorf("LsaOpenPolicy failed: %w", syscall.Errno(r0))
+		return syscall.InvalidHandle, fmt.Errorf("failed to set LSA open policy: %w", syscall.Errno(r0))
 	}
 
 	return handle, nil
@@ -100,7 +100,7 @@ func getPrimaryDomainSID() (*windows.SID, error) {
 		uintptr(unsafe.Pointer(&buffer)),
 	)
 	if r0 != 0 {
-		return nil, fmt.Errorf("LsaQueryInformationPolicy failed: %w", syscall.Errno(r0))
+		return nil, fmt.Errorf("failed to query information policy: %w", syscall.Errno(r0))
 	}
 	defer procLsaFreeMemory.Call(buffer) //nolint:errcheck
 
