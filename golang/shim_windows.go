@@ -202,10 +202,6 @@ func GetFinalPathNameByHandle(file Handle, filePath *uint16, filePathSize uint32
 	return n, err
 }
 
-// Source: https://github.com/golang/go/blob/77f911e3/src/syscall/syscall_windows.go#L183
-
-const _ERROR_NOT_ENOUGH_MEMORY = syscall.Errno(8)
-
 // Source: https://github.com/golang/go/blob/77f911e3/src/syscall/syscall_windows.go#L1274-L1291
 
 func fdpath(fd syscall.Handle, buf []uint16) ([]uint16, error) {
@@ -219,7 +215,7 @@ func fdpath(fd syscall.Handle, buf []uint16) ([]uint16, error) {
 			buf = buf[:n]
 			break
 		}
-		if !errors.Is(err, _ERROR_NOT_ENOUGH_MEMORY) { // compat: was if err != _ERROR_NOT_ENOUGH_MEMORY {
+		if !errors.Is(err, windows.ERROR_NOT_ENOUGH_MEMORY) { // compat: was if err != _ERROR_NOT_ENOUGH_MEMORY {
 			return nil, err
 		}
 		buf = append(buf, make([]uint16, n-uint32(len(buf)))...) //nolint:gosec
