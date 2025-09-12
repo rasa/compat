@@ -119,5 +119,8 @@ test: ## go test
 
 .PHONY: diff
 diff: ## git diff
+ifeq ($(OS),Windows_NT)
+	git config --local core.filemode false
+endif
 	git diff --exit-code
 	@RES=$$(git status --porcelain --untracked-files=no) ; if [ -n "$$RES" ]; then echo $$RES && exit 1 ; fi
