@@ -271,9 +271,11 @@ func TestStatUID(t *testing.T) {
 	if got != want {
 		if compat.IsApple && (partType == "exfat" || partType == "msdos") {
 			t.Logf("UID(): got %v, want %v (ignoring: %v on %v)", got, want, partType, runtime.GOOS)
-		} else {
-			t.Fatalf("UID(): got %v, want %v", got, want)
+
+			return
 		}
+
+		t.Fatalf("UID(): got %v, want %v", got, want)
 	}
 }
 
@@ -304,9 +306,11 @@ func TestStatGID(t *testing.T) {
 	if got != want {
 		if compat.IsApple && isRoot {
 			t.Logf("GID(): got %v, want %v (ignoring: root on %v)", got, want, runtime.GOOS)
-		} else {
-			t.Fatalf("GID(): got %v, want %v", got, want)
+
+			return
 		}
+
+		t.Fatalf("GID(): got %v, want %v", got, want)
 	}
 }
 
@@ -341,9 +345,11 @@ func TestStatUser(t *testing.T) {
 	if !compareNames(got, want) {
 		if compat.IsApple && (partType == "exfat" || partType == "msdos") {
 			t.Logf("User(): got %v, want %v (ignoring: %v on %v)", got, want, partType, runtime.GOOS)
-		} else {
-			t.Fatalf("User(): got %v, want %v", got, want)
+
+			return
 		}
+
+		t.Fatalf("User(): got %v, want %v", got, want)
 	}
 }
 
@@ -382,9 +388,11 @@ func TestStatGroup(t *testing.T) {
 	if !compareNames(got, want) {
 		if compat.IsApple && isRoot {
 			t.Logf("Group(): got %v, want %v (ignoring: root on %v)", got, want, runtime.GOOS)
-		} else {
-			t.Fatalf("Group(): got %v, want %v", got, want)
+
+			return
 		}
+
+		t.Fatalf("Group(): got %v, want %v", got, want)
 	}
 }
 

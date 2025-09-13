@@ -46,7 +46,7 @@ func TestLstatStat(t *testing.T) { //nolint:dupl
 	want := fixPerms(perm, false)
 	if got := fi.Mode().Perm(); got != want {
 		if compat.IsWindows {
-			t.Logf("Mode(): got 0o%o, want 0o%o (ignoring: on Windows)", got, want)
+			t.Logf("Mode(): got 0o%o, want 0o%o (ignoring: on %v)", got, want, runtime.GOOS)
 		} else {
 			t.Errorf("Mode(): got 0o%o, want 0o%o", got, want)
 		}
@@ -97,7 +97,7 @@ func TestLstatLstat(t *testing.T) { //nolint:dupl
 	want := fixPerms(perm, false)
 	if got := fi.Mode().Perm(); got == want {
 		if testEnv.noACLs {
-			t.Logf("Mode(): got 0o%o, want !0o%o", got, want)
+			t.Logf("Mode(): got 0o%o, want !0o%o (ignoring: no ACLs)", got, want)
 		} else {
 			t.Errorf("Mode(): got 0o%o, want !0o%o", got, want)
 		}
@@ -407,9 +407,11 @@ func TestLstatGID(t *testing.T) {
 	if got != want {
 		if compat.IsApple && isRoot {
 			t.Logf("GID(): got %v, want %v (ignoring: root on %v)", got, want, runtime.GOOS)
-		} else {
-			t.Fatalf("GID(): got %v, want %v", got, want)
+
+			return
 		}
+
+		t.Fatalf("GID(): got %v, want %v", got, want)
 	}
 }
 
@@ -425,14 +427,7 @@ func TestLstatUser(t *testing.T) {
 		return
 	}
 
-	if compat.IsWindows {
-		// tinygo: Current requires cgo or $USER, $HOME set in environment
-		skip(t, "Skipping test: User() will be indeterminate on Windows")
-
-		return
-	}
-
-	_, name, err := createTempSymlink(t)
+	_, name, err := createTempSymlink(t, compat.WithSetSymlinkOwner(false))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -451,6 +446,13 @@ func TestLstatUser(t *testing.T) {
 	want := u.Username
 
 	if compareNames(got, want) == compat.IsWindows {
+		if compat.IsWindows {
+			t.Logf("User(): got %v, want %v (ignoring: on %v)", got, want, runtime.GOOS)
+			// skip(t, "Skipping test: User() will be indeterminate on Windows")
+
+			return
+		}
+
 		t.Fatalf("User(): got %v, want %v", got, want)
 	}
 }
@@ -529,9 +531,11 @@ func TestLstatGroup(t *testing.T) {
 	if !compareNames(got, want) {
 		if compat.IsApple && isRoot {
 			t.Logf("Group(): got %v, want %v (ignoring: root on %v)", got, want, runtime.GOOS)
-		} else {
-			t.Fatalf("Group(): got %v, want %v", got, want)
+
+			return
 		}
+
+		t.Fatalf("Group(): got %v, want %v", got, want)
 	}
 }
 
