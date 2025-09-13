@@ -34,7 +34,7 @@ func WithDefaultFileMode(mode os.FileMode) Option {
 
 // WithFileMode sets the file mode to the desired value and has precedence over all
 // other options.
-// Used by the Create, CreateTemp, MkdirTemp, Open, OpenFile, WriteFile, 
+// Used by the Create, CreateTemp, MkdirTemp, Open, OpenFile, WriteFile,
 // WriteFileAtomic and WriteReaderAtomic functions.
 func WithFileMode(mode os.FileMode) Option {
 	return func(opts *Options) {
@@ -43,7 +43,7 @@ func WithFileMode(mode os.FileMode) Option {
 }
 
 // WithFlags sets the flag option.
-// Used by the Create, CreateTemp, Open, OpenFile, WriteFile, WriteFileAtomic and 
+// Used by the Create, CreateTemp, Open, OpenFile, WriteFile, WriteFileAtomic and
 // WriteReaderAtomic functions.
 func WithFlags(flags int) Option {
 	return func(opts *Options) {
@@ -67,7 +67,7 @@ func WithKeepFileMode(keep bool) Option {
 // user writable bit set.
 // ReadOnlyMaskReset  do not set a file's RO attribute, and if it's set, reset it.
 // The option is functional on Windows only. On other OSes, it is ignored.
-// Used by the Chmod, Create, CreateTemp, Fchmod, Open, OpenFile, WriteFile, 
+// Used by the Chmod, Create, CreateTemp, Fchmod, Open, OpenFile, WriteFile,
 // WriteFileAtomic and WriteReaderAtomic functions.
 func WithReadOnlyMode(mode ReadOnlyMode) Option {
 	return func(opts *Options) {

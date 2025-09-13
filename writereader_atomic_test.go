@@ -9,22 +9,24 @@ package compat_test
 import (
 	"bytes"
 	"os"
-	"path/filepath"
 	"testing"
 
 	"github.com/rasa/compat"
 )
 
+var helloBuf = bytes.NewBuffer(helloBytes)
+
 func TestWriteReaderAtomic(t *testing.T) {
-	dir := tempDir(t)
-	file := filepath.Join(dir, "foo.txt")
-	content := bytes.NewBufferString("foo")
+	file, err := tempName(t)
+	if err != nil {
+		t.Fatalf("Failed to create temp file: %v", err)
+	}
 
 	t.Cleanup(func() {
 		_ = os.Remove(file)
 	})
 
-	if err := compat.WriteReaderAtomic(file, content); err != nil {
+	if err := compat.WriteReaderAtomic(file, helloBuf); err != nil {
 		t.Fatalf("Failed to write file: %q: %v", file, err)
 	}
 
@@ -33,8 +35,8 @@ func TestWriteReaderAtomic(t *testing.T) {
 		t.Fatalf("Failed to stat file: %q: %v", file, err)
 	}
 
-	want := compat.CreateTempPerm // 0o600
-	want = fixPerms(want, false)
+	perm := compat.CreateTempPerm // 0o600
+	want := fixPerms(perm, false)
 
 	got := fi.Mode().Perm()
 
@@ -44,15 +46,16 @@ func TestWriteReaderAtomic(t *testing.T) {
 }
 
 func TestWriteReaderAtomicDefaultFileMode(t *testing.T) {
-	dir := tempDir(t)
-	file := filepath.Join(dir, "bar.txt")
-	content := bytes.NewBufferString("bar")
+	file, err := tempName(t)
+	if err != nil {
+		t.Fatalf("Failed to create temp file: %v", err)
+	}
 
 	t.Cleanup(func() {
 		_ = os.Remove(file)
 	})
 
-	err := compat.WriteReaderAtomic(file, content, compat.WithDefaultFileMode(perm644))
+	err = compat.WriteReaderAtomic(file, helloBuf, compat.WithDefaultFileMode(perm644))
 	if err != nil {
 		t.Fatalf("Failed to write file: %q: %v", file, err)
 	}
@@ -65,9 +68,6 @@ func TestWriteReaderAtomicDefaultFileMode(t *testing.T) {
 	}
 
 	want := fixPerms(perm644, false)
-	// if compat.IsTinygo && compat.IsWasip1 {
-	// 	want = perm600
-	// }
 
 	got := fi.Mode().Perm()
 	if got != want {
@@ -79,7 +79,7 @@ func TestWriteReaderAtomicDefaultFileMode(t *testing.T) {
 		t.Fatalf("Failed to change file mode: %q: %v", file, err)
 	}
 
-	err = compat.WriteReaderAtomic(file, content, compat.WithDefaultFileMode(perm644))
+	err = compat.WriteReaderAtomic(file, helloBuf, compat.WithDefaultFileMode(perm644))
 	if err != nil {
 		t.Fatalf("Failed to write file: %q: %v", file, err)
 	}
@@ -98,16 +98,66 @@ func TestWriteReaderAtomicDefaultFileMode(t *testing.T) {
 	}
 }
 
-func TestWriteReaderAtomicMode(t *testing.T) {
-	dir := tempDir(t)
-	file := filepath.Join(dir, "baz.txt")
-	content := bytes.NewBufferString("baz")
+func TestWriteReaderAtomicKeepFileMode(t *testing.T) {
+	file, err := tempName(t)
+	if err != nil {
+		t.Fatalf("Failed to create temp file: %v", err)
+	}
 
 	t.Cleanup(func() {
 		_ = os.Remove(file)
 	})
 
-	err := compat.WriteReaderAtomic(file, content, compat.WithFileMode(perm644))
+	perm := perm555
+
+	err = compat.WriteFile(file, helloBytes, perm)
+	if err != nil {
+		t.Fatalf("Failed to create file: %q: %v", file, err)
+	}
+
+	err = compat.WriteReaderAtomic(file, helloBuf, compat.KeepFileMode(true))
+	if err != nil {
+		t.Fatalf("Failed to write file: %q: %v", file, err)
+	}
+
+	fi, err := compat.Stat(file)
+	if err != nil {
+		t.Fatalf("Failed to stat file: %q: %v", file, err)
+	}
+
+	want := fixPerms(perm, false)
+	got := fi.Mode().Perm()
+	if got != want {
+		t.Fatalf("got %04o, want %04o (1)", got, want)
+	}
+
+	err = compat.WriteReaderAtomic(file, helloBuf, compat.KeepFileMode(false))
+	if err != nil {
+		t.Fatalf("Failed to write file: %q: %v", file, err)
+	}
+
+	fi, err = compat.Stat(file)
+	if err != nil {
+		t.Fatalf("Failed to stat file: %q: %v", file, err)
+	}
+
+	got = fi.Mode().Perm()
+	if got == want {
+		t.Fatalf("got %04o, want %04o (2)", got, want)
+	}
+}
+
+func TestWriteReaderAtomicWithFileMode(t *testing.T) {
+	file, err := tempName(t)
+	if err != nil {
+		t.Fatalf("Failed to create temp file: %v", err)
+	}
+
+	t.Cleanup(func() {
+		_ = os.Remove(file)
+	})
+
+	err = compat.WriteReaderAtomic(file, helloBuf, compat.WithFileMode(perm644))
 	if err != nil {
 		t.Fatalf("Failed to write file: %q: %v", file, err)
 	}
@@ -118,9 +168,6 @@ func TestWriteReaderAtomicMode(t *testing.T) {
 	}
 
 	want := fixPerms(perm644, false)
-	// if compat.IsTinygo && compat.IsWasip1 {
-	// 	want = perm600
-	// }
 
 	got := fi.Mode().Perm()
 	if got != want {
@@ -132,7 +179,7 @@ func TestWriteReaderAtomicMode(t *testing.T) {
 		t.Fatalf("Failed to change file mode: %q: %v", file, err)
 	}
 
-	err = compat.WriteReaderAtomic(file, content, compat.WithFileMode(perm644))
+	err = compat.WriteReaderAtomic(file, helloBuf, compat.WithFileMode(perm644))
 	if err != nil {
 		t.Fatalf("Failed to write file: %q: %v", file, err)
 	}
