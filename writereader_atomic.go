@@ -53,6 +53,12 @@ func WriteReaderAtomic(filename string, r io.Reader, opts ...Option) (err error)
 		fileMode = fopts.fileMode
 	}
 
+	if IsWindows {
+		if fopts.readOnlyMode != ReadOnlyModeSet {
+			fopts.flags |= O_FILE_FLAG_NO_RO_ATTR
+		}
+	}
+
 	// write to a temp file first, then we'll atomically replace the target file
 	// with the temp file.
 	dir, file := filepath.Split(filename)
