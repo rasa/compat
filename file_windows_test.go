@@ -242,7 +242,7 @@ func TestFileWindowsRemove(t *testing.T) {
 	}
 }
 
-func TestFileWindowsWithReadOnlyMode(t *testing.T) {
+func TestFileWindowsWithReadOnlyModeIgnore(t *testing.T) {
 	for _, perm := range perms {
 		name, err := tempFile(t)
 		if err != nil {
@@ -270,7 +270,9 @@ func TestFileWindowsWithReadOnlyMode(t *testing.T) {
 			t.Fatal(err)
 		}
 	}
+}
 
+func TestFileWindowsWithReadOnlyModeSet(t *testing.T) {
 	for _, perm := range perms {
 		name, err := tempFile(t)
 		if err != nil {
@@ -298,7 +300,9 @@ func TestFileWindowsWithReadOnlyMode(t *testing.T) {
 			t.Fatal(err)
 		}
 	}
+}
 
+func TestFileWindowsWithReadOnlyModeReset(t *testing.T) {
 	for _, perm := range perms {
 		name, err := tempFile(t)
 		if err != nil {
