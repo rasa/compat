@@ -242,6 +242,98 @@ func TestFileWindowsRemove(t *testing.T) {
 	}
 }
 
+func TestFileWindowsWithReadOnlyMode(t *testing.T) {
+	for _, perm := range perms {
+		name, err := tempFile(t)
+		if err != nil {
+			t.Fatal(err)
+		}
+		// ReadOnlyModeIgnore do not set a file's RO attribute, and ignore if it's set.
+		err = compat.Chmod(name, perm, compat.WithReadOnlyMode(compat.ReadOnlyModeIgnore))
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		fi, err := os.Stat(name)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		want := false
+		got := fi.Mode().Perm()&perm600 == perm600
+		if want != got {
+			t.Fatalf("WithReadOnlyMode(ReadOnlyModeIgnore): got %v, want %v: %v", got, want, name)
+		}
+
+		err = compat.Remove(name)
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	for _, perm := range perms {
+		name, err := tempFile(t)
+		if err != nil {
+			t.Fatal(err)
+		}
+		// ReadOnlyMaskSet set a file's RO attribute if the file's FileMode has the
+		err = compat.Chmod(name, perm, compat.WithReadOnlyMode(compat.ReadOnlyModeSet))
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		fi, err := os.Stat(name)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		want := true
+		got := fi.Mode().Perm()&perm600 == perm600
+		if want != got {
+			t.Fatalf("WithReadOnlyMode(ReadOnlyModeSet): got %v, want %v: %v", got, want, name)
+		}
+
+		err = compat.Remove(name)
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	for _, perm := range perms {
+		name, err := tempFile(t)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		err = os.Chmod(name, perm600)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		// ReadOnlyModeReset do not set a file's RO attribute, and if it's set, reset it.
+		err = compat.Chmod(name, perm, compat.WithReadOnlyMode(compat.ReadOnlyModeReset))
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		fi, err := os.Stat(name)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		want := false
+		got := fi.Mode().Perm()&perm600 == perm600
+		if want != got {
+			t.Fatalf("WithReadOnlyMode(ReadOnlyModeReset): got %v, want %v: %v", got, want, name)
+		}
+
+		err = compat.Remove(name)
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+}
+
 func TestFileWindowsWriteFile(t *testing.T) {
 	for _, perm := range perms {
 		name, err := tempName(t)
