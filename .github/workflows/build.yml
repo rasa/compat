@@ -201,6 +201,7 @@ jobs:
         #  CGO_ENABLED: ${{ contains(matrix.os, 'windows') && '0' || '1' }}
 
       - run: |
+          # go tool goreleaser release --clean --snapshot
           if [[ -f go.tool.mod ]]; then
             export GOFLAGS="${GOFLAGS:-} -modfile=go.tool.mod"
           fi
