@@ -14,9 +14,9 @@ package golang
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-// Snippet: https://github.com/golang/go/blob/77f911e3/src/os/tempfile.go#L35-L58
+// Snippet: https://github.com/golang/go/blob/ac803b59/src/os/tempfile.go#L35-L58
 
-func CreateTemp(dir, pattern string, perm FileMode) (*File, error) { // compat: added: perm FileMode
+func CreateTemp(dir, pattern string, perm FileMode) (*File, error) { // compat: s|string|string, perm FileMode|
 	if dir == "" {
 		dir = TempDir()
 	}
@@ -30,7 +30,7 @@ func CreateTemp(dir, pattern string, perm FileMode) (*File, error) { // compat: 
 	try := 0
 	for {
 		name := prefix + nextRandom() + suffix
-		f, err := OpenFile(name, O_RDWR|O_CREATE|O_EXCL, perm) // compat: changed 0600 to perm
+		f, err := OpenFile(name, O_RDWR|O_CREATE|O_EXCL, perm) // compat: s|0600|perm|
 		if IsExist(err) {
 			if try++; try < 10000 {
 				continue
@@ -41,9 +41,9 @@ func CreateTemp(dir, pattern string, perm FileMode) (*File, error) { // compat: 
 	}
 }
 
-// Snippet: https://github.com/golang/go/blob/77f911e3/src/os/tempfile.go#L86-L117
+// Snippet: https://github.com/golang/go/blob/ac803b59/src/os/tempfile.go#L86-L117
 
-func MkdirTemp(dir, pattern string, perm FileMode) (string, error) { // compat: added: perm FileMode
+func MkdirTemp(dir, pattern string, perm FileMode) (string, error) { // compat: s|string|string, perm FileMode|
 	if dir == "" {
 		dir = TempDir()
 	}
@@ -57,7 +57,7 @@ func MkdirTemp(dir, pattern string, perm FileMode) (string, error) { // compat: 
 	try := 0
 	for {
 		name := prefix + nextRandom() + suffix
-		err := Mkdir(name, perm) // compat: changed 0700 to perm
+		err := Mkdir(name, perm) // compat: s|0700|perm|
 		if err == nil {
 			return name, nil
 		}
@@ -65,7 +65,7 @@ func MkdirTemp(dir, pattern string, perm FileMode) (string, error) { // compat: 
 			if try++; try < 10000 {
 				continue
 			}
-			return "", &PathError{Op: "mkdirtemp", Path: dir + string(PathSeparator) + prefix + "*" + suffix, Err: ErrExist}
+			return "", &PathError{Op: "mkdirtemp", Path: prefix + "*" + suffix, Err: ErrExist}
 		}
 		if IsNotExist(err) {
 			if _, err := Stat(dir); IsNotExist(err) {

@@ -7,7 +7,6 @@ package golang
 
 import (
 	"errors"
-	"fmt"
 	"os"
 	"syscall"
 	"unsafe"
@@ -18,10 +17,10 @@ import (
 
 const (
 	// Redefining here to avoid a circular dependency.
-	// O_DELETE deletes the file when closed.
-	O_DELETE = 0x8000000
-	// O_NOROATTR doesn't set a file's read-only attribute if mode.
-	O_NOROATTR = 0x4000000
+	// O_FILE_FLAG_DELETE_ON_CLOSE deletes the file when closed.
+	O_FILE_FLAG_DELETE_ON_CLOSE = 0x04000000
+	// O_FILE_FLAG_NO_RO_ATTR skips setting a file's read-only attribute on Windows.
+	O_FILE_FLAG_NO_RO_ATTR = 0x00010000
 )
 
 const perm600 = os.FileMode(0o600)
@@ -29,6 +28,7 @@ const perm600 = os.FileMode(0o600)
 const (
 	CREATE_NEW                   = syscall.CREATE_NEW
 	EISDIR                       = syscall.EISDIR
+	ENOTDIR                      = syscall.ENOTDIR
 	ERROR_ACCESS_DENIED          = syscall.ERROR_ACCESS_DENIED
 	ERROR_ALREADY_EXISTS         = syscall.ERROR_ALREADY_EXISTS
 	ERROR_FILE_NOT_FOUND         = syscall.ERROR_FILE_NOT_FOUND
@@ -47,14 +47,18 @@ const (
 	InvalidHandle                = syscall.InvalidHandle
 	O_CREAT                      = syscall.O_CREAT
 	O_CLOEXEC                    = syscall.O_CLOEXEC
-	OPEN_ALWAYS                  = syscall.OPEN_ALWAYS
-	OPEN_EXISTING                = syscall.OPEN_EXISTING
-	S_IWRITE                     = syscall.S_IWRITE
-	STANDARD_RIGHTS_WRITE        = syscall.STANDARD_RIGHTS_WRITE
-	SYNCHRONIZE                  = syscall.SYNCHRONIZE
-	// See https://github.com/golang/go/blob/77f911e3/src/syscall/types_windows.go#L100
-	// and https://github.com/golang/go/blob/77f911e3/src/internal/syscall/windows/types_windows.go#L27
+	// https://github.com/golang/go/blob/ac803b59/src/syscall/types_windows.go#L50
+	o_DIRECTORY           = 0x04000
+	OPEN_ALWAYS           = syscall.OPEN_ALWAYS
+	OPEN_EXISTING         = syscall.OPEN_EXISTING
+	S_IWRITE              = syscall.S_IWRITE
+	STANDARD_RIGHTS_WRITE = syscall.STANDARD_RIGHTS_WRITE
+	SYNCHRONIZE           = syscall.SYNCHRONIZE
+	// See https://github.com/golang/go/blob/ac803b59/src/syscall/types_windows.go#L114
+	// and https://github.com/golang/go/blob/ac803b59/src/internal/syscall/windows/types_windows.go#L28
 	_FILE_WRITE_EA = windows.FILE_WRITE_EA
+	// See https://github.com/golang/go/blob/ac803b59/src/internal/syscall/windows/types_windows.go#L180
+	O_FILE_FLAG_OVERLAPPED = windows.FILE_FLAG_OVERLAPPED
 )
 
 var (
@@ -65,20 +69,22 @@ var (
 )
 
 var (
-	CloseHandle        = syscall.CloseHandle
-	CreateFile         = syscall.CreateFile
-	Ftruncate          = syscall.Ftruncate
-	GetFileAttributes  = syscall.GetFileAttributes
-	Syscall9           = syscall.Syscall9 //nolint:staticcheck
-	UTF16PtrFromString = syscall.UTF16PtrFromString
+	CloseHandle                = syscall.CloseHandle
+	CreateFile                 = syscall.CreateFile
+	Ftruncate                  = syscall.Ftruncate
+	GetFileAttributes          = syscall.GetFileAttributes
+	GetFileInformationByHandle = syscall.GetFileInformationByHandle
+	SyscallN                   = syscall.SyscallN //nolint:staticcheck
+	UTF16PtrFromString         = syscall.UTF16PtrFromString
 )
 
 type (
-	Handle             = syscall.Handle
-	SecurityAttributes = syscall.SecurityAttributes
+	ByHandleFileInformation = syscall.ByHandleFileInformation
+	Handle                  = syscall.Handle
+	SecurityAttributes      = syscall.SecurityAttributes
 )
 
-// See https://github.com/golang/go/blob/77f911e3/src/runtime/os_windows.go#L446
+// See https://github.com/golang/go/blob/ac803b59/src/runtime/os_windows.go#L435
 var canUseLongPaths bool
 
 func isWindowsAtLeast(major, minor, build uint32) bool {
@@ -97,16 +103,14 @@ func init() {
 }
 
 func fixAttributesAndShareMode(flag int, attrs uint32, sharemode uint32) (uint32, uint32) {
-	if flag&O_DELETE == O_DELETE {
+	if flag&O_FILE_FLAG_DELETE_ON_CLOSE == O_FILE_FLAG_DELETE_ON_CLOSE {
 		attrs &^= uint32(windows.FILE_ATTRIBUTE_READONLY)
 		attrs |= (windows.FILE_FLAG_DELETE_ON_CLOSE | windows.FILE_ATTRIBUTE_TEMPORARY)
 		sharemode |= FILE_SHARE_DELETE
-		flag &^= O_DELETE
 	}
 
-	if flag&O_NOROATTR == O_NOROATTR {
+	if flag&O_FILE_FLAG_NO_RO_ATTR == O_FILE_FLAG_NO_RO_ATTR {
 		attrs &^= uint32(windows.FILE_ATTRIBUTE_READONLY)
-		flag &^= O_NOROATTR //nolint:ineffassign
 	}
 
 	return attrs, sharemode
@@ -127,23 +131,24 @@ func mkdir(longName string, _ uint32, sa *syscall.SecurityAttributes) error {
 	return nil
 }
 
-// See https://github.com/golang/go/blob/77f911e3/src/os/sticky_notbsd.go#L9
+// See https://github.com/golang/go/blob/ac803b59/src/os/sticky_notbsd.go#L9
 
 const supportsCreateWithStickyBit = true
 
-// See https://github.com/golang/go/blob/77f911e3//src/os/file.go#L351-L357
+// See https://github.com/golang/go/blob/ac803b59/src/os/file.go#L351-L357
 
 func setStickyBit(name string) error {
 	return nil
 }
 
 var (
-	// See https://github.com/golang/go/blob/77f911e3/src/syscall/zsyscall_windows.go#L43
+	// See https://github.com/golang/go/blob/ac803b59/src/syscall/zsyscall_windows.go#L43
 	modkernel32     = syscall.NewLazyDLL("kernel32.dll")
 	procCreateFileW = modkernel32.NewProc("CreateFileW")
 )
 
-// emulate newFile() as f.cleanup and f.pfd are private.
+// Emulate newFile() as f.cleanup and f.pfd are private.
+// See https://github.com/golang/go/blob/ac803b59/src/os/file_windows.go#L50
 func newFile(h syscall.Handle, name string /*kind*/, _ string /*nonBlocking*/, _ bool) *File {
 	if h == syscall.InvalidHandle {
 		return nil
@@ -154,7 +159,7 @@ func newFile(h syscall.Handle, name string /*kind*/, _ string /*nonBlocking*/, _
 
 func Remove(path string) error {
 	var err error
-	// See https://github.com/golang/go/blob/77f911e3/src/os/removeall_noat.go#L126
+	// See https://github.com/golang/go/blob/ac803b59/src/os/removeall_noat.go#L126
 	err1 := os.Remove(path)
 	if err1 == nil || os.IsNotExist(err1) {
 		return nil
@@ -163,7 +168,7 @@ func Remove(path string) error {
 		if fs, err2 := os.Stat(path); err2 == nil {
 			err = acl.Chmod(path, perm600)
 			if err != nil {
-				return fmt.Errorf("remove: %w (1)", err)
+				return &PathError{Op: "remove", Path: path, Err: err}
 			}
 			if err = os.Chmod(path, os.FileMode(0o200|uint32(fs.Mode().Perm()))); err == nil { //nolint:mnd
 				err1 = os.Remove(path)
@@ -177,7 +182,7 @@ func Remove(path string) error {
 	return err
 }
 
-// Source: https://github.com/golang/go/blob/77f911e3/src/syscall/syscall_windows.go#L357-L362
+// Source: https://github.com/golang/go/blob/ac803b59/src/syscall/syscall_windows.go#L357-L362
 
 func makeInheritSa(sa *SecurityAttributes) *SecurityAttributes {
 	if sa == nil {
@@ -191,10 +196,10 @@ func makeInheritSa(sa *SecurityAttributes) *SecurityAttributes {
 
 var procGetFinalPathNameByHandleW = modkernel32.NewProc("GetFinalPathNameByHandleW")
 
-// Source: https://github.com/golang/go/blob/77f911e3/src/syscall/zsyscall_windows.go#L783-790
+// Source: https://github.com/golang/go/blob/ac803b59/src/syscall/zsyscall_windows.go#L783-L790
 
 func GetFinalPathNameByHandle(file Handle, filePath *uint16, filePathSize uint32, flags uint32) (n uint32, err error) {
-	r0, _, e1 := syscall.Syscall6(procGetFinalPathNameByHandleW.Addr(), 4, uintptr(file), uintptr(unsafe.Pointer(filePath)), uintptr(filePathSize), uintptr(flags), 0, 0) //nolint:gosec,mnd,staticcheck
+	r0, _, e1 := syscall.SyscallN(procGetFinalPathNameByHandleW.Addr(), uintptr(file), uintptr(unsafe.Pointer(filePath)), uintptr(filePathSize), uintptr(flags)) //nolint:gosec,mnd,staticcheck
 	n = uint32(r0)
 	if n == 0 || n >= filePathSize {
 		err = errnoErr(e1)
@@ -202,7 +207,7 @@ func GetFinalPathNameByHandle(file Handle, filePath *uint16, filePathSize uint32
 	return n, err
 }
 
-// Source: https://github.com/golang/go/blob/77f911e3/src/syscall/syscall_windows.go#L1274-L1291
+// Source: https://github.com/golang/go/blob/ac803b59/src/syscall/syscall_windows.go#L1295-L1312
 
 func fdpath(fd syscall.Handle, buf []uint16) ([]uint16, error) {
 	const (
@@ -229,7 +234,7 @@ func Filepath(f *os.File) (string, error) {
 	}
 	fd := syscall.Handle(f.Fd())
 
-	// Source: https://github.com/golang/go/blob/77f911e3/src/syscall/syscall_windows.go#L1294-L1310
+	// Source: https://github.com/golang/go/blob/ac803b59/src/syscall/syscall_windows.go#L1315-L1331
 
 	var buf [syscall.MAX_PATH + 1]uint16
 	path, err := fdpath(fd, buf[:])
@@ -252,3 +257,43 @@ func Filepath(f *os.File) (string, error) {
 
 	return pathString, nil
 }
+
+// Source: https://github.com/golang/go/blob/ac803b59/src/syscall/types_windows.go#L92
+
+const fileFlagsMask = 0xFFF00000
+
+// Source: https://github.com/golang/go/blob/ac803b59/src/syscall/types_windows.go#L136-L148
+
+const (
+	// The following flags are supported by [Open]
+	// and exported in [golang.org/x/sys/windows].
+	_FILE_FLAG_OPEN_NO_RECALL = 0x00100000
+	// FILE_FLAG_OPEN_REPARSE_POINT = 0x00200000.
+	_FILE_FLAG_SESSION_AWARE   = 0x00800000
+	_FILE_FLAG_POSIX_SEMANTICS = 0x01000000
+	// FILE_FLAG_BACKUP_SEMANTICS   = 0x02000000.
+	_FILE_FLAG_DELETE_ON_CLOSE = 0x04000000
+	_FILE_FLAG_SEQUENTIAL_SCAN = 0x08000000
+	_FILE_FLAG_RANDOM_ACCESS   = 0x10000000
+	_FILE_FLAG_NO_BUFFERING    = 0x20000000
+	// FILE_FLAG_OVERLAPPED         = 0x40000000.
+	_FILE_FLAG_WRITE_THROUGH = 0x80000000
+)
+
+// Source: https://github.com/golang/go/blob/ac803b59/src/syscall/types_windows.go#L94-L104
+
+const validFileFlagsMask = FILE_FLAG_OPEN_REPARSE_POINT |
+	FILE_FLAG_BACKUP_SEMANTICS |
+	windows.FILE_FLAG_OVERLAPPED |
+	_FILE_FLAG_OPEN_NO_RECALL |
+	_FILE_FLAG_SESSION_AWARE |
+	_FILE_FLAG_POSIX_SEMANTICS |
+	_FILE_FLAG_DELETE_ON_CLOSE |
+	_FILE_FLAG_SEQUENTIAL_SCAN |
+	_FILE_FLAG_NO_BUFFERING |
+	_FILE_FLAG_RANDOM_ACCESS |
+	_FILE_FLAG_WRITE_THROUGH
+
+// Source: https://github.com/golang/go/blob/ac803b59/src/internal/oserror/errors.go#L13
+
+var ErrInvalid = errors.New("invalid argument")

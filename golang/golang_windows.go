@@ -11,6 +11,7 @@ import (
 	"io"
 	"os"
 	filepathlite "path/filepath"
+	"runtime"
 	"syscall"
 	"unsafe"
 
@@ -25,7 +26,7 @@ import (
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-// Snippet: https://github.com/golang/go/blob/77f911e3/src/internal/syscall/windows/syscall_windows.go#L162-L179
+// Snippet: https://github.com/golang/go/blob/ac803b59/src/internal/syscall/windows/syscall_windows.go#L162-L179
 
 type FILE_BASIC_INFO struct {
 	CreationTime   int64
@@ -46,11 +47,11 @@ type FILE_BASIC_INFO struct {
 	_ uint32
 }
 
-// Snippet: https://github.com/golang/go/blob/77f911e3/src/internal/poll/errno_windows.go#L14-L16
+// Snippet: https://github.com/golang/go/blob/ac803b59/src/internal/poll/errno_windows.go#L14-L16
 
 var errERROR_IO_PENDING error = syscall.Errno(syscall.ERROR_IO_PENDING)
 
-// Snippet: https://github.com/golang/go/blob/77f911e3/src/internal/poll/errno_windows.go#L20-L31
+// Snippet: https://github.com/golang/go/blob/ac803b59/src/internal/poll/errno_windows.go#L20-L31
 
 func errnoErr(e syscall.Errno) error {
 	switch e {
@@ -65,14 +66,13 @@ func errnoErr(e syscall.Errno) error {
 	return e
 }
 
-// Snippet: https://github.com/golang/go/blob/77f911e3/src/os/file.go#L327-L348
+// Snippet: https://github.com/golang/go/blob/ac803b59/src/os/file.go#L327-L348
 
-// compat: added , sa *syscall.SecurityAttributes
+// compat: s|FileMode|FileMode, sa *syscall.SecurityAttributes|
 func Mkdir(name string, perm FileMode, sa *syscall.SecurityAttributes) error {
 	longName := fixLongPath(name)
 	e := ignoringEINTR(func() error {
-		// return syscall.Mkdir(longName, syscallMode(perm)) // compat: removed
-		return mkdir(longName, syscallMode(perm), sa) // compat: added
+		return mkdir(longName, syscallMode(perm), sa) // compat: s|syscall.Mkdir|mkdir|; s|\)$|), sa)|;
 	})
 
 	if e != nil {
@@ -92,7 +92,7 @@ func Mkdir(name string, perm FileMode, sa *syscall.SecurityAttributes) error {
 	return nil
 }
 
-// Snippet: https://github.com/golang/go/blob/77f911e3/src/os/file_posix.go#L60-L73
+// Snippet: https://github.com/golang/go/blob/ac803b59/src/os/file_posix.go#L60-L73
 
 func syscallMode(i FileMode) (o uint32) {
 	o |= uint32(i.Perm())
@@ -109,7 +109,7 @@ func syscallMode(i FileMode) (o uint32) {
 	return
 }
 
-// Snippet: https://github.com/golang/go/blob/77f911e3/src/os/file_posix.go#L254-L261
+// Snippet: https://github.com/golang/go/blob/ac803b59/src/os/file_posix.go#L254-L261
 
 func ignoringEINTR(fn func() error) error {
 	for {
@@ -120,25 +120,25 @@ func ignoringEINTR(fn func() error) error {
 	}
 }
 
-// Snippet: https://github.com/golang/go/blob/77f911e3/src/os/file_windows.go#L114-L125
+// Snippet: https://github.com/golang/go/blob/ac803b59/src/os/file_windows.go#L114-L125
 
-// compat: added: , sa *syscall.SecurityAttributes
+// compat: s|FileMode|FileMode, sa *syscall.SecurityAttributes|
 func openFileNolog(name string, flag int, perm FileMode, sa *syscall.SecurityAttributes) (*File, error) {
 	if name == "" {
 		return nil, &PathError{Op: "open", Path: name, Err: syscall.ENOENT}
 	}
 	path := fixLongPath(name)
-	r, err := Open(path, flag|syscall.O_CLOEXEC, syscallMode(perm), sa) // compat: added: , sa
+	r, err := Open(path, flag|syscall.O_CLOEXEC, syscallMode(perm), sa) // compat: s|\)$|), sa)|
 	if err != nil {
 		return nil, &PathError{Op: "open", Path: name, Err: err}
 	}
-	// syscall.Open always returns a non-blocking handle.
-	return newFile(r, name, "file", false), nil
+	nonblocking := flag&O_FILE_FLAG_OVERLAPPED != 0 // compat: s|windows.||
+	return newFile(r, name, "file", nonblocking), nil
 }
 
-// Snippet: https://github.com/golang/go/blob/77f911e3/src/os/path.go#L19-L66
+// Snippet: https://github.com/golang/go/blob/ac803b59/src/os/path.go#L19-L66
 
-// compat: added: , sa *syscall.SecurityAttributes
+// compat: s|FileMode|FileMode, sa *syscall.SecurityAttributes|
 func MkdirAll(path string, perm FileMode, sa *syscall.SecurityAttributes) error {
 	// Fast path: if we can tell whether path is a directory or file, stop with success or error.
 	dir, err := Stat(path)
@@ -168,14 +168,14 @@ func MkdirAll(path string, perm FileMode, sa *syscall.SecurityAttributes) error 
 	// If there is a parent directory, and it is not the volume name,
 	// recurse to ensure parent directory exists.
 	if parent := path[:i]; len(parent) > len(filepathlite.VolumeName(path)) {
-		err = MkdirAll(parent, perm, sa) // compat: added: , sa
+		err = MkdirAll(parent, perm, sa) // compat: s|\)$|), sa)|
 		if err != nil {
 			return err
 		}
 	}
 
 	// Parent now exists; invoke Mkdir and use its result.
-	err = Mkdir(path, perm, sa) // compat: added: , sa
+	err = Mkdir(path, perm, sa) // compat: s|\)$|), sa)|
 	if err != nil {
 		// Handle arguments like "foo/." by
 		// double-checking that directory doesn't exist.
@@ -188,7 +188,7 @@ func MkdirAll(path string, perm FileMode, sa *syscall.SecurityAttributes) error 
 	return nil
 }
 
-// Snippet: https://github.com/golang/go/blob/77f911e3/src/os/path_windows.go#L100-L105
+// Snippet: https://github.com/golang/go/blob/ac803b59/src/os/path_windows.go#L100-L105
 
 func fixLongPath(path string) string {
 	if canUseLongPaths {
@@ -197,7 +197,7 @@ func fixLongPath(path string) string {
 	return addExtendedPrefix(path)
 }
 
-// Snippet: https://github.com/golang/go/blob/77f911e3/src/os/path_windows.go#L108-L202
+// Snippet: https://github.com/golang/go/blob/ac803b59/src/os/path_windows.go#L108-L202
 
 func addExtendedPrefix(path string) string {
 	if len(path) >= 4 {
@@ -295,9 +295,9 @@ func addExtendedPrefix(path string) string {
 	return syscall.UTF16ToString(buf)
 }
 
-// Snippet: https://github.com/golang/go/blob/77f911e3/src/os/tempfile.go#L35-L58
+// Snippet: https://github.com/golang/go/blob/ac803b59/src/os/tempfile.go#L35-L58
 
-// compat: added , sa *syscall.SecurityAttributes
+// compat: s|int|int, sa *syscall.SecurityAttributes|
 func CreateTemp(dir, pattern string, flag int, sa *syscall.SecurityAttributes) (*File, error) {
 	if dir == "" {
 		dir = TempDir()
@@ -312,7 +312,7 @@ func CreateTemp(dir, pattern string, flag int, sa *syscall.SecurityAttributes) (
 	try := 0
 	for {
 		name := prefix + nextRandom() + suffix
-		f, err := OpenFile(name, O_RDWR|O_CREATE|O_EXCL|flag, 0o600, sa) // compat: added: , sa
+		f, err := OpenFile(name, O_RDWR|O_CREATE|O_EXCL|flag, 0o600, sa) // compat: s|\)$|), sa)|
 		if IsExist(err) {
 			if try++; try < 10000 {
 				continue
@@ -323,9 +323,9 @@ func CreateTemp(dir, pattern string, flag int, sa *syscall.SecurityAttributes) (
 	}
 }
 
-// Snippet: https://github.com/golang/go/blob/77f911e3/src/os/tempfile.go#L86-L117
+// Snippet: https://github.com/golang/go/blob/ac803b59/src/os/tempfile.go#L86-L117
 
-// compat: added , sa *syscall.SecurityAttributes
+// compat: s|string|string, sa *syscall.SecurityAttributes|
 func MkdirTemp(dir, pattern string, sa *syscall.SecurityAttributes) (string, error) {
 	if dir == "" {
 		dir = TempDir()
@@ -340,7 +340,7 @@ func MkdirTemp(dir, pattern string, sa *syscall.SecurityAttributes) (string, err
 	try := 0
 	for {
 		name := prefix + nextRandom() + suffix
-		err := Mkdir(name, 0o700, sa) // compat: added: , sa
+		err := Mkdir(name, 0o700, sa) // compat: s|\)$|), sa)|
 		if err == nil {
 			return name, nil
 		}
@@ -348,7 +348,7 @@ func MkdirTemp(dir, pattern string, sa *syscall.SecurityAttributes) (string, err
 			if try++; try < 10000 {
 				continue
 			}
-			return "", &PathError{Op: "mkdirtemp", Path: dir + string(PathSeparator) + prefix + "*" + suffix, Err: ErrExist}
+			return "", &PathError{Op: "mkdirtemp", Path: prefix + "*" + suffix, Err: ErrExist}
 		}
 		if IsNotExist(err) {
 			if _, err := Stat(dir); IsNotExist(err) {
@@ -359,9 +359,9 @@ func MkdirTemp(dir, pattern string, sa *syscall.SecurityAttributes) (string, err
 	}
 }
 
-// Snippet: https://github.com/golang/go/blob/77f911e3/src/syscall/syscall_windows.go#L364-L456
+// Snippet: https://github.com/golang/go/blob/ac803b59/src/syscall/syscall_windows.go#L364-L456
 
-// compat: added , sa *syscall.SecurityAttributes
+// compat: s|uint32|uint32, sa *syscall.SecurityAttributes|
 func Open(name string, flag int, perm uint32, sa *syscall.SecurityAttributes) (fd Handle, err error) {
 	if len(name) == 0 {
 		return InvalidHandle, ERROR_FILE_NOT_FOUND
@@ -394,13 +394,22 @@ func Open(name string, flag int, perm uint32, sa *syscall.SecurityAttributes) (f
 		access |= FILE_APPEND_DATA | FILE_WRITE_ATTRIBUTES | _FILE_WRITE_EA | STANDARD_RIGHTS_WRITE | SYNCHRONIZE
 	}
 	sharemode := uint32(FILE_SHARE_READ | FILE_SHARE_WRITE)
-	// var sa *SecurityAttributes // compat: removed
+	// var sa *SecurityAttributes // compat: s|var|// var|
 	if flag&O_CLOEXEC == 0 {
-		sa = makeInheritSa(sa) // compat: added: (sa)
+		sa = makeInheritSa(sa) // compat: s|\)$|sa)|
 	}
 	var attrs uint32 = FILE_ATTRIBUTE_NORMAL
 	if perm&S_IWRITE == 0 {
 		attrs = FILE_ATTRIBUTE_READONLY
+	}
+	// fileFlags contains the high 12 bits of flag.
+	// This bit range can be used by the caller to specify the file flags
+	// passed to CreateFile. It is an error to use if the bits can't be
+	// mapped to the supported FILE_FLAG_* constants.
+	if fileFlags := uint32(flag) & fileFlagsMask; fileFlags&^validFileFlagsMask == 0 {
+		attrs |= fileFlags
+	} else {
+		return InvalidHandle, ErrInvalid // compat: s|oserror.||
 	}
 	switch accessFlags {
 	case O_WRONLY, O_RDWR:
@@ -415,7 +424,6 @@ func Open(name string, flag int, perm uint32, sa *syscall.SecurityAttributes) (f
 		attrs |= FILE_FLAG_BACKUP_SEMANTICS
 	}
 	if flag&O_SYNC != 0 {
-		const _FILE_FLAG_WRITE_THROUGH = 0x80000000
 		attrs |= _FILE_FLAG_WRITE_THROUGH
 	}
 	// We don't use CREATE_ALWAYS, because when opening a file with
@@ -445,6 +453,18 @@ func Open(name string, flag int, perm uint32, sa *syscall.SecurityAttributes) (f
 		}
 		return h, err
 	}
+	if flag&o_DIRECTORY != 0 {
+		// Check if the file is a directory, else return ENOTDIR.
+		var fi ByHandleFileInformation
+		if err := GetFileInformationByHandle(h, &fi); err != nil {
+			CloseHandle(h)
+			return InvalidHandle, err
+		}
+		if fi.FileAttributes&FILE_ATTRIBUTE_DIRECTORY == 0 {
+			CloseHandle(h)
+			return InvalidHandle, ENOTDIR
+		}
+	}
 	// Ignore O_TRUNC if the file has just been created.
 	if flag&O_TRUNC == O_TRUNC &&
 		(createmode == OPEN_EXISTING || (createmode == OPEN_ALWAYS && err == ERROR_ALREADY_EXISTS)) {
@@ -457,10 +477,10 @@ func Open(name string, flag int, perm uint32, sa *syscall.SecurityAttributes) (f
 	return h, nil
 }
 
-// Snippet: https://github.com/golang/go/blob/77f911e3/src/syscall/zsyscall_windows.go#L506-L513
+// Snippet: https://github.com/golang/go/blob/ac803b59/src/syscall/zsyscall_windows.go#L506-L513
 
 func createFile(name *uint16, access uint32, mode uint32, sa *SecurityAttributes, createmode uint32, attrs uint32, templatefile int32) (handle Handle, err error) {
-	r0, _, e1 := Syscall9(procCreateFileW.Addr(), 7, uintptr(unsafe.Pointer(name)), uintptr(access), uintptr(mode), uintptr(unsafe.Pointer(sa)), uintptr(createmode), uintptr(attrs), uintptr(templatefile), 0, 0)
+	r0, _, e1 := SyscallN(procCreateFileW.Addr(), uintptr(unsafe.Pointer(name)), uintptr(access), uintptr(mode), uintptr(unsafe.Pointer(sa)), uintptr(createmode), uintptr(attrs), uintptr(templatefile))
 	handle = Handle(r0)
 	if handle == InvalidHandle || e1 == ERROR_ALREADY_EXISTS {
 		err = errnoErr(e1)
@@ -468,7 +488,7 @@ func createFile(name *uint16, access uint32, mode uint32, sa *SecurityAttributes
 	return
 }
 
-// Snippet: https://github.com/golang/go/blob/77f911e3/src/os/removeall_noat.go#L15-L142
+// Snippet: https://github.com/golang/go/blob/ac803b59/src/os/removeall_noat.go#L15-L142
 
 func removeAll(path string) error {
 	if path == "" {
@@ -506,7 +526,7 @@ func removeAll(path string) error {
 	// Remove contents & return first error.
 	err = nil
 	for {
-		fd, err := os.Open(path) // compat: added: os.
+		fd, err := os.Open(path) // compat: s|Open|os.Open|
 		if err != nil {
 			if IsNotExist(err) {
 				// Already deleted by someone else.
@@ -524,7 +544,7 @@ func removeAll(path string) error {
 			names, readErr = fd.Readdirnames(reqSize)
 
 			for _, name := range names {
-				err1 := removeAll(path + string(PathSeparator) + name) // compat: changed RemoveAll to removeAll
+				err1 := removeAll(path + string(PathSeparator) + name) // compat: s|RemoveAll|removeAll|
 				if err == nil {
 					err = err1
 				}
@@ -586,7 +606,7 @@ func removeAll(path string) error {
 	if err1 == nil || IsNotExist(err1) {
 		return nil
 	}
-	if /* runtime.GOOS == "windows" && */ IsPermission(err1) { // compat: commented out
+	if runtime.GOOS == "windows" && IsPermission(err1) {
 		if fs, err := Stat(path); err == nil {
 			err = acl.Chmod(path, 0o600) // compat: added
 			if err != nil {              // compat: added

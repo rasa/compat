@@ -58,7 +58,7 @@ func Create(name string, opts ...Option) (*os.File, error) {
 
 	if IsWindows {
 		if fopts.readOnlyMode != ReadOnlyModeSet {
-			fopts.flags |= O_NOROATTR
+			fopts.flags |= O_FILE_FLAG_NO_RO_ATTR
 		}
 	}
 
@@ -85,7 +85,7 @@ func CreateTemp(dir, pattern string, opts ...Option) (*os.File, error) {
 
 	if IsWindows {
 		if fopts.readOnlyMode != ReadOnlyModeSet {
-			fopts.flags |= O_NOROATTR
+			fopts.flags |= O_FILE_FLAG_NO_RO_ATTR
 		}
 	}
 
@@ -159,7 +159,7 @@ func OpenFile(name string, flag int, perm os.FileMode, opts ...Option) (*os.File
 
 	if IsWindows {
 		if fopts.readOnlyMode != ReadOnlyModeSet {
-			fopts.flags |= O_NOROATTR
+			fopts.flags |= O_FILE_FLAG_NO_RO_ATTR
 		}
 	}
 
@@ -211,7 +211,7 @@ func WriteFile(name string, data []byte, perm os.FileMode, opts ...Option) error
 
 	if IsWindows {
 		if fopts.readOnlyMode != ReadOnlyModeSet {
-			fopts.flags |= O_NOROATTR
+			fopts.flags |= O_FILE_FLAG_NO_RO_ATTR
 		}
 	}
 

@@ -11,7 +11,7 @@ import (
 	"strings"
 )
 
-// Source: https://github.com/golang/go/blob/77f911e3/src/io/fs/fs.go#L91-L113
+// Source: https://github.com/golang/go/blob/ac803b59/src/io/fs/fs.go#L91-L113
 
 // A DirEntry is an entry read from a directory
 // (using the [ReadDir] function or a [ReadDirFile]'s ReadDir method).
@@ -37,7 +37,7 @@ type DirEntry interface {
 	Info() (FileInfo, error)
 }
 
-// Inspired by: https://github.com/golang/go/blob/77f911e3/src/os/file_unix.go#L446-L486
+// Inspired by: https://github.com/golang/go/blob/ac803b59/src/os/file_unix.go#L446-L486
 
 type dirEntry struct {
 	parent string
@@ -94,7 +94,7 @@ func (d dirEntry) String() string {
 	return FormatDirEntry(d)
 }
 
-// Source: https://github.com/golang/go/blob/77f911e3/src/os/dir.go#L87
+// Source: https://github.com/golang/go/blob/ac803b59/src/os/dir.go#L87-L107
 
 // ReadDir reads the named directory,
 // returning all its directory entries sorted by filename.
@@ -104,7 +104,7 @@ func (d dirEntry) String() string {
 func ReadDir(name string) ([]DirEntry, error) {
 	osDirs, err := os.ReadDir(name)
 	if err != nil {
-		return []DirEntry{}, err
+		return nil, err
 	}
 	dirs := make([]DirEntry, len(osDirs))
 	for i, dir := range osDirs {
@@ -117,7 +117,7 @@ func ReadDir(name string) ([]DirEntry, error) {
 	return dirs, nil
 }
 
-// Inspired by: https://github.com/golang/go/blob/77f911e3/src/io/fs/readdir.go#L77-L84
+// Inspired by: https://github.com/golang/go/blob/ac803b59/src/io/fs/readdir.go#L77-L84
 
 // FileInfoToDirEntry returns a [DirEntry] that returns information from info.
 // If info is nil, FileInfoToDirEntry returns nil.

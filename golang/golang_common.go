@@ -18,20 +18,20 @@ import (
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-// Snippet: https://github.com/golang/go/blob/77f911e3/src/os/getwd.go#L13-L16
+// Snippet: https://github.com/golang/go/blob/ac803b59/src/os/getwd.go#L13-L16
 
 var getwdCache struct {
 	sync.Mutex
 	dir string
 }
 
-// Snippet: https://github.com/golang/go/blob/77f911e3/src/os/tempfile.go#L22-L24
+// Snippet: https://github.com/golang/go/blob/ac803b59/src/os/tempfile.go#L22-L24
 
 func nextRandom() string {
 	return Uitoa(uint(uint32(runtime_rand())))
 }
 
-// Snippet: https://github.com/golang/go/blob/77f911e3/src/internal/bytealg/lastindexbyte_generic.go#L16-L23
+// Snippet: https://github.com/golang/go/blob/ac803b59/src/internal/bytealg/lastindexbyte_generic.go#L16-L23
 
 func lastIndexByteString(s string, c byte) int {
 	for i := len(s) - 1; i >= 0; i-- {
@@ -42,7 +42,7 @@ func lastIndexByteString(s string, c byte) int {
 	return -1
 }
 
-// Snippet: https://github.com/golang/go/blob/77f911e3/src/internal/itoa/itoa.go#L18-L33
+// Snippet: https://github.com/golang/go/blob/ac803b59/src/internal/itoa/itoa.go#L18-L33
 
 func Uitoa(val uint) string {
 	if val == 0 { // avoid string allocation
@@ -61,11 +61,11 @@ func Uitoa(val uint) string {
 	return string(buf[i:])
 }
 
-// Snippet: https://github.com/golang/go/blob/77f911e3/src/os/tempfile.go#L60-L60
+// Snippet: https://github.com/golang/go/blob/ac803b59/src/os/tempfile.go#L60-L60
 
 var errPatternHasSeparator = errors.New("pattern contains path separator")
 
-// Snippet: https://github.com/golang/go/blob/77f911e3/src/os/tempfile.go#L64-L76
+// Snippet: https://github.com/golang/go/blob/ac803b59/src/os/tempfile.go#L64-L76
 
 func prefixAndSuffix(pattern string) (prefix, suffix string, err error) {
 	for i := 0; i < len(pattern); i++ {
@@ -73,7 +73,7 @@ func prefixAndSuffix(pattern string) (prefix, suffix string, err error) {
 			return "", "", errPatternHasSeparator
 		}
 	}
-	if pos := lastIndexByteString(pattern, '*'); pos != -1 { // removed bytealg
+	if pos := lastIndexByteString(pattern, '*'); pos != -1 { // compat: s|bytealg.||
 		prefix, suffix = pattern[:pos], pattern[pos+1:]
 	} else {
 		prefix = pattern
@@ -81,7 +81,7 @@ func prefixAndSuffix(pattern string) (prefix, suffix string, err error) {
 	return prefix, suffix, nil
 }
 
-// Snippet: https://github.com/golang/go/blob/77f911e3/src/os/tempfile.go#L119-L124
+// Snippet: https://github.com/golang/go/blob/ac803b59/src/os/tempfile.go#L119-L124
 
 func joinPath(dir, name string) string {
 	if len(dir) > 0 && IsPathSeparator(dir[len(dir)-1]) {
@@ -90,7 +90,7 @@ func joinPath(dir, name string) string {
 	return dir + string(PathSeparator) + name
 }
 
-// Snippet: https://github.com/golang/go/blob/77f911e3/src/os/path.go#L77-L86
+// Snippet: https://github.com/golang/go/blob/ac803b59/src/os/path.go#L77-L86
 
 func endsWithDot(path string) bool {
 	if path == "." {

@@ -43,7 +43,9 @@ type (
 	PathError = os.PathError
 )
 
-// Source: https://github.com/golang/go/blob/77f911e3/src/os/tempfile.go#L19-L24
+// Source: https://github.com/golang/go/blob/cc8a6780/src/os/tempfile.go#L19-L24
 
 //go:linkname runtime_rand runtime.rand
 func runtime_rand() uint64
+
+var PrefixAndSuffix = prefixAndSuffix

@@ -4,22 +4,37 @@
 package compat_test
 
 import (
+	"errors"
+	"os"
+	"path/filepath"
+	"syscall"
 	"testing"
 
 	"github.com/rasa/compat"
 )
 
-// Source: https://github.com/golang/go/blob/77f911e3/src/os/read_test.go#L102
+// Source: https://github.com/golang/go/blob/ac803b59/src/os/read_test.go#L104-L144
 
 func TestReadDir(t *testing.T) {
+	// t.Parallel()
+
 	dirname := "rumpelstilzchen"
-	_, err := compat.ReadDir(dirname)
-	if err == nil {
+	if _, err := compat.ReadDir(dirname); err == nil { // compat: s|ReadDir|compat.ReadDir|
 		t.Fatalf("ReadDir %s: error expected, none found", dirname)
 	}
 
+	filename := filepath.Join(t.TempDir(), "foo")
+	f, err := os.Create(filename) //nolint:govet // compat: s|Create|os.Create|
+	if err != nil {
+		t.Fatal(err)
+	}
+	f.Close()
+	if list, err := compat.ReadDir(filename); list != nil || !errors.Is(err, syscall.ENOTDIR) { //nolint:govet // compat: s|ReadDir|compat.ReadDir|
+		t.Fatalf("ReadDir %s: (nil, ENOTDIR) expected, got (%v, %v)", filename, list, err)
+	}
+
 	dirname = "."
-	list, err := compat.ReadDir(dirname)
+	list, err := compat.ReadDir(dirname) //nolint:govet // compat: s|ReadDir|compat.ReadDir|
 	if err != nil {
 		t.Fatalf("ReadDir %s: %v", dirname, err)
 	}

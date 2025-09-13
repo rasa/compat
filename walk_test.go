@@ -32,7 +32,7 @@ type (
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-// Source: https://github.com/golang/go/blob/77f911e3/src/io/fs/walk_test.go#L17-L183
+// Source: https://github.com/golang/go/blob/ac803b59/src/io/fs/walk_test.go#L17-L183
 
 type Node struct {
 	name    string

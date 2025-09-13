@@ -3,7 +3,7 @@
 
 package compat
 
-// Source: https://github.com/golang/go/blob/77f911e3/src/io/fs/format.go#L54
+// Source: https://github.com/golang/go/blob/ac803b59/src/io/fs/format.go#L60-L76
 
 // FormatDirEntry returns a formatted version of dir for human readability.
 // Implementations of [DirEntry] can call this from a String method.

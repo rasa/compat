@@ -84,6 +84,8 @@ func Getegid() (int, error) {
 	return Getgid()
 }
 
+// @TODO(rasa) improve this logic per
+// https://github.com/golang/go/blob/cc8a6780/src/os/user/lookup_windows.go#L351
 func getPrimaryGroupSID() (*windows.SID, error) {
 	var token windows.Token
 	err := windows.OpenProcessToken(windows.CurrentProcess(), windows.TOKEN_QUERY, &token)

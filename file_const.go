@@ -52,18 +52,17 @@ const (
 	DefaultWindowsFilePerm os.FileMode = 0o666
 
 	// Verify we don't conflict with any of the values listed at
-	// https://github.com/golang/go/blob/77f911e3/src/syscall/types_windows.go#L37-L55
+	// https://github.com/golang/go/blob/ac803b59/src/syscall/types_windows.go#L37-L55
 
-	// O_DELETE deletes the file when closed.
-	O_DELETE = 0x8000000
-	// O_NOROATTR doesn't set a file's read-only attribute on Windows.
-	O_NOROATTR = 0x4000000
-
-	// https://github.com/golang/go/blob/e282cbb1/src/os/file.go#L77
+	// O_FILE_FLAG_DELETE_ON_CLOSE deletes the file when closed.
+	O_FILE_FLAG_DELETE_ON_CLOSE = 0x04000000
+	// O_FILE_FLAG_NO_RO_ATTR skips setting a file's read-only attribute on Windows.
+	O_FILE_FLAG_NO_RO_ATTR = 0x00010000
 
 	// The following constants are not used by the compat library, but are
 	// provided to make code migration easier.
 
+	// Source: https://github.com/golang/go/blob/ac803b59/src/os/file.go#L81-L89
 	O_RDONLY = os.O_RDONLY // open the file read-only. //nolint:revive
 	O_WRONLY = os.O_WRONLY // open the file write-only. //nolint:revive
 	O_RDWR   = os.O_RDWR   // open the file read-write. //nolint:revive

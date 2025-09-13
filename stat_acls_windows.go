@@ -265,7 +265,7 @@ func resolveCanonicalRootFromHandle(h windows.Handle) (guidRoot string, root str
 	}
 
 	// Fallback to drive-root "C:\" style if present.
-	if len(full) >= 3 && full[1] == ':' && full[2] == '\\' {
+	if len(full) >= 3 && full[1] == ':' && (full[2] == '\\' || full[2] == '/') {
 		return "", strings.ToUpper(full[:3]), nil
 	}
 	return "", "", errors.New("could not resolve canonical root")

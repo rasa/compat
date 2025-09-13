@@ -193,7 +193,7 @@ func (fs *fileStat) UID() int {
 		var err error
 		fs.uid, fs.gid, fs.user, fs.group, err = getUserGroup(fs.path)
 		if err != nil {
-			fs.err = err
+			fs.err = &os.PathError{Op: "stat", Path: fs.path, Err: err}
 		}
 	}
 
@@ -206,7 +206,7 @@ func (fs *fileStat) GID() int {
 		var err error
 		fs.uid, fs.gid, fs.user, fs.group, err = getUserGroup(fs.path)
 		if err != nil {
-			fs.err = err
+			fs.err = &os.PathError{Op: "stat", Path: fs.path, Err: err}
 		}
 	}
 
@@ -219,7 +219,7 @@ func (fs *fileStat) User() string {
 		var err error
 		fs.uid, fs.gid, fs.user, fs.group, err = getUserGroup(fs.path)
 		if err != nil {
-			fs.err = err
+			fs.err = &os.PathError{Op: "stat", Path: fs.path, Err: err}
 		}
 	}
 
@@ -232,7 +232,7 @@ func (fs *fileStat) Group() string {
 		var err error
 		fs.uid, fs.gid, fs.user, fs.group, err = getUserGroup(fs.path)
 		if err != nil {
-			fs.err = err
+			fs.err = &os.PathError{Op: "stat", Path: fs.path, Err: err}
 		}
 	}
 
@@ -251,14 +251,14 @@ func (fs *fileStat) stat() (os.FileMode, error) {
 
 	perm, err := acl.GetExplicitFileAccessMode(fs.path)
 	if err != nil {
-		fs.err = err
-		return perm, err
+		fs.err = &os.PathError{Op: "stat", Path: fs.path, Err: err}
+		return perm, fs.err
 	}
 	if perm == perm000 {
 		b, err = supportsACLs(fs.path)
 		if err != nil {
-			fs.err = err
-			return perm, err
+			fs.err = &os.PathError{Op: "stat", Path: fs.path, Err: err}
+			return perm, fs.err
 		}
 		if !b {
 			if fs.mode.IsDir() {

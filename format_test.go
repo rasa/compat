@@ -16,7 +16,7 @@ import (
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-// Source: https://github.com/golang/go/blob/77f911e3/src/io/fs/format_test.go#L13
+// Source: https://github.com/golang/go/blob/ac803b59/src/io/fs/format_test.go#L13
 
 // formatTest implements FileInfo to test FormatFileInfo,
 // and implements DirEntry to test FormatDirEntry.

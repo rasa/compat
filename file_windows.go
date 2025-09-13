@@ -19,6 +19,9 @@ import (
 	"github.com/rasa/compat/golang"
 )
 
+// UnknownUsername is returned when the current username is not available.
+const UnknownUsername = "n/a"
+
 type tokenPrimaryGroup struct {
 	PrimaryGroup *windows.SID
 }
@@ -36,7 +39,7 @@ func chmod(name string, perm os.FileMode, mask ReadOnlyMode) error {
 	// set Windows' ACLs
 	err := acl.Chmod(name, perm)
 	if err != nil {
-		return fmt.Errorf("%w (acl)", err)
+		return &os.PathError{Op: "chmod", Path: name, Err: fmt.Errorf("%w (acl)", err)}
 	}
 
 	if mask == ReadOnlyModeIgnore {
@@ -45,7 +48,7 @@ func chmod(name string, perm os.FileMode, mask ReadOnlyMode) error {
 
 	fi, err := os.Stat(name)
 	if err != nil {
-		return fmt.Errorf("%w (stat)", err)
+		return &os.PathError{Op: "chmod", Path: name, Err: fmt.Errorf("%w (stat)", err)}
 	}
 
 	// Set or clear Windows' read-only attribute
@@ -70,7 +73,7 @@ func chmod(name string, perm os.FileMode, mask ReadOnlyMode) error {
 	}
 	err = os.Chmod(name, perm)
 	if err != nil {
-		return fmt.Errorf("%w (chmod)", err)
+		return &os.PathError{Op: "chmod", Path: name, Err: fmt.Errorf("%w (chmod)", err)}
 	}
 
 	return nil
@@ -80,7 +83,7 @@ func create(name string, perm os.FileMode, flag int) (*os.File, error) {
 	flag |= os.O_CREATE
 	sa, err := saFromPerm(perm, true)
 	if err != nil {
-		return nil, err
+		return nil, &os.PathError{Op: "create", Path: name, Err: err}
 	}
 
 	return golang.OpenFileNolog(name, flag, perm, sa)
@@ -88,56 +91,85 @@ func create(name string, perm os.FileMode, flag int) (*os.File, error) {
 
 func createTemp(dir, pattern string, perm os.FileMode, flag int) (*os.File, error) {
 	if perm == 0 {
-		perm = CreateTempPerm
+		perm = CreateTempPerm // 0o600
 	}
-	sa, err := saFromPerm(perm, true) // 0o600
+	sa, err := saFromPerm(perm, true)
 	if err != nil {
-		return nil, err
+		return nil, &os.PathError{Op: "createtemp", Path: dir, Err: err}
 	}
 
-	return golang.CreateTemp(dir, pattern, flag, sa)
+	f, err := golang.CreateTemp(dir, pattern, flag, sa)
+	if err != nil {
+		return nil, &os.PathError{Op: "createtemp", Path: dir, Err: err}
+	}
+
+	return f, nil
 }
 
 func fchmod(f *os.File, mode os.FileMode, mask ReadOnlyMode) error {
 	path, err := golang.Filepath(f)
 	if err != nil {
-		return err
+		return &os.PathError{Op: "chmod", Path: f.Name(), Err: err}
 	}
 
-	return chmod(path, mode, mask)
+	err = chmod(path, mode, mask)
+	if err != nil {
+		return &os.PathError{Op: "chmod", Path: path, Err: err}
+	}
+
+	return nil
 }
 
 func mkdir(name string, perm os.FileMode) error {
 	sa, err := saFromPerm(perm, true)
 	if err != nil {
-		return err
+		return &os.PathError{Op: "mkdir", Path: name, Err: err}
 	}
 
-	return golang.Mkdir(name, 0o700, sa) //nolint:mnd
+	err = golang.Mkdir(name, 0o700, sa) //nolint:mnd
+	if err != nil {
+		return &os.PathError{Op: "mkdir", Path: name, Err: err}
+	}
+
+	return nil
 }
 
 func mkdirAll(name string, perm os.FileMode) error {
 	sa, err := saFromPerm(perm, true)
 	if err != nil {
-		return err
+		return &os.PathError{Op: "mkdirall", Path: name, Err: err}
 	}
 
-	return golang.MkdirAll(name, 0o700, sa) //nolint:mnd
+	err = golang.MkdirAll(name, 0o700, sa) //nolint:mnd
+	if err != nil {
+		return &os.PathError{Op: "mkdirall", Path: name, Err: err}
+	}
+
+	return nil
 }
 
 func mkdirTemp(dir, pattern string, perm os.FileMode) (string, error) {
 	sa, err := saFromPerm(perm, true) // 0o700
 	if err != nil {
-		return "", err
+		prefix, suffix, _ := golang.PrefixAndSuffix(pattern)
+
+		return "", &os.PathError{Op: "mkdirtmemp", Path: dir + string(os.PathSeparator) + prefix + "*" + suffix, Err: err}
 	}
 
-	return golang.MkdirTemp(dir, pattern, sa)
+	path, err := golang.MkdirTemp(dir, pattern, sa)
+	if err != nil {
+		prefix, suffix, _ := golang.PrefixAndSuffix(pattern)
+
+		return "", &os.PathError{Op: "mkdirtmemp", Path: dir + string(os.PathSeparator) + prefix + "*" + suffix, Err: err}
+	}
+
+	return path, nil
 }
 
 func openFile(name string, flag int, perm os.FileMode) (*os.File, error) {
 	sa, err := saFromPerm(perm, (flag&os.O_CREATE) == os.O_CREATE)
 	if err != nil {
-		return nil, err
+		return nil, &os.PathError{Op: "open", Path: name, Err: err}
 	}
 
 	return golang.OpenFileNolog(name, flag, perm, sa)
@@ -157,11 +189,14 @@ func symlink(oldname, newname string, setSymlinkOwner bool) error {
 		return err
 	}
 
-	if !setSymlinkOwner {
-		return nil
+	if setSymlinkOwner {
+		err = setOwnerToCurrentUser(newname)
+		if err != nil {
+			return &os.LinkError{Op: "symlink", Old: oldname, New: newname, Err: err}
+		}
 	}
 
-	return setOwnerToCurrentUser(newname)
+	return nil
 }
 
 func writeFile(name string, data []byte, perm os.FileMode, flag int) error {
@@ -171,9 +206,10 @@ func writeFile(name string, data []byte, perm os.FileMode, flag int) error {
 	if err != nil {
 		return err
 	}
+	defer f.Close() //nolint:errcheck
+
 	_, err = f.Write(data)
 	if err != nil {
-		_ = f.Close()
 		return err
 	}
 
@@ -306,7 +342,7 @@ func sdFromSi(si securityInfo) (*windows.SECURITY_DESCRIPTOR, error) {
 func currentUsername() string {
 	usr, err := user.Current()
 	if err != nil {
-		return "n/a"
+		return UnknownUsername
 	}
 
 	return usr.Username
@@ -352,14 +388,14 @@ func setOwnerToCurrentUser(path string) error {
 		&tok,
 	)
 	if err != nil {
-		return fmt.Errorf("OpenProcessToken: %w", err)
+		return fmt.Errorf("failed to open process token: %w", err)
 	}
 	defer tok.Close()
 
 	// Current user SID (needs TOKEN_QUERY)
 	tu, err := tok.GetTokenUser()
 	if err != nil {
-		return fmt.Errorf("GetTokenUser: %w", err)
+		return fmt.Errorf("failed to get token user: %w", err)
 	}
 	userSID := tu.User.Sid
 
