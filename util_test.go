@@ -22,6 +22,8 @@ import (
 
 const (
 	perm000 = os.FileMode(0)
+	perm200 = os.FileMode(0o200)
+	perm400 = os.FileMode(0o400)
 	perm555 = os.FileMode(0o555)
 	perm644 = os.FileMode(0o644)
 	perm600 = os.FileMode(0o600)
