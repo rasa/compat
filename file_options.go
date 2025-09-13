@@ -25,6 +25,7 @@ type Option func(*Options)
 
 // WithDefaultFileMode sets the default file mode instead of using the
 // `os.CreateTemp()` default of `0600`.
+// Used by the WriteFileAtomic and WriteReaderAtomic functions.
 func WithDefaultFileMode(mode os.FileMode) Option {
 	return func(opts *Options) {
 		opts.defaultFileMode = mode
@@ -33,6 +34,8 @@ func WithDefaultFileMode(mode os.FileMode) Option {
 
 // WithFileMode sets the file mode to the desired value and has precedence over all
 // other options.
+// Used by the Create, CreateTemp, MkdirTemp, Open, OpenFile, WriteFile, 
+// WriteFileAtomic and WriteReaderAtomic functions.
 func WithFileMode(mode os.FileMode) Option {
 	return func(opts *Options) {
 		opts.fileMode = mode
@@ -40,6 +43,8 @@ func WithFileMode(mode os.FileMode) Option {
 }
 
 // WithFlags sets the flag option.
+// Used by the Create, CreateTemp, Open, OpenFile, WriteFile, WriteFileAtomic and 
+// WriteReaderAtomic functions.
 func WithFlags(flags int) Option {
 	return func(opts *Options) {
 		opts.flags = flags
@@ -48,6 +53,7 @@ func WithFlags(flags int) Option {
 
 // WithKeepFileMode preserves the file mode of an existing file instead of using the
 // default value.
+// Used by the WriteFileAtomic and WriteReaderAtomic functions.
 func WithKeepFileMode(keep bool) Option {
 	return func(opts *Options) {
 		opts.keepFileMode = keep
@@ -55,13 +61,14 @@ func WithKeepFileMode(keep bool) Option {
 }
 
 // WithReadOnlyMode is used to determine if/when to set a file's read-only
-// (RO) attribute on Windows. The following values are supported:
+// (RO) attribute. The following values are supported:
 // ReadOnlyModeIgnore do not set a file's RO attribute, and ignore if it's set.
-// ReadOnlyMaskSet    set a file's RO attribute if the file's FileMode has the
-//
-//	user writable bit set.
-//
+// ReadOnlyMaskSet set a file's RO attribute if the file's FileMode has the
+// user writable bit set.
 // ReadOnlyMaskReset  do not set a file's RO attribute, and if it's set, reset it.
+// The option is functional on Windows only. On other OSes, it is ignored.
+// Used by the Chmod, Create, CreateTemp, Fchmod, Open, OpenFile, WriteFile, 
+// WriteFileAtomic and WriteReaderAtomic functions.
 func WithReadOnlyMode(mode ReadOnlyMode) Option {
 	return func(opts *Options) {
 		opts.readOnlyMode = mode
@@ -71,6 +78,8 @@ func WithReadOnlyMode(mode ReadOnlyMode) Option {
 // WithSetSymlinkOwner sets the symlink's owner to be the current user.
 // Otherwise, the symlink will have a default owner assigned by the system,
 // such as BUILTIN\Administrator.
+// The option is functional on Windows only. On other OSes, it is ignored.
+// Used by the Symlink function.
 func WithSetSymlinkOwner(setSymlinkOwner bool) Option {
 	return func(opts *Options) {
 		opts.setSymlinkOwner = setSymlinkOwner
