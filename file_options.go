@@ -63,9 +63,9 @@ func WithKeepFileMode(keep bool) Option {
 // WithReadOnlyMode is used to determine if/when to set a file's read-only
 // (RO) attribute. The following values are supported:
 // ReadOnlyModeIgnore do not set a file's RO attribute, and ignore if it's set.
-// ReadOnlyMaskSet set a file's RO attribute if the file's FileMode has the
+// ReadOnlyModeSet set a file's RO attribute if the file's FileMode has the
 // user writable bit set.
-// ReadOnlyMaskReset  do not set a file's RO attribute, and if it's set, reset it.
+// ReadOnlyModeReset  do not set a file's RO attribute, and if it's set, reset it.
 // The option is functional on Windows only. On other OSes, it is ignored.
 // Used by the Chmod, Create, CreateTemp, Fchmod, Open, OpenFile, WriteFile,
 // WriteFileAtomic and WriteReaderAtomic functions.

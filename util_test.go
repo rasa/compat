@@ -22,6 +22,9 @@ import (
 
 const (
 	perm000 = os.FileMode(0)
+	perm100 = os.FileMode(0o100)
+	perm200 = os.FileMode(0o200)
+	perm400 = os.FileMode(0o400)
 	perm555 = os.FileMode(0o555)
 	perm644 = os.FileMode(0o644)
 	perm600 = os.FileMode(0o600)
@@ -83,6 +86,22 @@ func compareTimes(a, b time.Time, granularity int) bool {
 	return a.Sub(b).Abs() < time.Duration(granularity)*time.Second
 }
 
+func debugln(t *testing.T, msg string) { //nolint:unused
+	t.Helper()
+
+	if testing.Verbose() && strings.Contains(compatDebug, "DEBUG") {
+		fmt.Println(msg)
+	}
+}
+
+func debugf(t *testing.T, format string, a ...any) { //nolint:unused
+	t.Helper()
+
+	if testing.Verbose() && strings.Contains(compatDebug, "DEBUG") {
+		fmt.Println(fmt.Sprintf(format, a...))
+	}
+}
+
 func fatal(t *testing.T, msg any) { //nolint:unused
 	t.Helper()
 
@@ -113,47 +132,37 @@ func fatalTimes(t *testing.T, prefix string, got, want time.Time, granularity in
 
 func fixPerms(perm os.FileMode, isDir bool) os.FileMode {
 	if compat.IsWasip1 {
-		if compat.IsTinygo {
-			return perm600
-		} else {
-			// only the user-bit is used
-			return perm & 0o700
+		return perm600
+	}
+
+	if !testEnv.noACLs {
+		return perm
+	}
+
+	if isDir {
+		switch {
+		case compat.IsWindows:
+			return compat.DefaultWindowsDirPerm
+		case compat.IsApple:
+			return compat.DefaultAppleDirPerm
+		default:
+			return compat.DefaultUnixDirPerm
 		}
 	}
 
-	if testEnv.noACLs {
-		if isDir {
-			switch {
-			case compat.IsWindows:
-				return compat.DefaultWindowsDirPerm
-			case compat.IsApple:
-				return compat.DefaultAppleDirPerm
-			default:
-
-				return compat.DefaultUnixDirPerm
-			}
-		} else {
-			switch {
-			case compat.IsWindows:
-				return compat.DefaultWindowsFilePerm
-			case compat.IsApple:
-				return compat.DefaultAppleFilePerm
-			default:
-				return compat.DefaultUnixFilePerm
-			}
-		}
+	switch {
+	case compat.IsWindows:
+		return compat.DefaultWindowsFilePerm
+	case compat.IsApple:
+		return compat.DefaultAppleFilePerm
+	default:
+		return compat.DefaultUnixFilePerm
 	}
-
-	return perm
 }
 
 func fixPosixPerms(perm os.FileMode, isDir bool) os.FileMode {
 	if compat.IsWasip1 {
-		if compat.IsTinygo {
-			return perm000
-		} else {
-			return perm & 0o700
-		}
+		return perm600
 	}
 
 	if compat.IsWindows {

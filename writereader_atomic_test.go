@@ -129,7 +129,7 @@ func TestWriteReaderAtomicKeepFileMode(t *testing.T) { //nolint:dupl
 	want := fixPerms(perm, false)
 	got := fi.Mode().Perm()
 	if got != want {
-		t.Fatalf("got %04o, want %04o (1)", got, want)
+		t.Fatalf("got %04o, want %04o: perm=%3o (%v) (1)", got, want, perm, perm)
 	}
 
 	err = compat.WriteReaderAtomic(file, helloBuf, compat.KeepFileMode(false))
