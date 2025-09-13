@@ -97,7 +97,7 @@ func TestWriteFileAtomicDefaultFileMode(t *testing.T) {
 	}
 }
 
-func TestWriteFileAtomicKeepFileMode(t *testing.T) {
+func TestWriteFileAtomicKeepFileMode(t *testing.T) { //nolint:dupl
 	file, err := tempName(t)
 	if err != nil {
 		t.Fatalf("Failed to create temp file: %v", err)
