@@ -23,7 +23,8 @@ func TestWriteFileAtomic(t *testing.T) {
 		_ = os.Remove(file)
 	})
 
-	if err := compat.WriteFileAtomic(file, helloBytes); err != nil {
+	err = compat.WriteFileAtomic(file, helloBytes)
+	if err != nil {
 		fatalf(t, "Failed to write file: %q: %v", file, err)
 
 		return // Tinygo doesn't support T.Fatal

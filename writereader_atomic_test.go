@@ -26,7 +26,8 @@ func TestWriteReaderAtomic(t *testing.T) {
 		_ = os.Remove(file)
 	})
 
-	if err := compat.WriteReaderAtomic(file, helloBuf); err != nil {
+	err = compat.WriteReaderAtomic(file, helloBuf)
+	if err != nil {
 		t.Fatalf("Failed to write file: %q: %v", file, err)
 	}
 
