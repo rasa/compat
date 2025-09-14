@@ -9,6 +9,7 @@ import (
 	"os/user"
 	"path/filepath"
 	"runtime"
+	"strings"
 	"testing"
 	"time"
 
@@ -396,6 +397,112 @@ func TestStatGroup(t *testing.T) {
 	}
 }
 
+func TestStatError(t *testing.T) { //nolint:dupl
+	name, err := createTempFile(t)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	fi, err := compat.Stat(name)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	err = fi.Error()
+	if err != nil {
+		t.Fatalf("got %v, expected nil", err)
+	}
+}
+
+func TestStatFileID(t *testing.T) { //nolint:dupl
+	name, err := createTempFile(t)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	fi, err := compat.Stat(name)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	got := fi.FileID()
+	if got == 0 {
+		t.Fatal("got 0, expected a value")
+	}
+}
+
+func TestStatPartitionID(t *testing.T) { //nolint:dupl
+	name, err := createTempFile(t)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	fi, err := compat.Stat(name)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	got := fi.PartitionID()
+	if got == 0 {
+		t.Fatal("got 0, expected a value")
+	}
+}
+
+var stringPrefixes = []string{
+	"Name:",
+	"Size:",
+	"Mode:",
+	"ModTime:",
+	"ATime:",
+	"BTime:",
+	"CTime:",
+	"IsDir:",
+	"Links:",
+	"UID:",
+	"GID:",
+	"PartID:",
+	"FileID:",
+}
+
+func TestStatString(t *testing.T) { //nolint:dupl
+	name, err := createTempFile(t)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	fi, err := compat.Stat(name)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	got := fi.String()
+	for _, prefix := range stringPrefixes {
+		if !strings.Contains(got, prefix) {
+			t.Fatalf("expected %q in %q", prefix, got)
+		}
+	}
+}
+
+func TestStatInfo(t *testing.T) { //nolint:dupl
+	name, err := createTempFile(t)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	fi, err := compat.Stat(name)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	got, err := fi.Info()
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got == nil {
+		t.Fatal("got nil, expected a value")
+	}
+}
+
 func TestStatSamePartition(t *testing.T) {
 	name, err := createTempFile(t)
 	if err != nil {
@@ -499,6 +606,18 @@ func TestStatDiffFiles(t *testing.T) {
 
 	if got := compat.SameFiles(name1, name2); got {
 		t.Fatalf("SameFiles(): got %v, want true", got)
+	}
+}
+
+const (
+	userIDSourceMin = compat.UserIDSourceIsInt
+	userIDSourceMax = compat.UserIDSourceIsNone
+)
+
+func TestStatUserIDSource(t *testing.T) { //nolint:dupl
+	src := compat.UserIDSource()
+	if src < userIDSourceMin || src > userIDSourceMax {
+		t.Fatalf("got %v, want between %v and %v", src, userIDSourceMin, userIDSourceMax)
 	}
 }
 
