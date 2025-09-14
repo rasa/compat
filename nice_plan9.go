@@ -6,15 +6,42 @@
 package compat
 
 import (
+	"bufio"
 	"fmt"
 	"os"
+	"strings"
 )
 
 // Nice gets the CPU process priority. The return value is in a range from
 // -20 (least nice), to 19 (most nice), even on non-Unix systems such as
-// Windows, plan9, etc. If not supported by the operating system, -1 is returned.
+// Windows, plan9, etc. If not supported by the operating system, an error is
+// returned.
 func Nice() (int, error) {
-	return -1, nil
+	pid := os.Getpid()
+	path := fmt.Sprintf("/proc/%d/status", pid)
+
+	f, err := os.Open(path)
+	if err != nil {
+		return 0, err
+	}
+	defer f.Close() //nolint:errcheck
+
+	scanner := bufio.NewScanner(f)
+	for scanner.Scan() {
+		line := scanner.Text()
+		if strings.HasPrefix(line, "pri ") {
+			// format: "pri <value>"
+			fields := strings.Fields(line)
+			if len(fields) == 2 {
+				val, err := strconv.Atoi(fields[1])
+				if err == nil {
+					return val, nil
+				}
+			}
+		}
+	}
+
+	return 0, fmt.Errorf("nice: priority not found in %v", path)
 }
 
 // See https://9p.io/magic/man2html/3/proc

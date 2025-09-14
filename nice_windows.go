@@ -22,13 +22,14 @@ var niceMap = map[uint32]int{
 
 // Nice gets the CPU process priority. The return value is in a range from
 // -20 (least nice), to 19 (most nice), even on non-Unix systems such as
-// Windows, plan9, etc. If not supported by the operating system, -1 is returned.
+// Windows, plan9, etc. If not supported by the operating system, an error is
+// returned.
 func Nice() (int, error) {
 	handle := windows.CurrentProcess()
 
 	priorityClass, err := windows.GetPriorityClass(handle)
 	if err != nil {
-		return -1, &NiceError{err}
+		return 0, &NiceError{err}
 	}
 
 	nice, ok := niceMap[priorityClass]

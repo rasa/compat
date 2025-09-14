@@ -14,11 +14,12 @@ import (
 
 // Nice gets the CPU process priority. The return value is in a range from
 // -20 (least nice), to 19 (most nice), even on non-Unix systems such as
-// Windows, plan9, etc. If not supported by the operating system, -1 is returned.
+// Windows, plan9, etc. If not supported by the operating system, an error is
+// returned.
 func Nice() (int, error) {
 	nice, err := unix.Getpriority(unix.PRIO_PROCESS, 0)
 	if err != nil {
-		return -1, &NiceError{err}
+		return 0, &NiceError{err}
 	}
 
 	return nice, nil
