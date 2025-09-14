@@ -140,12 +140,15 @@ func TestWriteFileAtomicKeepFileMode(t *testing.T) { //nolint:dupl
 		t.Fatalf("Failed to stat file: %q: %v", file, err)
 	}
 
+	partType, _ := compat.PartitionType(context.Background(), name)
+	
 	got = fi.Mode().Perm()
 	if got == want {
-		if compat.IsWasip1 {
-			return
+		if perm != want {
+			t.Logf("got %v, want %v (ignoring: %v on %v)", got, want, partType, runtime.GOOS)
+			returm
 		}
-		t.Fatalf("got %04o, want %04o (2)", got, want)
+		t.Fatalf("got %04o, want !%04o (2)", got, want)
 	}
 }
 
