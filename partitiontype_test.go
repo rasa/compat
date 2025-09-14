@@ -46,7 +46,7 @@ func TestPartitionType(t *testing.T) {
 }
 
 func TestPartitionTypeBad(t *testing.T) {
-	name := "/an/invalid/filename"
+	name := "/a/bad/filename/for/partitiontype"
 	ctx := context.Background()
 	_, err := compat.PartitionType(ctx, name)
 	if err == nil {
