@@ -129,7 +129,7 @@ func TestWriteReaderAtomicKeepFileMode(t *testing.T) { //nolint:dupl
 	want := fixPerms(perm, false)
 	got := fi.Mode().Perm()
 	if got != want {
-		t.Fatalf("got %04o, want %04o: perm=%3o (%v) (1)", got, want, perm, perm)
+		t.Fatalf("got %04o, want %04o: perm=%03o (%v) (1)", got, want, perm, perm)
 	}
 
 	err = compat.WriteReaderAtomic(file, helloBuf, compat.KeepFileMode(false))
@@ -144,10 +144,11 @@ func TestWriteReaderAtomicKeepFileMode(t *testing.T) { //nolint:dupl
 
 	got = fi.Mode().Perm()
 	if got == want {
-		if compat.IsWasip1 {
-			return
+		if perm != want {
+			t.Logf("got %v, want %v (ignoring: %v on %v)", got, want, partType, runtime.GOOS)
+			returm
 		}
-		t.Fatalf("got %04o, want %04o (2)", got, want)
+		t.Fatalf("got %04o, want !%04o (2)", got, want)
 	}
 }
 
