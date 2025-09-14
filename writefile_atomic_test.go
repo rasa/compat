@@ -142,7 +142,7 @@ func TestWriteFileAtomicKeepFileMode(t *testing.T) { //nolint:dupl
 		t.Fatalf("Failed to stat file: %q: %v", file, err)
 	}
 
-	partType, _ := compat.PartitionType(context.Background(), name)
+	partType, _ := compat.PartitionType(context.Background(), file)
 	
 	got = fi.Mode().Perm()
 	if got == want {
