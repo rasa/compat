@@ -1,7 +1,6 @@
 module github.com/rasa/compat
 
-// openbsd requires 1.24.1
-go 1.24.1
+go 1.25
 
 require (
 	github.com/OneOfOne/xxhash v1.2.8
