@@ -74,8 +74,8 @@ var (
 	Ftruncate                  = syscall.Ftruncate
 	GetFileAttributes          = syscall.GetFileAttributes
 	GetFileInformationByHandle = syscall.GetFileInformationByHandle
-	SyscallN                   = syscall.SyscallN //nolint:staticcheck
-	UTF16PtrFromString         = syscall.UTF16PtrFromString
+	// Syscall6                   = syscall.Syscall6 //nolint:staticcheck.
+	UTF16PtrFromString = syscall.UTF16PtrFromString
 )
 
 type (
@@ -141,11 +141,10 @@ func setStickyBit(name string) error {
 	return nil
 }
 
-var (
-	// See https://github.com/golang/go/blob/ac803b59/src/syscall/zsyscall_windows.go#L43
-	modkernel32     = syscall.NewLazyDLL("kernel32.dll")
-	procCreateFileW = modkernel32.NewProc("CreateFileW")
-)
+// See https://github.com/golang/go/blob/ac803b59/src/syscall/zsyscall_windows.go#L43
+var modkernel32 = syscall.NewLazyDLL("kernel32.dll")
+
+// procCreateFileW = modkernel32.NewProc("CreateFileW").
 
 // Emulate newFile() as f.cleanup and f.pfd are private.
 // See https://github.com/golang/go/blob/ac803b59/src/os/file_windows.go#L50
@@ -199,7 +198,7 @@ var procGetFinalPathNameByHandleW = modkernel32.NewProc("GetFinalPathNameByHandl
 // Source: https://github.com/golang/go/blob/ac803b59/src/syscall/zsyscall_windows.go#L783-L790
 
 func GetFinalPathNameByHandle(file Handle, filePath *uint16, filePathSize uint32, flags uint32) (n uint32, err error) {
-	r0, _, e1 := syscall.SyscallN(procGetFinalPathNameByHandleW.Addr(), uintptr(file), uintptr(unsafe.Pointer(filePath)), uintptr(filePathSize), uintptr(flags)) //nolint:gosec,mnd,staticcheck
+	r0, _, e1 := syscall.Syscall6(procGetFinalPathNameByHandleW.Addr(), 4, uintptr(file), uintptr(unsafe.Pointer(filePath)), uintptr(filePathSize), uintptr(flags), 0, 0) //nolint:gosec,mnd,staticcheck
 	n = uint32(r0)
 	if n == 0 || n >= filePathSize {
 		err = errnoErr(e1)

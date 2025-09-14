@@ -94,7 +94,7 @@ func TestFileWindowsChmodIgnoreNotSet(t *testing.T) {
 	}
 }
 
-func TestFileWindowsChmodIgnoreSet(t *testing.T) {
+func TestFileWindowsChmodIgnoreSet(t *testing.T) { //nolint:dupl
 	for _, perm := range perms {
 		name, err := tempFile(t)
 		if err != nil {
@@ -220,7 +220,7 @@ func TestFileWindowsChmodResetNotSet(t *testing.T) {
 	}
 }
 
-func TestFileWindowsChmodResetSet(t *testing.T) {
+func TestFileWindowsChmodResetSet(t *testing.T) { //nolint:dupl
 	for _, perm := range perms {
 		name, err := tempFile(t)
 		if err != nil {

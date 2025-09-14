@@ -308,6 +308,12 @@ func supportsHardLinks(t *testing.T) bool {
 func supportsSymlinks(t *testing.T) bool {
 	t.Helper()
 
+	if compat.IsTinygo {
+		skip(t, "Skipping test: symlinks are not supported on tinygo")
+
+		return false // tinygo doesn't support t.Skip
+	}
+
 	if !compat.SupportsSymlinks() {
 		skipf(t, "Skipping test: symlinks are not supported on %v", runtime.GOOS)
 

@@ -13,7 +13,6 @@ import (
 	filepathlite "path/filepath"
 	"runtime"
 	"syscall"
-	"unsafe"
 
 	"github.com/capnspacehook/go-acl"
 )
@@ -441,8 +440,8 @@ func Open(name string, flag int, perm uint32, sa *syscall.SecurityAttributes) (f
 	default:
 		createmode = OPEN_EXISTING
 	}
-	attrs, sharemode = fixAttributesAndShareMode(flag, attrs, sharemode) // compat: added
-	h, err := createFile(namep, access, sharemode, sa, createmode, attrs, 0)
+	attrs, sharemode = fixAttributesAndShareMode(flag, attrs, sharemode)             // compat: added
+	h, err := syscall.CreateFile(namep, access, sharemode, sa, createmode, attrs, 0) // compat: s|createFile|syscall.CreateFile|
 	if h == InvalidHandle {
 		if err == ERROR_ACCESS_DENIED && (attrs&FILE_FLAG_BACKUP_SEMANTICS == 0) {
 			// We should return EISDIR when we are trying to open a directory with write access.
@@ -479,14 +478,14 @@ func Open(name string, flag int, perm uint32, sa *syscall.SecurityAttributes) (f
 
 // Snippet: https://github.com/golang/go/blob/ac803b59/src/syscall/zsyscall_windows.go#L506-L513
 
-func createFile(name *uint16, access uint32, mode uint32, sa *SecurityAttributes, createmode uint32, attrs uint32, templatefile int32) (handle Handle, err error) {
-	r0, _, e1 := SyscallN(procCreateFileW.Addr(), uintptr(unsafe.Pointer(name)), uintptr(access), uintptr(mode), uintptr(unsafe.Pointer(sa)), uintptr(createmode), uintptr(attrs), uintptr(templatefile))
-	handle = Handle(r0)
-	if handle == InvalidHandle || e1 == ERROR_ALREADY_EXISTS {
-		err = errnoErr(e1)
-	}
-	return
-}
+// func createFile(name *uint16, access uint32, mode uint32, sa *SecurityAttributes, createmode uint32, attrs uint32, templatefile int32) (handle Handle, err error) {
+// 	r0, _, e1 := SyscallN(procCreateFileW.Addr(), uintptr(unsafe.Pointer(name)), uintptr(access), uintptr(mode), uintptr(unsafe.Pointer(sa)), uintptr(createmode), uintptr(attrs), uintptr(templatefile))
+// 	handle = Handle(r0)
+// 	if handle == InvalidHandle || e1 == ERROR_ALREADY_EXISTS {
+// 		err = errnoErr(e1)
+// 	}
+// 	return
+// }
 
 // Snippet: https://github.com/golang/go/blob/ac803b59/src/os/removeall_noat.go#L15-L142
 
