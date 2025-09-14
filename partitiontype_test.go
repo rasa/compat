@@ -35,7 +35,7 @@ func TestPartitionTypeRel(t *testing.T) {
 		return
 	}
 	t.Chdir(dir)
-	
+
 	name := filepath.Base(f.Name())
 	_ = f.Close()
 	testPartitionType(t, name)

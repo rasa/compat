@@ -21,7 +21,7 @@ func create(name string, perm os.FileMode, flag int) (*os.File, error) {
 		perm = CreatePerm
 	}
 
-	flag = (flag | O_CREATE) // & ^O_EXCL
+	flag |= O_CREATE // & ^O_EXCL
 	return openFile(name, flag, perm)
 }
 
@@ -59,7 +59,8 @@ func mkdirTemp(dir, pattern string, perm os.FileMode) (string, error) {
 }
 
 func openFile(name string, flag int, perm os.FileMode) (*os.File, error) {
-	oflag := flag & ^O_DELETE
+	// don't pass compat-only flags to os function.
+	oflag := flag & ^(O_FILE_FLAG_DELETE_ON_CLOSE | O_FILE_FLAG_NO_RO_ATTR)
 	f, err := os.OpenFile(name, oflag, perm)
 	if err != nil {
 		return nil, err
@@ -81,7 +82,7 @@ func writeFile(name string, data []byte, perm os.FileMode, _ int) error {
 }
 
 func wrap(name string, flag int, f *os.File) (*os.File, error) {
-	if flag&O_DELETE == O_DELETE {
+	if flag&O_FILE_FLAG_DELETE_ON_CLOSE == O_FILE_FLAG_DELETE_ON_CLOSE {
 		err := os.Remove(name)
 		if err != nil {
 			_ = f.Close()

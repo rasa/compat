@@ -29,14 +29,14 @@ func TestFilePosixChmod(t *testing.T) {
 		return
 	}
 
-	fs, err := os.Stat(name)
+	fi, err := os.Stat(name)
 	if err != nil {
 		t.Fatal(err)
 
 		return
 	}
 
-	got := fs.Mode().Perm()
+	got := fi.Mode().Perm()
 	if got != want {
 		t.Fatalf("got 0%03o, want 0%03o", got, want)
 
@@ -68,7 +68,7 @@ func TestFilePosixCreate(t *testing.T) {
 		return
 	}
 
-	fs, err := os.Stat(name)
+	fi, err := os.Stat(name)
 	if err != nil {
 		if compat.IsTinygo && errors.Is(err, os.ErrNotExist) {
 			skip(t, "Skipping test: file is disappearing on tinygo")
@@ -81,7 +81,7 @@ func TestFilePosixCreate(t *testing.T) {
 		return
 	}
 
-	got := fs.Mode().Perm()
+	got := fi.Mode().Perm()
 	if got != want {
 		t.Fatalf("got 0%03o, want 0%03o", got, want)
 
@@ -114,7 +114,7 @@ func TestFilePosixCreateEx(t *testing.T) {
 		return
 	}
 
-	fs, err := os.Stat(name)
+	fi, err := os.Stat(name)
 	if err != nil {
 		if compat.IsTinygo && errors.Is(err, os.ErrNotExist) {
 			skip(t, "Skipping test: file is disappearing on tinygo")
@@ -127,7 +127,7 @@ func TestFilePosixCreateEx(t *testing.T) {
 		return
 	}
 
-	got := fs.Mode().Perm()
+	got := fi.Mode().Perm()
 	if got != want {
 		t.Fatalf("got 0%03o, want 0%03o", got, want)
 
@@ -186,14 +186,14 @@ func TestFilePosixCreateTemp(t *testing.T) {
 		return
 	}
 
-	fs, err := os.Stat(name)
+	fi, err := os.Stat(name)
 	if err != nil {
 		t.Fatal(err)
 
 		return
 	}
 
-	got := fs.Mode().Perm()
+	got := fi.Mode().Perm()
 	if got != want {
 		t.Fatalf("got 0%03o, want 0%03o", got, want)
 
@@ -222,14 +222,14 @@ func TestFilePosixCreateTempEx(t *testing.T) {
 		return
 	}
 
-	fs, err := os.Stat(name)
+	fi, err := os.Stat(name)
 	if err != nil {
 		t.Fatal(err)
 
 		return
 	}
 
-	got := fs.Mode().Perm()
+	got := fi.Mode().Perm()
 	if got != want {
 		t.Fatalf("got 0%03o, want 0%03o", got, want)
 
@@ -282,14 +282,14 @@ func TestFilePosixMkdir(t *testing.T) {
 		return
 	}
 
-	fs, err := os.Stat(name)
+	fi, err := os.Stat(name)
 	if err != nil {
 		t.Fatal(err)
 
 		return
 	}
 
-	got := fs.Mode().Perm()
+	got := fi.Mode().Perm()
 	if got != want {
 		t.Fatalf("got 0%03o, want 0%03o", got, want)
 
@@ -315,14 +315,14 @@ func TestFilePosixMkdirAll(t *testing.T) {
 		return
 	}
 
-	fs, err := os.Stat(name)
+	fi, err := os.Stat(name)
 	if err != nil {
 		t.Fatal(err)
 
 		return
 	}
 
-	got := fs.Mode().Perm()
+	got := fi.Mode().Perm()
 	if got != want {
 		t.Fatalf("got 0%03o, want 0%03o", got, want)
 
@@ -342,14 +342,14 @@ func TestFilePosixMkdirTemp(t *testing.T) {
 		return
 	}
 
-	fs, err := os.Stat(name)
+	fi, err := os.Stat(name)
 	if err != nil {
 		t.Fatal(err)
 
 		return
 	}
 
-	got := fs.Mode().Perm()
+	got := fi.Mode().Perm()
 	if got != want {
 		t.Fatalf("got 0%03o, want 0%03o", got, want)
 
@@ -382,7 +382,7 @@ func TestFilePosixOpenFile(t *testing.T) {
 		return
 	}
 
-	fs, err := os.Stat(name)
+	fi, err := os.Stat(name)
 	if err != nil {
 		if compat.IsTinygo && errors.Is(err, os.ErrNotExist) {
 			skip(t, "Skipping test: file is disappearing on tinygo")
@@ -395,7 +395,7 @@ func TestFilePosixOpenFile(t *testing.T) {
 		return
 	}
 
-	got := fs.Mode().Perm()
+	got := fi.Mode().Perm()
 	if got != want {
 		t.Fatalf("got 0%03o, want 0%03o", got, want)
 
@@ -457,14 +457,14 @@ func TestFilePosixWriteFile(t *testing.T) {
 		return
 	}
 
-	fs, err := os.Stat(name)
+	fi, err := os.Stat(name)
 	if err != nil {
 		t.Fatal(err)
 
 		return
 	}
 
-	got := fs.Mode().Perm()
+	got := fi.Mode().Perm()
 	if got != want {
 		t.Fatalf("got 0%03o, want 0%03o", got, want)
 
@@ -490,14 +490,14 @@ func TestFilePosixWriteFileEx(t *testing.T) {
 		return
 	}
 
-	fs, err := os.Stat(name)
+	fi, err := os.Stat(name)
 	if err != nil {
 		t.Fatal(err)
 
 		return
 	}
 
-	got := fs.Mode().Perm()
+	got := fi.Mode().Perm()
 	if got != want {
 		t.Fatalf("got 0%03o, want 0%03o", got, want)
 

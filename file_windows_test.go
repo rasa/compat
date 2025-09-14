@@ -642,6 +642,46 @@ func TestFileWindowsWriteFileEx(t *testing.T) {
 	}
 }
 
+func TestFileWindowsCreateReadOnlyModeSet(t *testing.T) {
+	perm := fixPerms(perm400, false)
+
+	name, err := tempName(t)
+	if err != nil {
+		t.Fatal(err)
+
+		return
+	}
+
+	fh, err := compat.Create(name, compat.WithFileMode(perm), compat.WithReadOnlyMode(compat.ReadOnlyModeSet))
+	if err != nil {
+		t.Fatal(err)
+
+		return
+	}
+
+	err = fh.Close()
+	if err != nil {
+		t.Fatal(err)
+
+		return
+	}
+
+	fi, err := os.Stat(name)
+	if err != nil {
+		t.Fatal(err)
+
+		return
+	}
+
+	want := false // the user-writable bit is not set.
+	got := fi.Mode().Perm()&perm200 == perm200
+	if got != want {
+		t.Fatalf("got %v, want %v", got, want)
+
+		return
+	}
+}
+
 func checkPerm(t *testing.T, name string, perm os.FileMode, isDir bool) {
 	t.Helper()
 

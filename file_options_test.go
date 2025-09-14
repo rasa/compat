@@ -106,14 +106,14 @@ func TestFileOptionsCreateTempFileMode(t *testing.T) {
 		return
 	}
 
-	fs, err := os.Stat(name)
+	fi, err := os.Stat(name)
 	if err != nil {
 		t.Fatal(err)
 
 		return
 	}
 
-	got := fs.Mode().Perm()
+	got := fi.Mode().Perm()
 	if got != want {
 		t.Fatalf("got 0%03o, want 0%03o", got, want)
 
@@ -133,14 +133,14 @@ func TestFileOptionsMkdirTempFileMode(t *testing.T) {
 		return
 	}
 
-	fs, err := os.Stat(name)
+	fi, err := os.Stat(name)
 	if err != nil {
 		t.Fatal(err)
 
 		return
 	}
 
-	got := fs.Mode().Perm()
+	got := fi.Mode().Perm()
 	if got != want {
 		t.Fatalf("got 0%03o, want 0%03o", got, want)
 
@@ -209,14 +209,14 @@ func TestFileOptionsOpenFileFileMode(t *testing.T) {
 		return
 	}
 
-	fs, err := os.Stat(name)
+	fi, err := os.Stat(name)
 	if err != nil {
 		t.Fatal(err)
 
 		return
 	}
 
-	got := fs.Mode().Perm()
+	got := fi.Mode().Perm()
 	if got != want {
 		t.Fatalf("got 0%03o, want 0%03o", got, want)
 
@@ -242,14 +242,14 @@ func TestFileOptionsWriteFileFileMode(t *testing.T) {
 		return
 	}
 
-	fs, err := os.Stat(name)
+	fi, err := os.Stat(name)
 	if err != nil {
 		t.Fatal(err)
 
 		return
 	}
 
-	got := fs.Mode().Perm()
+	got := fi.Mode().Perm()
 	if got != want {
 		t.Fatalf("got 0%03o, want 0%03o", got, want)
 
