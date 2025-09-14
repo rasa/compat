@@ -112,10 +112,10 @@ endif
 
 .PHONY: test
 test: ## go test
-	go test $(TEST_OPTS) -tags debug $(RACE_OPT) -covermode=atomic -coverprofile=coverage.tmp -coverpkg=. .
-	grep -Ev '/(cmd|golang)/' coverage.tmp > coverage.out
+	go test $(TEST_OPTS) -tags debug $(RACE_OPT) -covermode=atomic -coverprofile=coverage.out -coverpkg=. .
+	sed -i.bak "/compat\/cmd\//d; /compat\/golang\//d;" coverage.out
+	rm -f *.bak
 	go tool cover -html=coverage.out -o coverage.html
-	rm -f coverage.tmp
 
 .PHONY: diff
 diff: ## git diff

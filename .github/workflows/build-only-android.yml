@@ -154,4 +154,4 @@ jobs:
       # yamllint disable-line
       #     export CC="${NDK_PATH}/toolchains/llvm/prebuilt/linux-x86_64/bin/${{ matrix.android_arch }}-linux-android${ABI_PREFIX}${ABI_VERSION}-clang"
       #     go env
-      #     go test -v .
+      #     go test .

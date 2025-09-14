@@ -7,7 +7,9 @@
 package compat_test
 
 import (
+	"context"
 	"os"
+	"runtime"
 	"testing"
 
 	"github.com/rasa/compat"
@@ -127,7 +129,7 @@ func TestWriteFileAtomicKeepFileMode(t *testing.T) { //nolint:dupl
 	want := fixPerms(perm, false)
 	got := fi.Mode().Perm()
 	if got != want {
-		t.Fatalf("got %04o, want %04o (1)", got, want)
+		t.Fatalf("got %04o, want %04o: perm=%3o (%v) (1)", got, want, perm, perm)
 	}
 
 	err = compat.WriteFileAtomic(file, helloBytes, compat.KeepFileMode(false))
@@ -140,9 +142,15 @@ func TestWriteFileAtomicKeepFileMode(t *testing.T) { //nolint:dupl
 		t.Fatalf("Failed to stat file: %q: %v", file, err)
 	}
 
+	partType, _ := compat.PartitionType(context.Background(), file)
+
 	got = fi.Mode().Perm()
 	if got == want {
-		t.Fatalf("got %04o, want %04o (2)", got, want)
+		if perm != want {
+			t.Logf("got %v, want %v (ignoring: %v on %v)", got, want, partType, runtime.GOOS)
+			return
+		}
+		t.Fatalf("got %04o, want !%04o (2)", got, want)
 	}
 }
 

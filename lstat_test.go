@@ -143,7 +143,7 @@ func TestLstatLinks(t *testing.T) {
 	dir, _ := filepath.Split(name)
 	link := filepath.Join(dir, "link.txt")
 
-	err = os.Link(name, link)
+	err = osLink(name, link)
 	if err != nil {
 		t.Fatal(err)
 	}

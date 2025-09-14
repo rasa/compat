@@ -22,6 +22,7 @@ import (
 
 const (
 	perm000 = os.FileMode(0)
+	perm100 = os.FileMode(0o100)
 	perm200 = os.FileMode(0o200)
 	perm400 = os.FileMode(0o400)
 	perm555 = os.FileMode(0o555)
@@ -85,6 +86,19 @@ func compareTimes(a, b time.Time, granularity int) bool {
 	return a.Sub(b).Abs() < time.Duration(granularity)*time.Second
 }
 
+func debugln(t *testing.T, msg string) { //nolint:unused
+	t.Helper()
+
+	if testing.Verbose() && strings.Contains(compatDebug, "DEBUG") {
+		fmt.Println(msg)
+	}
+}
+
+func debugf(t *testing.T, format string, a ...any) { //nolint:unused
+	t.Helper()
+	debugln(t, fmt.Sprintf(format, a...))
+}
+
 func fatal(t *testing.T, msg any) { //nolint:unused
 	t.Helper()
 
@@ -117,53 +131,57 @@ func fixPerms(perm os.FileMode, isDir bool) os.FileMode {
 	if compat.IsWasip1 {
 		if compat.IsTinygo {
 			return perm600
-		} else {
-			// only the user-bit is used
-			return perm & 0o700
 		}
-	}
-
-	if testEnv.noACLs {
 		if isDir {
-			switch {
-			case compat.IsWindows:
-				return compat.DefaultWindowsDirPerm
-			case compat.IsApple:
-				return compat.DefaultAppleDirPerm
-			default:
+			return perm700
+		}
 
-				return compat.DefaultUnixDirPerm
-			}
-		} else {
-			switch {
-			case compat.IsWindows:
-				return compat.DefaultWindowsFilePerm
-			case compat.IsApple:
-				return compat.DefaultAppleFilePerm
-			default:
-				return compat.DefaultUnixFilePerm
-			}
+		return perm600
+	}
+
+	if !testEnv.noACLs {
+		return perm
+	}
+
+	if isDir {
+		switch {
+		case compat.IsWindows:
+			return compat.DefaultWindowsDirPerm
+		case compat.IsApple:
+			return compat.DefaultAppleDirPerm
+		default:
+			return compat.DefaultUnixDirPerm
 		}
 	}
 
-	return perm
+	switch {
+	case compat.IsWindows:
+		return compat.DefaultWindowsFilePerm
+	case compat.IsApple:
+		return compat.DefaultAppleFilePerm
+	default:
+		return compat.DefaultUnixFilePerm
+	}
 }
 
 func fixPosixPerms(perm os.FileMode, isDir bool) os.FileMode {
 	if compat.IsWasip1 {
 		if compat.IsTinygo {
 			return perm000
-		} else {
-			return perm & 0o700
 		}
+		if isDir {
+			return perm700
+		}
+
+		return perm600
 	}
 
 	if compat.IsWindows {
 		if isDir {
 			return compat.DefaultWindowsDirPerm
-		} else {
-			return compat.DefaultWindowsFilePerm
 		}
+
+		return compat.DefaultWindowsFilePerm
 	}
 
 	return fixPerms(perm, isDir)
@@ -284,6 +302,12 @@ func supportsHardLinks(t *testing.T) bool {
 		return false // tinygo doesn't support t.Skip
 	}
 
+	if compat.IsTinygo {
+		skip(t, "Skipping test: hard links are not supported on tinygo")
+
+		return false // tinygo doesn't support t.Skip
+	}
+
 	return true
 }
 
@@ -298,6 +322,12 @@ func supportsSymlinks(t *testing.T) bool {
 
 	if testEnv.noSymlinks {
 		skipf(t, "Skipping test: symlinks are not supported on a %v filesystem", testEnv.fsType)
+
+		return false // tinygo doesn't support t.Skip
+	}
+
+	if compat.IsTinygo {
+		skip(t, "Skipping test: symlinks are not supported on tinygo")
 
 		return false // tinygo doesn't support t.Skip
 	}
