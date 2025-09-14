@@ -6,6 +6,7 @@ package compat_test
 import (
 	"context"
 	"os"
+	"path/filepath"
 	"runtime"
 	"strings"
 	"testing"
@@ -22,6 +23,36 @@ func TestPartitionType(t *testing.T) {
 	}
 	name := f.Name()
 	_ = f.Close()
+	testPartitionType(t, name)
+}
+
+func TestPartitionTypeRel(t *testing.T) {
+	dir := tempDir(t)
+	f, err := os.CreateTemp(dir, "")
+	if err != nil {
+		t.Error(err)
+
+		return
+	}
+	t.Chdir(dir)
+	
+	name := filepath.Base(f.Name())
+	_ = f.Close()
+	testPartitionType(t, name)
+}
+
+func TestPartitionTypeBad(t *testing.T) {
+	name := "/a/bad/filename/for/partitiontype"
+	ctx := context.Background()
+	_, err := compat.PartitionType(ctx, name)
+	if err == nil {
+		t.Fatalf("got not error for invalid file %q", name)
+	}
+}
+
+func testPartitionType(t *testing.T, name string) {
+	t.Helper()
+
 	ctx := context.Background()
 	partitionType, err := compat.PartitionType(ctx, name)
 	if err != nil {
@@ -42,14 +73,5 @@ func TestPartitionType(t *testing.T) {
 	if !strings.Contains(partitionType, fsType) {
 		// @TODO change this to Errorf eventually
 		t.Logf("PartitionType(): got %v, want %v", partitionType, fsType)
-	}
-}
-
-func TestPartitionTypeBad(t *testing.T) {
-	name := "/a/bad/filename/for/partitiontype"
-	ctx := context.Background()
-	_, err := compat.PartitionType(ctx, name)
-	if err == nil {
-		t.Fatalf("got not error for invalid file %q", name)
 	}
 }
