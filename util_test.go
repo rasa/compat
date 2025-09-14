@@ -302,17 +302,17 @@ func supportsHardLinks(t *testing.T) bool {
 		return false // tinygo doesn't support t.Skip
 	}
 
+	if compat.IsTinygo {
+		skip(t, "Skipping test: hard links are not supported on tinygo")
+
+		return false // tinygo doesn't support t.Skip
+	}
+
 	return true
 }
 
 func supportsSymlinks(t *testing.T) bool {
 	t.Helper()
-
-	if compat.IsTinygo {
-		skip(t, "Skipping test: symlinks are not supported on tinygo")
-
-		return false // tinygo doesn't support t.Skip
-	}
 
 	if !compat.SupportsSymlinks() {
 		skipf(t, "Skipping test: symlinks are not supported on %v", runtime.GOOS)
@@ -322,6 +322,12 @@ func supportsSymlinks(t *testing.T) bool {
 
 	if testEnv.noSymlinks {
 		skipf(t, "Skipping test: symlinks are not supported on a %v filesystem", testEnv.fsType)
+
+		return false // tinygo doesn't support t.Skip
+	}
+
+	if compat.IsTinygo {
+		skip(t, "Skipping test: symlinks are not supported on tinygo")
 
 		return false // tinygo doesn't support t.Skip
 	}
