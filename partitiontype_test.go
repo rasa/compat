@@ -44,3 +44,12 @@ func TestPartitionType(t *testing.T) {
 		t.Logf("PartitionType(): got %v, want %v", partitionType, fsType)
 	}
 }
+
+func TestPartitionTypeBad(t *testing.T) {
+	name := "/an/invalid/filename"
+	ctx := context.Background()
+	_, err := compat.PartitionType(ctx, name)
+	if err == nil {
+		t.Fatalf("got not error for invalid file %q", name)
+	}
+}
