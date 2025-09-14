@@ -30,7 +30,7 @@ jobs:
 
       - run: go build -trimpath ./...
 
-      - run: go test -v .
+      - run: go test .
 
       # - uses: actions/upload-artifact@v3
       #  with:

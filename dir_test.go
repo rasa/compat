@@ -17,6 +17,11 @@ import (
 
 func TestReadDir(t *testing.T) {
 	// t.Parallel()
+	if compat.IsTinygo {
+		skip(t, "Skipping test: fdopendir /tmp/TestReadDir256423683/000/foo: errno 8")
+
+		return
+	}
 
 	dirname := "rumpelstilzchen"
 	if _, err := compat.ReadDir(dirname); err == nil { // compat: s|ReadDir|compat.ReadDir|

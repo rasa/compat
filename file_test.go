@@ -49,28 +49,28 @@ func TestFilePosixCreate(t *testing.T) {
 
 	name, err := tempName(t)
 	if err != nil {
-		t.Fatal(err)
+		t.Fatalf("tempName failed: %v", err)
 
 		return
 	}
 
 	fh, err := compat.Create(name)
 	if err != nil {
-		t.Fatal(err)
+		t.Fatalf("Create failed: %v", err)
 
 		return
 	}
 
 	err = fh.Close()
 	if err != nil {
-		t.Fatal(err)
+		t.Fatalf("Close failed: %v", err)
 
 		return
 	}
 
 	fs, err := os.Stat(name)
 	if err != nil {
-		t.Fatal(err)
+		t.Fatalf("Stat failed: %v", err)
 
 		return
 	}
@@ -89,28 +89,28 @@ func TestFilePosixCreateEx(t *testing.T) {
 
 	name, err := tempName(t)
 	if err != nil {
-		t.Fatal(err)
+		t.Fatalf("tempName failed: %v", err)
 
 		return
 	}
 
 	fh, err := compat.CreateEx(name, perm, 0)
 	if err != nil {
-		t.Fatal(err)
+		t.Fatalf("CreateEx failed: %v", err)
 
 		return
 	}
 
 	err = fh.Close()
 	if err != nil {
-		t.Fatal(err)
+		t.Fatalf("Close failed: %v", err)
 
 		return
 	}
 
 	fs, err := os.Stat(name)
 	if err != nil {
-		t.Fatal(err)
+		t.Fatalf("Stat failed: %v", err)
 
 		return
 	}
@@ -351,28 +351,28 @@ func TestFilePosixOpenFile(t *testing.T) {
 
 	name, err := tempName(t)
 	if err != nil {
-		t.Fatal(err)
+		t.Fatalf("tempName failed: %v", err)
 
 		return
 	}
 
 	fh, err := compat.OpenFile(name, os.O_RDWR|os.O_CREATE, perm)
 	if err != nil {
-		t.Fatal(err)
+		t.Fatalf("OpenFile failed: %v", err)
 
 		return
 	}
 
 	err = fh.Close()
 	if err != nil {
-		t.Fatal(err)
+		t.Fatalf("Close failed: %v", err)
 
 		return
 	}
 
 	fs, err := os.Stat(name)
 	if err != nil {
-		t.Fatal(err)
+		t.Fatalf("Stat failed: %v", err)
 
 		return
 	}

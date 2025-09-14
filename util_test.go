@@ -96,10 +96,7 @@ func debugln(t *testing.T, msg string) { //nolint:unused
 
 func debugf(t *testing.T, format string, a ...any) { //nolint:unused
 	t.Helper()
-
-	if testing.Verbose() && strings.Contains(compatDebug, "DEBUG") {
-		fmt.Println(fmt.Sprintf(format, a...))
-	}
+	debugln(t, fmt.Sprintf(format, a...))
 }
 
 func fatal(t *testing.T, msg any) { //nolint:unused
