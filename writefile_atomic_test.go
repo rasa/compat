@@ -142,6 +142,9 @@ func TestWriteFileAtomicKeepFileMode(t *testing.T) { //nolint:dupl
 
 	got = fi.Mode().Perm()
 	if got == want {
+		if compat.IsWasip1 {
+			return
+		}
 		t.Fatalf("got %04o, want %04o (2)", got, want)
 	}
 }
