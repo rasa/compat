@@ -113,8 +113,8 @@ endif
 .PHONY: test
 test: ## go test
 	go test $(TEST_OPTS) -tags debug $(RACE_OPT) -covermode=atomic -coverprofile=coverage.out -coverpkg=. .
-        sed -i.bak "/compat\/cmd\//d; /compat\/golang\//d;" coverage.out
-        rm -f *.bak
+	sed -i.bak "/compat\/cmd\//d; /compat\/golang\//d;" coverage.out
+	rm -f *.bak
 	go tool cover -html=coverage.out -o coverage.html
 
 .PHONY: diff
