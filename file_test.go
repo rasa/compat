@@ -70,6 +70,12 @@ func TestFilePosixCreate(t *testing.T) {
 
 	fs, err := os.Stat(name)
 	if err != nil {
+		if compat.IsTinygo && errors.Is(err, os.ErrNotExist) {
+			skip(t, "Skipping test: file is disappearing on tinygo")
+
+			return // tinygo doesn't support t.Skip
+		}
+
 		t.Fatalf("Stat failed: %v", err)
 
 		return
@@ -110,6 +116,12 @@ func TestFilePosixCreateEx(t *testing.T) {
 
 	fs, err := os.Stat(name)
 	if err != nil {
+		if compat.IsTinygo && errors.Is(err, os.ErrNotExist) {
+			skip(t, "Skipping test: file is disappearing on tinygo")
+
+			return // tinygo doesn't support t.Skip
+		}
+
 		t.Fatalf("Stat failed: %v", err)
 
 		return
@@ -372,6 +384,12 @@ func TestFilePosixOpenFile(t *testing.T) {
 
 	fs, err := os.Stat(name)
 	if err != nil {
+		if compat.IsTinygo && errors.Is(err, os.ErrNotExist) {
+			skip(t, "Skipping test: file is disappearing on tinygo")
+
+			return // tinygo doesn't support t.Skip
+		}
+
 		t.Fatalf("Stat failed: %v", err)
 
 		return
