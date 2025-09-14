@@ -143,7 +143,7 @@ func TestWriteFileAtomicKeepFileMode(t *testing.T) { //nolint:dupl
 	}
 
 	partType, _ := compat.PartitionType(context.Background(), file)
-	
+
 	got = fi.Mode().Perm()
 	if got == want {
 		if perm != want {
