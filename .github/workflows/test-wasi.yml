@@ -80,8 +80,8 @@ jobs:
           version: "${{ env.wasmtime_version }}"
 
       # https://go.dev/blog/wasi#running-go-tests-with-wasip1
-      - run: GOOS=wasip1 GOARCH=wasm go test -v .
+      - run: GOOS=wasip1 GOARCH=wasm go test .
 
-      - run: tinygo test -target=wasip1 -tags tinygo -v .
+      - run: tinygo test -target=wasip1 -tags tinygo .
 
-      # - run: tinygo test -bench -target=wasip1 -tags tinygo -v ./
+      # - run: tinygo test -bench -target=wasip1 -tags tinygo ./
