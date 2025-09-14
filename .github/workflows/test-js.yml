@@ -12,6 +12,9 @@ jobs:
     name: test-js
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    env:
+      GOOS: js
+      GOARCH: wasm
     steps:
     - uses: actions/checkout@v5
 
@@ -29,5 +32,14 @@ jobs:
         printf '::notice ::%s\n' "$(go version)"
         GOROOT=$(go env GOROOT)
         cp "${GOROOT}/lib/wasm/wasm_exec.js" .
-        GOOS=js GOARCH=wasm go test -exec="${GOROOT}/lib/wasm/go_js_wasm_exec" .
-        exit 0
+        go test -exec="${GOROOT}/lib/wasm/go_js_wasm_exec" -covermode=atomic -coverprofile=coverage.out -coverpkg=. .
+        sed -i.bak "/compat\/cmd\//d; /compat\/golang\//d;" coverage.out
+        rm -f *.bak
+
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@5a1091511ad55cbe89839c7260b706298ca349f7 # v5.5.1
+      with:
+        fail_ci_if_error: false
+        files: ./coverage.out
+        name: coverage-${{ env.GOOS }}
+        token: ${{ secrets.CODECOV_TOKEN }}

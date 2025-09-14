@@ -45,6 +45,8 @@ jobs:
         #       tiny: "0.37.0"
 
     env:
+      GOOS: wasip1
+      GOARCH: wasm
       GODEBUG: toolchaintrace=1
       GOTOOLCHAIN: local
 
@@ -80,8 +82,19 @@ jobs:
           version: "${{ env.wasmtime_version }}"
 
       # https://go.dev/blog/wasi#running-go-tests-with-wasip1
-      - run: GOOS=wasip1 GOARCH=wasm go test .
+      - run: |
+          go test -covermode=atomic -coverprofile=coverage.out -coverpkg=. .
+          sed -i.bak "/compat\/cmd\//d; /compat\/golang\//d;" coverage.out
+          rm -f *.bak
 
-      - run: tinygo test -target=wasip1 -tags tinygo .
+      - run: tinygo test -target=${{ env.GOOS }} -tags tinygo .
 
-      # - run: tinygo test -bench -target=wasip1 -tags tinygo ./
+      # - run: tinygo test -bench -target=${{ env.GOOS }} -tags tinygo ./
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@5a1091511ad55cbe89839c7260b706298ca349f7 # v5.5.1
+        with:
+          fail_ci_if_error: false
+          files: ./coverage.out
+          name: coverage-${{ env.GOOS }}
+          token: ${{ secrets.CODECOV_TOKEN }}

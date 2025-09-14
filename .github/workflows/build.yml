@@ -221,4 +221,5 @@ jobs:
         with:
           fail_ci_if_error: false
           files: ./coverage.out
+          name: coverage-${{ runner.os }}
           token: ${{ secrets.CODECOV_TOKEN }}
