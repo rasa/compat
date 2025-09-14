@@ -81,7 +81,7 @@ func TestNiceReniceIfRootInvalid(t *testing.T) {
 		return // tinygo doesn't support t.Skip
 	}
 
-	const invalidNice = compat.MinNice + 1
+	const invalidNice = compat.MinNice - 1024
 
 	err := compat.Renice(invalidNice)
 	if err == nil {
