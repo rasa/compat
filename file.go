@@ -47,13 +47,16 @@ func Create(name string, opts ...Option) (*os.File, error) {
 	// return OpenFile(name, O_RDWR|O_CREATE|O_TRUNC, 0666)
 
 	fopts := Options{
-		keepFileMode: true,
-		fileMode:     CreatePerm,
-		flags:        os.O_RDWR | os.O_CREATE | os.O_TRUNC,
+		fileMode: CreatePerm,
+		flags:    os.O_CREATE | os.O_TRUNC,
 	}
 
 	for _, opt := range opts {
 		opt(&fopts)
+	}
+
+	if fopts.flags&os.O_WRONLY != os.O_WRONLY {
+		fopts.flags |= os.O_RDWR
 	}
 
 	if IsWindows {
@@ -77,10 +80,15 @@ func Create(name string, opts ...Option) (*os.File, error) {
 func CreateTemp(dir, pattern string, opts ...Option) (*os.File, error) {
 	fopts := Options{
 		fileMode: CreateTempPerm,
-		flags:    os.O_CREATE,
+		flags:    os.O_CREATE | os.O_TRUNC,
 	}
+
 	for _, opt := range opts {
 		opt(&fopts)
+	}
+
+	if fopts.flags&os.O_WRONLY != os.O_WRONLY {
+		fopts.flags |= os.O_RDWR
 	}
 
 	if IsWindows {

@@ -165,6 +165,10 @@ jobs:
           printf "GOMODCACHE=%s\n"   "$(go env GOMODCACHE | tr '\\' '/')" >>"${GITHUB_ENV}"
           printf "GOVERSION=%s\n"    "$(go version | sed 's|^.*go||; s| .*||;')" >>"${GITHUB_ENV}"
           printf "sudo=%s\n"         "${sudo:-}" >>"${GITHUB_ENV}"
+          # to improve code coverage
+          if [[ "${{ runner.os }}" == "Windows" ]]; then
+            printf "UMASK=022\n" >>"${GITHUB_ENV}"
+          fi
           # echo "${GITHUB_ENV}":
           cat "${GITHUB_ENV}"
 

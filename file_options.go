@@ -47,7 +47,7 @@ func WithFileMode(mode os.FileMode) Option {
 // WriteReaderAtomic functions.
 func WithFlags(flags int) Option {
 	return func(opts *Options) {
-		opts.flags = flags
+		opts.flags |= flags
 	}
 }
 
