@@ -132,9 +132,13 @@ func fatalTimes(t *testing.T, prefix string, got, want time.Time, granularity in
 
 func fixPerms(perm os.FileMode, isDir bool) os.FileMode {
 	if compat.IsWasip1 {
+		if compat.IsTinygo {
+			return perm600
+		}
 		if isDir {
 			return perm700
 		}
+
 		return perm600
 	}
 
@@ -165,18 +169,22 @@ func fixPerms(perm os.FileMode, isDir bool) os.FileMode {
 
 func fixPosixPerms(perm os.FileMode, isDir bool) os.FileMode {
 	if compat.IsWasip1 {
+		if compat.IsTinygo {
+			return perm000
+		}
 		if isDir {
 			return perm700
 		}
+
 		return perm600
 	}
 
 	if compat.IsWindows {
 		if isDir {
 			return compat.DefaultWindowsDirPerm
-		} else {
-			return compat.DefaultWindowsFilePerm
 		}
+
+		return compat.DefaultWindowsFilePerm
 	}
 
 	return fixPerms(perm, isDir)
