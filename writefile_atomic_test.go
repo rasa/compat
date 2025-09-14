@@ -201,3 +201,37 @@ func TestWriteFileAtomicWithFileMode(t *testing.T) {
 		t.Fatalf("got %04o, want %04o (2)", got, want)
 	}
 }
+
+func TestWriteFileAtomicReadOnlyModeReset(t *testing.T) {
+	if !compat.IsWindows {
+		skip(t, "Skipping test: requires Windows")
+
+		return
+	}
+
+	file, err := tempName(t)
+	if err != nil {
+		t.Fatalf("Failed to create temp file: %v", err)
+	}
+
+	t.Cleanup(func() {
+		_ = compat.Chmod(file, perm600)
+		_ = os.Remove(file)
+	})
+
+	err = compat.WriteFileAtomic(file, helloBytes, compat.WithFileMode(perm400), compat.WithReadOnlyMode(compat.ReadOnlyModeReset))
+	if err != nil {
+		t.Fatalf("Failed to write file: %q: %v", file, err)
+	}
+
+	fi, err := os.Stat(file)
+	if err != nil {
+		t.Fatalf("Failed to stat file: %q: %v", file, err)
+	}
+
+	want := false // user-writable bit is not set.
+	got := fi.Mode().Perm()&perm200 == perm200
+	if got != want {
+		t.Fatalf("got %v, want %v", got, want)
+	}
+}
