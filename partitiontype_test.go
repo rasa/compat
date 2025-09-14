@@ -50,6 +50,38 @@ func TestPartitionTypeBad(t *testing.T) {
 	}
 }
 
+func TestPartitionTypeUNC(t *testing.T) {
+	if !compat.IsWindows {
+		skip(t, "Skipping test: requires Windows")
+
+		return
+	}
+
+	f, err := os.CreateTemp(tempDir(t), "")
+	if err != nil {
+		t.Error(err)
+
+		return
+	}
+	name := `\\?\UNC\` + f.Name()
+	_ = f.Close()
+	testPartitionType(t, name)
+}
+
+func TestPartitionTypeRoot(t *testing.T) {
+	if !compat.IsWindows {
+		skip(t, "Skipping test: requires Windows")
+
+		return
+	}
+
+	systemDrive := os.Getenv("SystemDrive")
+	if systemDrive == "" {
+		systemDrive = "C:"
+	}
+	testPartitionType(t, systemDrive)
+}
+
 func testPartitionType(t *testing.T, name string) {
 	t.Helper()
 
