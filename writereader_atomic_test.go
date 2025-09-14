@@ -150,7 +150,7 @@ func TestWriteReaderAtomicKeepFileMode(t *testing.T) { //nolint:dupl
 	if got == want {
 		if perm != want {
 			t.Logf("got %v, want %v (ignoring: %v on %v)", got, want, partType, runtime.GOOS)
-			returm
+			return
 		}
 		t.Fatalf("got %04o, want !%04o (2)", got, want)
 	}
