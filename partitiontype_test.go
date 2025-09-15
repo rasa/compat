@@ -6,6 +6,8 @@ package compat_test
 import (
 	"context"
 	"os"
+	"os/exec"
+	"os/user"
 	"path/filepath"
 	"runtime"
 	"strings"
@@ -59,7 +61,7 @@ func TestPartitionTypePrefix(t *testing.T) {
 
 	f, err := os.CreateTemp(tempDir(t), "")
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 
 		return
 	}
@@ -68,28 +70,44 @@ func TestPartitionTypePrefix(t *testing.T) {
 	testPartitionType(t, name)
 }
 
-/*
-	func TestPartitionTypeUNC(t *testing.T) {
-		if !compat.IsWindows {
-			skip(t, "Skipping test: requires Windows")
+func TestPartitionTypeUNC(t *testing.T) {
+	if !compat.IsWindows {
+		skip(t, "Skipping test: requires Windows")
 
-			return
-		}
-
-		dir := tempDir(t)
-		// net share sharename=dir
-		f, err := os.CreateTemp(dir, "")
-		if err != nil {
-			t.Error(err)
-
-			return
-		}
-		name := `\\?\UNC\127.0.0.1\sharename\` + filepath(f.Name())
-		_ = f.Close()
-		testPartitionType(t, name)
-		// net share sharename /del /yes
+		return
 	}
-*/
+
+	dir := tempDir(t)
+	ctx := context.Background()
+	sharename := randomBase36String(8)
+	args := []string{"share", sharename + "=" + dir, "/grant:" + currentUsername() + ",READ"}
+	err := exec.CommandContext(ctx, "net.exe", args...).Run()
+	if err != nil {
+		t.Fatal(err)
+
+		return
+	}
+
+	defer func() {
+		args := []string{"share", sharename, "/del", "/yes"}
+		err = exec.CommandContext(ctx, "net.exe", args...).Run()
+		if err != nil {
+			t.Fatal(err)
+		}
+	}()
+
+	f, err := os.CreateTemp(dir, "")
+	if err != nil {
+		t.Fatal(err)
+
+		return
+	}
+
+	name := `\\?\UNC\127.0.0.1\` + sharename + `\` + filepath.Base(f.Name())
+	_ = f.Close()
+	testPartitionType(t, name)
+}
+
 func TestPartitionTypeRoot(t *testing.T) {
 	if !compat.IsWindows {
 		skip(t, "Skipping test: requires Windows")
@@ -128,4 +146,13 @@ func testPartitionType(t *testing.T, name string) {
 		// @TODO change this to Errorf eventually
 		t.Logf("PartitionType(): got %v, want %v", partitionType, fsType)
 	}
+}
+
+func currentUsername() string {
+	usr, err := user.Current()
+	if err != nil {
+		return compat.UnknownUsername
+	}
+
+	return usr.Username
 }
