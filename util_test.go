@@ -249,7 +249,7 @@ func randomBase36String(n int) string { //nolint:unused
 	return string(out)
 }
 
-func removeIt(name string) {
+func removeIt(name string) { //nolint:unused
 	if os.IsPermission(os.Remove(name)) {
 		_ = compat.Chmod(name, perm600)
 		_ = compat.Remove(name)
