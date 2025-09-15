@@ -11,7 +11,7 @@ import (
 	"golang.org/x/sys/unix"
 )
 
-const supports supportsType = supportsLinks | supportsATime | supportsBTime | supportsCTime | supportsSymlinks
+const supports supportsType = supportsATime | supportsBTime | supportsCTime | supportsLinks | supportsNice | supportsSymlinks
 
 const userIDSource UserIDSourceType = UserIDSourceIsInt
 

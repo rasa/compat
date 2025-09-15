@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ### Added
 
 - Add `Fchmod()` function.
+- Add `SupportsNice()` function.
 
 ### Fixed
 
@@ -23,6 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Deprecate `O_DELETE` and `O_NOROATTR` constants.
 - Freshen golang code from upstream.
 - Always return `os.PathError` or `os.LinkError`, as appropriate.
+- Rework `Nice()` to return `0` and no error, when not supported by the OS.
 
 ## [v0.5.3](https://github.com/rasa/compat/compare/v0.5.2...v0.5.3)
 

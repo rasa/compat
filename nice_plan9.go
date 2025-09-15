@@ -14,7 +14,7 @@ import (
 
 // Nice gets the CPU process priority. The return value is in a range from
 // -20 (least nice), to 19 (most nice), even on non-Unix systems such as
-// Windows, plan9, etc. If not supported by the operating system, an error is
+// Windows, plan9, etc. If not supported by the operating system, 0 is
 // returned.
 func Nice() (int, error) {
 	pid := os.Getpid()
@@ -115,7 +115,7 @@ var priorityMap = map[int]uint32{
 
 // Renice sets the CPU process priority. The nice parameter can range from
 // -20 (least nice), to 19 (most nice), even on non-Unix systems such as
-// Windows, plan9, etc.
+// Windows, plan9, etc. If not supported by the operating system, nil is returned.
 func Renice(nice int) error {
 	priority, ok := priorityMap[nice]
 	if !ok {

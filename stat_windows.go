@@ -22,7 +22,7 @@ import (
 
 const perm000 = os.FileMode(0o0)
 
-const supports supportsType = supportsLinks | supportsATime | supportsBTime | supportsCTime | supportsSymlinks
+const supports supportsType = supportsLinks | supportsATime | supportsBTime | supportsCTime | supportsNice | supportsSymlinks
 
 const userIDSource UserIDSourceType = UserIDSourceIsSID
 

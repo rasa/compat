@@ -14,8 +14,7 @@ import (
 
 // Nice gets the CPU process priority. The return value is in a range from
 // -20 (least nice), to 19 (most nice), even on non-Unix systems such as
-// Windows, plan9, etc. If not supported by the operating system, an error is
-// returned.
+// Windows, plan9, etc. If not supported by the operating system, 0 is returned.
 func Nice() (int, error) {
 	nice, err := unix.Getpriority(unix.PRIO_PROCESS, 0)
 	if err != nil {
@@ -27,7 +26,7 @@ func Nice() (int, error) {
 
 // Renice sets the CPU process priority. The nice parameter can range from
 // -20 (least nice), to 19 (most nice), even on non-Unix systems such as
-// Windows, plan9, etc.
+// Windows, plan9, etc. If not supported by the operating system, nil is returned.
 func Renice(nice int) error {
 	// Move ourselves to a new process group so that we can use the process
 	// group variants of Setpriority etc to affect all of our threads in one

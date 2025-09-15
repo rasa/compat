@@ -39,6 +39,8 @@ const (
 	supportsGID
 	// supportsSymlinks defines if symlinks are supported by the OS.
 	supportsSymlinks
+	// supportsNice defines if Nice() is supported by the OS.
+	supportsNice
 )
 
 // UnknownID is returned when the UID or GID could not be determined.
@@ -130,11 +132,6 @@ func UserIDSource() UserIDSourceType {
 	return userIDSource
 }
 
-// SupportsLinks returns true if FileInfo's Links() function is supported by the OS.
-func SupportsLinks() bool {
-	return supports&supportsLinks == supportsLinks
-}
-
 // SupportsATime returns true if FileInfo's ATime() function is supported by the OS.
 func SupportsATime() bool {
 	return supports&supportsATime == supportsATime
@@ -148,6 +145,16 @@ func SupportsBTime() bool {
 // SupportsCTime returns true if FileInfo's CTime() function is supported by the OS.
 func SupportsCTime() bool {
 	return supports&supportsCTime == supportsCTime
+}
+
+// SupportsLinks returns true if FileInfo's Links() function is supported by the OS.
+func SupportsLinks() bool {
+	return supports&supportsLinks == supportsLinks
+}
+
+// SupportsNice returns true if the Nice() function is supported by the OS.
+func SupportsNice() bool {
+	return supports&supportsNice == supportsNice
 }
 
 // SupportsSymlinks returns true if the os.Symlinks() function is supported by the OS.
