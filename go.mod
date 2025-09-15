@@ -1,6 +1,7 @@
 module github.com/rasa/compat
 
-go 1.25
+// tinygo requires 1.24
+go 1.24
 
 require (
 	github.com/OneOfOne/xxhash v1.2.8
