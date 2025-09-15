@@ -82,15 +82,18 @@ func writeFile(name string, data []byte, perm os.FileMode, _ int) error {
 }
 
 func wrap(name string, flag int, f *os.File) (*os.File, error) {
-	if flag&O_FILE_FLAG_DELETE_ON_CLOSE == O_FILE_FLAG_DELETE_ON_CLOSE {
-		err := os.Remove(name)
-		if err != nil {
-			_ = f.Close()
-			_ = os.Remove(name)
-
-			return nil, err
-		}
+	if flag&O_FILE_FLAG_DELETE_ON_CLOSE == 0 {
+		return f, nil
 	}
 
-	return f, nil
+	err := os.Remove(name)
+	if err == nil || os.IsNotExist(err) {
+		return f, nil
+	}
+	if f != nil {
+		_ = f.Close()
+	}
+	_ = os.Remove(name)
+
+	return nil, err
 }
