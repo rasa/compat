@@ -184,6 +184,7 @@ func getVolumeInfoByHandle(h windows.Handle) (uint32, uint32, error) {
 }
 
 // (Optional) by-root variant if you want to seed/verify the byRoot cache directly.
+/*
 func getVolumeInfoByRoot(root string) (uint32, uint32, error) { //nolint:unused
 	r16, err := windows.UTF16PtrFromString(root)
 	if err != nil {
@@ -199,6 +200,7 @@ func getVolumeInfoByRoot(root string) (uint32, uint32, error) { //nolint:unused
 	}
 	return serial, flags, nil
 }
+*/
 
 //------------------------------------------------------------------------------
 // Root resolution via GUID + GetVolumePathNamesForVolumeName
