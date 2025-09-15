@@ -4,6 +4,7 @@
 package compat_test
 
 import (
+	"runtime"
 	"testing"
 
 	"github.com/rasa/compat"
@@ -17,26 +18,20 @@ func TestNice(t *testing.T) {
 }
 
 func TestNiceRenice(t *testing.T) {
-	if compat.IsWasip1 {
-		skip(t, "Skipping test: operation not supported")
-
-		return // tinygo doesn't support t.Skip
-	}
-
 	err := compat.Renice(compat.MaxNice)
 	if err != nil {
+		if compat.IsIOS || compat.IsWasm {
+			skipf(t, "Skipping test: %v on %v", err, runtime.GOOS)
+
+			return // tinygo doesn't support t.Skip
+		}
+
 		// Don't fail on "permission denied" on Linux
 		skip(t, err)
 	}
 }
 
 func TestNiceReniceIfRootValid(t *testing.T) {
-	if compat.IsWasip1 {
-		skip(t, "Skipping test: operation not supported")
-
-		return // tinygo doesn't support t.Skip
-	}
-
 	isRoot, _ := compat.IsRoot()
 
 	if !compat.IsWindows && !isRoot {
@@ -47,12 +42,22 @@ func TestNiceReniceIfRootValid(t *testing.T) {
 
 	nice, err := compat.Nice()
 	if err != nil {
-		t.Fatal(err)
+		if compat.IsIOS || compat.IsWasm {
+			skipf(t, "Skipping test: %v on %v", err, runtime.GOOS)
+		} else {
+			t.Fatal(err)
+		}
 	}
 
 	for n := 0; n >= compat.MinNice; n-- {
 		err = compat.Renice(n)
 		if err != nil {
+			if compat.IsIOS || compat.IsWasm {
+				skipf(t, "Skipping test: %v on %v", err, runtime.GOOS)
+
+				return // tinygo doesn't support t.Skip
+			}
+
 			// under act, "permission denied" is returned, even though we root.
 			skip(t, err)
 
@@ -67,12 +72,6 @@ func TestNiceReniceIfRootValid(t *testing.T) {
 }
 
 func TestNiceReniceIfRootInvalid(t *testing.T) {
-	if compat.IsWasip1 {
-		skip(t, "Skipping test: operation not supported")
-
-		return // tinygo doesn't support t.Skip
-	}
-
 	isRoot, _ := compat.IsRoot()
 
 	if !compat.IsWindows && !isRoot {
