@@ -715,6 +715,14 @@ func TestLstatDiffFiles(t *testing.T) {
 	}
 }
 
+func TestLstatLstatInvalid(t *testing.T) {
+	name := "/an/invalid/file/lstat"
+	_, err := compat.Lstat(name)
+	if err == nil {
+		t.Fatalf("expected no error, got %v", err)
+	}
+}
+
 func createTempSymlink(t *testing.T, opts ...compat.Option) (string, string, error) {
 	t.Helper()
 

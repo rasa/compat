@@ -618,6 +618,57 @@ func TestStatUserIDSource(t *testing.T) { //nolint:dupl
 	}
 }
 
+func TestStatStatInvalid(t *testing.T) {
+	name := "/an/invalid/file/stat"
+	_, err := compat.Stat(name)
+	if err == nil {
+		t.Fatalf("expected no error, got %v", err)
+	}
+}
+
+func TestStatSamePartitionInvalid(t *testing.T) {
+	name := "/an/invalid/file/samepartition"
+
+	fi1, _ := compat.Stat(name)
+	fi2, _ := compat.Stat(name)
+
+	got := compat.SamePartition(fi1, fi2)
+	if got {
+		t.Fatalf("got %v, want false", got)
+	}
+}
+
+func TestStatSamePartitionsInvalid(t *testing.T) {
+	name := "/an/invalid/file/samepartitions"
+
+	got := compat.SamePartitions(name, name)
+	if got {
+		t.Fatalf("got %v, want false", got)
+	}
+}
+
+func TestStatSameFileInvalid(t *testing.T) {
+	name := "/an/invalid/file/samefile"
+
+	fi1, _ := compat.Stat(name)
+
+	fi2, _ := compat.Stat(name)
+
+	got := compat.SameFile(fi1, fi2)
+	if got {
+		t.Fatalf("got %v, want false", got)
+	}
+}
+
+func TestStatSameFilesInvalid(t *testing.T) {
+	name := "/an/invalid/file/samefiles"
+
+	got := compat.SameFiles(name, name)
+	if got {
+		t.Fatalf("got %v, want false", got)
+	}
+}
+
 func createTempFile(t *testing.T) (string, error) {
 	t.Helper()
 
