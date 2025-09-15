@@ -13,6 +13,11 @@ import (
 func TestNice(t *testing.T) {
 	_, err := compat.Nice()
 	if err != nil {
+		if compat.IsIOS || compat.IsWasm {
+			skipf(t, "Skipping test: %v on %v", err, runtime.GOOS)
+
+			return // tinygo doesn't support t.Skip
+		}
 		t.Fatal(err)
 	}
 }
