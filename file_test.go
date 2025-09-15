@@ -439,6 +439,52 @@ func TestFilePosixOpenFileDelete(t *testing.T) {
 	}
 }
 
+func TestFilePosixRemove(t *testing.T) {
+	name, err := tempFile(t)
+	if err != nil {
+		t.Fatal(err)
+
+		return
+	}
+
+	err = compat.Remove(name)
+	if err != nil {
+		t.Fatal(err)
+
+		return
+	}
+
+	_, err = os.Stat(name)
+	if !errors.Is(err, os.ErrNotExist) {
+		t.Fatal("File exists, should not")
+
+		return
+	}
+}
+
+func TestFilePosixRemoveAll(t *testing.T) {
+	name, err := tempFile(t)
+	if err != nil {
+		t.Fatal(err)
+
+		return
+	}
+
+	err = compat.RemoveAll(name)
+	if err != nil {
+		t.Fatal(err)
+
+		return
+	}
+
+	_, err = os.Stat(name)
+	if !errors.Is(err, os.ErrNotExist) {
+		t.Fatal("File exists, should not")
+
+		return
+	}
+}
+
 func TestFilePosixWriteFile(t *testing.T) {
 	perm := os.FileMode(0o666)
 	want := fixPosixPerms(perm, false)
