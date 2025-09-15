@@ -435,6 +435,33 @@ func TestFileWindowsRemove(t *testing.T) {
 	}
 }
 
+func TestFileWindowsRemoveAll(t *testing.T) {
+	for _, perm := range perms {
+		name, err := tempFile(t)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		err = compat.Chmod(name, perm)
+		checkPerm(t, name, perm, false)
+		if err != nil {
+			t.Fatalf("Chmod(%04o) failed: %v", perm, err)
+		}
+
+		perm = perm777
+		err = compat.Chmod(name, perm)
+		checkPerm(t, name, perm, false)
+		if err != nil {
+			t.Fatalf("Chmod(%04o) failed: %v", perm, err)
+		}
+		err = compat.RemoveAll(name)
+		checkDeleted(t, name, perm, err)
+		if err != nil {
+			t.Fatalf("RemoveAll failed: %v: %v", name, err)
+		}
+	}
+}
+
 func TestFileWindowsWithReadOnlyModeIgnore(t *testing.T) {
 	for _, perm := range perms {
 		name, err := tempFile(t)
