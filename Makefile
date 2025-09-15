@@ -15,20 +15,20 @@ export TOOL_OPTS
 .DEFAULT_GOAL := all
 
 .PHONY: all
-all: ## build pipeline
+all: ## make download gen build spell lint fix test
 all: download gen build spell lint fix test
 
 .PHONY: precommit
-precommit: ## validate the branch before commit
+precommit: ## make all vuln
 precommit: all vuln
 
 .PHONY: ci
-ci: ## CI build pipeline
+ci: ## make precommit diff
 ci: precommit diff
 
 .PHONY: help
 help:
-	@awk -F ':.*##[ \t]*' '/^[^#: \t]+:.*##/ {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}' $(MAKEFILE_LIST) | sort
+	@awk -F ':.*##[ \t]*' '/^[^#: \t]+:.*##/ {printf "\033[36m%-10s\033[0m %s\n", $$1, $$2}' $(MAKEFILE_LIST) | sort
 
 .PHONY: clean
 clean: ## remove files created during build pipeline
@@ -50,7 +50,7 @@ get: ## go get -u
 	make mod
 
 .PHONY: tools
-tools: ## freshen tools to latest versions
+tools: ## freshen tools (misspell, golangci-lint, goreleaser, govulncheck, gofumpt)
 	test -f go.tool.mod && export GOFLAGS="$(GOFLAGS) -modfile=go.tool.mod" ;\
 	go get github.com/client9/misspell/cmd/misspell@latest ;\
 	go get github.com/golangci/golangci-lint/v2/cmd/golangci-lint@latest ;\
@@ -65,20 +65,20 @@ mod: ## go mod tidy
 	test -f go.tool.mod && go mod tidy -modfile=go.tool.mod
 
 .PHONY: gen
-gen: ## go generate
+gen: ## go generate ./...
 	go generate ./...
 
 .PHONY: build
-build: ## goreleaser build
+build: ## goreleaser build --clean --single-target --snapshot
 	-go tool $(TOOL_OPTS) goreleaser --version
 	go tool $(TOOL_OPTS) goreleaser build --clean --single-target --snapshot
 
 .PHONY: spell
-spell: ## misspell
+spell: ## misspell -error -locale=US -w **.md
 	go tool $(TOOL_OPTS) misspell -error -locale=US -w **.md
 
 .PHONY: lint
-lint: ## golangci-lint
+lint: ## golangci-lint run --fix
 	go tool $(TOOL_OPTS) golangci-lint run --fix
 
 .PHONY: fix
