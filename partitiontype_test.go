@@ -77,11 +77,18 @@ func TestPartitionTypeUNC(t *testing.T) {
 		return
 	}
 
+	usr, err := user.Current()
+	if err != nil {
+		t.Fatal(err)
+
+		return
+	}
+
 	dir := tempDir(t)
 	ctx := context.Background()
 	sharename := randomBase36String(8)
-	args := []string{"share", sharename + "=" + dir, "/grant:" + currentUsername() + ",READ"}
-	err := exec.CommandContext(ctx, "net.exe", args...).Run()
+	args := []string{"share", sharename + "=" + dir, "/grant:" + usr.Username + ",READ"}
+	err = exec.CommandContext(ctx, "net.exe", args...).Run()
 	if err != nil {
 		t.Fatal(err)
 
@@ -146,13 +153,4 @@ func testPartitionType(t *testing.T, name string) {
 		// @TODO change this to Errorf eventually
 		t.Logf("PartitionType(): got %v, want %v", partitionType, fsType)
 	}
-}
-
-func currentUsername() string {
-	usr, err := user.Current()
-	if err != nil {
-		return compat.UnknownUsername
-	}
-
-	return usr.Username
 }
