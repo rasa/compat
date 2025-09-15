@@ -11,8 +11,6 @@ import (
 	"time"
 )
 
-const supports supportsType = supportsLinks | supportsATime | supportsBTime | supportsCTime | supportsSymlinks
-
 const userIDSource UserIDSourceType = UserIDSourceIsInt
 
 func (fs *fileStat) times() {

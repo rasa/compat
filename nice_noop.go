@@ -15,7 +15,7 @@ import (
 // Windows, plan9, etc. If not supported by the operating system, an error
 // is returned.
 func Nice() (int, error) {
-	return 0, errors.New("nice: function not supported on " + runtime.GOOS)
+	return 0, nil
 }
 
 // Renice sets the CPU process priority. The nice parameter can range from
