@@ -232,6 +232,14 @@ func parseName(name string) (string, string) {
 	}
 }
 
+func partitionType(name string) string {
+	partType, err := compat.PartitionType(context.Background(), name)
+	if err != nil {
+		return "n/a"
+	}
+	return partType
+}
+
 func randomBase36String(n int) string { //nolint:unused
 	const base36 = "0123456789abcdefghijklmnopqrstuvwxyz"
 	out := make([]byte, n)
@@ -239,6 +247,13 @@ func randomBase36String(n int) string { //nolint:unused
 		out[i] = base36[rand.IntN(len(base36))] //nolint:gosec
 	}
 	return string(out)
+}
+
+func removeIt(name string) {
+	if os.IsPermission(os.Remove(name)) {
+		_ = compat.Chmod(name, perm600)
+		_ = compat.Remove(name)
+	}
 }
 
 func run(name string, args ...string) error { //nolint:unparam,unused

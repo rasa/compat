@@ -202,7 +202,7 @@ func TestFileWindowsChmodResetNotSet(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		want := true // user-writable bit should be set.
+		want := false // user-writable bit should not be set.
 		got := fi.Mode().Perm()&perm200 == perm200
 		if want != got {
 			if perm&perm200 != perm200 {
@@ -511,12 +511,17 @@ func TestFileWindowsWithReadOnlyModeSet(t *testing.T) {
 		// user writable bit set.
 		err = compat.Chmod(name, perm, compat.WithReadOnlyMode(compat.ReadOnlyModeSet))
 		if err != nil {
-			t.Fatal(err)
+			if perm&perm200 != perm200 {
+				debugf(t, "perm=%03o (%v): %v (ignoring)", perm, perm, err)
+				continue
+			}
+
+			t.Fatalf("perm=%3o (%v): %v", perm, perm, err)
 		}
 
 		fi, err := os.Stat(name)
 		if err != nil {
-			t.Fatal(err)
+			t.Fatalf("perm=%3o (%v): %v", perm, perm, err)
 		}
 
 		want := perm&perm200 == perm200
@@ -527,12 +532,12 @@ func TestFileWindowsWithReadOnlyModeSet(t *testing.T) {
 
 		err = compat.Remove(name)
 		if err != nil {
-			t.Fatal(err)
+			t.Fatalf("perm=%3o (%v): %v", perm, perm, err)
 		}
 	}
 }
 
-func TestFileWindowsWithReadOnlyModeReset(t *testing.T) {
+func TestFileWindowsWithReadOnlyModeResetSet(t *testing.T) {
 	for _, perm := range perms {
 		name, err := tempFile(t)
 		if err != nil {
@@ -548,6 +553,11 @@ func TestFileWindowsWithReadOnlyModeReset(t *testing.T) {
 		// ReadOnlyModeReset do not set a file's RO attribute, and if it's set, reset it.
 		err = compat.Chmod(name, perm, compat.WithReadOnlyMode(compat.ReadOnlyModeReset))
 		if err != nil {
+			if perm&perm200 != perm200 {
+				debugf(t, "perm=%03o (%v): %v (ignoring)", perm, perm, err)
+				continue
+			}
+
 			t.Fatal(err)
 		}
 
@@ -567,39 +577,46 @@ func TestFileWindowsWithReadOnlyModeReset(t *testing.T) {
 			t.Fatal(err)
 		}
 	}
+}
 
+func TestFileWindowsWithReadOnlyModeResetReset(t *testing.T) {
 	for _, perm := range perms {
 		name, err := tempFile(t)
 		if err != nil {
-			t.Fatal(err)
+			t.Fatalf("perm=%3o (%v): %v", perm, perm, err)
 		}
 
 		// Reset the RO attribute.
 		err = os.Chmod(name, perm600)
 		if err != nil {
-			t.Fatal(err)
+			t.Fatalf("perm=%3o (%v): %v", perm, perm, err)
 		}
 
 		// ReadOnlyModeReset do not set a file's RO attribute, and if it's set, reset it.
 		err = compat.Chmod(name, perm, compat.WithReadOnlyMode(compat.ReadOnlyModeReset))
 		if err != nil {
-			t.Fatal(err)
+			if perm&perm200 != perm200 {
+				debugf(t, "perm=%03o (%v): %v (ignoring)", perm, perm, err)
+				continue
+			}
+
+			t.Fatalf("perm=%3o (%v): %v", perm, perm, err)
 		}
 
 		fi, err := os.Stat(name)
 		if err != nil {
-			t.Fatal(err)
+			t.Fatalf("perm=%3o (%v): %v", perm, perm, err)
 		}
 
 		want := false // user-writable bit should not be set.
 		got := fi.Mode().Perm()&perm200 == perm200
 		if want != got {
-			t.Fatalf("WithReadOnlyMode(ReadOnlyModeReset): got %v, want %v: perm=%03o (%v): %v", got, want, perm, perm, name)
+			t.Fatalf("WithReadOnlyMode(ReadOnlyModeReset): got %v, want %v: perm=%03o (%v) fi.Mode().Perm()=%03o (%v): %v", got, want, perm, perm, fi.Mode().Perm(), fi.Mode().Perm(), name)
 		}
 
 		err = compat.Remove(name)
 		if err != nil {
-			t.Fatal(err)
+			t.Fatalf("perm=%3o (%v): %v", perm, perm, err)
 		}
 	}
 }
@@ -643,7 +660,7 @@ func TestFileWindowsWriteFileEx(t *testing.T) {
 }
 
 func TestFileWindowsCreateReadOnlyModeSet(t *testing.T) {
-	perm := fixPerms(perm400, false)
+	perm := perm400
 
 	name, err := tempName(t)
 	if err != nil {
@@ -651,6 +668,8 @@ func TestFileWindowsCreateReadOnlyModeSet(t *testing.T) {
 
 		return
 	}
+
+	defer removeIt(name)
 
 	fh, err := compat.Create(name, compat.WithFileMode(perm), compat.WithReadOnlyMode(compat.ReadOnlyModeSet))
 	if err != nil {

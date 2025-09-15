@@ -6,7 +6,6 @@
 package compat_test
 
 import (
-	"context"
 	"fmt"
 	"os"
 	"runtime"
@@ -38,12 +37,13 @@ func TestMain(m *testing.M) {
 		tempSize = fsSize
 	}
 
-	nativeFSType, _ := compat.PartitionType(context.Background(), os.TempDir())
-	if nativeFSType == "" {
-		nativeFSType = "Unknown"
+	tempDir := os.TempDir()
+	fsPath := os.Getenv("COMPAT_DEBUG_FS_PATH")
+	if fsPath != "" {
+		tempDir = fsPath
 	}
 
-	fsPath := os.Getenv("COMPAT_DEBUG_FS_PATH")
+	nativeFSType := partitionType(tempDir)
 
 	code := testMain(m, fsToTest, nativeFSType, fsPath)
 

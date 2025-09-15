@@ -50,7 +50,7 @@ func TestPartitionTypeBad(t *testing.T) {
 	}
 }
 
-func TestPartitionTypeUNC(t *testing.T) {
+func TestPartitionTypePrefix(t *testing.T) {
 	if !compat.IsWindows {
 		skip(t, "Skipping test: requires Windows")
 
@@ -63,11 +63,33 @@ func TestPartitionTypeUNC(t *testing.T) {
 
 		return
 	}
-	name := `\\?\UNC\` + f.Name()
+	name := `\\?\` + f.Name()
 	_ = f.Close()
 	testPartitionType(t, name)
 }
 
+/*
+	func TestPartitionTypeUNC(t *testing.T) {
+		if !compat.IsWindows {
+			skip(t, "Skipping test: requires Windows")
+
+			return
+		}
+
+		dir := tempDir(t)
+		// net share sharename=dir
+		f, err := os.CreateTemp(dir, "")
+		if err != nil {
+			t.Error(err)
+
+			return
+		}
+		name := `\\?\UNC\127.0.0.1\sharename\` + filepath(f.Name())
+		_ = f.Close()
+		testPartitionType(t, name)
+		// net share sharename /del /yes
+	}
+*/
 func TestPartitionTypeRoot(t *testing.T) {
 	if !compat.IsWindows {
 		skip(t, "Skipping test: requires Windows")

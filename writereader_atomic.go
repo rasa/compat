@@ -13,6 +13,8 @@ import (
 	"path/filepath"
 )
 
+const perm600 = os.FileMode(0o600)
+
 // WriteReaderAtomic atomically writes the contents of r to the specified filename.
 // The target file is guaranteed to be either fully written, or not written at all.
 // WriteReaderAtomic overwrites any file that exists at the location (but only if
@@ -76,7 +78,10 @@ func WriteReaderAtomic(filename string, r io.Reader, opts ...Option) (err error)
 	defer func() {
 		if err != nil {
 			// Don't leave the temp file lying around on error.
-			_ = os.Remove(name) // yes, ignore the error, not much we can do about it.
+			if os.IsPermission(Remove(name)) {
+				_ = Chmod(name, perm600)
+				_ = Remove(name)
+			}
 		}
 	}()
 	// ensure we always close f. Note that this does not conflict with the

@@ -4,7 +4,6 @@
 package compat_test
 
 import (
-	"context"
 	"os"
 	"os/user"
 	"path/filepath"
@@ -266,10 +265,9 @@ func TestStatUID(t *testing.T) {
 		return
 	}
 
-	partType, _ := compat.PartitionType(context.Background(), name)
-
 	want := os.Geteuid()
 	if got != want {
+		partType := partitionType(name)
 		if compat.IsApple && (partType == "exfat" || partType == "msdos") {
 			t.Logf("UID(): got %v, want %v (ignoring: %v on %v)", got, want, partType, runtime.GOOS)
 
@@ -341,9 +339,8 @@ func TestStatUser(t *testing.T) {
 	}
 	want := u.Username
 
-	partType, _ := compat.PartitionType(context.Background(), name)
-
 	if !compareNames(got, want) {
+		partType := partitionType(name)
 		if compat.IsApple && (partType == "exfat" || partType == "msdos") {
 			t.Logf("User(): got %v, want %v (ignoring: %v on %v)", got, want, partType, runtime.GOOS)
 

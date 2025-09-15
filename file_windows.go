@@ -54,11 +54,6 @@ func chmod(name string, perm os.FileMode, mask ReadOnlyMode) error {
 	// Set or clear Windows' read-only attribute
 	want := perm&syscall.S_IWRITE != 0 // 0x80 (0o200)
 	got := fi.Mode().Perm()&syscall.S_IWRITE != 0
-
-	if want == got {
-		return nil
-	}
-
 	if mask == ReadOnlyModeReset {
 		if !got {
 			return nil
@@ -66,10 +61,14 @@ func chmod(name string, perm os.FileMode, mask ReadOnlyMode) error {
 		want = false
 	}
 
+	if want == got {
+		return nil
+	}
+
 	if want {
 		perm |= syscall.S_IWRITE
 	} else {
-		perm &= ^os.FileMode(syscall.S_IWRITE)
+		perm &^= os.FileMode(syscall.S_IWRITE)
 	}
 	err = os.Chmod(name, perm)
 	if err != nil {
@@ -98,7 +97,7 @@ func createTemp(dir, pattern string, perm os.FileMode, flag int) (*os.File, erro
 		return nil, &os.PathError{Op: "createtemp", Path: dir, Err: err}
 	}
 
-	f, err := golang.CreateTemp(dir, pattern, flag, sa)
+	f, err := golang.CreateTemp(dir, pattern, flag, perm, sa)
 	if err != nil {
 		return nil, &os.PathError{Op: "createtemp", Path: dir, Err: err}
 	}

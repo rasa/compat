@@ -7,7 +7,6 @@
 package compat_test
 
 import (
-	"context"
 	"os"
 	"runtime"
 	"testing"
@@ -142,11 +141,10 @@ func TestWriteFileAtomicKeepFileMode(t *testing.T) { //nolint:dupl
 		t.Fatalf("Failed to stat file: %q: %v", file, err)
 	}
 
-	partType, _ := compat.PartitionType(context.Background(), file)
-
 	got = fi.Mode().Perm()
 	if got == want {
 		if perm != want {
+			partType := partitionType(file)
 			t.Logf("got %v, want %v (ignoring: %v on %v)", got, want, partType, runtime.GOOS)
 			return
 		}
@@ -229,7 +227,7 @@ func TestWriteFileAtomicReadOnlyModeReset(t *testing.T) {
 		t.Fatalf("Failed to stat file: %q: %v", file, err)
 	}
 
-	want := false // user-writable bit is not set.
+	want := true // user-writable bit is set.
 	got := fi.Mode().Perm()&perm200 == perm200
 	if got != want {
 		t.Fatalf("got %v, want %v", got, want)

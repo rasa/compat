@@ -296,8 +296,8 @@ func addExtendedPrefix(path string) string {
 
 // Snippet: https://github.com/golang/go/blob/ac803b59/src/os/tempfile.go#L35-L58
 
-// compat: s|int|int, sa *syscall.SecurityAttributes|
-func CreateTemp(dir, pattern string, flag int, sa *syscall.SecurityAttributes) (*File, error) {
+// compat: s|int|int, perm os.FileMode, sa *syscall.SecurityAttributes|
+func CreateTemp(dir, pattern string, flag int, perm os.FileMode, sa *syscall.SecurityAttributes) (*File, error) {
 	if dir == "" {
 		dir = TempDir()
 	}
@@ -311,7 +311,7 @@ func CreateTemp(dir, pattern string, flag int, sa *syscall.SecurityAttributes) (
 	try := 0
 	for {
 		name := prefix + nextRandom() + suffix
-		f, err := OpenFile(name, O_RDWR|O_CREATE|O_EXCL|flag, 0o600, sa) // compat: s|\)$|), sa)|
+		f, err := OpenFile(name, O_RDWR|O_CREATE|O_EXCL|flag, perm, sa) // compat: s|, 0600\)$|\|flag, perm, sa)|
 		if IsExist(err) {
 			if try++; try < 10000 {
 				continue
