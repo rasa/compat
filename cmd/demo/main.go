@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: MIT
 
 // demo is a sample application that runs functions provided by this library.
-// This also helps with our code coverage report.
 package main
 
 import (
