@@ -92,7 +92,7 @@ func TestNiceReniceIfRootInvalid(t *testing.T) {
 
 	err := compat.Renice(invalidNice)
 	if err == nil {
-		if compat.IsBSD {
+		if !compat.IsWindows && !compat.IsPlan9 {
 			skipf(t, "got no error calling Renice with %v (ignoring: doesn't fail on %v)", invalidNice, runtime.GOOS)
 		}
 		fatalf(t, "got no error calling Renice with %v", invalidNice)
