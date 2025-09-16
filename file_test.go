@@ -89,6 +89,51 @@ func TestFilePosixCreate(t *testing.T) {
 	}
 }
 
+func TestFilePosixCreateWithFileMode(t *testing.T) {
+	want := fixPosixPerms(compat.CreatePerm, false) // 0o666
+
+	name, err := tempName(t)
+	if err != nil {
+		t.Fatalf("tempName failed: %v", err)
+
+		return
+	}
+
+	fh, err := compat.Create(name, compat.WithFileMode(perm000))
+	if err != nil {
+		t.Fatalf("Create failed: %v", err)
+
+		return
+	}
+
+	err = fh.Close()
+	if err != nil {
+		t.Fatalf("Close failed: %v", err)
+
+		return
+	}
+
+	fi, err := os.Stat(name)
+	if err != nil {
+		if compat.IsTinygo && errors.Is(err, os.ErrNotExist) {
+			skip(t, "Skipping test: file is disappearing on tinygo")
+
+			return // tinygo doesn't support t.Skip
+		}
+
+		t.Fatalf("Stat failed: %v", err)
+
+		return
+	}
+
+	got := fi.Mode().Perm()
+	if got != want {
+		t.Fatalf("got 0%03o, want 0%03o", got, want)
+
+		return
+	}
+}
+
 func TestFilePosixCreateEx(t *testing.T) {
 	perm := compat.CreatePerm
 	want := fixPosixPerms(perm, false)
@@ -264,6 +309,48 @@ func TestFilePosixCreateTempExDelete(t *testing.T) {
 	}
 }
 
+func TestFilePosixFchmod(t *testing.T) {
+	perm := os.FileMode(0o644)
+	want := fixPosixPerms(perm, false)
+
+	name, err := tempFile(t)
+	if err != nil {
+		t.Fatal(err)
+
+		return
+	}
+
+	f, err := os.Open(name)
+	if err != nil {
+		t.Fatal(err)
+
+		return
+	}
+
+	defer fclose(f)
+
+	err = compat.Fchmod(f, perm)
+	if err != nil {
+		t.Fatal(err)
+
+		return
+	}
+
+	fs, err := os.Stat(name)
+	if err != nil {
+		t.Fatal(err)
+
+		return
+	}
+
+	got := fs.Mode().Perm()
+	if got != want {
+		t.Fatalf("got 0%03o, want 0%03o", got, want)
+
+		return
+	}
+}
+
 func TestFilePosixMkdir(t *testing.T) {
 	perm := os.FileMode(0o777)
 	want := fixPosixPerms(perm, true)
@@ -336,6 +423,33 @@ func TestFilePosixMkdirTemp(t *testing.T) {
 	pattern := ""
 
 	name, err := compat.MkdirTemp(dir, pattern)
+	if err != nil {
+		t.Fatal(err)
+
+		return
+	}
+
+	fi, err := os.Stat(name)
+	if err != nil {
+		t.Fatal(err)
+
+		return
+	}
+
+	got := fi.Mode().Perm()
+	if got != want {
+		t.Fatalf("got 0%03o, want 0%03o", got, want)
+
+		return
+	}
+}
+
+func TestFilePosixMkdirTempWithFileMode(t *testing.T) {
+	want := fixPosixPerms(compat.MkdirTempPerm, true) // 0o700
+	dir := tempDir(t)
+	pattern := ""
+
+	name, err := compat.MkdirTemp(dir, pattern, compat.WithFileMode(perm000))
 	if err != nil {
 		t.Fatal(err)
 

@@ -79,6 +79,9 @@ func chmod(name string, perm os.FileMode, mask ReadOnlyMode) error {
 }
 
 func create(name string, perm os.FileMode, flag int) (*os.File, error) {
+	if perm == 0 {
+		perm = CreatePerm
+	}
 	flag |= os.O_CREATE
 	sa, err := saFromPerm(perm, true)
 	if err != nil {
@@ -148,7 +151,11 @@ func mkdirAll(name string, perm os.FileMode) error {
 }
 
 func mkdirTemp(dir, pattern string, perm os.FileMode) (string, error) {
-	sa, err := saFromPerm(perm, true) // 0o700
+	if perm == 0 {
+		perm = MkdirTempPerm
+	}
+
+	sa, err := saFromPerm(perm, true)
 	if err != nil {
 		prefix, suffix, _ := golang.PrefixAndSuffix(pattern)
 
