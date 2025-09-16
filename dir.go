@@ -90,9 +90,9 @@ func (d dirEntry) Name() string {
 	return d.name
 }
 
-// func (d dirEntry) String() string {
-// 	return FormatDirEntry(d)
-// }
+func (d dirEntry) String() string {
+	return FormatDirEntry(d)
+}
 
 // Source: https://github.com/golang/go/blob/ac803b59/src/os/dir.go#L87-L107
 
