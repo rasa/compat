@@ -233,3 +233,10 @@ func TestWriteFileAtomicReadOnlyModeReset(t *testing.T) {
 		t.Fatalf("got %v, want %v", got, want)
 	}
 }
+
+func TestWriteFileAtomicInvalid(t *testing.T) {
+	err := compat.WriteFileAtomic(invalidName, helloBytes)
+	if err == nil {
+		t.Fatalf("expected error, got nil")
+	}
+}

@@ -46,7 +46,7 @@ func TestLstatStat(t *testing.T) { //nolint:dupl
 	want := fixPerms(perm, false)
 	if got := fi.Mode().Perm(); got != want {
 		if compat.IsWindows {
-			t.Logf("Mode(): got 0o%o, want 0o%o (ignoring: on %v)", got, want, runtime.GOOS)
+			t.Logf("Mode(): got 0o%o, want 0o%o (ignoring: functionality not available on %v)", got, want, runtime.GOOS)
 		} else {
 			t.Errorf("Mode(): got 0o%o, want 0o%o", got, want)
 		}
@@ -97,7 +97,8 @@ func TestLstatLstat(t *testing.T) { //nolint:dupl
 	want := fixPerms(perm, false)
 	if got := fi.Mode().Perm(); got == want {
 		if testEnv.noACLs {
-			t.Logf("Mode(): got 0o%o, want !0o%o (ignoring: no ACLs)", got, want)
+			partType := partitionType(link)
+			t.Logf("Mode(): got 0o%o, want !0o%o (ignoring: %v does not have ACLs)", got, want, partType)
 		} else {
 			t.Errorf("Mode(): got 0o%o, want !0o%o", got, want)
 		}
@@ -406,7 +407,7 @@ func TestLstatGID(t *testing.T) {
 	want := os.Getegid()
 	if got != want {
 		if compat.IsApple && isRoot {
-			t.Logf("GID(): got %v, want %v (ignoring: root on %v)", got, want, runtime.GOOS)
+			t.Logf("GID(): got %v, want %v (ignoring: we are root on %v)", got, want, runtime.GOOS)
 
 			return
 		}
@@ -447,7 +448,7 @@ func TestLstatUser(t *testing.T) {
 
 	if compareNames(got, want) == compat.IsWindows {
 		if compat.IsWindows {
-			t.Logf("User(): got %v, want %v (ignoring: on %v)", got, want, runtime.GOOS)
+			t.Logf("User(): got %v, want %v (ignoring: User() will be indeterminate on %v)", got, want, runtime.GOOS)
 			// skip(t, "Skipping test: User() will be indeterminate on Windows")
 
 			return
@@ -530,7 +531,7 @@ func TestLstatGroup(t *testing.T) {
 	want := g.Name
 	if !compareNames(got, want) {
 		if compat.IsApple && isRoot {
-			t.Logf("Group(): got %v, want %v (ignoring: root on %v)", got, want, runtime.GOOS)
+			t.Logf("Group(): got %v, want %v (ignoring: we are root on %v)", got, want, runtime.GOOS)
 
 			return
 		}
@@ -716,8 +717,7 @@ func TestLstatDiffFiles(t *testing.T) {
 }
 
 func TestLstatLstatInvalid(t *testing.T) {
-	name := "/an/invalid/file/lstat"
-	_, err := compat.Lstat(name)
+	_, err := compat.Lstat(invalidName)
 	if err == nil {
 		t.Fatalf("expected no error, got %v", err)
 	}

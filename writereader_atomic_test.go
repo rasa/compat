@@ -201,3 +201,10 @@ func TestWriteReaderAtomicWithFileMode(t *testing.T) {
 		t.Fatalf("got %04o, want %04o (2)", got, want)
 	}
 }
+
+func TestWriteReaderAtomicInvalid(t *testing.T) {
+	err := compat.WriteReaderAtomic(invalidName, helloBuf, compat.WithFileMode(perm644))
+	if err == nil {
+		t.Fatalf("expected error, got nil")
+	}
+}

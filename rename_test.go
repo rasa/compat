@@ -48,8 +48,8 @@ func TestRenameEmptyNew(t *testing.T) {
 	}
 }
 
-func TestRenameBadOld(t *testing.T) {
-	old := "/a/bad/filename/for/rename/old"
+func TestRenameInvalidOld(t *testing.T) {
+	old := invalidName
 
 	new, err := tempName(t)
 	if err != nil {
@@ -62,12 +62,12 @@ func TestRenameBadOld(t *testing.T) {
 	}
 }
 
-func TestRenameBadNew(t *testing.T) {
+func TestRenameInvalidNew(t *testing.T) {
 	old, err := tempFile(t)
 	if err != nil {
 		t.Fatal(err)
 	}
-	new := "/a/bad/filename/for/rename/new"
+	new := invalidName
 
 	err = compat.Rename(old, new)
 	if err == nil {

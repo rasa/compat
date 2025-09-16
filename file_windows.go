@@ -34,10 +34,15 @@ type securityInfo struct {
 }
 
 func chmod(name string, perm os.FileMode, mask ReadOnlyMode) error {
+	_, err := syscall.UTF16PtrFromString(name)
+	if err != nil {
+		return &os.PathError{Op: "chmod", Path: name, Err: os.ErrInvalid}
+	}
+
 	perm = perm.Perm()
 
 	// set Windows' ACLs
-	err := acl.Chmod(name, perm)
+	err = acl.Chmod(name, perm)
 	if err != nil {
 		return &os.PathError{Op: "chmod", Path: name, Err: fmt.Errorf("%w (acl)", err)}
 	}

@@ -21,15 +21,16 @@ import (
 )
 
 const (
-	perm000 = os.FileMode(0)
-	perm100 = os.FileMode(0o100)
-	perm200 = os.FileMode(0o200)
-	perm400 = os.FileMode(0o400)
-	perm555 = os.FileMode(0o555)
-	perm644 = os.FileMode(0o644)
-	perm600 = os.FileMode(0o600)
-	perm700 = os.FileMode(0o700)
-	perm777 = os.FileMode(0o777)
+	perm000     = os.FileMode(0)
+	perm100     = os.FileMode(0o100)
+	perm200     = os.FileMode(0o200)
+	perm400     = os.FileMode(0o400)
+	perm555     = os.FileMode(0o555)
+	perm644     = os.FileMode(0o644)
+	perm600     = os.FileMode(0o600)
+	perm700     = os.FileMode(0o700)
+	perm777     = os.FileMode(0o777)
+	invalidName = "\x00/a/name/with/an/embedded/\x00/byte"
 )
 
 var (
@@ -96,6 +97,7 @@ func debugln(t *testing.T, msg string) { //nolint:unused
 
 func debugf(t *testing.T, format string, a ...any) { //nolint:unused
 	t.Helper()
+
 	debugln(t, fmt.Sprintf(format, a...))
 }
 
@@ -116,6 +118,7 @@ func fatal(t *testing.T, msg any) { //nolint:unused
 
 func fatalf(t *testing.T, format string, a ...any) { //nolint:unused
 	t.Helper()
+
 	fatal(t, fmt.Sprintf(format, a...))
 }
 
@@ -125,6 +128,12 @@ func fatalTimes(t *testing.T, prefix string, got, want time.Time, granularity in
 	diff := got.Sub(want).Abs().Seconds()
 
 	t.Fatalf("%v: got %.2fs difference, want <%ds (%v vs %v)", prefix, diff, granularity, got, want)
+}
+
+func fclose(f *os.File) {
+	if f != nil {
+		_ = f.Close()
+	}
 }
 
 func fixPerms(perm os.FileMode, isDir bool) os.FileMode {
@@ -299,6 +308,7 @@ func skip(t *testing.T, msg any) {
 
 func skipf(t *testing.T, format string, a ...any) {
 	t.Helper()
+
 	skip(t, fmt.Sprintf(format, a...))
 }
 

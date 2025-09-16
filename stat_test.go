@@ -304,7 +304,7 @@ func TestStatGID(t *testing.T) {
 	want := os.Getegid()
 	if got != want {
 		if compat.IsApple && isRoot {
-			t.Logf("GID(): got %v, want %v (ignoring: root on %v)", got, want, runtime.GOOS)
+			t.Logf("GID(): got %v, want %v (ignoring: we are root on %v)", got, want, runtime.GOOS)
 
 			return
 		}
@@ -385,7 +385,7 @@ func TestStatGroup(t *testing.T) {
 	want := g.Name
 	if !compareNames(got, want) {
 		if compat.IsApple && isRoot {
-			t.Logf("Group(): got %v, want %v (ignoring: root on %v)", got, want, runtime.GOOS)
+			t.Logf("Group(): got %v, want %v (ignoring: we are root on %v)", got, want, runtime.GOOS)
 
 			return
 		}
@@ -619,15 +619,14 @@ func TestStatUserIDSource(t *testing.T) { //nolint:dupl
 }
 
 func TestStatStatInvalid(t *testing.T) {
-	name := "/an/invalid/file/stat"
-	_, err := compat.Stat(name)
+	_, err := compat.Stat(invalidName)
 	if err == nil {
 		t.Fatalf("expected no error, got %v", err)
 	}
 }
 
 func TestStatSamePartitionInvalid1(t *testing.T) {
-	name1 := "/an/invalid/file/samepartition1"
+	name1 := invalidName
 
 	name2, err := createTempFile(t)
 	if err != nil {
@@ -649,7 +648,7 @@ func TestStatSamePartitionInvalid2(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	name2 := "/an/invalid/file/samepartition2"
+	name2 := invalidName
 
 	fi1, _ := compat.Stat(name1)
 	fi2, _ := compat.Stat(name2)
@@ -661,7 +660,7 @@ func TestStatSamePartitionInvalid2(t *testing.T) {
 }
 
 func TestStatSamePartitionsInvalid1(t *testing.T) {
-	name1 := "/an/invalid/file/samepartitions1"
+	name1 := invalidName
 
 	name2, err := createTempFile(t)
 	if err != nil {
@@ -680,7 +679,7 @@ func TestStatSamePartitionsInvalid2(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	name2 := "/an/invalid/file/samepartitions2"
+	name2 := invalidName
 
 	got := compat.SamePartitions(name1, name2)
 	if got {
@@ -689,7 +688,7 @@ func TestStatSamePartitionsInvalid2(t *testing.T) {
 }
 
 func TestStatSameFileInvalid1(t *testing.T) {
-	name1 := "/an/invalid/file/samefile1"
+	name1 := invalidName
 
 	name2, err := createTempFile(t)
 	if err != nil {
@@ -712,7 +711,7 @@ func TestStatSameFileInvalid2(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	name2 := "/an/invalid/file/samefile2"
+	name2 := invalidName
 
 	fi1, _ := compat.Stat(name1)
 
@@ -725,7 +724,7 @@ func TestStatSameFileInvalid2(t *testing.T) {
 }
 
 func TestStatSameFilesInvalid1(t *testing.T) {
-	name1 := "/an/invalid/file/samefiles1"
+	name1 := invalidName
 
 	name2, err := createTempFile(t)
 	if err != nil {
@@ -744,7 +743,7 @@ func TestStatSameFilesInvalid2(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	name2 := "/an/invalid/file/samefiles2"
+	name2 := invalidName
 
 	got := compat.SameFiles(name1, name2)
 	if got {

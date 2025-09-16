@@ -43,15 +43,6 @@ func TestPartitionTypeRel(t *testing.T) {
 	testPartitionType(t, name)
 }
 
-func TestPartitionTypeBad(t *testing.T) {
-	name := "/a/bad/filename/for/partitiontype"
-	ctx := context.Background()
-	_, err := compat.PartitionType(ctx, name)
-	if err == nil {
-		t.Fatalf("got not error for invalid file %q", name)
-	}
-}
-
 func TestPartitionTypePrefix(t *testing.T) {
 	if !compat.IsWindows {
 		skip(t, "Skipping test: requires Windows")
@@ -127,6 +118,13 @@ func TestPartitionTypeRoot(t *testing.T) {
 		systemDrive = "C:"
 	}
 	testPartitionType(t, systemDrive)
+}
+
+func TestPartitionTypeInvalid(t *testing.T) {
+	_, err := compat.PartitionType(context.Background(), invalidName)
+	if err == nil {
+		t.Fatalf("expected error for invalid file %q", invalidName)
+	}
 }
 
 func testPartitionType(t *testing.T, name string) {
