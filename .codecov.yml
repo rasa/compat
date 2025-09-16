@@ -3,3 +3,23 @@ ignore:
   - "golang"
   - "file_debug.go"
   - "file_debug_windows.go"
+component_management:
+  individual_components:
+    - component_id: windows
+      name: windows
+      paths:
+        - **/*_windows.go
+    - component_id: non_windows
+      name: non_windows
+      paths:
+        - **/*_bsd.go
+        - **/*_darwin.go
+        - **/*_ios.go
+        - **/*_js.go
+        - **/*_linux.go
+        - **/*_na.go
+        - **/*_noop.go
+        - **/*_other.go
+        - **/*_plan9.go
+        - **/*_unix*.go
+        - **/*_wasip1.go
