@@ -56,6 +56,10 @@ func TestStatStat(t *testing.T) {
 	if got := fi.ModTime(); !compareTimes(got, now, testEnv.mtimeGranularity) {
 		fatalTimes(t, "ModTime()", got, now, testEnv.mtimeGranularity)
 	}
+
+	if got := fi.Sys(); got == nil {
+		t.Error("Sys(): got nil, want not-nil")
+	}
 }
 
 func TestStatLinks(t *testing.T) {
