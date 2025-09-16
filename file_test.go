@@ -664,3 +664,98 @@ func TestFilePosixWriteFileEx(t *testing.T) {
 		return
 	}
 }
+
+func TestFilePosixChmodInvalid(t *testing.T) {
+	name := "/an/invalid/file/chmod"
+	perm := compat.CreatePerm
+	err := compat.Chmod(name, perm)
+	if err == nil {
+		t.Fatalf("expected no error, got %v", err)
+	}
+}
+
+func TestFilePosixCreateInvalid(t *testing.T) {
+	name := "/an/invalid/file/create"
+	_, err := compat.Create(name)
+	if err == nil {
+		t.Fatalf("expected no error, got %v", err)
+	}
+}
+
+func TestFilePosixCreateExInvalid(t *testing.T) {
+	name := "/an/invalid/file/createex"
+	perm := compat.CreatePerm
+	_, err := compat.CreateEx(name, perm, 0)
+	if err == nil {
+		t.Fatalf("expected no error, got %v", err)
+	}
+}
+
+func TestFilePosixCreateTempInvalid(t *testing.T) {
+	dir := "/an/invalid/dir/createtemp"
+	_, err := compat.CreateTemp(dir, "")
+	if err == nil {
+		t.Fatalf("expected no error, got %v", err)
+	}
+}
+
+func TestFilePosixFchmodInvalid(t *testing.T) {
+	perm := compat.CreatePerm
+	err := compat.Fchmod(nil, perm)
+	if err == nil {
+		t.Fatalf("expected no error, got %v", err)
+	}
+}
+
+func TestFilePosixMkdirInvalid(t *testing.T) {
+	dir := "/an/invalid/dir/mkdir"
+	perm := compat.MkdirTempPerm
+	err := compat.Mkdir(dir, perm)
+	if err == nil {
+		t.Fatalf("expected no error, got %v", err)
+	}
+}
+
+func TestFilePosixMkdirAllInvalid(t *testing.T) {
+	dir := ""
+	perm := compat.MkdirTempPerm
+	err := compat.MkdirAll(dir, perm)
+	if err == nil {
+		t.Fatalf("expected no error, got %v", err)
+	}
+}
+
+func TestFilePosixMkdirTempInvalid(t *testing.T) {
+	dir := "/an/invalid/dir/mkdirtemp"
+	_, err := compat.MkdirTemp(dir, "")
+	if err == nil {
+		t.Fatalf("expected no error, got %v", err)
+	}
+}
+
+func TestFilePosixOpenFileInvalid(t *testing.T) {
+	name := "/an/invalid/file/openfile"
+	perm := compat.CreatePerm
+	_, err := compat.OpenFile(name, os.O_CREATE, perm)
+	if err == nil {
+		t.Fatalf("expected no error, got %v", err)
+	}
+}
+
+func TestFilePosixWriteFileInvalid(t *testing.T) {
+	name := "/an/invalid/file/writefile"
+	perm := compat.CreatePerm
+	err := compat.WriteFile(name, helloBytes, perm)
+	if err == nil {
+		t.Fatalf("expected no error, got %v", err)
+	}
+}
+
+func TestFilePosixWriteFileExInvalid(t *testing.T) {
+	name := "/an/invalid/file/writefileex"
+	perm := compat.CreatePerm
+	err := compat.WriteFileEx(name, helloBytes, perm, 0)
+	if err == nil {
+		t.Fatalf("expected no error, got %v", err)
+	}
+}

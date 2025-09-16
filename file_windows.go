@@ -109,6 +109,9 @@ func createTemp(dir, pattern string, perm os.FileMode, flag int) (*os.File, erro
 }
 
 func fchmod(f *os.File, mode os.FileMode, mask ReadOnlyMode) error {
+	if f == nil {
+		return &os.PathError{Op: "chmod", Path: "", Err: os.ErrInvalid}
+	}
 	path, err := golang.Filepath(f)
 	if err != nil {
 		return &os.PathError{Op: "chmod", Path: f.Name(), Err: err}
