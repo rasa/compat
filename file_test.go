@@ -38,7 +38,7 @@ func TestFilePosixChmod(t *testing.T) {
 
 	got := fi.Mode().Perm()
 	if got != want {
-		t.Fatalf("got 0%03o, want 0%03o", got, want)
+		t.Fatalf("got 0%03o (%v), want 0%03o (%v)", got, got, want, want)
 
 		return
 	}
@@ -83,7 +83,7 @@ func TestFilePosixCreate(t *testing.T) {
 
 	got := fi.Mode().Perm()
 	if got != want {
-		t.Fatalf("got 0%03o, want 0%03o", got, want)
+		t.Fatalf("got 0%03o (%v), want 0%03o (%v)", got, got, want, want)
 
 		return
 	}
@@ -128,7 +128,7 @@ func TestFilePosixCreateWithFileMode(t *testing.T) {
 
 	got := fi.Mode().Perm()
 	if got != want {
-		t.Fatalf("got 0%03o, want 0%03o", got, want)
+		t.Fatalf("got 0%03o (%v), want 0%03o (%v)", got, got, want, want)
 
 		return
 	}
@@ -174,7 +174,7 @@ func TestFilePosixCreateEx(t *testing.T) {
 
 	got := fi.Mode().Perm()
 	if got != want {
-		t.Fatalf("got 0%03o, want 0%03o", got, want)
+		t.Fatalf("got 0%03o (%v), want 0%03o (%v)", got, got, want, want)
 
 		return
 	}
@@ -240,7 +240,7 @@ func TestFilePosixCreateTemp(t *testing.T) {
 
 	got := fi.Mode().Perm()
 	if got != want {
-		t.Fatalf("got 0%03o, want 0%03o", got, want)
+		t.Fatalf("got 0%03o (%v), want 0%03o (%v)", got, got, want, want)
 
 		return
 	}
@@ -276,7 +276,7 @@ func TestFilePosixCreateTempEx(t *testing.T) {
 
 	got := fi.Mode().Perm()
 	if got != want {
-		t.Fatalf("got 0%03o, want 0%03o", got, want)
+		t.Fatalf("got 0%03o (%v), want 0%03o (%v)", got, got, want, want)
 
 		return
 	}
@@ -345,7 +345,7 @@ func TestFilePosixFchmod(t *testing.T) {
 
 	got := fs.Mode().Perm()
 	if got != want {
-		t.Fatalf("got 0%03o, want 0%03o", got, want)
+		t.Fatalf("got 0%03o (%v), want 0%03o (%v)", got, got, want, want)
 
 		return
 	}
@@ -378,7 +378,7 @@ func TestFilePosixMkdir(t *testing.T) {
 
 	got := fi.Mode().Perm()
 	if got != want {
-		t.Fatalf("got 0%03o, want 0%03o", got, want)
+		t.Fatalf("got 0%03o (%v), want 0%03o (%v)", got, got, want, want)
 
 		return
 	}
@@ -411,7 +411,7 @@ func TestFilePosixMkdirAll(t *testing.T) {
 
 	got := fi.Mode().Perm()
 	if got != want {
-		t.Fatalf("got 0%03o, want 0%03o", got, want)
+		t.Fatalf("got 0%03o (%v), want 0%03o (%v)", got, got, want, want)
 
 		return
 	}
@@ -438,7 +438,7 @@ func TestFilePosixMkdirTemp(t *testing.T) {
 
 	got := fi.Mode().Perm()
 	if got != want {
-		t.Fatalf("got 0%03o, want 0%03o", got, want)
+		t.Fatalf("got 0%03o (%v), want 0%03o (%v)", got, got, want, want)
 
 		return
 	}
@@ -465,7 +465,7 @@ func TestFilePosixMkdirTempWithFileMode(t *testing.T) {
 
 	got := fi.Mode().Perm()
 	if got != want {
-		t.Fatalf("got 0%03o, want 0%03o", got, want)
+		t.Fatalf("got 0%03o (%v), want 0%03o (%v)", got, got, want, want)
 
 		return
 	}
@@ -511,7 +511,7 @@ func TestFilePosixOpenFile(t *testing.T) {
 
 	got := fi.Mode().Perm()
 	if got != want {
-		t.Fatalf("got 0%03o, want 0%03o", got, want)
+		t.Fatalf("got 0%03o (%v), want 0%03o (%v)", got, got, want, want)
 
 		return
 	}
@@ -626,7 +626,7 @@ func TestFilePosixWriteFile(t *testing.T) {
 
 	got := fi.Mode().Perm()
 	if got != want {
-		t.Fatalf("got 0%03o, want 0%03o", got, want)
+		t.Fatalf("got 0%03o (%v), want 0%03o (%v)", got, got, want, want)
 
 		return
 	}
@@ -659,7 +659,7 @@ func TestFilePosixWriteFileEx(t *testing.T) {
 
 	got := fi.Mode().Perm()
 	if got != want {
-		t.Fatalf("got 0%03o, want 0%03o", got, want)
+		t.Fatalf("got 0%03o (%v), want 0%03o (%v)", got, got, want, want)
 
 		return
 	}
@@ -668,76 +668,76 @@ func TestFilePosixWriteFileEx(t *testing.T) {
 func TestFilePosixChmodInvalid(t *testing.T) {
 	err := compat.Chmod(invalidName, compat.CreatePerm)
 	if err == nil {
-		t.Fatalf("expected no error, got %v", err)
+		t.Fatal("expected error, got nil")
 	}
 }
 
 func TestFilePosixCreateInvalid(t *testing.T) {
 	_, err := compat.Create(invalidName)
 	if err == nil {
-		t.Fatalf("expected no error, got %v", err)
+		t.Fatal("expected error, got nil")
 	}
 }
 
 func TestFilePosixCreateExInvalid(t *testing.T) {
 	_, err := compat.CreateEx(invalidName, compat.CreatePerm, 0)
 	if err == nil {
-		t.Fatalf("expected no error, got %v", err)
+		t.Fatal("expected error, got nil")
 	}
 }
 
 func TestFilePosixCreateTempInvalid(t *testing.T) {
 	_, err := compat.CreateTemp(invalidName, invalidName)
 	if err == nil {
-		t.Fatalf("expected no error, got %v", err)
+		t.Fatal("expected error, got nil")
 	}
 }
 
 func TestFilePosixFchmodInvalid(t *testing.T) {
 	err := compat.Fchmod(nil, compat.CreatePerm)
 	if err == nil {
-		t.Fatalf("expected no error, got %v", err)
+		t.Fatal("expected error, got nil")
 	}
 }
 
 func TestFilePosixMkdirInvalid(t *testing.T) {
 	err := compat.Mkdir(invalidName, compat.MkdirTempPerm)
 	if err == nil {
-		t.Fatalf("expected no error, got %v", err)
+		t.Fatal("expected error, got nil")
 	}
 }
 
 func TestFilePosixMkdirAllInvalid(t *testing.T) {
 	err := compat.MkdirAll(invalidName, compat.MkdirTempPerm)
 	if err == nil {
-		t.Fatalf("expected no error, got %v", err)
+		t.Fatal("expected error, got nil")
 	}
 }
 
 func TestFilePosixMkdirTempInvalid(t *testing.T) {
 	_, err := compat.MkdirTemp(invalidName, invalidName)
 	if err == nil {
-		t.Fatalf("expected no error, got %v", err)
+		t.Fatal("expected error, got nil")
 	}
 }
 
 func TestFilePosixOpenFileInvalid(t *testing.T) {
 	_, err := compat.OpenFile(invalidName, os.O_CREATE, compat.CreatePerm)
 	if err == nil {
-		t.Fatalf("expected no error, got %v", err)
+		t.Fatal("expected error, got nil")
 	}
 }
 
 func TestFilePosixWriteFileInvalid(t *testing.T) {
 	err := compat.WriteFile(invalidName, helloBytes, compat.CreatePerm)
 	if err == nil {
-		t.Fatalf("expected no error, got %v", err)
+		t.Fatal("expected error, got nil")
 	}
 }
 
 func TestFilePosixWriteFileExInvalid(t *testing.T) {
 	err := compat.WriteFileEx(invalidName, helloBytes, compat.CreatePerm, 0)
 	if err == nil {
-		t.Fatalf("expected no error, got %v", err)
+		t.Fatal("expected error, got nil")
 	}
 }
