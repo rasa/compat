@@ -626,11 +626,16 @@ func TestStatStatInvalid(t *testing.T) {
 	}
 }
 
-func TestStatSamePartitionInvalid(t *testing.T) {
-	name := "/an/invalid/file/samepartition"
+func TestStatSamePartitionInvalid1(t *testing.T) {
+	name1 := "/an/invalid/file/samepartition1"
 
-	fi1, _ := compat.Stat(name)
-	fi2, _ := compat.Stat(name)
+	name2, err := createTempFile(t)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	fi1, _ := compat.Stat(name1)
+	fi2, _ := compat.Stat(name2)
 
 	got := compat.SamePartition(fi1, fi2)
 	if got {
@@ -638,21 +643,62 @@ func TestStatSamePartitionInvalid(t *testing.T) {
 	}
 }
 
-func TestStatSamePartitionsInvalid(t *testing.T) {
-	name := "/an/invalid/file/samepartitions"
+func TestStatSamePartitionInvalid2(t *testing.T) {
+	name1, err := createTempFile(t)
+	if err != nil {
+		t.Fatal(err)
+	}
 
-	got := compat.SamePartitions(name, name)
+	name2 := "/an/invalid/file/samepartition2"
+
+	fi1, _ := compat.Stat(name1)
+	fi2, _ := compat.Stat(name2)
+
+	got := compat.SamePartition(fi1, fi2)
 	if got {
 		t.Fatalf("got %v, want false", got)
 	}
 }
 
-func TestStatSameFileInvalid(t *testing.T) {
-	name := "/an/invalid/file/samefile"
+func TestStatSamePartitionsInvalid1(t *testing.T) {
+	name1 := "/an/invalid/file/samepartitions1"
 
-	fi1, _ := compat.Stat(name)
+	name2, err := createTempFile(t)
+	if err != nil {
+		t.Fatal(err)
+	}
 
-	fi2, _ := compat.Stat(name)
+	got := compat.SamePartitions(name1, name2)
+	if got {
+		t.Fatalf("got %v, want false", got)
+	}
+}
+
+func TestStatSamePartitionsInvalid2(t *testing.T) {
+	name1, err := createTempFile(t)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	name2 := "/an/invalid/file/samepartitions2"
+
+	got := compat.SamePartitions(name1, name2)
+	if got {
+		t.Fatalf("got %v, want false", got)
+	}
+}
+
+func TestStatSameFileInvalid1(t *testing.T) {
+	name1 := "/an/invalid/file/samefile1"
+
+	name2, err := createTempFile(t)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	fi1, _ := compat.Stat(name1)
+
+	fi2, _ := compat.Stat(name2)
 
 	got := compat.SameFile(fi1, fi2)
 	if got {
@@ -660,10 +706,47 @@ func TestStatSameFileInvalid(t *testing.T) {
 	}
 }
 
-func TestStatSameFilesInvalid(t *testing.T) {
-	name := "/an/invalid/file/samefiles"
+func TestStatSameFileInvalid2(t *testing.T) {
+	name1, err := createTempFile(t)
+	if err != nil {
+		t.Fatal(err)
+	}
 
-	got := compat.SameFiles(name, name)
+	name2 := "/an/invalid/file/samefile2"
+
+	fi1, _ := compat.Stat(name1)
+
+	fi2, _ := compat.Stat(name2)
+
+	got := compat.SameFile(fi1, fi2)
+	if got {
+		t.Fatalf("got %v, want false", got)
+	}
+}
+
+func TestStatSameFilesInvalid1(t *testing.T) {
+	name1 := "/an/invalid/file/samefiles1"
+
+	name2, err := createTempFile(t)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	got := compat.SameFiles(name1, name2)
+	if got {
+		t.Fatalf("got %v, want false", got)
+	}
+}
+
+func TestStatSameFilesInvalid2(t *testing.T) {
+	name1, err := createTempFile(t)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	name2 := "/an/invalid/file/samefiles2"
+
+	got := compat.SameFiles(name1, name2)
 	if got {
 		t.Fatalf("got %v, want false", got)
 	}
