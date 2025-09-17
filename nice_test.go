@@ -112,7 +112,19 @@ func TestNiceReniceIfRootInvalid(t *testing.T) {
 
 func TestNiceErrors(t *testing.T) {
 	err := errors.New("Test")
-	t.Log(&compat.NiceError{err})
-	t.Log(&compat.InvalidNiceError{1024})
-	t.Log(&compat.ReniceError{1024, err})
+
+	e := &compat.NiceError{err})
+	if e.Error() == "" {
+    		t.Fatal("expected non-empty error")
+	}
+
+	e = &compat.InvalidNiceError{1024}
+	if e.Error() == "" {
+    		t.Fatal("expected non-empty error")
+	}
+
+	e = &compat.ReniceError{1024, err}
+	if e.Error() == "" {
+    		t.Fatal("expected non-empty error")
+	}
 }
