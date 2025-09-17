@@ -113,16 +113,16 @@ func TestNiceErrors(t *testing.T) {
 
 	e1 := &compat.NiceError{err}
 	if e1.Error() == "" {
-    		fatal(t, "NiceError: got '', want non-empty string")
+		fatal(t, "NiceError: got '', want non-empty string")
 	}
 
 	e2 := &compat.InvalidNiceError{1024}
 	if e2.Error() == "" {
-    		fatal(t, "InvalidNiceError: got '', want non-empty string")
+		fatal(t, "InvalidNiceError: got '', want non-empty string")
 	}
 
 	e3 := &compat.ReniceError{1024, err}
 	if e3.Error() == "" {
-    		fatal(t, "ReniceError: got '', want non-empty string")
+		fatal(t, "ReniceError: got '', want non-empty string")
 	}
 }
