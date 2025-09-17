@@ -20,7 +20,7 @@ func TestNice(t *testing.T) {
 			return // tinygo doesn't support t.Skip
 		}
 
-		fatalf("Nice; got %v, want nil", err)
+		fatalf(t, "Nice; got %v, want nil", err)
 	}
 }
 
@@ -55,7 +55,7 @@ func TestNiceReniceIfRootValid(t *testing.T) {
 			return // tinygo doesn't support t.Skip
 		}
 
-		fatalf("Nice; got %v, want nil", err)
+		fatalf(t, "Nice; got %v, want nil", err)
 	}
 
 	for n := 0; n >= compat.MinNice; n-- {
@@ -113,16 +113,16 @@ func TestNiceErrors(t *testing.T) {
 
 	e1 := &compat.NiceError{err}
 	if e1.Error() == "" {
-    		fatal("NiceError: got '', want non-empty string")
+    		fatal(t, "NiceError: got '', want non-empty string")
 	}
 
 	e2 := &compat.InvalidNiceError{1024}
 	if e2.Error() == "" {
-    		fatal("InvalidNiceError: got '', want non-empty string")
+    		fatal(t, "InvalidNiceError: got '', want non-empty string")
 	}
 
 	e3 := &compat.ReniceError{1024, err}
 	if e3.Error() == "" {
-    		fatal("ReniceError: got '', want non-empty string")
+    		fatal(t, "ReniceError: got '', want non-empty string")
 	}
 }
