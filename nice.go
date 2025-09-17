@@ -16,29 +16,29 @@ const (
 
 // NiceError is returned when the system call failed.
 type NiceError struct {
-	err error
+	Err error
 }
 
 func (e *NiceError) Error() string {
-	return fmt.Errorf("nice: %w", e.err).Error()
+	return fmt.Errorf("nice: %w", e.Err).Error()
 }
 
 // InvalidNiceError is returned when the niceness value passed by the user is
 // invalid.
 type InvalidNiceError struct {
-	nice int
+	Nice int
 }
 
 func (e *InvalidNiceError) Error() string {
-	return fmt.Sprintf("nice: invalid nice value %d", e.nice)
+	return fmt.Sprintf("nice: invalid nice value %d", e.Nice)
 }
 
 // ReniceError is returned when the system failed to set the OS's niceness level.
 type ReniceError struct {
-	nice int
-	err  error
+	Nice int
+	Err  error
 }
 
 func (e *ReniceError) Error() string {
-	return fmt.Errorf("nice: failed to set nice to %d: %w", e.nice, e.err).Error()
+	return fmt.Errorf("nice: failed to set nice to %d: %w", e.Nice, e.Err).Error()
 }
