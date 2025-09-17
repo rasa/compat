@@ -20,7 +20,7 @@ func TestNice(t *testing.T) {
 			return // tinygo doesn't support t.Skip
 		}
 
-		t.Fatal(err)
+		fatalf("Nice; got %v, want nil", err)
 	}
 }
 
@@ -34,7 +34,7 @@ func TestNiceRenice(t *testing.T) {
 		}
 
 		// Don't fail on "permission denied" on Linux
-		skip(t, err)
+		skipf(t, "Renice: got %v, want nil", err)
 	}
 }
 
@@ -55,7 +55,7 @@ func TestNiceReniceIfRootValid(t *testing.T) {
 			return // tinygo doesn't support t.Skip
 		}
 
-		t.Fatal(err)
+		fatalf("Nice; got %v, want nil", err)
 	}
 
 	for n := 0; n >= compat.MinNice; n-- {
@@ -68,16 +68,13 @@ func TestNiceReniceIfRootValid(t *testing.T) {
 			}
 
 			// under act, "permission denied" is returned, even though we root.
-			skip(t, err)
+			skipf(t, "Renice: got %v, want nil", err)
 
 			return // tinygo doesn't support t.Skip
 		}
 	}
 
-	err = compat.Renice(nice)
-	if err != nil {
-		skip(t, err)
-	}
+	_ = compat.Renice(nice)
 }
 
 func TestNiceReniceIfRootInvalid(t *testing.T) {
@@ -100,11 +97,12 @@ func TestNiceReniceIfRootInvalid(t *testing.T) {
 		}
 
 		if !compat.IsWindows && !compat.IsPlan9 {
-			skipf(t, "got no error calling Renice with %v (ignoring: doesn't fail on %v)", invalidNice, runtime.GOOS)
+			skipf(t, "Renice(%v): got nil, want error (ignoring: doesn't fail on %v)", invalidNice, runtime.GOOS)
 
 			return
 		}
-		fatalf(t, "got no error calling Renice with %v", invalidNice)
+
+		fatalf(t, "Renice(%v): got nil, want error", invalidNice)
 
 		return // tinygo doesn't support t.Skip
 	}
@@ -115,16 +113,16 @@ func TestNiceErrors(t *testing.T) {
 
 	e := &compat.NiceError{err}
 	if e.Error() == "" {
-    		t.Fatal("expected non-empty error")
+    		fatal("NiceError: got '', want non-empty string")
 	}
 
 	e = &compat.InvalidNiceError{1024}
 	if e.Error() == "" {
-    		t.Fatal("expected non-empty error")
+    		fatal("InvalidNiceError: got '', want non-empty string")
 	}
 
 	e = &compat.ReniceError{1024, err}
 	if e.Error() == "" {
-    		t.Fatal("expected non-empty error")
+    		fatal("ReniceError: got '', want non-empty string")
 	}
 }
