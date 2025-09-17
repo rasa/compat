@@ -21,6 +21,6 @@ func TestWalkDirSkipDir(t *testing.T) {
 
 	err := compat.WalkDir(os.DirFS("."), ".", walkFn)
 	if err != nil {
-		t.Fatalf("no error expected, found: %s", err)
+		t.Fatalf("got %q, want nil", err)
 	}
 }

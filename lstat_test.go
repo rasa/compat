@@ -365,7 +365,7 @@ func TestLstatUID(t *testing.T) {
 
 	if compat.IsWindows {
 		if got == compat.UnknownID {
-			t.Fatalf("UID(): got %v", got)
+			t.Fatalf("UID(): got %v (UnknownID), want a valid ID", got)
 		}
 
 		return
@@ -719,7 +719,7 @@ func TestLstatDiffFiles(t *testing.T) {
 func TestLstatLstatInvalid(t *testing.T) {
 	_, err := compat.Lstat(invalidName)
 	if err == nil {
-		t.Fatal("expected error, got nil")
+		t.Fatal("got nil, want an error")
 	}
 }
 

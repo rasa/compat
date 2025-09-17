@@ -3,26 +3,10 @@
 
 package compat
 
-var EqualDomainSid = equalDomainSid
+// dir.go
 
 var FSDirEntryToDirEntry = fsDirEntryToDirEntry
 
 var FSFileInfoToDirEntry = fsFileInfoToDirEntry
 
-var GetFileOwnerAndGroupSIDs = getFileOwnerAndGroupSIDs
-
-var GetPrimaryDomainSID = getPrimaryDomainSID
-
-var GetRID = getRID
-
-var GetUserGroup = getUserGroup
-
-var IsValidSid = isValidSid
-
-var LSAOpenPolicy = lsaOpenPolicy //nolint:unused
-
-var NameFromSID = nameFromSID
-
 var OSDirEntryToDirEntry = osDirEntryToDirEntry
-
-var SIDToPOSIXID = sidToPOSIXID

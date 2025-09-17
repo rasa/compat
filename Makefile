@@ -55,6 +55,7 @@ tools: ## freshen tools (misspell, golangci-lint, goreleaser, govulncheck, gofum
 	go get github.com/client9/misspell/cmd/misspell@latest ;\
 	go get github.com/golangci/golangci-lint/v2/cmd/golangci-lint@latest ;\
 	go get github.com/goreleaser/goreleaser/v2@latest ;\
+	go get golang.org/x/tools/gopls/internal/analysis/modernize/cmd/modernize ;\
 	go get golang.org/x/vuln/cmd/govulncheck@latest ;\
 	go get mvdan.cc/gofumpt@latest
 	make mod

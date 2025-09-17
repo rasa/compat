@@ -411,7 +411,7 @@ func TestStatError(t *testing.T) { //nolint:dupl
 
 	err = fi.Error()
 	if err != nil {
-		t.Fatalf("got %v, expected nil", err)
+		t.Fatalf("got %v, want nil", err)
 	}
 }
 
@@ -428,7 +428,7 @@ func TestStatFileID(t *testing.T) { //nolint:dupl
 
 	got := fi.FileID()
 	if got == 0 {
-		t.Fatal("got 0, expected a value")
+		t.Fatal("got 0, want !0")
 	}
 }
 
@@ -445,7 +445,7 @@ func TestStatPartitionID(t *testing.T) { //nolint:dupl
 
 	got := fi.PartitionID()
 	if got == 0 {
-		t.Fatal("got 0, expected a value")
+		t.Fatal("got 0, want !0")
 	}
 }
 
@@ -479,7 +479,7 @@ func TestStatString(t *testing.T) { //nolint:dupl
 	got := fi.String()
 	for _, prefix := range stringPrefixes {
 		if !strings.Contains(got, prefix) {
-			t.Fatalf("expected %q in %q", prefix, got)
+			t.Fatalf("got %q, want to contained in %q", got, prefix)
 		}
 	}
 }
@@ -500,7 +500,7 @@ func TestStatInfo(t *testing.T) { //nolint:dupl
 		t.Fatal(err)
 	}
 	if got == nil {
-		t.Fatal("got nil, expected a value")
+		t.Fatal("got nil, want a value")
 	}
 }
 
@@ -625,7 +625,7 @@ func TestStatUserIDSource(t *testing.T) { //nolint:dupl
 func TestStatStatInvalid(t *testing.T) {
 	_, err := compat.Stat(invalidName)
 	if err == nil {
-		t.Fatalf("expected no error, got %v", err)
+		t.Fatalf("got %q, want nil", err)
 	}
 }
 

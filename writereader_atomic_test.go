@@ -7,15 +7,12 @@
 package compat_test
 
 import (
-	"bytes"
 	"os"
 	"runtime"
 	"testing"
 
 	"github.com/rasa/compat"
 )
-
-var helloBuf = bytes.NewBuffer(helloBytes)
 
 func TestWriteReaderAtomic(t *testing.T) {
 	file, err := tempName(t)
@@ -29,7 +26,9 @@ func TestWriteReaderAtomic(t *testing.T) {
 
 	err = compat.WriteReaderAtomic(file, helloBuf)
 	if err != nil {
-		t.Fatalf("Failed to write file: %q: %v", file, err)
+		fatalf(t, "Failed to write file: %q: %v", file, err)
+
+		return // Tinygo doesn't support T.Fatal
 	}
 
 	fi, err := compat.Stat(file)
@@ -39,9 +38,7 @@ func TestWriteReaderAtomic(t *testing.T) {
 
 	perm := compat.CreateTempPerm // 0o600
 	want := fixPerms(perm, false)
-
 	got := fi.Mode().Perm()
-
 	if got != want {
 		t.Fatalf("got %04o, want %04o", got, want)
 	}
@@ -202,9 +199,43 @@ func TestWriteReaderAtomicWithFileMode(t *testing.T) {
 	}
 }
 
+func TestWriteReaderAtomicReadOnlyModeReset(t *testing.T) {
+	if !compat.IsWindows {
+		skip(t, "Skipping test: requires Windows")
+
+		return
+	}
+
+	file, err := tempName(t)
+	if err != nil {
+		t.Fatalf("Failed to create temp file: %v", err)
+	}
+
+	t.Cleanup(func() {
+		_ = compat.Chmod(file, perm600)
+		_ = os.Remove(file)
+	})
+
+	err = compat.WriteReaderAtomic(file, helloBuf, compat.WithFileMode(perm400), compat.WithReadOnlyMode(compat.ReadOnlyModeReset))
+	if err != nil {
+		t.Fatalf("Failed to write file: %q: %v", file, err)
+	}
+
+	fi, err := os.Stat(file)
+	if err != nil {
+		t.Fatalf("Failed to stat file: %q: %v", file, err)
+	}
+
+	want := true // user-writable bit is set.
+	got := fi.Mode().Perm()&perm200 == perm200
+	if got != want {
+		t.Fatalf("got %v, want %v", got, want)
+	}
+}
+
 func TestWriteReaderAtomicInvalid(t *testing.T) {
 	err := compat.WriteReaderAtomic(invalidName, helloBuf, compat.WithFileMode(perm644))
 	if err == nil {
-		t.Fatalf("expected error, got nil")
+		t.Fatalf("got nil, want an error")
 	}
 }

@@ -78,8 +78,8 @@ func TestRuntime(t *testing.T) { //nolint:funlen,gocyclo
 	gooses := make(map[string]struct{})
 	goarches := make(map[string]struct{})
 
-	lines := bytes.Split(out, []byte{'\n'})
-	for _, line := range lines {
+	lines := bytes.SplitSeq(out, []byte{'\n'})
+	for line := range lines {
 		trimmed := strings.TrimSpace(string(line))
 
 		before, after, found := strings.Cut(trimmed, "/")

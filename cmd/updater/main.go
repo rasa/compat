@@ -615,8 +615,8 @@ func runGitMergeFile(ours, them, base string) ([]byte, int, error) {
 	out := stdout.Bytes()
 	if len(out) == 0 {
 		// Unexpected; synthesize something
-		out = []byte(fmt.Sprintf("<<<<<<< ours\n%s\n=======\n%s\n>>>>>>> them\n",
-			readOrEmpty(ours), readOrEmpty(them)))
+		out = fmt.Appendf(nil, "<<<<<<< ours\n%s\n=======\n%s\n>>>>>>> them\n",
+			readOrEmpty(ours), readOrEmpty(them))
 		exit = 1
 	}
 	if exit > 1 {
@@ -659,9 +659,9 @@ func extractRejects(merged []byte) []byte {
 }
 
 func synthesizeConflict(ours, them, _ string) []byte {
-	return []byte(fmt.Sprintf(
+	return fmt.Appendf(nil,
 		"<<<<<<< ours\n%s\n=======\n%s\n>>>>>>> them\n",
-		readOrEmpty(ours), readOrEmpty(them)))
+		readOrEmpty(ours), readOrEmpty(them))
 }
 
 const shaLen = 8

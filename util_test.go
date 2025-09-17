@@ -36,6 +36,7 @@ const (
 var (
 	compatDebug = strings.ToUpper(os.Getenv("COMPAT_DEBUG"))
 	helloBytes  = []byte("hello")
+	helloBuf    = bytes.NewBuffer(helloBytes)
 )
 
 func init() {

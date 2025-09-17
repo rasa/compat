@@ -7,6 +7,7 @@ package compat
 
 import (
 	"errors"
+	"fmt"
 	"unsafe"
 
 	"golang.org/x/sys/windows"
@@ -20,24 +21,24 @@ func Getuid() (int, error) {
 	var token windows.Token
 	err := windows.OpenProcessToken(windows.CurrentProcess(), windows.TOKEN_QUERY, &token)
 	if err != nil {
-		return UnknownID, err
+		return UnknownID, fmt.Errorf("failed to open process token: %w", err)
 	}
 	defer token.Close()
 
 	// Get the token's user
 	tokenUser, err := token.GetTokenUser()
 	if err != nil {
-		return UnknownID, err
+		return UnknownID, fmt.Errorf("failed to get token user: %w", err)
 	}
 
 	primaryDomainSID, err := getPrimaryDomainSID()
 	if err != nil {
-		return UnknownID, err
+		return UnknownID, fmt.Errorf("failed to get primary domain SID: %w", err)
 	}
 
 	uid, err := sidToPOSIXID(tokenUser.User.Sid, primaryDomainSID)
 	if err != nil {
-		return UnknownID, err
+		return UnknownID, fmt.Errorf("failed to convert SID to POSIX ID: %w", err)
 	}
 
 	return uid, nil
@@ -51,17 +52,17 @@ func Getuid() (int, error) {
 func Getgid() (int, error) {
 	primaryDomainSID, err := getPrimaryDomainSID()
 	if err != nil {
-		return UnknownID, err
+		return UnknownID, fmt.Errorf("failed to get primary domain SID: %w", err)
 	}
 
 	groupSID, err := getPrimaryGroupSID()
 	if err != nil {
-		return UnknownID, err
+		return UnknownID, fmt.Errorf("failed to get primary group SID: %w", err)
 	}
 
 	gid, err := sidToPOSIXID(groupSID, primaryDomainSID)
 	if err != nil {
-		return UnknownID, err
+		return UnknownID, fmt.Errorf("failed to convert SID to POSIX ID: %w", err)
 	}
 
 	return gid, nil
@@ -90,24 +91,40 @@ func getPrimaryGroupSID() (*windows.SID, error) {
 	var token windows.Token
 	err := windows.OpenProcessToken(windows.CurrentProcess(), windows.TOKEN_QUERY, &token)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to open process token: %w", err)
 	}
 	defer token.Close()
 
-	// Get size for TOKEN_PRIMARY_GROUP
-	var size uint32
-	err = windows.GetTokenInformation(token, windows.TokenPrimaryGroup, nil, 0, &size)
-	if !errors.Is(err, windows.ERROR_INSUFFICIENT_BUFFER) {
-		return nil, err
+	bufSize := initialBufSize
+	for {
+		var newBufSize uint32
+		buf := make([]byte, bufSize)
+		if bufSize <= 1 {
+			err = windows.GetTokenInformation(
+				token,
+				windows.TokenPrimaryGroup,
+				nil,
+				0,
+				&newBufSize)
+		} else {
+			err = windows.GetTokenInformation(
+				token,
+				windows.TokenPrimaryGroup,
+				&buf[0],
+				bufSize,
+				&newBufSize)
+		}
+		if err == nil {
+			pg := (*windows.Tokenprimarygroup)(unsafe.Pointer(&buf[0]))
+			return pg.PrimaryGroup, nil
+		}
+		if !errors.Is(err, windows.ERROR_INSUFFICIENT_BUFFER) {
+			return nil, fmt.Errorf("failed to get token information: %w", err)
+		}
+		if newBufSize > bufSize {
+			bufSize = newBufSize
+		} else {
+			bufSize *= 2
+		}
 	}
-
-	buf := make([]byte, size)
-	err = windows.GetTokenInformation(token, windows.TokenPrimaryGroup, &buf[0], size, &size)
-	if err != nil {
-		return nil, err
-	}
-
-	tpg := (*tokenPrimaryGroup)(unsafe.Pointer(&buf[0]))
-
-	return tpg.PrimaryGroup, nil
 }

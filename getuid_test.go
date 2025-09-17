@@ -12,7 +12,7 @@ import (
 func TestGetuid(t *testing.T) {
 	uid, err := compat.Getuid()
 	if err != nil {
-		t.Errorf("Getuid: got %v, want nil", err)
+		t.Errorf("Getuid: got %q, want nil", err)
 
 		return // tinygo doesn't support t.Fatal
 	}
@@ -30,7 +30,7 @@ func TestGetuid(t *testing.T) {
 func TestGetgid(t *testing.T) {
 	gid, err := compat.Getgid()
 	if err != nil {
-		t.Errorf("Getgid: got %v, want nil", err)
+		t.Errorf("Getgid: got %q, want nil", err)
 
 		return // tinygo doesn't support t.Fatal
 	}
@@ -48,7 +48,7 @@ func TestGetgid(t *testing.T) {
 func TestGeteuid(t *testing.T) {
 	uid, err := compat.Geteuid()
 	if err != nil {
-		t.Errorf("Geteuid: got %v, want nil", err)
+		t.Errorf("Geteuid: got %q, want nil", err)
 
 		return // tinygo doesn't support t.Fatal
 	}
@@ -66,7 +66,7 @@ func TestGeteuid(t *testing.T) {
 func TestGetegid(t *testing.T) {
 	gid, err := compat.Getegid()
 	if err != nil {
-		t.Errorf("Getegid: got %v, want nil", err)
+		t.Errorf("Getegid: got %q, want nil", err)
 
 		return // tinygo doesn't support t.Fatal
 	}

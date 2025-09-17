@@ -44,6 +44,7 @@ type LSA_POLICY_ACCOUNT_DOMAIN_INFO struct {
 
 var (
 	modadvapi32                   = windows.NewLazySystemDLL("advapi32.dll")
+	procCopySid                   = modadvapi32.NewProc("CopySid")
 	procEqualDomainSid            = modadvapi32.NewProc("EqualDomainSid")
 	procGetNamedSecurityInfoW     = modadvapi32.NewProc("GetNamedSecurityInfoW")
 	procIsValidSid                = modadvapi32.NewProc("IsValidSid") //nolint:unused
@@ -74,21 +75,6 @@ func getFileOwnerAndGroupSIDs(name string) (*windows.SID, *windows.SID, error) {
 	return owner, group, nil
 }
 
-func lsaOpenPolicy(systemName *uint16, access uint32) (handle syscall.Handle, err error) {
-	var objectAttrs LSA_OBJECT_ATTRIBUTES
-	r0, _, _ := procLsaOpenPolicy.Call(
-		uintptr(unsafe.Pointer(systemName)),
-		uintptr(unsafe.Pointer(&objectAttrs)),
-		uintptr(access),
-		uintptr(unsafe.Pointer(&handle)),
-	)
-	if r0 != 0 {
-		return syscall.InvalidHandle, fmt.Errorf("failed to set LSA open policy: %w", syscall.Errno(r0))
-	}
-
-	return handle, nil
-}
-
 func getPrimaryDomainSID() (*windows.SID, error) {
 	handle, err := lsaOpenPolicy(nil, POLICY_VIEW_LOCAL_INFORMATION)
 	if err != nil {
@@ -109,7 +95,12 @@ func getPrimaryDomainSID() (*windows.SID, error) {
 
 	info := (*LSA_POLICY_ACCOUNT_DOMAIN_INFO)(unsafe.Pointer(buffer))
 
-	return info.DomainSid, nil
+	sidCopy, err := copySid(info.DomainSid)
+	if err != nil {
+		return nil, err
+	}
+
+	return sidCopy, nil
 }
 
 func getRID(sid *windows.SID) (int, error) {
@@ -121,37 +112,18 @@ func getRID(sid *windows.SID) (int, error) {
 	return int(sid.SubAuthority(count - 1)), nil
 }
 
-func equalDomainSid(sid1, sid2 *windows.SID) (bool, error) {
-	if sid1 == nil || sid2 == nil {
-		return false, nil
-	}
-
-	var equal int32
-	r1, _, e1 := syscall.SyscallN(
-		procEqualDomainSid.Addr(),
-		uintptr(unsafe.Pointer(sid1)),
-		uintptr(unsafe.Pointer(sid2)),
-		uintptr(unsafe.Pointer(&equal)),
-	)
-	if r1 == 0 {
-		if e1 != 0 {
-			return false, error(e1)
-		}
-		return false, syscall.EINVAL
-	}
-
-	return equal != 0, nil
-}
-
-func isValidSid(sid *windows.SID) bool { //nolint:unused
-	if sid == nil {
-		return false
-	}
-	r1, _, _ := syscall.SyscallN(
-		procIsValidSid.Addr(),
-		uintptr(unsafe.Pointer(sid)),
-	)
-	return r1 != 0
+var wellKnownSIDToGID = map[string]int{
+	"S-1-1-0":      0x30201, // 197121 // Everyone
+	"S-1-5-5-":     0xfff,
+	"S-1-5-32-544": 544, // Administrators
+	"S-1-5-32-545": 545, // Users
+	"S-1-5-32-546": 546, // Guests
+	"S-1-5-32-547": 547, // Power Users
+	"S-1-5-32-548": 548, // Account Operators
+	"S-1-5-32-549": 549, // Server Operators
+	"S-1-5-32-550": 550, // Print Operators
+	"S-1-5-32-551": 551, // Backup Operators
+	"S-1-5-32-552": 552, // Replicators
 }
 
 // See https://cygwin.com/cygwin-ug-net/ntsec.html
@@ -163,8 +135,6 @@ func sidToPOSIXID(sid *windows.SID, primaryDomainSid *windows.SID) (int, error) 
 	sidStr := sid.String()
 
 	switch {
-	case strings.HasPrefix(sidStr, "S-1-5-5-"):
-		return 0xFFF, nil //nolint:mnd
 	case strings.HasPrefix(sidStr, "S-1-5-32-"):
 		rid, err := getRID(sid)
 		if err != nil {
@@ -186,9 +156,16 @@ func sidToPOSIXID(sid *windows.SID, primaryDomainSid *windows.SID) (int, error) 
 
 		return 0x30000 + rid, nil //nolint:mnd
 	default:
-
-		return UnknownID, fmt.Errorf("unsupported SID: %s", sidStr)
+		// fallthrough
 	}
+
+	for prefix, gid := range wellKnownSIDToGID {
+		if strings.HasPrefix(sidStr, prefix) {
+			return gid, nil
+		}
+	}
+
+	return UnknownID, fmt.Errorf("unsupported SID: %s", sidStr)
 }
 
 func nameFromSID(sid *windows.SID) (string, error) {
@@ -253,4 +230,74 @@ func getUserGroup(path string) (int, int, string, string, error) {
 	}
 
 	return uid, gid, user, group, nil
+}
+
+func equalDomainSid(sid1, sid2 *windows.SID) (bool, error) {
+	if sid1 == nil || sid2 == nil {
+		return false, nil
+	}
+
+	var equal int32
+	r1, _, e1 := syscall.SyscallN(
+		procEqualDomainSid.Addr(),
+		uintptr(unsafe.Pointer(sid1)),
+		uintptr(unsafe.Pointer(sid2)),
+		uintptr(unsafe.Pointer(&equal)),
+	)
+	if r1 == 0 {
+		if e1 != 0 {
+			return false, error(e1)
+		}
+
+		return false, syscall.EINVAL
+	}
+
+	return equal != 0, nil
+}
+
+// Used only in the tests, for now.
+func isValidSid(sid *windows.SID) bool { //nolint:unused
+	if sid == nil {
+		return false
+	}
+	r1, _, _ := syscall.SyscallN(
+		procIsValidSid.Addr(),
+		uintptr(unsafe.Pointer(sid)),
+	)
+
+	return r1 != 0
+}
+
+func lsaOpenPolicy(systemName *uint16, access uint32) (handle syscall.Handle, err error) {
+	var objectAttrs LSA_OBJECT_ATTRIBUTES
+	r0, _, _ := procLsaOpenPolicy.Call(
+		uintptr(unsafe.Pointer(systemName)),
+		uintptr(unsafe.Pointer(&objectAttrs)),
+		uintptr(access),
+		uintptr(unsafe.Pointer(&handle)),
+	)
+	if r0 != 0 {
+		return syscall.InvalidHandle, fmt.Errorf("failed to open LSA policy: %w", syscall.Errno(r0))
+	}
+
+	return handle, nil
+}
+
+func copySid(src *windows.SID) (*windows.SID, error) {
+	if src == nil {
+		return nil, syscall.EINVAL
+	}
+
+	length := windows.GetLengthSid(src)
+	dst := make([]byte, length)
+
+	ret, _, err := procCopySid.Call(
+		uintptr(length),
+		uintptr(unsafe.Pointer(&dst[0])),
+		uintptr(unsafe.Pointer(src)),
+	)
+	if ret == 0 {
+		return nil, err
+	}
+	return (*windows.SID)(unsafe.Pointer(&dst[0])), nil
 }

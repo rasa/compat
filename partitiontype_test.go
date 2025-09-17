@@ -123,7 +123,7 @@ func TestPartitionTypeRoot(t *testing.T) {
 func TestPartitionTypeInvalid(t *testing.T) {
 	_, err := compat.PartitionType(context.Background(), invalidName)
 	if err == nil {
-		t.Fatalf("expected error for invalid file %q", invalidName)
+		t.Fatal("got nil, want an error")
 	}
 }
 

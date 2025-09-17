@@ -12,27 +12,27 @@ import (
 func TestDirEntryFileInfoToDirEntryNil(t *testing.T) {
 	de := compat.FileInfoToDirEntry(nil, "")
 	if de != nil {
-		t.Fatalf("expected nil, got a %T", de)
+		t.Fatalf("got a %T, want nil", de)
 	}
 }
 
 func TestDirEntryOSDirEntryToDirEntryNil(t *testing.T) {
 	de := compat.OSDirEntryToDirEntry(nil, "")
 	if de != nil {
-		t.Fatalf("expected nil, got a %T", de)
+		t.Fatalf("got a %T, want nil", de)
 	}
 }
 
 func TestDirEntryFSDirEntryToDirEntryNil(t *testing.T) {
 	de := compat.FSDirEntryToDirEntry(nil, "")
 	if de != nil {
-		t.Fatalf("expected nil, got a %T", de)
+		t.Fatalf("got a %T, want nil", de)
 	}
 }
 
 func TestDirEntryFSFileInfoToDirEntryNil(t *testing.T) {
 	de := compat.FSFileInfoToDirEntry(nil, "")
 	if de != nil {
-		t.Fatalf("expected nil, got a %T", de)
+		t.Fatalf("got a %T, want nil", de)
 	}
 }

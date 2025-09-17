@@ -38,7 +38,6 @@ func TestWriteFileAtomic(t *testing.T) {
 
 	perm := compat.CreateTempPerm // 0o600
 	want := fixPerms(perm, false)
-
 	got := fi.Mode().Perm()
 	if got != want {
 		t.Fatalf("got %04o, want %04o", got, want)
@@ -237,6 +236,6 @@ func TestWriteFileAtomicReadOnlyModeReset(t *testing.T) {
 func TestWriteFileAtomicInvalid(t *testing.T) {
 	err := compat.WriteFileAtomic(invalidName, helloBytes)
 	if err == nil {
-		t.Fatalf("expected error, got nil")
+		t.Fatalf("got nil, want an error")
 	}
 }

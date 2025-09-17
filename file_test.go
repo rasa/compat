@@ -668,76 +668,76 @@ func TestFilePosixWriteFileEx(t *testing.T) {
 func TestFilePosixChmodInvalid(t *testing.T) {
 	err := compat.Chmod(invalidName, compat.CreatePerm)
 	if err == nil {
-		t.Fatal("expected error, got nil")
+		t.Fatal("got nil, want an error")
 	}
 }
 
 func TestFilePosixCreateInvalid(t *testing.T) {
 	_, err := compat.Create(invalidName)
 	if err == nil {
-		t.Fatal("expected error, got nil")
+		t.Fatal("got nil, want an error")
 	}
 }
 
 func TestFilePosixCreateExInvalid(t *testing.T) {
 	_, err := compat.CreateEx(invalidName, compat.CreatePerm, 0)
 	if err == nil {
-		t.Fatal("expected error, got nil")
+		t.Fatal("got nil, want an error")
 	}
 }
 
 func TestFilePosixCreateTempInvalid(t *testing.T) {
 	_, err := compat.CreateTemp(invalidName, invalidName)
 	if err == nil {
-		t.Fatal("expected error, got nil")
+		t.Fatal("got nil, want an error")
 	}
 }
 
 func TestFilePosixFchmodInvalid(t *testing.T) {
 	err := compat.Fchmod(nil, compat.CreatePerm)
 	if err == nil {
-		t.Fatal("expected error, got nil")
+		t.Fatal("got nil, want an error")
 	}
 }
 
 func TestFilePosixMkdirInvalid(t *testing.T) {
 	err := compat.Mkdir(invalidName, compat.MkdirTempPerm)
 	if err == nil {
-		t.Fatal("expected error, got nil")
+		t.Fatal("got nil, want an error")
 	}
 }
 
 func TestFilePosixMkdirAllInvalid(t *testing.T) {
 	err := compat.MkdirAll(invalidName, compat.MkdirTempPerm)
 	if err == nil {
-		t.Fatal("expected error, got nil")
+		t.Fatal("got nil, want an error")
 	}
 }
 
 func TestFilePosixMkdirTempInvalid(t *testing.T) {
 	_, err := compat.MkdirTemp(invalidName, invalidName)
 	if err == nil {
-		t.Fatal("expected error, got nil")
+		t.Fatal("got nil, want an error")
 	}
 }
 
 func TestFilePosixOpenFileInvalid(t *testing.T) {
 	_, err := compat.OpenFile(invalidName, os.O_CREATE, compat.CreatePerm)
 	if err == nil {
-		t.Fatal("expected error, got nil")
+		t.Fatal("got nil, want an error")
 	}
 }
 
 func TestFilePosixWriteFileInvalid(t *testing.T) {
 	err := compat.WriteFile(invalidName, helloBytes, compat.CreatePerm)
 	if err == nil {
-		t.Fatal("expected error, got nil")
+		t.Fatal("got nil, want an error")
 	}
 }
 
 func TestFilePosixWriteFileExInvalid(t *testing.T) {
 	err := compat.WriteFileEx(invalidName, helloBytes, compat.CreatePerm, 0)
 	if err == nil {
-		t.Fatal("expected error, got nil")
+		t.Fatal("got nil, want an error")
 	}
 }

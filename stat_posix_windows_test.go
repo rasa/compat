@@ -20,7 +20,7 @@ func TestStatPosixWindowsGetFileOwnerAndGroupSIDs(t *testing.T) {
 
 	ownerSID, groupSID, err := compat.GetFileOwnerAndGroupSIDs(name)
 	if err != nil {
-		t.Fatalf("expected no error, got %v", err)
+		t.Fatalf("got %q, want nil", err)
 	}
 	if !compat.IsValidSid(ownerSID) {
 		t.Fatalf("got an invalid owner SID: %v", ownerSID.String())
@@ -33,14 +33,14 @@ func TestStatPosixWindowsGetFileOwnerAndGroupSIDs(t *testing.T) {
 func TestStatPosixWindowsGetFileOwnerAndGroupSIDsInvalid(t *testing.T) {
 	_, _, err := compat.GetFileOwnerAndGroupSIDs(invalidName)
 	if err == nil {
-		t.Fatal("expected error, got nil")
+		t.Fatal("got nil, want an error")
 	}
 }
 
 func TestStatPosixWindowsLSAOpenPolicy(t *testing.T) {
 	_, err := compat.LSAOpenPolicy(nil, compat.POLICY_VIEW_LOCAL_INFORMATION)
 	if err != nil {
-		t.Fatalf("expected no error, got %v", err)
+		t.Fatalf("got %q, want nil", err)
 	}
 }
 
@@ -48,14 +48,14 @@ func TestStatPosixWindowsLSAOpenPolicyInvalid(t *testing.T) {
 	access := ^uint32(0) // all bits set
 	_, err := compat.LSAOpenPolicy(nil, access)
 	if err == nil {
-		t.Fatal("expected error, got nil")
+		t.Fatal("got nil, want an error")
 	}
 }
 
 func TestStatPosixWindowsGetPrimaryDomainSID(t *testing.T) {
 	sid, err := compat.GetPrimaryDomainSID()
 	if err != nil {
-		t.Fatalf("expected no error, got %v", err)
+		t.Fatalf("got %q, want nil", err)
 	}
 	if !compat.IsValidSid(sid) {
 		t.Fatalf("got an invalid SID: %v", sid.String())
@@ -76,10 +76,10 @@ func TestStatPosixWindowsGetRid(t *testing.T) {
 
 	rid, err := compat.GetRID(sid)
 	if err != nil {
-		t.Fatalf("expected no error, got %v", err)
+		t.Fatalf("got %q, want nil", err)
 	}
 	if rid != 544 {
-		t.Fatalf("expected RID 544, got %d", rid)
+		t.Fatalf("got %d, want RID 544", rid)
 	}
 }
 
@@ -95,7 +95,7 @@ func TestStatPosixWindowsGetRidInvalid(t *testing.T) {
 
 	_, err := compat.GetRID(sid)
 	if err == nil {
-		t.Fatal("expected error, got nil")
+		t.Fatal("got nil, want an error")
 	}
 }
 
@@ -138,8 +138,24 @@ func TestStatPosixWindowsSIDToPOSIXID(t *testing.T) {
 			equalDom:   false,
 		},
 		{
-			name:    "unsupported",
-			sidStr:  "S-1-1-0", // Everyone
+			name:      "Everyone",
+			sidStr:    "S-1-1-0",
+			wantIDMin: 0x30201,
+			wantIDMax: 0x30201,
+		},
+		{
+			name:    "S-1-5-9999999999",
+			sidStr:  "S-1-5-9999999999",
+			wantErr: true,
+		},
+		{
+			name:    "S-0-0-0",
+			sidStr:  "S-0-0-0",
+			wantErr: true,
+		},
+		{
+			name:    "S-2-0-0",
+			sidStr:  "S-2-0-0",
 			wantErr: true,
 		},
 	}
@@ -164,26 +180,27 @@ func TestStatPosixWindowsSIDToPOSIXID(t *testing.T) {
 			got, err := compat.SIDToPOSIXID(sid, primary)
 			if tt.wantErr {
 				if err == nil {
-					t.Fatalf("expected error, got id=0x%x (%d)", got, got)
+					t.Fatalf("got nil, want an error: POSIX id=0x%x (%d)", got, got)
 				}
+
 				return
 			}
 			if err != nil {
-				t.Fatalf("unexpected error: %v", err)
+				t.Fatalf("got %q, want nil", err)
 			}
 			if primary == nil {
 				return
 			}
 
 			if got < tt.wantIDMin {
-				t.Errorf("id=0x%x (%d), want >= 0x%x (%d)", got, got, tt.wantIDMin, tt.wantIDMin)
+				t.Errorf("got 0x%x (%d), want >= 0x%x (%d)", got, got, tt.wantIDMin, tt.wantIDMin)
 			}
 			if got > tt.wantIDMax {
-				t.Errorf("id=0x%x (%d), want <= 0x%x (%d)", got, got, tt.wantIDMax, tt.wantIDMax)
+				t.Errorf("got 0x%x (%d), want <= 0x%x (%d)", got, got, tt.wantIDMax, tt.wantIDMax)
 			}
 			equalDom, _ := compat.EqualDomainSid(sid, primary)
 			if tt.equalDom != equalDom {
-				t.Errorf("id=0x%x (%d), got %v, want %v", got, got, equalDom, tt.equalDom)
+				t.Errorf("got 0x%x (%d), got %v, want %v", got, got, equalDom, tt.equalDom)
 			}
 		})
 	}
@@ -197,7 +214,7 @@ func TestStatPosixWindowsNameFromSID(t *testing.T) {
 
 	_, err = compat.NameFromSID(sid)
 	if err != nil {
-		t.Fatalf("expected no error, got %v", err)
+		t.Fatalf("got %q, want nil", err)
 	}
 
 }
@@ -205,7 +222,7 @@ func TestStatPosixWindowsNameFromSID(t *testing.T) {
 func TestStatPosixWindowsNameFromSIDInvalid(t *testing.T) {
 	_, err := compat.NameFromSID(nil)
 	if err == nil {
-		t.Fatal("expected error, got nil")
+		t.Fatal("got nil, want an error")
 	}
 }
 
@@ -217,7 +234,7 @@ func TestStatPosixWindowsGetUserGroup(t *testing.T) {
 
 	_, _, _, _, err = compat.GetUserGroup(name)
 	if err != nil {
-		t.Fatalf("expected no error, got %v", err)
+		t.Fatalf("got %q, want nil", err)
 	}
 
 }
@@ -225,6 +242,6 @@ func TestStatPosixWindowsGetUserGroup(t *testing.T) {
 func TestStatPosixWindowsGetUserGroupInvalid(t *testing.T) {
 	_, _, _, _, err := compat.GetUserGroup(invalidName)
 	if err == nil {
-		t.Fatal("expected error, got nil")
+		t.Fatal("got nil, want an error")
 	}
 }

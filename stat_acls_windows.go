@@ -9,9 +9,18 @@ import (
 	"errors"
 	"strings"
 	"sync"
+	"testing"
 
 	"golang.org/x/sys/windows"
 )
+
+var initialBufSize uint32 = 1024
+
+func init() {
+	if testing.Testing() {
+		initialBufSize = 0
+	}
+}
 
 type volumeACLCache struct {
 	mu         sync.RWMutex
@@ -38,7 +47,10 @@ func supportsACLs(path string) (bool, error) {
 }
 
 func supportsACLsCached(fi FileInfo) (bool, error) {
-	if fi != nil && fi.PartitionID() != 0 {
+	if fi == nil {
+		return false, errors.New("fi is nil")
+	}
+	if fi.PartitionID() != 0 {
 		volumeSerialNumber := uint32(fi.PartitionID()) //nolint:gosec,govet
 		volCache.mu.RLock()
 		fsFlags, ok := volCache.bySerial[volumeSerialNumber]
@@ -121,23 +133,31 @@ func getFinalPathNameByHandleGUID(h windows.Handle) (string, error) {
 	const FILE_NAME_NORMALIZED = 0x0
 	const VOLUME_NAME_GUID = 0x1
 
-	n, err := windows.GetFinalPathNameByHandle(h, nil, 0, FILE_NAME_NORMALIZED|VOLUME_NAME_GUID)
-	if n == 0 {
-		if err != nil {
-			return "", err
-		}
-		return "", errors.New("size probe failed with GetFinalPathNameByHandle()")
-	}
+	bufSize := initialBufSize
+	for {
+		buf := make([]uint16, bufSize)
 
-	buf := make([]uint16, n+1)
-	n2, err := windows.GetFinalPathNameByHandle(h, &buf[0], uint32(len(buf)), FILE_NAME_NORMALIZED|VOLUME_NAME_GUID) //nolint:gosec
-	if n2 == 0 || n2 >= uint32(len(buf)) {                                                                           //nolint:gosec
-		if err != nil {
-			return "", err
+		var n uint32
+		var err error
+		if bufSize == 0 {
+			n, err = windows.GetFinalPathNameByHandle(h, nil, 0, FILE_NAME_NORMALIZED|VOLUME_NAME_GUID)
+		} else {
+			n, err = windows.GetFinalPathNameByHandle(h, &buf[0], uint32(len(buf)), FILE_NAME_NORMALIZED|VOLUME_NAME_GUID) //nolint:gosec
 		}
-		return "", errors.New("unexpected length with GetFinalPathNameByHandle()")
+		if n == 0 {
+			if err != nil {
+				return "", err
+			}
+			return "", errors.New("unexpected length with GetFinalPathNameByHandle()")
+		}
+
+		if n < uint32(len(buf)) { //nolint:gosec
+			// success, truncate to returned length
+			return windows.UTF16ToString(buf[:n]), nil
+		}
+
+		bufSize = n + 1
 	}
-	return windows.UTF16ToString(buf), nil
 }
 
 // getVolumePathNamesForVolumeName fetches all mount points for a volume GUID.
@@ -146,27 +166,29 @@ func getVolumePathNamesForVolumeName(volGUID string) ([]string, error) {
 	if err != nil {
 		return nil, err
 	}
-	var need uint32
-	// With len=0, API returns ERROR_MORE_DATA and sets 'need'.
-	err = windows.GetVolumePathNamesForVolumeName(g16, nil, 0, &need)
-	if err == nil {
-		// Unusual success with zero buffer => no mount points.
-		return nil, nil
-	}
-	errno, ok := err.(windows.Errno) //nolint:errorlint
-	if !ok || errno != windows.ERROR_MORE_DATA {
-		return nil, err
-	}
-	if need == 0 {
-		return nil, nil
-	}
 
-	buf := make([]uint16, need)
-	err = windows.GetVolumePathNamesForVolumeName(g16, &buf[0], need, &need)
-	if err != nil {
-		return nil, err
+	bufSize := initialBufSize
+	for {
+		var newBufSize uint32
+		buf := make([]uint16, bufSize)
+		if bufSize == 0 {
+			err = windows.GetVolumePathNamesForVolumeName(g16, nil, bufSize, &newBufSize)
+		} else {
+			err = windows.GetVolumePathNamesForVolumeName(g16, &buf[0], bufSize, &newBufSize)
+		}
+		if err == nil {
+			return multiSZToStrings(buf), nil
+		}
+		errno, ok := err.(windows.Errno) //nolint:errorlint
+		if !ok || errno != windows.ERROR_MORE_DATA {
+			return nil, err
+		}
+		if newBufSize > bufSize {
+			bufSize = newBufSize
+		} else {
+			bufSize *= 2
+		}
 	}
-	return multiSZToStrings(buf), nil
 }
 
 // getVolumeInfoByHandle returns (serial, fsFlags) using GetVolumeInformationByHandle.
