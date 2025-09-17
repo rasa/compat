@@ -719,7 +719,7 @@ func TestLstatDiffFiles(t *testing.T) {
 func TestLstatLstatInvalid(t *testing.T) {
 	_, err := compat.Lstat(invalidName)
 	if err == nil {
-		t.Fatalf("expected no error, got %v", err)
+		t.Fatal("expected error, got nil")
 	}
 }
 

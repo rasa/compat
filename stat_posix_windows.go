@@ -7,6 +7,7 @@ package compat
 
 import (
 	"fmt"
+	"os"
 	"strings"
 	"syscall"
 	"unsafe"
@@ -43,7 +44,9 @@ type LSA_POLICY_ACCOUNT_DOMAIN_INFO struct {
 
 var (
 	modadvapi32                   = windows.NewLazySystemDLL("advapi32.dll")
+	procEqualDomainSid            = modadvapi32.NewProc("EqualDomainSid")
 	procGetNamedSecurityInfoW     = modadvapi32.NewProc("GetNamedSecurityInfoW")
+	procIsValidSid                = modadvapi32.NewProc("IsValidSid") //nolint:unused
 	procLsaOpenPolicy             = modadvapi32.NewProc("LsaOpenPolicy")
 	procLsaQueryInformationPolicy = modadvapi32.NewProc("LsaQueryInformationPolicy")
 	procLsaFreeMemory             = modadvapi32.NewProc("LsaFreeMemory")
@@ -118,21 +121,45 @@ func getRID(sid *windows.SID) (int, error) {
 	return int(sid.SubAuthority(count - 1)), nil
 }
 
-func isSameDomainSID(sid1, sid2 *windows.SID) bool {
+func equalDomainSid(sid1, sid2 *windows.SID) (bool, error) {
 	if sid1 == nil || sid2 == nil {
+		return false, nil
+	}
+
+	var equal int32
+	r1, _, e1 := syscall.SyscallN(
+		procEqualDomainSid.Addr(),
+		uintptr(unsafe.Pointer(sid1)),
+		uintptr(unsafe.Pointer(sid2)),
+		uintptr(unsafe.Pointer(&equal)),
+	)
+	if r1 == 0 {
+		if e1 != 0 {
+			return false, error(e1)
+		}
+		return false, syscall.EINVAL
+	}
+
+	return equal != 0, nil
+}
+
+func isValidSid(sid *windows.SID) bool { //nolint:unused
+	if sid == nil {
 		return false
 	}
-	// Compare domain portion (strip RID)
-	s1 := sid1.String()
-	s2 := sid2.String()
-	last1 := strings.LastIndex(s1, "-")
-	last2 := strings.LastIndex(s2, "-")
-
-	return last1 > 0 && last2 > 0 && s1[:last1] == s2[:last2]
+	r1, _, _ := syscall.SyscallN(
+		procIsValidSid.Addr(),
+		uintptr(unsafe.Pointer(sid)),
+	)
+	return r1 != 0
 }
 
 // See https://cygwin.com/cygwin-ug-net/ntsec.html
 func sidToPOSIXID(sid *windows.SID, primaryDomainSid *windows.SID) (int, error) {
+	if sid == nil {
+		return 0, os.ErrInvalid
+	}
+
 	sidStr := sid.String()
 
 	switch {
@@ -149,7 +176,11 @@ func sidToPOSIXID(sid *windows.SID, primaryDomainSid *windows.SID) (int, error) 
 		if err != nil {
 			return UnknownID, err
 		}
-		if isSameDomainSID(sid, primaryDomainSid) {
+		b, err := equalDomainSid(sid, primaryDomainSid)
+		if err != nil {
+			return UnknownID, err
+		}
+		if b {
 			return 0x40000 + rid, nil //nolint:mnd
 		}
 
