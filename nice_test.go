@@ -113,6 +113,6 @@ func TestNiceReniceIfRootInvalid(t *testing.T) {
 func TestNiceErrors(t *testing.T) {
 	err := errors.New("Test")
 	_ = &compat.NiceError{err}
-	_ = &compat.InvalidNiceError{1024, err}
+	_ = &compat.InvalidNiceError{1024}
 	_ = &compat.ReniceError{1024, err}
 }
