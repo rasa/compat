@@ -216,7 +216,6 @@ func TestStatPosixWindowsNameFromSID(t *testing.T) {
 	if err != nil {
 		t.Fatalf("got %q, want nil", err)
 	}
-
 }
 
 func TestStatPosixWindowsNameFromSIDInvalid(t *testing.T) {
@@ -232,15 +231,14 @@ func TestStatPosixWindowsGetUserGroup(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	_, _, _, _, err = compat.GetUserGroup(name)
+	_, _, _, _, err = compat.GetUserGroup(name) //nolint:dogsled
 	if err != nil {
 		t.Fatalf("got %q, want nil", err)
 	}
-
 }
 
 func TestStatPosixWindowsGetUserGroupInvalid(t *testing.T) {
-	_, _, _, _, err := compat.GetUserGroup(invalidName)
+	_, _, _, _, err := compat.GetUserGroup(invalidName) //nolint:dogsled
 	if err == nil {
 		t.Fatal("got nil, want an error")
 	}

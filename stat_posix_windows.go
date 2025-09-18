@@ -113,17 +113,17 @@ func getRID(sid *windows.SID) (int, error) {
 }
 
 var wellKnownSIDToGID = map[string]int{
-	"S-1-1-0":      0x30201, // 197121 // Everyone
-	"S-1-5-5-":     0xfff,
-	"S-1-5-32-544": 544, // Administrators
-	"S-1-5-32-545": 545, // Users
-	"S-1-5-32-546": 546, // Guests
-	"S-1-5-32-547": 547, // Power Users
-	"S-1-5-32-548": 548, // Account Operators
-	"S-1-5-32-549": 549, // Server Operators
-	"S-1-5-32-550": 550, // Print Operators
-	"S-1-5-32-551": 551, // Backup Operators
-	"S-1-5-32-552": 552, // Replicators
+	"S-1-1-0":      0x30201, //nolint:mnd // 197121 // Everyone
+	"S-1-5-5-":     0xfff,   //nolint:mnd
+	"S-1-5-32-544": 544,     //nolint:mnd // Administrators
+	"S-1-5-32-545": 545,     //nolint:mnd // Users
+	"S-1-5-32-546": 546,     //nolint:mnd // Guests
+	"S-1-5-32-547": 547,     //nolint:mnd // Power Users
+	"S-1-5-32-548": 548,     //nolint:mnd // Account Operators
+	"S-1-5-32-549": 549,     //nolint:mnd // Server Operators
+	"S-1-5-32-550": 550,     //nolint:mnd // Print Operators
+	"S-1-5-32-551": 551,     //nolint:mnd // Backup Operators
+	"S-1-5-32-552": 552,     //nolint:mnd // Replicators
 }
 
 // See https://cygwin.com/cygwin-ug-net/ntsec.html

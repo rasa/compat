@@ -24,11 +24,6 @@ require (
 	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 // indirect
 	github.com/power-devops/perfstat v0.0.0-20240221224432-82ca36839d55 // indirect
 	github.com/yusufpapurcu/wmi v1.2.4 // indirect
-	golang.org/x/mod v0.26.0 // indirect
-	golang.org/x/sync v0.16.0 // indirect
-	golang.org/x/telemetry v0.0.0-20250710130107-8d8967aff50b // indirect
-	golang.org/x/tools v0.35.1-0.20250728180453-01a3475a31bc // indirect
-	golang.org/x/tools/gopls v0.20.0 // indirect
 )
 
 // replace github.com/capnspacehook/go-acl v0.0.0-20191017210724-28a28d1b4c77 => ../go-acl
