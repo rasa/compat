@@ -9,6 +9,7 @@ package compat_test
 import (
 	"os"
 	"runtime"
+	"strings"
 	"testing"
 
 	"github.com/rasa/compat"
@@ -67,6 +68,13 @@ func TestWriteFileAtomicCurrentDir(t *testing.T) {
 	want := fixPerms(perm, false)
 	got := fi.Mode().Perm()
 	if got != want {
+		partType := partitionType(os.Getwd())
+		if strings.Contains(partType, "fat") || strings.Contains(partType, "dos") {
+			skipf(t, "got %04o, want %04o (ignoring: on %v filesystem", got, want, partType)
+
+			return
+		}
+	
 		t.Fatalf("got %04o, want %04o", got, want)
 	}
 }
