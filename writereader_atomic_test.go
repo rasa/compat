@@ -58,7 +58,7 @@ func TestWriteReaderAtomicCurrentDir(t *testing.T) {
 		_ = os.Remove(file)
 	})
 
-	err = compat.WriteFileAtomic(base, helloBytes)
+	err = compat.WriteReaderAtomic(base, helloBuf)
 	if err != nil {
 		fatalf(t, "Failed to write file: %q: %v", file, err)
 
