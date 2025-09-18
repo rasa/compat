@@ -8,8 +8,8 @@ package compat_test
 
 import (
 	"os"
+	"path/filepath"
 	"runtime"
-	"strings"
 	"testing"
 
 	"github.com/rasa/compat"
@@ -51,16 +51,13 @@ func TestWriteFileAtomicCurrentDir(t *testing.T) {
 		t.Fatalf("Failed to create temp file: %v", err)
 	}
 	dir, base := filepath.Split(file)
-	err = t.Chdir(dir)
-	if err != nil {
-		t.Fatalf("Failed to chdir: %v", err)
-	}
+	t.Chdir(dir)
 
 	t.Cleanup(func() {
 		_ = os.Remove(file)
 	})
 
-	err := compat.WriteFileAtomic(base, helloBytes)
+	err = compat.WriteFileAtomic(base, helloBytes)
 	if err != nil {
 		fatalf(t, "Failed to write file: %q: %v", file, err)
 
