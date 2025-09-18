@@ -250,7 +250,7 @@ func partitionType(name string) string {
 	return partType
 }
 
-func randomBase36String(n int) string { //nolint:unused
+func randomBase36String(n int) string { //nolint:unparam,unused
 	const base36 = "0123456789abcdefghijklmnopqrstuvwxyz"
 	out := make([]byte, n)
 	for i := range out {

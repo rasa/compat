@@ -5,6 +5,10 @@
 
 package compat
 
+// file_windows.go
+
+var CurrentUsername = currentUsername
+
 // stat_posix_windows.go
 
 var EqualDomainSid = equalDomainSid

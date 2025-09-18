@@ -78,10 +78,8 @@ func WriteReaderAtomic(filename string, r io.Reader, opts ...Option) (err error)
 	defer func() {
 		if err != nil {
 			// Don't leave the temp file lying around on error.
-			if os.IsPermission(Remove(name)) {
-				_ = Chmod(name, perm600)
-				_ = Remove(name)
-			}
+			_ = Chmod(name, perm600)
+			_ = Remove(name)
 		}
 	}()
 	// ensure we always close f. Note that this does not conflict with the

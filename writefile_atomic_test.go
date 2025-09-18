@@ -44,6 +44,33 @@ func TestWriteFileAtomic(t *testing.T) {
 	}
 }
 
+func TestWriteFileAtomicCurrentDir(t *testing.T) {
+	file := randomBase36String(8) + ".tmp"
+
+	t.Cleanup(func() {
+		_ = os.Remove(file)
+	})
+
+	err := compat.WriteFileAtomic(file, helloBytes)
+	if err != nil {
+		fatalf(t, "Failed to write file: %q: %v", file, err)
+
+		return // Tinygo doesn't support T.Fatal
+	}
+
+	fi, err := compat.Stat(file)
+	if err != nil {
+		t.Fatalf("Failed to stat file: %q: %v", file, err)
+	}
+
+	perm := compat.CreateTempPerm // 0o600
+	want := fixPerms(perm, false)
+	got := fi.Mode().Perm()
+	if got != want {
+		t.Fatalf("got %04o, want %04o", got, want)
+	}
+}
+
 func TestWriteFileAtomicDefaultFileMode(t *testing.T) {
 	file, err := tempName(t)
 	if err != nil {
@@ -237,5 +264,36 @@ func TestWriteFileAtomicInvalid(t *testing.T) {
 	err := compat.WriteFileAtomic(invalidName, helloBytes)
 	if err == nil {
 		t.Fatalf("got nil, want an error")
+	}
+}
+
+func TestWriteFileAtomicCantRead(t *testing.T) {
+	file, err := tempFile(t)
+	if err != nil {
+		t.Fatalf("Failed to create temp file: %v", err)
+	}
+
+	t.Cleanup(func() {
+		_ = compat.Chmod(file, perm600)
+		_ = os.Remove(file)
+	})
+
+	perm := fixPerms(perm100, false)
+	if perm != perm100 {
+		partType := partitionType(file)
+		skipf(t, "Skipping test: ACLs are not supported on a %v filesystem", partType)
+
+		return
+	}
+	err = compat.Chmod(file, perm)
+	if err != nil {
+		t.Fatalf("Chmod: %v", err)
+	}
+
+	err = compat.WriteFileAtomic(file, helloBytes, compat.KeepFileMode(true))
+	if err != nil {
+		fatalf(t, "WriteFileAtomic: %v", err)
+
+		return // Tinygo doesn't support T.Fatal
 	}
 }

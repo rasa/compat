@@ -962,6 +962,13 @@ func TestFileWindowsWriteFileEx(t *testing.T) {
 	}
 }
 
+func TestFileWindowsCurrentUsername(t *testing.T) {
+	username := compat.CurrentUsername()
+	if username == "" {
+		t.Fatal("currentUsername: got '', want a value")
+	}
+}
+
 func checkPerm(t *testing.T, name string, perm os.FileMode, isDir bool) {
 	t.Helper()
 

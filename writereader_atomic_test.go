@@ -7,6 +7,7 @@
 package compat_test
 
 import (
+	"errors"
 	"os"
 	"runtime"
 	"testing"
@@ -25,6 +26,33 @@ func TestWriteReaderAtomic(t *testing.T) {
 	})
 
 	err = compat.WriteReaderAtomic(file, helloBuf)
+	if err != nil {
+		fatalf(t, "Failed to write file: %q: %v", file, err)
+
+		return // Tinygo doesn't support T.Fatal
+	}
+
+	fi, err := compat.Stat(file)
+	if err != nil {
+		t.Fatalf("Failed to stat file: %q: %v", file, err)
+	}
+
+	perm := compat.CreateTempPerm // 0o600
+	want := fixPerms(perm, false)
+	got := fi.Mode().Perm()
+	if got != want {
+		t.Fatalf("got %04o, want %04o", got, want)
+	}
+}
+
+func TestWriteReaderAtomicCurrentDir(t *testing.T) {
+	file := randomBase36String(8) + ".tmp"
+
+	t.Cleanup(func() {
+		_ = os.Remove(file)
+	})
+
+	err := compat.WriteReaderAtomic(file, helloBuf)
 	if err != nil {
 		fatalf(t, "Failed to write file: %q: %v", file, err)
 
@@ -230,6 +258,30 @@ func TestWriteReaderAtomicReadOnlyModeReset(t *testing.T) {
 	got := fi.Mode().Perm()&perm200 == perm200
 	if got != want {
 		t.Fatalf("got %v, want %v", got, want)
+	}
+}
+
+type errReader struct{}
+
+func (errReader) Read(p []byte) (int, error) {
+	return 0, errors.New("boom: read failure")
+}
+
+func TestWriteReaderAtomicError(t *testing.T) {
+	file, err := tempName(t)
+	if err != nil {
+		t.Fatalf("Failed to create temp file: %v", err)
+	}
+
+	t.Cleanup(func() {
+		_ = os.Remove(file)
+	})
+
+	err = compat.WriteReaderAtomic(file, errReader{})
+	if err == nil {
+		fatal(t, "got nil, want an error")
+
+		return // Tinygo doesn't support T.Fatal
 	}
 }
 
