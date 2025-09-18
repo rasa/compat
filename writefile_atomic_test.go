@@ -76,7 +76,7 @@ func TestWriteFileAtomicCurrentDir(t *testing.T) {
 			return
 		}
 	
-		t.Fatalf("got %04o, want %04o", got, want)
+		t.Fatalf("got %04o, want %04o: on %v (%v)", got, want, dir, partType)
 	}
 }
 
