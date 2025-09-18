@@ -47,13 +47,21 @@ func TestWriteReaderAtomic(t *testing.T) {
 }
 
 func TestWriteReaderAtomicCurrentDir(t *testing.T) {
-	file := randomBase36String(8) + ".tmp"
+	file, err := tempName(t)
+	if err != nil {
+		t.Fatalf("Failed to create temp file: %v", err)
+	}
+	dir, base := filepath.Split(file)
+	err = t.Chdir(dir)
+	if err != nil {
+		t.Fatalf("Failed to chdir: %v", err)
+	}
 
 	t.Cleanup(func() {
 		_ = os.Remove(file)
 	})
 
-	err := compat.WriteReaderAtomic(file, helloBuf)
+	err := compat.WriteReaderAtomic(base, helloBuf)
 	if err != nil {
 		fatalf(t, "Failed to write file: %q: %v", file, err)
 
@@ -69,15 +77,7 @@ func TestWriteReaderAtomicCurrentDir(t *testing.T) {
 	want := fixPerms(perm, false)
 	got := fi.Mode().Perm()
 	if got != want {
-		dir, _ := os.Getwd()
-		partType := partitionType(dir)
-		if strings.Contains(partType, "fat") || strings.Contains(partType, "dos") {
-			skipf(t, "got %04o, want %04o (ignoring: on %v filesystem", got, want, partType)
-
-			return
-		}
-
-		t.Fatalf("got %04o, want %04o: on %v (%v)", got, want, dir, partType)
+		t.Fatalf("got %04o, want %04o", got, want)
 	}
 }
 
