@@ -244,6 +244,13 @@ func TestStatPosixWindowsGetUserGroupInvalid(t *testing.T) {
 	}
 }
 
+func TestStatPosixWindowsGetRIDInvalid(t *testing.T) {
+	_, err := compat.GetRID(nil)
+	if err == nil {
+		t.Fatal("got nil, want an error")
+	}
+}
+
 func TestStatPosixWindowsSIDToPOSIXIDInvalid(t *testing.T) {
 	_, err := compat.SIDToPOSIXID(nil, nil)
 	if err == nil {
