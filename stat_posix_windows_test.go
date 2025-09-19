@@ -271,3 +271,10 @@ func TestStatPosixWindowsIsValidSidInvalid(t *testing.T) {
 		t.Fatal("got true, want false")
 	}
 }
+
+func TestStatPosixWindowsCopySidInvalid(t *testing.T) {
+	_, err := compat.CopySid(nil)
+	if err == nil {
+		t.Fatal("got nil, want an error")
+	}
+}
