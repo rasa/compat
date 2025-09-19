@@ -8,6 +8,7 @@
 package compat
 
 import (
+	"errors"
 	"os"
 	"os/user"
 	"strconv"
@@ -17,7 +18,8 @@ import (
 
 func stat(fi os.FileInfo, name string, followSymlinks bool) (FileInfo, error) {
 	if fi == nil {
-		return nil, os.ErrInvalid
+		err := errors.New("fileInfo is nil")
+		return nil, &os.PathError{Op: "stat", Path: name, Err: err}
 	}
 
 	var fs fileStat
