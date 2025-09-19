@@ -16,6 +16,10 @@ import (
 )
 
 func stat(fi os.FileInfo, name string, followSymlinks bool) (FileInfo, error) {
+	if fi == nil {
+		return nil, os.ErrInvalid
+	}
+
 	var fs fileStat
 
 	fs.path = name
