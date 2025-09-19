@@ -292,7 +292,7 @@ func lsaOpenPolicy(systemName *uint16, access uint32) (handle syscall.Handle, er
 
 func copySid(src *windows.SID) (*windows.SID, error) {
 	if src == nil {
-		return nil, os ErrInvalid
+		return nil, os.ErrInvalid
 	}
 
 	length := windows.GetLengthSid(src)
