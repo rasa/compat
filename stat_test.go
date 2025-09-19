@@ -754,6 +754,7 @@ func TestStatSameFilesInvalid2(t *testing.T) {
 		t.Fatalf("got %v, want false", got)
 	}
 }
+
 func TestStatExportedStatInvalidFileInfo(t *testing.T) {
 	name, err := createTempFile(t)
 	if err != nil {
