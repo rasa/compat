@@ -11,6 +11,8 @@ var CurrentUsername = currentUsername
 
 // stat_posix_windows.go
 
+var CopySid = copySid
+
 var EqualDomainSid = equalDomainSid
 
 var GetFileOwnerAndGroupSIDs = getFileOwnerAndGroupSIDs
