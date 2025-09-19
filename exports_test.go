@@ -3,7 +3,7 @@
 
 package compat
 
-var Stat_ = stat
+var ExportedStat = stat //nolint:unused
 
 // dir.go
 
