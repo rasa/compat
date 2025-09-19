@@ -29,7 +29,7 @@ func stat(fi os.FileInfo, name string, _ bool) (FileInfo, error) {
 	fs.mode = fi.Mode()
 	fs.mtime = fi.ModTime()
 	fs.sys = *fi.Sys().(*syscall.Stat_t)
-	
+
 	fs.partID = uint64(fs.sys.Dev) //nolint:gosec,unconvert,nolintlint // intentional int32 → uint64 conversion
 	fs.fileID = fs.sys.Ino
 	fs.links = uint(fs.sys.Nlink) //nolint:gosec,unconvert,nolintlint // intentional int32 → uint conversion
