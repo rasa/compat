@@ -60,7 +60,6 @@ func stat(fi os.FileInfo, _ string, _ bool) (FileInfo, error) {
 	fs.mtime = fi.ModTime()
 	fs.sys = *fi.Sys().(*syscall.Dir)
 
-	
 	fs.partID = uint64(fs.sys.Type)<<32 + uint64(fs.sys.Dev)
 	fs.fileID = uint64(fs.sys.Qid.Path)
 	// fs.links not supported
