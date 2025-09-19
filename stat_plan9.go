@@ -6,6 +6,7 @@
 package compat
 
 import (
+	"errors"
 	"os"
 	"syscall"
 	"time"
@@ -46,6 +47,11 @@ type fileStat struct {
 }
 
 func stat(fi os.FileInfo, _ string, _ bool) (FileInfo, error) {
+	if fi == nil {
+		err := errors.New("fileInfo is nil")
+		return nil, &os.PathError{Op: "stat", Path: name, Err: err}
+	}
+
 	var fs fileStat
 
 	fs.name = fi.Name()
@@ -54,6 +60,7 @@ func stat(fi os.FileInfo, _ string, _ bool) (FileInfo, error) {
 	fs.mtime = fi.ModTime()
 	fs.sys = *fi.Sys().(*syscall.Dir)
 
+	
 	fs.partID = uint64(fs.sys.Type)<<32 + uint64(fs.sys.Dev)
 	fs.fileID = uint64(fs.sys.Qid.Path)
 	// fs.links not supported
