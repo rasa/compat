@@ -762,11 +762,15 @@ func TestStatExportedStatInvalidFileInfo(t *testing.T) {
 
 	_, err = compat.ExportedStat(nil, name, false)
 	if err == nil {
-		t.Fatalf("got %q, want nil", err)
+		t.Fatal("got nil, want an error")
 	}
 }
 
 func TestStatExportedStatInvalidName(t *testing.T) {
+	if !compat.IsWindows {
+		skip(t, "skipping test: requires Windows")
+		return
+	}
 	name, err := createTempFile(t)
 	if err != nil {
 		t.Fatal(err)
@@ -779,7 +783,7 @@ func TestStatExportedStatInvalidName(t *testing.T) {
 
 	_, err = compat.ExportedStat(fi, invalidName, false)
 	if err == nil {
-		t.Fatalf("got %q, want nil", err)
+		t.Fatal("got nil, want an error")
 	}
 }
 
