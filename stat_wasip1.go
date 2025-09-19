@@ -6,6 +6,7 @@
 package compat
 
 import (
+	"errors"
 	"os"
 	"syscall"
 )
