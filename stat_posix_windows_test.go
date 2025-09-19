@@ -259,8 +259,8 @@ func TestStatPosixWindowsEqualDomainSidInvalid(t *testing.T) {
 }
 
 func TestStatPosixWindowsIsValidSidInvalid(t *testing.T) {
-	_, err := compat.IsValidSid(nil)
-	if err == nil {
-		t.Fatal("got nil, want an error")
+	b := compat.IsValidSid(nil)
+	if b {
+		t.Fatal("got true, want false")
 	}
 }
