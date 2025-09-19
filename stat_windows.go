@@ -106,12 +106,8 @@ func stat(fi os.FileInfo, name string, followSymlinks bool) (FileInfo, error) {
 	fs.size = fi.Size()
 	fs.mode = fi.Mode()
 	fs.mtime = fi.ModTime()
-	sys, ok := fi.Sys().(*syscall.Win32FileAttributeData)
-	if !ok {
-		err = fmt.Errorf("sys is not a Win32FileAttributeData, it's a %T", fi.Sys())
-		return nil, &os.PathError{Op: "stat", Path: name, Err: err}
-	}
-	fs.sys = *sys
+	# See https://github.com/golang/go/blob/3cf1aaf8/src/os/types_windows.go#L367
+	fs.sys = *(fi.Sys().(*syscall.Win32FileAttributeData)) //nolint:staticcheck
 
 	fs.partID = uint64(i.VolumeSerialNumber)                             // uint32
 	fs.fileID = (uint64(i.FileIndexHigh) << 32) + uint64(i.FileIndexLow) //nolint:mnd
