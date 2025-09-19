@@ -72,9 +72,6 @@ func stat(fi os.FileInfo, name string, followSymlinks bool) (FileInfo, error) {
 	}
 	var fs fileStat
 
-	fs.mux.Lock()
-	defer fs.mux.Unlock()
-
 	fs.followSymlinks = followSymlinks
 
 	name = golang.FixLongPath(name)
@@ -90,6 +87,10 @@ func stat(fi os.FileInfo, name string, followSymlinks bool) (FileInfo, error) {
 		attrs |= syscall.FILE_FLAG_OPEN_REPARSE_POINT
 	}
 
+	// See https://github.com/golang/go/blob/3cf1aaf8/src/os/types_windows.go#L288
+	fs.mux.Lock()
+	defer fs.mux.Unlock()
+		
 	h, err := windows.CreateFile(pathp, 0, 0, nil, windows.OPEN_EXISTING, attrs, 0)
 	if err != nil {
 		return nil, &os.PathError{Op: "stat", Path: name, Err: err}
@@ -130,55 +131,55 @@ func (fs *fileStat) BTime() time.Time {
 }
 
 func (fs *fileStat) CTime() time.Time {
-	if fs.ctimed {
-		return fs.ctime
+	if !fs.ctimed {
+		fs.ctimed = true
+		pathp, err := windows.UTF16PtrFromString(fs.path)
+		if err != nil {
+			fs.err = &os.PathError{Op: "stat", Path: fs.path, Err: err}
+			
+			return fs.ctime
+		}
+
+		attrs := uint32(syscall.FILE_FLAG_BACKUP_SEMANTICS)
+		
+		if !fs.followSymlinks {
+			attrs |= syscall.FILE_FLAG_OPEN_REPARSE_POINT
+		}
+
+		// See https://github.com/golang/go/blob/3cf1aaf8/src/os/types_windows.go#L288
+		fs.mux.Lock()
+		defer fs.mux.Unlock()
+
+		h, err := windows.CreateFile(pathp, 0, 0, nil, windows.OPEN_EXISTING, attrs, 0)
+		if err != nil {
+			fs.err = &os.PathError{Op: "stat", Path: fs.path, Err: err}
+			
+			return fs.ctime
+		}
+		defer windows.CloseHandle(h) //nolint:errcheck
+		
+		var bi golang.FILE_BASIC_INFO
+		
+		err = windows.GetFileInformationByHandleEx(h, windows.FileBasicInfo, (*byte)(unsafe.Pointer(&bi)), uint32(unsafe.Sizeof(bi)))
+		if err != nil {
+			fs.err = &os.PathError{Op: "stat", Path: fs.path, Err: err}
+			
+			return fs.ctime
+		}
+		
+		if bi.ChangedTime == 0 {
+			// exFAT returns 0
+			return fs.ctime
+		}
+		
+		// ChangedTime is 100-nanosecond intervals since January 1, 1601.
+		nsec := bi.ChangedTime
+		// Change starting time to the Epoch (00:00:00 UTC, January 1, 1970).
+		nsec -= 116444736000000000
+		// Convert into nanoseconds.
+		nsec *= 100
+		fs.ctime = time.Unix(0, nsec)
 	}
-
-	fs.ctimed = true
-
-	pathp, err := windows.UTF16PtrFromString(fs.path)
-	if err != nil {
-		fs.err = &os.PathError{Op: "stat", Path: fs.path, Err: err}
-		return fs.ctime
-	}
-
-	fs.mux.Lock()
-	defer fs.mux.Unlock()
-
-	attrs := uint32(syscall.FILE_FLAG_BACKUP_SEMANTICS)
-
-	if !fs.followSymlinks {
-		attrs |= syscall.FILE_FLAG_OPEN_REPARSE_POINT
-	}
-
-	h, err := windows.CreateFile(pathp, 0, 0, nil, windows.OPEN_EXISTING, attrs, 0)
-	if err != nil {
-		fs.err = &os.PathError{Op: "stat", Path: fs.path, Err: err}
-
-		return fs.ctime
-	}
-	defer windows.CloseHandle(h) //nolint:errcheck
-
-	var bi golang.FILE_BASIC_INFO
-	err = windows.GetFileInformationByHandleEx(h, windows.FileBasicInfo, (*byte)(unsafe.Pointer(&bi)), uint32(unsafe.Sizeof(bi)))
-	if err != nil {
-		fs.err = &os.PathError{Op: "stat", Path: fs.path, Err: err}
-
-		return fs.ctime
-	}
-
-	if bi.ChangedTime == 0 {
-		// exFAT returns 0
-		return fs.ctime
-	}
-
-	// ChangedTime is 100-nanosecond intervals since January 1, 1601.
-	nsec := bi.ChangedTime
-	// Change starting time to the Epoch (00:00:00 UTC, January 1, 1970).
-	nsec -= 116444736000000000
-	// Convert into nanoseconds.
-	nsec *= 100
-	fs.ctime = time.Unix(0, nsec)
 
 	return fs.ctime
 }
