@@ -16,6 +16,11 @@ const (
 )
 
 func stat(fi os.FileInfo, name string, _ bool) (FileInfo, error) {
+	if fi == nil {
+		err := errors.New("fileInfo is nil")
+		return nil, &os.PathError{Op: "stat", Path: name, Err: err}
+	}
+
 	var fs fileStat
 
 	fs.path = name
@@ -24,19 +29,22 @@ func stat(fi os.FileInfo, name string, _ bool) (FileInfo, error) {
 	fs.mode = fi.Mode()
 	fs.mtime = fi.ModTime()
 	fs.sys = *fi.Sys().(*syscall.Stat_t)
-	// See https://github.com/golang/go/blob/5045fdd8/src/os/stat_wasip1.go#L35
-	if fs.mode == 0 {
-		if fs.sys.Mode == syscall.S_IFDIR {
-			fs.mode = defaultDirMode
-		} else {
-			fs.mode = defaultFileMode
-		}
-	}
+	
 	fs.partID = uint64(fs.sys.Dev) //nolint:gosec,unconvert,nolintlint // intentional int32 → uint64 conversion
 	fs.fileID = fs.sys.Ino
 	fs.links = uint(fs.sys.Nlink) //nolint:gosec,unconvert,nolintlint // intentional int32 → uint conversion
 	fs.uid = int(fs.sys.Uid)
 	fs.gid = int(fs.sys.Gid)
+
+	// See https://github.com/golang/go/blob/5045fdd8/src/os/stat_wasip1.go#L35
+	if fs.mode == 0 {
+		if fs.sys.Mode == syscall.S_IFDIR {
+			fs.mode = defaultDirMode | os.ModeDir
+		} else {
+			fs.mode = defaultFileMode
+		}
+	}
+
 	// https://github.com/golang/go/blob/5045fdd8/src/syscall/syscall_wasip1.go#L356
 	if fs.uid == 0 {
 		fs.uid = os.Getuid()
