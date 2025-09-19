@@ -760,7 +760,7 @@ func TestStatExportedStatInvalidFileInfo(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	_, err := compat.ExportedStat(nil, name, false)
+	_, err = compat.ExportedStat(nil, name, false)
 	if err == nil {
 		t.Fatalf("got %q, want nil", err)
 	}
@@ -777,7 +777,7 @@ func TestStatExportedStatInvalidName(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	_, err := compat.ExportedStat(fi, invalidName, false)
+	_, err = compat.ExportedStat(fi, invalidName, false)
 	if err == nil {
 		t.Fatalf("got %q, want nil", err)
 	}
