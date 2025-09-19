@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: Copyright © 2025 Ross Smith II <ross@smithii.com>
+// SPDX-FileCopyrightText: Copyright ?? 2025 Ross Smith II <ross@smithii.com>
 // SPDX-License-Identifier: MIT
 
 //go:build windows
@@ -7,7 +7,6 @@ package compat
 
 import (
 	"errors"
-	"fmt"
 	"os"
 	"sync"
 	"syscall"
