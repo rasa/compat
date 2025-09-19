@@ -754,6 +754,34 @@ func TestStatSameFilesInvalid2(t *testing.T) {
 		t.Fatalf("got %v, want false", got)
 	}
 }
+func TestStatExportedStatInvalidFileInfo(t *testing.T) {
+	name, err := createTempFile(t)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	_, err := compat.ExportedStat(nil, name, false)
+	if err == nil {
+		t.Fatalf("got %q, want nil", err)
+	}
+}
+
+func TestStatExportedStatInvalidName(t *testing.T) {
+	name, err := createTempFile(t)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	fi, err := os.Stat(name)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	_, err := compat.ExportedStat(fi, invalidName, false)
+	if err == nil {
+		t.Fatalf("got %q, want nil", err)
+	}
+}
 
 func createTempFile(t *testing.T) (string, error) {
 	t.Helper()
