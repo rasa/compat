@@ -81,9 +81,8 @@ func compareTimes(a, b time.Time, granularity int) bool {
 	if granularity < 0 {
 		return a.IsZero()
 	}
-	if granularity == 0 {
-		granularity = 1
-	}
+	// add 1 second for fractional seconds
+	granularity += 1
 
 	return a.Sub(b).Abs() < time.Duration(granularity)*time.Second
 }
