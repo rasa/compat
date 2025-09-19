@@ -27,10 +27,10 @@ var fsTests = []fsTest{
 	{"HFSX", testVars{}},
 	{"JHFS+", testVars{}},
 	{"JHFS+X", testVars{}},
-	{"UDF", testVars{false, false, false, 86401, 0, 0, 0, 0, ""}},
+	{"UDF", testVars{false, false, false, 86400, 0, 0, 0, 0, ""}},
 	// 2 second difference, plus 1 second
-	{"ExFAT", testVars{true, true, true, 3, 3, 3, 3, -1, ""}},
-	{"FAT32", testVars{true, true, true, 86400, 3, 3, 3, -1, ""}},
+	{"ExFAT", testVars{true, true, true, 2, 2, 2, 2, -1, ""}},
+	{"FAT32", testVars{true, true, true, 86400, 2, 2, 2, -1, ""}},
 }
 
 func testMain(m *testing.M, fsToTest, nativeFSType, fsPath string) int { //nolint:gocyclo
