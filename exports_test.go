@@ -3,6 +3,8 @@
 
 package compat
 
+var Stat_ = stat
+
 // dir.go
 
 var FSDirEntryToDirEntry = fsDirEntryToDirEntry
