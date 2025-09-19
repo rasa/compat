@@ -104,6 +104,10 @@ func getPrimaryDomainSID() (*windows.SID, error) {
 }
 
 func getRID(sid *windows.SID) (int, error) {
+	if sid == nil {
+		return UnknownID, os.ErrInvalid
+	}
+
 	count := uint32(sid.SubAuthorityCount())
 	if count == 0 {
 		return UnknownID, fmt.Errorf("no subauthorities found for %q", sid.String())
@@ -169,6 +173,9 @@ func sidToPOSIXID(sid *windows.SID, primaryDomainSid *windows.SID) (int, error) 
 }
 
 func nameFromSID(sid *windows.SID) (string, error) {
+	if sid == nil {
+		return "", os.ErrInvalid
+	}
 	name16 := make([]uint16, 256)      //nolint:mnd
 	domain16 := make([]uint16, 256)    //nolint:mnd
 	nameLen := uint32(len(name16))     //nolint:gosec
@@ -234,7 +241,7 @@ func getUserGroup(path string) (int, int, string, string, error) {
 
 func equalDomainSid(sid1, sid2 *windows.SID) (bool, error) {
 	if sid1 == nil || sid2 == nil {
-		return false, nil
+		return false, os.ErrInvalid
 	}
 
 	var equal int32
@@ -285,7 +292,7 @@ func lsaOpenPolicy(systemName *uint16, access uint32) (handle syscall.Handle, er
 
 func copySid(src *windows.SID) (*windows.SID, error) {
 	if src == nil {
-		return nil, syscall.EINVAL
+		return nil, os ErrInvalid
 	}
 
 	length := windows.GetLengthSid(src)
