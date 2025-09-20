@@ -165,7 +165,7 @@ jobs:
           if [[ "${{ inputs.sudo }}" == "true" ]]; then
             if builtin command -v sudo &>/dev/null; then
               if [[ ! "${OS:-}" =~ [Ww]indows ]]; then
-                sudo='sudo -E -n --preserve-env=PATH,COMPAT_DEBUG,TEST_OPTS'
+                sudo='sudo -E -n --preserve-env=PATH,COMPAT_DEBUG,COMPAT_DEBUG_FS,TEST_OPTS'
               fi
             fi
           fi
