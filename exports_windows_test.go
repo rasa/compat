@@ -9,27 +9,9 @@ package compat
 
 var CurrentUsername = currentUsername
 
-// stat_posix_windows.go
+var SaFromPerm = saFromPerm
 
-var CopySid = copySid
-
-var EqualDomainSid = equalDomainSid
-
-var GetFileOwnerAndGroupSIDs = getFileOwnerAndGroupSIDs
-
-var GetPrimaryDomainSID = getPrimaryDomainSID
-
-var GetRID = getRID
-
-var GetUserGroup = getUserGroup
-
-var IsValidSid = isValidSid
-
-var LSAOpenPolicy = lsaOpenPolicy //nolint:unused
-
-var NameFromSID = nameFromSID
-
-var SIDToPOSIXID = sidToPOSIXID
+var SetOwnerToCurrentUser = setOwnerToCurrentUser
 
 // stat_acls_windows.go
 
@@ -54,3 +36,25 @@ var MultiSZToStrings = multiSZToStrings //nolint:unused
 var IsDriveLetterRoot = isDriveLetterRoot //nolint:unused
 
 var NormalizeRoot = normalizeRoot
+
+// stat_posix_windows.go
+
+var CopySid = copySid
+
+var EqualDomainSid = equalDomainSid
+
+var GetFileOwnerAndGroupSIDs = getFileOwnerAndGroupSIDs
+
+var GetPrimaryDomainSID = getPrimaryDomainSID
+
+var GetRID = getRID
+
+var GetUserGroup = getUserGroup
+
+var IsValidSid = isValidSid
+
+var LSAOpenPolicy = lsaOpenPolicy //nolint:unused
+
+var NameFromSID = nameFromSID
+
+var SIDToPOSIXID = sidToPOSIXID

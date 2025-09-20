@@ -4,6 +4,11 @@
 package compat_test
 
 import (
+	"context"
+	"os"
+	"os/exec"
+	"os/user"
+	"path/filepath"
 	"testing"
 
 	"golang.org/x/sys/windows"
@@ -54,6 +59,12 @@ func TestACLWindowsGetVolumePathNamesForVolumeNameInvalid(t *testing.T) {
 	if err == nil {
 		t.Fatal("got nil, want an error")
 	}
+
+	_, err = compat.GetVolumePathNamesForVolumeName(invalidName)
+
+	if err == nil {
+		t.Fatal("got nil, want an error")
+	}
 }
 
 func TestACLWindowsGetVolumeInfoByHandleInvalid(t *testing.T) {
@@ -72,9 +83,61 @@ func TestACLWindowsResolveCanonicalRootFromHandleInvalid(t *testing.T) {
 	}
 }
 
+func TestACLWindowsResolveCanonicalRootFromHandleUNC(t *testing.T) {
+	usr, err := user.Current()
+	if err != nil {
+		t.Fatal(err)
+
+		return
+	}
+
+	dir := tempDir(t)
+	ctx := context.Background()
+	sharename := randomBase36String(8)
+	args := []string{"share", sharename + "=" + dir, "/grant:" + usr.Username + ",READ"}
+	err = exec.CommandContext(ctx, "net.exe", args...).Run()
+	if err != nil {
+		t.Fatal(err)
+
+		return
+	}
+
+	defer func() {
+		args := []string{"share", sharename, "/del", "/yes"}
+		err = exec.CommandContext(ctx, "net.exe", args...).Run()
+		if err != nil {
+			t.Fatal(err)
+		}
+	}()
+
+	fh, err := os.CreateTemp(dir, "")
+	if err != nil {
+		t.Fatal(err)
+
+		return
+	}
+	path := `\\?\UNC\127.0.0.1\` + sharename + `\` + filepath.Base(fh.Name())
+	_ = fh.Close()
+
+	f, err := os.Open(path)
+	if err != nil {
+		t.Fatal(err)
+
+		return
+	}
+	defer func() { _ = f.Close() }()
+
+	h := windows.Handle(f.Fd())
+	defer func() { _ = windows.CloseHandle(h) }()
+
+	_, _, err = compat.ResolveCanonicalRootFromHandle(h)
+	if err == nil {
+		t.Fatal("got nil, want an error")
+	}
+}
+
 /*
 func TestACLWindowsMultiSZToStrings(t *testing.T) {
-
 	if err == nil {
 		t.Fatal("got nil, want an error")
 	}

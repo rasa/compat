@@ -969,6 +969,20 @@ func TestFileWindowsCurrentUsername(t *testing.T) {
 	}
 }
 
+func TestFileWindowsSaFromPermFalse(t *testing.T) {
+	_, err := compat.SaFromPerm(0, false)
+	if err != nil {
+		t.Fatalf("got %q, want nil", err)
+	}
+}
+
+func TestFileWindowsSetOwnerToCurrentUserInvalid(t *testing.T) {
+	err := compat.SetOwnerToCurrentUser(invalidName)
+	if err == nil {
+		t.Fatal("got nil, want an error")
+	}
+}
+
 func checkPerm(t *testing.T, name string, perm os.FileMode, isDir bool) {
 	t.Helper()
 

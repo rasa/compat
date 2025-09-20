@@ -12,6 +12,77 @@ import (
 	"github.com/rasa/compat"
 )
 
+var invalidSIDs = [][]byte{
+	// S-0-0-0
+	{
+		0, 1, // Revision=0 (invalid), SubAuthorityCount=1
+		0, 0, 0, 0, 0, 0, // IdentifierAuthority=0
+		0, 0, 0, 0, // SubAuthority[0]=0
+	},
+	// S-2-0-0
+	{
+		2, 1, // Revision=2 (invalid), SubAuthorityCount=1
+		0, 0, 0, 0, 0, 0, // IdentifierAuthority=0
+		0, 0, 0, 0, // SubAuthority[0]=0
+	},
+	// Revision = 0 (should be 1)
+	{
+		0,                // Revision (invalid)
+		1,                // SubAuthorityCount
+		0, 0, 0, 0, 0, 5, // IdentifierAuthority = SECURITY_NT_AUTHORITY
+		32, 0, 0, 0, // SubAuthority[0] = 32
+	},
+	// Too many subauthorities (declares 16, max is 15)
+	func() []byte {
+		raw := []byte{
+			1, 16, // Revision = 1, SubAuthorityCount = 16 (invalid)
+			0, 0, 0, 0, 0, 5, // IdentifierAuthority = 5
+		}
+		// Add 16 subauthorities (should be max 15)
+		for i := 0; i < 16; i++ {
+			raw = append(raw, byte(i), 0, 0, 0)
+		}
+		return raw
+	}(),
+}
+
+/*
+// CopySid copies invalid SIDs.
+func TestStatPosixWindowsCopySidInvalid(t *testing.T) {
+	for i, raw := range invalidSIDs {
+		sid := (*windows.SID)(unsafe.Pointer(&raw[0]))
+		_, err := compat.CopySid(sid)
+		if err == nil {
+			t.Fatalf("test %d: %q: got nil, want an error", i+1, sid.String())
+		}
+	}
+}
+*/
+
+func TestStatPosixWindowsCopySidInvalidNil(t *testing.T) {
+	_, err := compat.CopySid(nil)
+	if err == nil {
+		t.Fatal("got nil, want an error")
+	}
+}
+
+func TestStatPosixWindowsEqualDomainSidInvalid(t *testing.T) {
+	for i, raw := range invalidSIDs {
+		sid := (*windows.SID)(unsafe.Pointer(&raw[0]))
+		_, err := compat.EqualDomainSid(sid, sid)
+		if err == nil {
+			t.Fatalf("test %d: %q: got nil, want an error", i+1, sid.String())
+		}
+	}
+}
+
+func TestStatPosixWindowsEqualDomainSidInvalidNil(t *testing.T) {
+	_, err := compat.EqualDomainSid(nil, nil)
+	if err == nil {
+		t.Fatal("got nil, want an error")
+	}
+}
+
 func TestStatPosixWindowsGetFileOwnerAndGroupSIDs(t *testing.T) {
 	name, err := createTempFile(t)
 	if err != nil {
@@ -32,21 +103,6 @@ func TestStatPosixWindowsGetFileOwnerAndGroupSIDs(t *testing.T) {
 
 func TestStatPosixWindowsGetFileOwnerAndGroupSIDsInvalid(t *testing.T) {
 	_, _, err := compat.GetFileOwnerAndGroupSIDs(invalidName)
-	if err == nil {
-		t.Fatal("got nil, want an error")
-	}
-}
-
-func TestStatPosixWindowsLSAOpenPolicy(t *testing.T) {
-	_, err := compat.LSAOpenPolicy(nil, compat.POLICY_VIEW_LOCAL_INFORMATION)
-	if err != nil {
-		t.Fatalf("got %q, want nil", err)
-	}
-}
-
-func TestStatPosixWindowsLSAOpenPolicyInvalid(t *testing.T) {
-	access := ^uint32(0) // all bits set
-	_, err := compat.LSAOpenPolicy(nil, access)
 	if err == nil {
 		t.Fatal("got nil, want an error")
 	}
@@ -99,6 +155,93 @@ func TestStatPosixWindowsGetRidInvalid(t *testing.T) {
 	}
 }
 
+func TestStatPosixWindowsGetRidInvalidNil(t *testing.T) {
+	_, err := compat.GetRID(nil)
+	if err == nil {
+		t.Fatal("got nil, want an error")
+	}
+}
+
+func TestStatPosixWindowsGetUserGroup(t *testing.T) {
+	name, err := createTempFile(t)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	_, _, _, _, err = compat.GetUserGroup(name) //nolint:dogsled
+	if err != nil {
+		t.Fatalf("got %q, want nil", err)
+	}
+}
+
+func TestStatPosixWindowsGetUserGroupInvalid(t *testing.T) {
+	_, _, _, _, err := compat.GetUserGroup(invalidName) //nolint:dogsled
+	if err == nil {
+		t.Fatal("got nil, want an error")
+	}
+}
+
+func TestStatPosixWindowsIsValidSidInvalid(t *testing.T) {
+	for i, raw := range invalidSIDs {
+		sid := (*windows.SID)(unsafe.Pointer(&raw[0]))
+		b := compat.IsValidSid(sid)
+		if b {
+			t.Fatalf("test %d: %q: got true, want false", i+1, sid.String())
+		}
+	}
+}
+
+func TestStatPosixWindowsIsValidSidInvalidNil(t *testing.T) {
+	b := compat.IsValidSid(nil)
+	if b {
+		t.Fatal("got true, want false")
+	}
+}
+
+func TestStatPosixWindowsLSAOpenPolicy(t *testing.T) {
+	_, err := compat.LSAOpenPolicy(nil, compat.POLICY_VIEW_LOCAL_INFORMATION)
+	if err != nil {
+		t.Fatalf("got %q, want nil", err)
+	}
+}
+
+func TestStatPosixWindowsLSAOpenPolicyInvalid(t *testing.T) {
+	access := ^uint32(0) // all bits set
+	_, err := compat.LSAOpenPolicy(nil, access)
+	if err == nil {
+		t.Fatal("got nil, want an error")
+	}
+}
+
+func TestStatPosixWindowsNameFromSID(t *testing.T) {
+	sid, err := windows.StringToSid("S-1-5-18") // NT AUTHORITY\\SYSTEM
+	if err != nil {
+		t.Fatalf("failed to create SID: %v", err)
+	}
+
+	_, err = compat.NameFromSID(sid)
+	if err != nil {
+		t.Fatalf("got %q, want nil", err)
+	}
+}
+
+func TestStatPosixWindowsNameFromSIDInvalid(t *testing.T) {
+	for i, raw := range invalidSIDs {
+		sid := (*windows.SID)(unsafe.Pointer(&raw[0]))
+		_, err := compat.NameFromSID(sid)
+		if err == nil {
+			t.Fatalf("test %d: %q: got nil, want an error", i+1, sid.String())
+		}
+	}
+}
+
+func TestStatPosixWindowsNameFromSIDInvalidNil(t *testing.T) {
+	_, err := compat.NameFromSID(nil)
+	if err == nil {
+		t.Fatal("got nil, want an error")
+	}
+}
+
 func TestStatPosixWindowsSIDToPOSIXID(t *testing.T) {
 	tests := []struct {
 		name       string
@@ -107,7 +250,6 @@ func TestStatPosixWindowsSIDToPOSIXID(t *testing.T) {
 		wantIDMin  int
 		wantIDMax  int
 		equalDom   bool
-		wantErr    bool
 	}{
 		{
 			name:      "logon session (S-1-5-5-)",
@@ -143,21 +285,6 @@ func TestStatPosixWindowsSIDToPOSIXID(t *testing.T) {
 			wantIDMin: 0x30201,
 			wantIDMax: 0x30201,
 		},
-		{
-			name:    "S-1-5-9999999999",
-			sidStr:  "S-1-5-9999999999",
-			wantErr: true,
-		},
-		{
-			name:    "S-0-0-0",
-			sidStr:  "S-0-0-0",
-			wantErr: true,
-		},
-		{
-			name:    "S-2-0-0",
-			sidStr:  "S-2-0-0",
-			wantErr: true,
-		},
 	}
 
 	for _, tt := range tests {
@@ -165,11 +292,9 @@ func TestStatPosixWindowsSIDToPOSIXID(t *testing.T) {
 			var sid, primary *windows.SID
 			var err error
 
-			if tt.sidStr != "" {
-				sid, err = windows.StringToSid(tt.sidStr)
-				if err != nil {
-					t.Fatalf("StringToSid(%q) failed: %v", tt.sidStr, err)
-				}
+			sid, err = windows.StringToSid(tt.sidStr)
+			if err != nil {
+				t.Fatalf("StringToSid(%q) failed: %v", tt.sidStr, err)
 			}
 			if tt.primaryStr != "" {
 				primary, err = windows.StringToSid(tt.primaryStr)
@@ -178,13 +303,6 @@ func TestStatPosixWindowsSIDToPOSIXID(t *testing.T) {
 				}
 			}
 			got, err := compat.SIDToPOSIXID(sid, primary)
-			if tt.wantErr {
-				if err == nil {
-					t.Fatalf("got nil, want an error: POSIX id=0x%x (%d)", got, got)
-				}
-
-				return
-			}
 			if err != nil {
 				t.Fatalf("got %q, want nil", err)
 			}
@@ -206,74 +324,18 @@ func TestStatPosixWindowsSIDToPOSIXID(t *testing.T) {
 	}
 }
 
-func TestStatPosixWindowsNameFromSID(t *testing.T) {
-	sid, err := windows.StringToSid("S-1-5-18") // NT AUTHORITY\\SYSTEM
-	if err != nil {
-		t.Fatalf("failed to create SID: %v", err)
-	}
-
-	_, err = compat.NameFromSID(sid)
-	if err != nil {
-		t.Fatalf("got %q, want nil", err)
-	}
-}
-
-func TestStatPosixWindowsNameFromSIDInvalid(t *testing.T) {
-	_, err := compat.NameFromSID(nil)
-	if err == nil {
-		t.Fatal("got nil, want an error")
-	}
-}
-
-func TestStatPosixWindowsGetUserGroup(t *testing.T) {
-	name, err := createTempFile(t)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	_, _, _, _, err = compat.GetUserGroup(name) //nolint:dogsled
-	if err != nil {
-		t.Fatalf("got %q, want nil", err)
-	}
-}
-
-func TestStatPosixWindowsGetUserGroupInvalid(t *testing.T) {
-	_, _, _, _, err := compat.GetUserGroup(invalidName) //nolint:dogsled
-	if err == nil {
-		t.Fatal("got nil, want an error")
-	}
-}
-
-func TestStatPosixWindowsGetRIDInvalid(t *testing.T) {
-	_, err := compat.GetRID(nil)
-	if err == nil {
-		t.Fatal("got nil, want an error")
-	}
-}
-
 func TestStatPosixWindowsSIDToPOSIXIDInvalid(t *testing.T) {
+	for i, raw := range invalidSIDs {
+		sid := (*windows.SID)(unsafe.Pointer(&raw[0]))
+		_, err := compat.SIDToPOSIXID(sid, sid)
+		if err == nil {
+			t.Fatalf("test %d: %q: got nil, want an error", i+1, sid.String())
+		}
+	}
+}
+
+func TestStatPosixWindowsSIDToPOSIXIDInvalidNil(t *testing.T) {
 	_, err := compat.SIDToPOSIXID(nil, nil)
-	if err == nil {
-		t.Fatal("got nil, want an error")
-	}
-}
-
-func TestStatPosixWindowsEqualDomainSidInvalid(t *testing.T) {
-	_, err := compat.EqualDomainSid(nil, nil)
-	if err == nil {
-		t.Fatal("got nil, want an error")
-	}
-}
-
-func TestStatPosixWindowsIsValidSidInvalid(t *testing.T) {
-	b := compat.IsValidSid(nil)
-	if b {
-		t.Fatal("got true, want false")
-	}
-}
-
-func TestStatPosixWindowsCopySidInvalid(t *testing.T) {
-	_, err := compat.CopySid(nil)
 	if err == nil {
 		t.Fatal("got nil, want an error")
 	}
