@@ -599,6 +599,23 @@ func TestFilePosixRemoveAll(t *testing.T) {
 	}
 }
 
+func TestFilePosixSymlink(t *testing.T) {
+	if !supportsSymlinks(t) {
+		return
+	}
+
+	old, err := tempFile(t)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	new := old + ".link"
+	err = compat.Symlink(old, new)
+	if err != nil {
+		t.Fatalf("Symlink: %q to %q: %v", old, new, err)
+	}
+}
+
 func TestFilePosixWriteFile(t *testing.T) {
 	perm := os.FileMode(0o666)
 	want := fixPosixPerms(perm, false)
@@ -723,6 +740,36 @@ func TestFilePosixMkdirTempInvalid(t *testing.T) {
 
 func TestFilePosixOpenFileInvalid(t *testing.T) {
 	_, err := compat.OpenFile(invalidName, os.O_CREATE, compat.CreatePerm)
+	if err == nil {
+		t.Fatal("got nil, want an error")
+	}
+}
+
+func TestFilePosixSymlinkInvalidOld(t *testing.T) {
+	if !supportsSymlinks(t) {
+		return
+	}
+
+	old := invalidName
+	new := old + ".link"
+	err := compat.Symlink(old, new)
+	if err == nil {
+		t.Fatal("got nil, want an error")
+	}
+}
+
+func TestFilePosixSymlinkInvalidNew(t *testing.T) {
+	if !supportsSymlinks(t) {
+		return
+	}
+
+	old, err := tempFile(t)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	new := invalidName
+	err = compat.Symlink(old, new)
 	if err == nil {
 		t.Fatal("got nil, want an error")
 	}
