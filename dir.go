@@ -62,26 +62,25 @@ func (d dirEntry) Type() os.FileMode {
 }
 
 func (d dirEntry) Info() (FileInfo, error) {
-	if d.infoed {
-		return d.info, d.err
-	}
-	d.infoed = true //nolint:staticcheck
-	path := d.name
-	if d.parent != "" {
-		path = filepath.Join(d.parent, d.name)
-	}
-	if d.osInfo == nil {
-		// WalkDir doesn't follow symlinks
-		d.osInfo, d.err = os.Lstat(path)
+	if !d.infoed {
+		d.infoed = true //nolint:staticcheck
+		path := d.name
+		if d.parent != "" {
+			path = filepath.Join(d.parent, d.name)
+		}
+		if d.osInfo == nil {
+			// WalkDir doesn't follow symlinks
+			d.osInfo, d.err = os.Lstat(path)
+			if d.err != nil {
+				return nil, d.err
+			}
+		}
+		d.info, d.err = stat(d.osInfo, path, false)
 		if d.err != nil {
 			return nil, d.err
 		}
+		d.typ = d.info.Mode().Type() //nolint:govet,staticcheck
 	}
-	d.info, d.err = stat(d.osInfo, path, false)
-	if d.err != nil {
-		return nil, d.err
-	}
-	d.typ = d.info.Mode().Type() //nolint:govet,staticcheck
 
 	return d.info, nil
 }
