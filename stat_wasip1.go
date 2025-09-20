@@ -6,20 +6,18 @@
 package compat
 
 import (
-	"errors"
 	"os"
 	"syscall"
 )
 
-const (
-	defaultFileMode = os.FileMode(0o600)
-	defaultDirMode  = os.FileMode(0o700)
-)
+// const (
+// 	defaultFileMode = os.FileMode(0o600)
+// 	defaultDirMode  = os.FileMode(0o700)
+// )
 
 func stat(fi os.FileInfo, name string, _ bool) (FileInfo, error) {
 	if fi == nil {
-		err := errors.New("fileInfo is nil")
-		return nil, &os.PathError{Op: "stat", Path: name, Err: err}
+		return nil, &os.PathError{Op: "stat", Path: name, Err: os.ErrInvalid}
 	}
 
 	var fs fileStat
@@ -38,13 +36,14 @@ func stat(fi os.FileInfo, name string, _ bool) (FileInfo, error) {
 	fs.gid = int(fs.sys.Gid)
 
 	// See https://github.com/golang/go/blob/5045fdd8/src/os/stat_wasip1.go#L35
-	if fs.mode == 0 {
-		if fs.sys.Mode == syscall.S_IFDIR {
-			fs.mode = defaultDirMode | os.ModeDir
-		} else {
-			fs.mode = defaultFileMode
-		}
-	}
+	// This code doesn't seem to be needed any more.
+	// if fs.mode == 0 {
+	// 	if fs.sys.Mode == syscall.S_IFDIR {
+	// 		fs.mode = defaultDirMode | os.ModeDir
+	// 	} else {
+	// 		fs.mode = defaultFileMode
+	// 	}
+	// }
 
 	// https://github.com/golang/go/blob/5045fdd8/src/syscall/syscall_wasip1.go#L356
 	if fs.uid == 0 {
