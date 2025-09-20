@@ -64,7 +64,7 @@ func testMain(m *testing.M, fsToTest, nativeFSType, fsPath string) int { //nolin
 			continue
 		}
 		n++
-		git
+
 		if testing.Short() && code != -1 {
 			break
 		}
