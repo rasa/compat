@@ -9,6 +9,8 @@ package compat
 
 var CurrentUsername = currentUsername
 
+var EnablePrivilege = enablePrivilege
+
 var SaFromPerm = saFromPerm
 
 var SetOwnerToCurrentUser = setOwnerToCurrentUser

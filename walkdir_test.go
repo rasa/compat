@@ -16,11 +16,22 @@ func TestWalkDirSkipDir(t *testing.T) {
 		if entry.IsDir() {
 			return compat.SkipDir
 		}
-		return nil
+		return err
 	}
 
 	err := compat.WalkDir(os.DirFS("."), ".", walkFn)
 	if err != nil {
 		t.Fatalf("got %q, want nil", err)
+	}
+}
+
+func TestWalkDirInvalid(t *testing.T) {
+	walkFn := func(path string, entry compat.DirEntry, err error) error {
+		return err
+	}
+
+	err := compat.WalkDir(os.DirFS(invalidName), invalidName, walkFn)
+	if err == nil {
+		t.Fatal("got nil, want an error")
 	}
 }

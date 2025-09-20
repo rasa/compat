@@ -16,6 +16,8 @@ import (
 	"syscall"
 	"testing"
 
+	"golang.org/x/sys/windows"
+
 	"github.com/rasa/compat"
 )
 
@@ -966,6 +968,38 @@ func TestFileWindowsCurrentUsername(t *testing.T) {
 	username := compat.CurrentUsername()
 	if username == "" {
 		t.Fatal("currentUsername: got '', want a value")
+	}
+}
+
+var seTakeOwnershipPrivilegeW, _ = windows.UTF16PtrFromString("SeTakeOwnershipPrivilege")
+
+func TestFileWindowsEnablePrivilegeInvalidName(t *testing.T) {
+	var tok windows.Token
+	err := windows.OpenProcessToken(
+		windows.CurrentProcess(),
+		windows.TOKEN_ADJUST_PRIVILEGES|windows.TOKEN_QUERY,
+		&tok,
+	)
+	if err != nil {
+		t.Fatalf("failed to open process token: %v", err)
+	}
+	defer tok.Close()
+
+	// Enable SeTakeOwnershipPrivilege (required to take ownership when you don't own it)
+	err = compat.EnablePrivilege(tok, nil)
+	if err == nil {
+		t.Fatal("got nil, want an error")
+	}
+}
+
+func TestFileWindowsEnablePrivilegeInvalidToken(t *testing.T) {
+	var tok windows.Token
+	defer tok.Close()
+
+	// Enable SeTakeOwnershipPrivilege (required to take ownership when you don't own it)
+	err := compat.EnablePrivilege(tok, seTakeOwnershipPrivilegeW)
+	if err == nil {
+		t.Fatal("got nil, want an error")
 	}
 }
 
