@@ -343,6 +343,18 @@ func TestWriteFileAtomicReadOnlyDirectory(t *testing.T) {
 
 		return // Tinygo doesn't support T.Fatal
 	}
+	fi, err := os.Stat(dir)
+	if err != nil {
+		fatalf(t, "Failed to stat: %v", err)
+
+		return
+	}
+	if fi.Mode().Perm() != perm {
+		partType := partitionType(dir)
+		skipf(t, "Skipping test: the %v filesystem does not support permissions", partType)
+
+		return
+	}
 
 	err = compat.WriteFileAtomic(file, helloBytes)
 	if err == nil {

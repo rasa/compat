@@ -324,6 +324,47 @@ func TestWriteReaderAtomicCantRead(t *testing.T) {
 	}
 }
 
+func TestWriteReaderAtomicReadOnlyDirectory(t *testing.T) {
+	file, err := tempFile(t)
+	if err != nil {
+		t.Fatalf("Failed to create temp file: %v", err)
+	}
+	dir, _ := filepath.Split(file)
+	t.Chdir(dir)
+
+	t.Cleanup(func() {
+		_ = os.Chmod(dir, 0o700)
+		_ = os.Remove(file)
+	})
+
+	perm := os.FileMode(0o500)
+	err = os.Chmod(dir, perm)
+	if err != nil {
+		fatalf(t, "Chmod(%v, 0o%o) failed: %v", dir, perm, err)
+
+		return // Tinygo doesn't support T.Fatal
+	}
+	fi, err := os.Stat(dir)
+	if err != nil {
+		fatalf(t, "Failed to stat: %v", err)
+
+		return
+	}
+	if fi.Mode().Perm() != perm {
+		partType := partitionType(dir)
+		skipf(t, "Skipping test: the %v filesystem does not support permissions", partType)
+
+		return
+	}
+
+	err = compat.WriteReaderAtomic(file, helloBuf)
+	if err == nil {
+		fatal(t, "got nil, want an error")
+
+		return // Tinygo doesn't support T.Fatal
+	}
+}
+
 type errReader struct{}
 
 func (errReader) Read(p []byte) (int, error) {
