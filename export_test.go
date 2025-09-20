@@ -3,8 +3,6 @@
 
 package compat
 
-var ExportedStat = stat //nolint:unused
-
 // dir.go
 
 var FSDirEntryToDirEntry = fsDirEntryToDirEntry
@@ -12,3 +10,7 @@ var FSDirEntryToDirEntry = fsDirEntryToDirEntry
 var FSFileInfoToDirEntry = fsFileInfoToDirEntry
 
 var OSDirEntryToDirEntry = osDirEntryToDirEntry
+
+// stat_*.go
+
+var ExportedStat = stat //nolint:unused

@@ -8,7 +8,6 @@
 package compat
 
 import (
-	"errors"
 	"os"
 	"os/user"
 	"strconv"
@@ -18,8 +17,7 @@ import (
 
 func stat(fi os.FileInfo, name string, followSymlinks bool) (FileInfo, error) {
 	if fi == nil {
-		err := errors.New("fileInfo is nil")
-		return nil, &os.PathError{Op: "stat", Path: name, Err: err}
+		return nil, &os.PathError{Op: "stat", Path: name, Err: os.ErrInvalid}
 	}
 
 	var fs fileStat
@@ -49,13 +47,13 @@ func (fs *fileStat) GID() int { return fs.gid }
 
 func (fs *fileStat) User() string {
 	if !fs.usered {
+		fs.usered = true
 		u, err := user.LookupId(strconv.Itoa(fs.uid))
 		if err != nil {
 			fs.err = err
 		} else {
 			fs.user = u.Username
 		}
-		fs.usered = true
 	}
 
 	return fs.user
@@ -63,13 +61,13 @@ func (fs *fileStat) User() string {
 
 func (fs *fileStat) Group() string {
 	if !fs.grouped {
+		fs.grouped = true
 		g, err := user.LookupGroupId(strconv.Itoa(fs.gid))
 		if err != nil {
 			fs.err = err
 		} else {
 			fs.group = g.Name
 		}
-		fs.grouped = true
 	}
 
 	return fs.group

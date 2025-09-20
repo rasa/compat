@@ -162,18 +162,37 @@ func TestWriteFileAtomicKeepFileMode(t *testing.T) { //nolint:dupl
 	if got != want {
 		t.Fatalf("got %04o, want %04o: perm=%3o (%v) (1)", got, want, perm, perm)
 	}
+}
+
+func TestWriteFileAtomicKeepFileModeFalse(t *testing.T) { //nolint:dupl
+	file, err := tempName(t)
+	if err != nil {
+		t.Fatalf("Failed to create temp file: %v", err)
+	}
+
+	t.Cleanup(func() {
+		_ = os.Remove(file)
+	})
+
+	perm := perm555
+
+	err = compat.WriteFile(file, helloBytes, perm)
+	if err != nil {
+		t.Fatalf("Failed to create file: %q: %v", file, err)
+	}
 
 	err = compat.WriteFileAtomic(file, helloBytes, compat.KeepFileMode(false))
 	if err != nil {
 		t.Fatalf("Failed to write file: %q: %v", file, err)
 	}
 
-	fi, err = compat.Stat(file)
+	fi, err := compat.Stat(file)
 	if err != nil {
 		t.Fatalf("Failed to stat file: %q: %v", file, err)
 	}
 
-	got = fi.Mode().Perm()
+	want := fixPerms(perm, false)
+	got := fi.Mode().Perm()
 	if got == want {
 		if perm != want {
 			partType := partitionType(file)
@@ -299,6 +318,35 @@ func TestWriteFileAtomicCantRead(t *testing.T) {
 	err = compat.WriteFileAtomic(file, helloBytes, compat.KeepFileMode(true))
 	if err != nil {
 		fatalf(t, "WriteFileAtomic: %v", err)
+
+		return // Tinygo doesn't support T.Fatal
+	}
+}
+
+func TestWriteFileAtomicReadOnlyDirectory(t *testing.T) {
+	file, err := tempFile(t)
+	if err != nil {
+		t.Fatalf("Failed to create temp file: %v", err)
+	}
+	dir, _ := filepath.Split(file)
+	t.Chdir(dir)
+
+	t.Cleanup(func() {
+		_ = os.Chmod(dir, 0o700)
+		_ = os.Remove(file)
+	})
+
+	perm := os.FileMode(0o500)
+	err = os.Chmod(dir, perm)
+	if err != nil {
+		fatalf(t, "Chmod(%v, 0o%o) failed: %v", dir, perm, err)
+
+		return // Tinygo doesn't support T.Fatal
+	}
+
+	err = compat.WriteFileAtomic(file, helloBytes)
+	if err == nil {
+		fatal(t, "got nil, want an error")
 
 		return // Tinygo doesn't support T.Fatal
 	}
