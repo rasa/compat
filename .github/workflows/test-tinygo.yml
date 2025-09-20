@@ -33,7 +33,7 @@ jobs:
         with:
           go-version: ${{ matrix.go-version.big }}
 
-      - run: go get -t ./...
+      - run: go mod download
 
       - uses: acifani/setup-tinygo@v2.0.1
         with:

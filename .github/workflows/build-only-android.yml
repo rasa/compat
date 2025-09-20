@@ -93,7 +93,7 @@ jobs:
 
       - run: printf '::notice ::%s\n' "$(go version)"
 
-      - run: go get -t ./...
+      - run: go mod download
 
       - name: Install Android SDK via download
         run: |
