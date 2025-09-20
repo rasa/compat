@@ -25,7 +25,7 @@ on:
         default: "ACLS"
         type: string # required
       compat_debug_fs:
-        default: "ALL"
+        default: "All"
         type: string # required
       runner:
         default: "ubuntu-24.04"
@@ -45,7 +45,7 @@ on:
         type: string
       compat_debug_fs:
         description: "COMPAT_DEBUG_FS environmental variable."
-        default: "ALL"
+        default: "All"
         type: string # required
       # checkov:skip=CKV_GHA_7: The build output cannot be affected by user parameters...
       runner:
