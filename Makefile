@@ -41,7 +41,7 @@ clean: ## remove files created during build pipeline
 download: ## go mod download
 	go mod download
 	test -f go.tool.mod && go mod download -modfile=go.tool.mod
-	make mod
+	# make mod
 
 .PHONY: get
 get: ## go get -u
