@@ -330,21 +330,20 @@ func TestWriteReaderAtomicReadOnlyDirectory(t *testing.T) {
 		t.Fatalf("Failed to create temp file: %v", err)
 	}
 	dir, _ := filepath.Split(file)
-	t.Chdir(dir)
 
 	t.Cleanup(func() {
-		_ = os.Chmod(dir, 0o700)
+		_ = compat.Chmod(dir, 0o700)
 		_ = os.Remove(file)
 	})
 
 	perm := os.FileMode(0o500)
-	err = os.Chmod(dir, perm)
+	err = compat.Chmod(dir, perm)
 	if err != nil {
 		fatalf(t, "Chmod(%v, 0o%o) failed: %v", dir, perm, err)
 
 		return // Tinygo doesn't support T.Fatal
 	}
-	fi, err := os.Stat(dir)
+	fi, err := compat.Stat(dir)
 	if err != nil {
 		fatalf(t, "Failed to stat: %v", err)
 
