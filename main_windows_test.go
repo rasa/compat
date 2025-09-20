@@ -23,10 +23,8 @@ var fsTests = []fsTest{
 	{nativeFS, testVars{}},
 	{"exFAT", testVars{true, true, true, 2, 2, -1, 2, -1, ""}},
 	{"FAT32", testVars{true, true, true, 86400, 2, -1, 2, -1, ""}},
-	// @TODO(rasa) determine why FAT is suddenly failing with:
-	//   The directory or file cannot be created.
-	// when it *used* to work!
-	// {"FAT", testVars{true, true, 86400, 2, -1, 2, -1, ""}},
+	// @TODO(rasa) determine why FAT fails more often than it succeeds.
+	// {"FAT", testVars{true, true, true, 86400, 2, -1, 2, -1, ""}},
 	{"NTFS", testVars{}},
 	{"ReFS", testVars{}},
 }
@@ -47,14 +45,26 @@ func testMain(m *testing.M, fsToTest, nativeFSType, fsPath string) int { //nolin
 
 	code := -1
 	supported := []string{allFS}
-	for i, fsTest := range fsTests {
+
+	fsToTestUpper := strings.ToUpper(fsToTest)
+	testsToRun := 0
+	for _, fsTest := range fsTests {
 		supported = append(supported, fsTest.fsName)
 		fsNameUpper := strings.ToUpper(fsTest.fsName)
-		fsToTestUpper := strings.ToUpper(fsToTest)
-		if fsToTest != "" && fsToTest != allFS && fsToTestUpper != fsNameUpper {
+		if fsToTest != "" && fsToTestUpper != strings.ToUpper(allFS) && fsToTestUpper != fsNameUpper {
 			continue
 		}
+		testsToRun++
+	}
 
+	n := 0
+	for _, fsTest := range fsTests {
+		fsNameUpper := strings.ToUpper(fsTest.fsName)
+		if fsToTest != "" && fsToTestUpper != strings.ToUpper(allFS) && fsToTestUpper != fsNameUpper {
+			continue
+		}
+		n++
+		git
 		if testing.Short() && code != -1 {
 			break
 		}
@@ -81,7 +91,7 @@ func testMain(m *testing.M, fsToTest, nativeFSType, fsPath string) int { //nolin
 			mountPath = os.TempDir()
 		}
 
-		fmt.Printf("%d/%d: Testing on %v filesystem mounted on %v\n", i+1, len(fsTests), fsName, mountPath)
+		fmt.Printf("%d/%d: Testing on %v filesystem mounted on %v\n", n, testsToRun, fsName, mountPath)
 
 		if fsTest.fsName == "Native" {
 			code = m.Run()

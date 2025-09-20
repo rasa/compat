@@ -24,6 +24,9 @@ on:
       compat_debug:
         default: "ACLS"
         type: string # required
+      compat_debug_fs:
+        default: "ALL"
+        type: string # required
       runner:
         default: "ubuntu-24.04"
         type: string # required
@@ -40,6 +43,10 @@ on:
         description: "COMPAT_DEBUG environmental variable."
         default: "ACLS"
         type: string
+      compat_debug_fs:
+        description: "COMPAT_DEBUG_FS environmental variable."
+        default: "ALL"
+        type: string # required
       # checkov:skip=CKV_GHA_7: The build output cannot be affected by user parameters...
       runner:
         description: "GitHub runner to use"
@@ -82,6 +89,7 @@ permissions:
 
 env:
   COMPAT_DEBUG: ${{ inputs.compat_debug }}
+  COMPAT_DEBUG_FS:  ${{ inputs.compat_debug_fs }}
   RUNNER: ${{ inputs.runner }}
   TEST_OPTS: ${{ inputs.test_opts }}
 

@@ -30,7 +30,9 @@ type fsTest struct { //nolint:unused
 
 func TestMain(m *testing.M) {
 	fsToTest := os.Getenv("COMPAT_DEBUG_FS")
-
+	if fsToTest == "" {
+		fsToTest = nativeFS
+	}
 	tempSize = defaultTempSize
 	fsSize := os.Getenv("COMPAT_DEBUG_FS_SIZE")
 	if fsSize != "" {

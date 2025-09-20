@@ -48,13 +48,25 @@ func testMain(m *testing.M, fsToTest, nativeFSType, fsPath string) int { //nolin
 	}
 	defer os.RemoveAll(workdir)
 
-	for i, fsTest := range fsTests {
+	testsToRun := 0
+	for _, fsTest := range fsTests {
 		supported = append(supported, fsTest.fsName)
 		fsNameUpper := strings.ToUpper(fsTest.fsName)
 		fsToTestUpper := strings.ToUpper(fsToTest)
-		if fsToTest != "" && fsToTest != allFS && fsToTestUpper != fsNameUpper {
+		if fsToTest != "" && fsToTestUpper != strings.ToUpper(allFS) && fsToTestUpper != fsNameUpper {
 			continue
 		}
+		testsToRun++
+	}
+
+	n := 0
+	for _, fsTest := range fsTests {
+		fsNameUpper := strings.ToUpper(fsTest.fsName)
+		fsToTestUpper := strings.ToUpper(fsToTest)
+		if fsToTest != "" && fsToTestUpper != strings.ToUpper(allFS) && fsToTestUpper != fsNameUpper {
+			continue
+		}
+		n++
 
 		if testing.Short() && code != -1 {
 			break
@@ -80,7 +92,7 @@ func testMain(m *testing.M, fsToTest, nativeFSType, fsPath string) int { //nolin
 			mountPath = os.TempDir()
 		}
 
-		fmt.Printf("%d/%d: Testing on %v filesystem mounted on %v\n", i+1, len(fsTests), fsName, mountPath)
+		fmt.Printf("%d/%d: Testing on %v filesystem mounted on %v\n", n, testsToRun, fsName, mountPath)
 
 		if fsTest.fsName == nativeFS {
 			code = m.Run()

@@ -46,18 +46,29 @@ func testMain(m *testing.M, fsToTest, nativeFSType, fsPath string) int { //nolin
 	workdir, err := os.MkdirTemp("", "compat-fs-*")
 	if err != nil {
 		fmt.Printf("cannot create temp workdir: %v\n", err)
-
 		return 1
 	}
 	defer os.RemoveAll(workdir)
 
-	for i, fsTest := range fsTests {
+	testsToRun := 0
+	for _, fsTest := range fsTests {
 		supported = append(supported, fsTest.fsName)
 		fsNameUpper := strings.ToUpper(fsTest.fsName)
 		fsToTestUpper := strings.ToUpper(fsToTest)
-		if fsToTest != "" && fsToTest != allFS && fsToTestUpper != fsNameUpper {
+		if fsToTest != "" && fsToTestUpper != strings.ToUpper(allFS) && fsToTestUpper != fsNameUpper {
 			continue
 		}
+		testsToRun++
+	}
+
+	n := 0
+	for _, fsTest := range fsTests {
+		fsNameUpper := strings.ToUpper(fsTest.fsName)
+		fsToTestUpper := strings.ToUpper(fsToTest)
+		if fsToTest != "" && fsToTestUpper != strings.ToUpper(allFS) && fsToTestUpper != fsNameUpper {
+			continue
+		}
+		n++
 
 		if testing.Short() && code != -1 {
 			break
@@ -85,7 +96,7 @@ func testMain(m *testing.M, fsToTest, nativeFSType, fsPath string) int { //nolin
 			mountPath = os.TempDir()
 		}
 
-		fmt.Printf("%d/%d: Testing on %v filesystem mounted on %v\n", i+1, len(fsTests), fsName, mountPath)
+		fmt.Printf("%d/%d: Testing on %v filesystem mounted on %v\n", n, testsToRun, fsName, mountPath)
 
 		if fsTest.fsName == "Native" {
 			code = m.Run()
