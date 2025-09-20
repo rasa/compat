@@ -185,7 +185,7 @@ func TestWriteReaderAtomicKeepFileMode(t *testing.T) { //nolint:dupl
 	}
 }
 
-func TestWriteReaderAtomicWithFileMode(t *testing.T) {
+func TestWriteReaderAtomicWithFileMode(t *testing.T) { //nolint:dupl
 	file, err := tempName(t)
 	if err != nil {
 		t.Fatalf("Failed to create temp file: %v", err)
