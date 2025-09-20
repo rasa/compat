@@ -107,7 +107,7 @@ func TestWriteReaderAtomicDefaultFileMode(t *testing.T) {
 		t.Fatalf("got %04o, want %04o (1)", got, want)
 	}
 	// check if file mode is preserved
-	err = compat.Chmod(file, 0o600)
+	err = compat.Chmod(file, perm600)
 	if err != nil {
 		t.Fatalf("Failed to change file mode: %q: %v", file, err)
 	}
@@ -161,7 +161,25 @@ func TestWriteReaderAtomicKeepFileMode(t *testing.T) { //nolint:dupl
 	want := fixPerms(perm, false)
 	got := fi.Mode().Perm()
 	if got != want {
-		t.Fatalf("got %04o, want %04o: perm=%03o (%v) (1)", got, want, perm, perm)
+		t.Fatalf("got %04o, want %04o: perm=%3o (%v) (1)", got, want, perm, perm)
+	}
+}
+
+func TestWriteReaderAtomicKeepFileModeFalse(t *testing.T) { //nolint:dupl
+	file, err := tempName(t)
+	if err != nil {
+		t.Fatalf("Failed to create temp file: %v", err)
+	}
+
+	t.Cleanup(func() {
+		_ = os.Remove(file)
+	})
+
+	perm := perm555
+
+	err = compat.WriteFile(file, helloBytes, perm)
+	if err != nil {
+		t.Fatalf("Failed to create file: %q: %v", file, err)
 	}
 
 	err = compat.WriteReaderAtomic(file, helloBuf, compat.KeepFileMode(false))
@@ -169,12 +187,13 @@ func TestWriteReaderAtomicKeepFileMode(t *testing.T) { //nolint:dupl
 		t.Fatalf("Failed to write file: %q: %v", file, err)
 	}
 
-	fi, err = compat.Stat(file)
+	fi, err := compat.Stat(file)
 	if err != nil {
 		t.Fatalf("Failed to stat file: %q: %v", file, err)
 	}
 
-	got = fi.Mode().Perm()
+	want := fixPerms(perm, false)
+	got := fi.Mode().Perm()
 	if got == want {
 		if perm != want {
 			partType := partitionType(file)
@@ -267,6 +286,44 @@ func TestWriteReaderAtomicReadOnlyModeReset(t *testing.T) {
 	}
 }
 
+func TestWriteReaderAtomicInvalid(t *testing.T) {
+	err := compat.WriteReaderAtomic(invalidName, helloBuf)
+	if err == nil {
+		t.Fatalf("got nil, want an error")
+	}
+}
+
+func TestWriteReaderAtomicCantRead(t *testing.T) {
+	file, err := tempFile(t)
+	if err != nil {
+		t.Fatalf("Failed to create temp file: %v", err)
+	}
+
+	t.Cleanup(func() {
+		_ = compat.Chmod(file, perm600)
+		_ = os.Remove(file)
+	})
+
+	perm := fixPerms(perm100, false)
+	if perm != perm100 {
+		partType := partitionType(file)
+		skipf(t, "Skipping test: ACLs are not supported on a %v filesystem", partType)
+
+		return
+	}
+	err = compat.Chmod(file, perm)
+	if err != nil {
+		t.Fatalf("Chmod: %v", err)
+	}
+
+	err = compat.WriteReaderAtomic(file, helloBuf, compat.KeepFileMode(true))
+	if err != nil {
+		fatalf(t, "WriteReaderAtomic: %v", err)
+
+		return // Tinygo doesn't support T.Fatal
+	}
+}
+
 type errReader struct{}
 
 func (errReader) Read(p []byte) (int, error) {
@@ -288,12 +345,5 @@ func TestWriteReaderAtomicError(t *testing.T) {
 		fatal(t, "got nil, want an error")
 
 		return // Tinygo doesn't support T.Fatal
-	}
-}
-
-func TestWriteReaderAtomicInvalid(t *testing.T) {
-	err := compat.WriteReaderAtomic(invalidName, helloBuf, compat.WithFileMode(perm644))
-	if err == nil {
-		t.Fatalf("got nil, want an error")
 	}
 }
