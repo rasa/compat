@@ -14,15 +14,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Fixed
 
+- Increase code coverage 29% to 83%.
 - Implement `Nice()` on Plan9 OS.
 
 ### Changed
 
-- Rename `O_DELETE` constant to `O_FILE_FLAG_DELETE_ON_CLOSE` to align with
-  upstream.
+- Rename `O_DELETE` constant to `O_FILE_FLAG_DELETE_ON_CLOSE` to align with constant in golang's standard library.
 - Rename `O_NOROATTR` constant to `O_FILE_FLAG_NO_RO_ATTR`.
 - Deprecate `O_DELETE` and `O_NOROATTR` constants.
-- Freshen golang code from upstream.
+- Freshen cloned code from golang's standard library.
 - Always return `os.PathError` or `os.LinkError`, as appropriate.
 - Rework `Nice()` to return `0` and no error, when not supported by the OS.
 
