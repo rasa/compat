@@ -93,7 +93,7 @@ vuln: ## govulncheck
 
 .PHONY: modernize
 modernize: ## modernize
-	go tool $(TOOL_OPTS) modernize ./...
+	go tool $(TOOL_OPTS) modernize -fix ./...
 
 RACE_OPT := -race
 

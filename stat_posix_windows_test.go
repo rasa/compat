@@ -39,7 +39,7 @@ var invalidSIDs = [][]byte{
 			0, 0, 0, 0, 0, 5, // IdentifierAuthority = 5
 		}
 		// Add 16 subauthorities (should be max 15)
-		for i := 0; i < 16; i++ {
+		for i := range 16 {
 			raw = append(raw, byte(i), 0, 0, 0)
 		}
 		return raw
