@@ -6,6 +6,8 @@ SHELL := /bin/bash
 export NO_COLOR := 1
 export TERM := dumb
 
+TEST_TAGS :=$(strip $(TEST_TAGS),debug)
+
 ifneq ($(wildcard go.tool.mod),)
 TOOL_OPTS += -modfile=go.tool.mod
 endif
@@ -37,33 +39,14 @@ clean: ## remove files created during build pipeline
 	rm -f '"$(shell go env GOCACHE)/../golangci-lint"'
 	go clean -i -cache -testcache -modcache -fuzzcache -x
 
-.PHONY: download
-download: ## go mod download
-	go mod download
-	test -f go.tool.mod && go mod download -modfile=go.tool.mod
-	# make mod
-
-.PHONY: get
-get: ## go get -u
-	go get -u
-	test -f go.tool.mod && go get -u -modfile=go.tool.mod
-	make mod
-
-.PHONY: tools
-tools: ## freshen tools (misspell, golangci-lint, goreleaser, govulncheck, gofumpt)
-	test -f go.tool.mod && export GOFLAGS="$(GOFLAGS) -modfile=go.tool.mod" ;\
-	go get github.com/client9/misspell/cmd/misspell@latest ;\
-	go get github.com/golangci/golangci-lint/v2/cmd/golangci-lint@latest ;\
-	go get github.com/goreleaser/goreleaser/v2@latest ;\
-	go get golang.org/x/tools/gopls/internal/analysis/modernize/cmd/modernize ;\
-	go get golang.org/x/vuln/cmd/govulncheck@latest ;\
-	go get mvdan.cc/gofumpt@latest
-	make mod
+.PHONY: run
+run: ## go run
+	go run .
 
 .PHONY: mod
 mod: ## go mod tidy
 	go mod tidy
-	test -f go.tool.mod && go mod tidy -modfile=go.tool.mod
+	test -f go.tool.mod && go mod tidy $(TOOL_OPTS)
 
 .PHONY: gen
 gen: ## go generate ./...
@@ -95,6 +78,31 @@ vuln: ## govulncheck
 modernize: ## modernize
 	go tool $(TOOL_OPTS) modernize -fix ./...
 
+# Added by compat:
+
+.PHONY: download
+download: ## go mod download
+	go mod download
+	test -f go.tool.mod && go mod download $(TOOL_OPTS)
+	# make mod
+
+.PHONY: get
+get: ## go get -u
+	go get -u
+	test -f go.tool.mod && go get -u $(TOOL_OPTS)
+	make mod
+
+.PHONY: tools
+tools: ## freshen tools (misspell, golangci-lint, goreleaser, govulncheck, gofumpt)
+	export GOFLAGS="$(GOFLAGS) $(TOOL_OPTS)" ;\
+	go get github.com/golangci/golangci-lint/v2/cmd/golangci-lint@latest ;\
+	go get github.com/goreleaser/goreleaser/v2@latest ;\
+	go get golang.org/x/tools/gopls/internal/analysis/modernize/cmd/modernize ;\
+	go get github.com/client9/misspell/cmd/misspell@latest ;\
+	go get golang.org/x/vuln/cmd/govulncheck@latest ;\
+	go get mvdan.cc/gofumpt@latest
+	make mod
+
 RACE_OPT := -race
 
 # go: -race requires cgo
@@ -117,7 +125,7 @@ endif
 
 .PHONY: test
 test: ## go test
-	go test $(TEST_OPTS) -tags debug $(RACE_OPT) -covermode=atomic -coverprofile=coverage.out -coverpkg=. .
+	go test $(TEST_OPTS) -tags "$(TEST_TAGS)" $(RACE_OPT) -covermode=atomic -coverprofile=coverage.out -coverpkg=. .
 	sed -i.bak "/compat\/cmd\//d; /compat\/golang\//d;" coverage.out
 	rm -f *.bak
 	go tool cover -html=coverage.out -o coverage.html
