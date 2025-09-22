@@ -91,6 +91,10 @@ fix: ## gofumpt
 vuln: ## govulncheck
 	go tool $(TOOL_OPTS) govulncheck ./...
 
+.PHONY: modernize
+modernize: ## modernize
+	go tool $(TOOL_OPTS) modernize ./...
+
 RACE_OPT := -race
 
 # go: -race requires cgo
