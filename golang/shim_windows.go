@@ -13,14 +13,16 @@ import (
 
 	"github.com/capnspacehook/go-acl"
 	"golang.org/x/sys/windows"
+
+	"github.com/rasa/compat/consts"
 )
 
 const (
 	// Redefining here to avoid a circular dependency.
 	// O_FILE_FLAG_DELETE_ON_CLOSE deletes the file when closed.
-	O_FILE_FLAG_DELETE_ON_CLOSE = 0x04000000
+	O_FILE_FLAG_DELETE_ON_CLOSE = consts.O_FILE_FLAG_DELETE_ON_CLOSE
 	// O_FILE_FLAG_NO_RO_ATTR skips setting a file's read-only attribute on Windows.
-	O_FILE_FLAG_NO_RO_ATTR = 0x00010000
+	O_FILE_FLAG_NO_RO_ATTR = consts.O_FILE_FLAG_NO_RO_ATTR
 )
 
 const perm600 = os.FileMode(0o600)
