@@ -82,7 +82,7 @@ func getPrimaryDomainSID() (*windows.SID, error) {
 	}
 	defer procLsaClose.Call(uintptr(handle)) //nolint:errcheck
 
-	var buffer uintptr
+	var buffer unsafe.Pointer
 	r0, _, _ := procLsaQueryInformationPolicy.Call(
 		uintptr(handle),
 		uintptr(PolicyAccountDomainInformation),
@@ -91,9 +91,9 @@ func getPrimaryDomainSID() (*windows.SID, error) {
 	if r0 != 0 {
 		return nil, fmt.Errorf("failed to query information policy: %w", syscall.Errno(r0))
 	}
-	defer procLsaFreeMemory.Call(buffer) //nolint:errcheck
+	defer procLsaFreeMemory.Call(uintptr(buffer)) //nolint:errcheck
 
-	info := (*LSA_POLICY_ACCOUNT_DOMAIN_INFO)(unsafe.Pointer(buffer))
+	info := (*LSA_POLICY_ACCOUNT_DOMAIN_INFO)(buffer)
 
 	sidCopy, err := copySid(info.DomainSid)
 	if err != nil {
