@@ -18,7 +18,7 @@ export TOOL_OPTS
 
 .PHONY: all
 all: ## make download gen build spell lint fix test
-all: download gen build spell lint fix test
+all: download gen build spell lint fix test vet
 
 .PHONY: precommit
 precommit: ## make all vuln
@@ -77,6 +77,10 @@ vuln: ## govulncheck
 .PHONY: modernize
 modernize: ## modernize
 	go tool $(TOOL_OPTS) modernize -fix ./...
+
+.PHONY: vet
+vet: ## vet
+	go vet ./...
 
 # Added by compat:
 
