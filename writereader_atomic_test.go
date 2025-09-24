@@ -22,9 +22,7 @@ func TestWriteReaderAtomic(t *testing.T) {
 		t.Fatalf("Failed to create temp file: %v", err)
 	}
 
-	t.Cleanup(func() {
-		_ = os.Remove(file)
-	})
+	cleanup(t, file)
 
 	err = compat.WriteReaderAtomic(file, helloBuf)
 	if err != nil {
@@ -54,9 +52,7 @@ func TestWriteReaderAtomicCurrentDir(t *testing.T) {
 	dir, base := filepath.Split(file)
 	t.Chdir(dir)
 
-	t.Cleanup(func() {
-		_ = os.Remove(file)
-	})
+	cleanup(t, file)
 
 	err = compat.WriteReaderAtomic(base, helloBuf)
 	if err != nil {
@@ -84,9 +80,7 @@ func TestWriteReaderAtomicDefaultFileMode(t *testing.T) {
 		t.Fatalf("Failed to create temp file: %v", err)
 	}
 
-	t.Cleanup(func() {
-		_ = os.Remove(file)
-	})
+	cleanup(t, file)
 
 	err = compat.WriteReaderAtomic(file, helloBuf, compat.WithDefaultFileMode(perm644))
 	if err != nil {
@@ -137,9 +131,7 @@ func TestWriteReaderAtomicKeepFileMode(t *testing.T) { //nolint:dupl
 		t.Fatalf("Failed to create temp file: %v", err)
 	}
 
-	t.Cleanup(func() {
-		_ = os.Remove(file)
-	})
+	cleanup(t, file)
 
 	perm := perm555
 
@@ -171,9 +163,7 @@ func TestWriteReaderAtomicKeepFileModeFalse(t *testing.T) { //nolint:dupl
 		t.Fatalf("Failed to create temp file: %v", err)
 	}
 
-	t.Cleanup(func() {
-		_ = os.Remove(file)
-	})
+	cleanup(t, file)
 
 	perm := perm555
 
@@ -210,9 +200,7 @@ func TestWriteReaderAtomicWithFileMode(t *testing.T) { //nolint:dupl
 		t.Fatalf("Failed to create temp file: %v", err)
 	}
 
-	t.Cleanup(func() {
-		_ = os.Remove(file)
-	})
+	cleanup(t, file)
 
 	err = compat.WriteReaderAtomic(file, helloBuf, compat.WithFileMode(perm644))
 	if err != nil {
@@ -264,10 +252,7 @@ func TestWriteReaderAtomicReadOnlyModeReset(t *testing.T) {
 		t.Fatalf("Failed to create temp file: %v", err)
 	}
 
-	t.Cleanup(func() {
-		_ = compat.Chmod(file, perm600)
-		_ = os.Remove(file)
-	})
+	cleanup(t, file)
 
 	err = compat.WriteReaderAtomic(file, helloBuf, compat.WithFileMode(perm400), compat.WithReadOnlyMode(compat.ReadOnlyModeReset))
 	if err != nil {
@@ -299,10 +284,7 @@ func TestWriteReaderAtomicCantRead(t *testing.T) {
 		t.Fatalf("Failed to create temp file: %v", err)
 	}
 
-	t.Cleanup(func() {
-		_ = compat.Chmod(file, perm600)
-		_ = os.Remove(file)
-	})
+	cleanup(t, file)
 
 	perm := fixPerms(perm100, false)
 	if perm != perm100 {
@@ -331,10 +313,7 @@ func TestWriteReaderAtomicReadOnlyDirectory(t *testing.T) {
 	}
 	dir, _ := filepath.Split(file)
 
-	t.Cleanup(func() {
-		_ = compat.Chmod(dir, 0o700)
-		_ = os.Remove(file)
-	})
+	cleanup(t, file)
 
 	perm := os.FileMode(0o500)
 	err = compat.Chmod(dir, perm)
@@ -376,9 +355,7 @@ func TestWriteReaderAtomicError(t *testing.T) {
 		t.Fatalf("Failed to create temp file: %v", err)
 	}
 
-	t.Cleanup(func() {
-		_ = os.Remove(file)
-	})
+	cleanup(t, file)
 
 	err = compat.WriteReaderAtomic(file, errReader{})
 	if err == nil {

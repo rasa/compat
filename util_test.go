@@ -6,12 +6,15 @@ package compat_test
 import (
 	"bytes"
 	"context"
+	"errors"
 	"flag"
 	"fmt"
 	"io"
+	"io/fs"
 	"math/rand/v2"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"runtime"
 	"strings"
 	"testing"
@@ -46,6 +49,12 @@ func init() {
 
 	// @TODO(rasa): test different umask settings
 	compat.Umask(0)
+}
+
+func cleanup(t *testing.T, names ...string) {
+	for _, name := range names {
+		t.Cleanup(removeItFunc(name))
+	}
 }
 
 func compareNames(got string, want string) bool {
@@ -259,9 +268,37 @@ func randomBase36String(n int) string { //nolint:unparam,unused
 }
 
 func removeIt(name string) { //nolint:unused
-	if os.IsPermission(os.Remove(name)) {
-		_ = compat.Chmod(name, perm600)
-		_ = compat.Remove(name)
+	fi, err := os.Stat(name)
+	if errors.Is(err, os.ErrNotExist) {
+		return
+	}
+	if strings.Contains(compatDebug, "NODEL") {
+		return
+	}
+	if fi.IsDir() {
+		_ = filepath.WalkDir(name, func(path string, d fs.DirEntry, err error) error {
+			if err != nil {
+				return nil
+			}
+			_ = compat.Chmod(path, 0o777, compat.WithReadOnlyMode(compat.ReadOnlyModeReset))
+			return nil
+		})
+	}
+	_ = compat.RemoveAll(name)
+	fi, err = os.Stat(name)
+	if errors.Is(err, os.ErrNotExist) {
+		return
+	}
+	if compat.IsWindows {
+		args := []string{name, "/q", "/t", "/c", "/grant", os.Getenv("USERNAME") + ":F"}
+		exec.CommandContext(context.Background(), "icacls.exe", args...).Run() //nolint:gosec
+		_ = compat.RemoveAll(name)
+	}
+}
+
+func removeItFunc(name string) func() {
+	return func() {
+		removeIt(name)
 	}
 }
 
@@ -369,7 +406,6 @@ func tempFile(t *testing.T) (string, error) {
 	}
 
 	name := f.Name()
-
 	err = f.Close()
 	if err != nil {
 		return "", err
@@ -381,16 +417,7 @@ func tempFile(t *testing.T) (string, error) {
 func tempName(t *testing.T) (string, error) {
 	t.Helper()
 
-	name, err := tempFile(t)
-	if err != nil {
-		return "", err
-	}
-
-	err = os.Remove(name)
-	if err != nil {
-		return "", err
-	}
-
+	name := filepath.Join(tempDir(t), randomBase36String(8)+".tmp")
 	return name, nil
 }
 
@@ -398,7 +425,26 @@ func tempDir(t *testing.T) string {
 	t.Helper()
 
 	if tempPath != "" {
-		return tempPath
+		parts := strings.Split(t.TempDir(), string(os.PathSeparator))
+
+		var idx int = -1
+		for i, p := range parts {
+			if strings.HasPrefix(p, "Test") {
+				idx = i
+				break
+			}
+		}
+
+		if idx == -1 {
+			t.Fatalf("no component starting with 'Test' found in %v", t.TempDir())
+		}
+
+		tempDir := filepath.Join(append([]string{tempPath, "tmp"}, parts[idx:]...)...)
+		err := os.MkdirAll(tempDir, 0o777)
+		if err != nil {
+			t.Fatal(err)
+		}
+		return tempDir
 	}
 
 	return t.TempDir()

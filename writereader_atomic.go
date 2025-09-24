@@ -63,12 +63,12 @@ func WriteReaderAtomic(filename string, r io.Reader, opts ...Option) (err error)
 
 	// write to a temp file first, then we'll atomically replace the target file
 	// with the temp file.
-	dir, file := filepath.Split(filename)
+	dir, _ := filepath.Split(filename)
 	if dir == "" {
 		dir = "."
 	}
 
-	f, err := createTemp(dir, file, fileMode, fopts.flags)
+	f, err := createTemp(dir, "~*.tmp", fileMode, fopts.flags)
 	if err != nil {
 		return fmt.Errorf("cannot create temp file: %w", err)
 	}

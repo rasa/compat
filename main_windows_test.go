@@ -65,10 +65,6 @@ func testMain(m *testing.M, fsToTest, nativeFSType, fsPath string) int { //nolin
 		}
 		n++
 
-		if testing.Short() && code != -1 {
-			break
-		}
-
 		fsName := fsTest.fsName
 		if fsTest.fsName == nativeFS {
 			fsTest.vars.fsType = testEnv.fsType
@@ -125,12 +121,14 @@ func testMain(m *testing.M, fsToTest, nativeFSType, fsPath string) int { //nolin
 		if err == nil {
 			code = m.Run()
 		}
-		args = []string{
-			"-file",
-			"remove-vhdx.ps1",
+		if !strings.Contains(compatDebug, "NODEL") {
+			args = []string{
+				"-file",
+				"remove-vhdx.ps1",
+			}
+			out2, _ := runCapture(exe, args...)
+			log(out2)
 		}
-		out2, _ := runCapture(exe, args...)
-		log(out2)
 		if err != nil {
 			fmt.Printf("Skipping testing on %v: %v\n", fsTest.fsName, err)
 			if !testing.Verbose() {

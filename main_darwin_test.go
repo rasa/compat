@@ -46,7 +46,7 @@ func testMain(m *testing.M, fsToTest, nativeFSType, fsPath string) int { //nolin
 		fmt.Printf("cannot create temp workdir: %v\n", err)
 		return 1
 	}
-	defer os.RemoveAll(workdir)
+	defer removeIt(workdir)
 
 	testsToRun := 0
 	for _, fsTest := range fsTests {
@@ -67,10 +67,6 @@ func testMain(m *testing.M, fsToTest, nativeFSType, fsPath string) int { //nolin
 			continue
 		}
 		n++
-
-		if testing.Short() && code != -1 {
-			break
-		}
 
 		fsName := fsTest.fsName
 		if fsTest.fsName == nativeFS {
