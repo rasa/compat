@@ -55,10 +55,13 @@ func samePartition() {
 }
 
 func samePartitionl() {
+	if !compat.SupportsLinks() {
+		return
+	}
 	exe, _ := os.Executable()
 	link := "link" + filepath.Ext(exe)
 
-	_ = os.Link(exe, link)
+	_ = compat.Link(exe, link)
 
 	defer os.Remove(link)
 
@@ -98,10 +101,14 @@ func sameFile() {
 }
 
 func sameFilel() {
+	if !compat.SupportsLinks() {
+		return
+	}
+
 	exe, _ := os.Executable()
 	link := "link" + filepath.Ext(exe)
 
-	_ = os.Link(exe, link)
+	_ = compat.Link(exe, link)
 
 	defer os.Remove(link)
 
