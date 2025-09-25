@@ -132,6 +132,10 @@ func testMain(m *testing.M, fsToTest, nativeFSType, fsPath string) int { //nolin
 
 		testEnv = fsTest.vars
 
+		if fsNameUpper == "NTFS" && os.Getenv("CI") != "" {
+			testEnv.noACLs = true
+		}
+
 		if fsTest.fsName != nativeFS {
 			testEnv.fsType = fsTest.fsName
 			tempPath = getMountPoint()
