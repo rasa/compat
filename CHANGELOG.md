@@ -12,6 +12,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Add `Fchmod()` function.
 - Add `Link()` function.
 - Add `SupportsNice()` function.
+- Add `WithRetrySeconds()` function.
+- Add optional `Option` param to `Rename()`.
+- Add optional `Option` param to `RemoveAll()`.
 
 ### Fixed
 

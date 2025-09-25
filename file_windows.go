@@ -17,6 +17,7 @@ import (
 	"golang.org/x/sys/windows"
 
 	"github.com/rasa/compat/golang"
+	"github.com/rasa/compat/robustio"
 )
 
 // UnknownUsername is returned when the current username is not available.
@@ -193,8 +194,21 @@ func remove(name string) error {
 	return golang.Remove(name)
 }
 
-func removeAll(path string) error {
-	return golang.RemoveAll(path)
+func removeAll(path string, opts ...Option) error {
+	fopts := Options{}
+
+	for _, opt := range opts {
+		opt(&fopts)
+	}
+
+	if fopts.retrySeconds <= 0 {
+		return golang.RemoveAll(path)
+	}
+
+	return robustio.Retry(func() (err error, mayRetry bool) {
+		err = golang.RemoveAll(path)
+		return err, robustio.IsEphemeralError(err)
+	}, fopts.retrySeconds)
 }
 
 func symlink(oldname, newname string, setSymlinkOwner bool) error {

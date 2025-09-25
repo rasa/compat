@@ -285,13 +285,13 @@ func removeIt(name string) { //nolint:unused
 		})
 	}
 	_ = compat.RemoveAll(name)
-	fi, err = os.Stat(name)
+	_, err = os.Stat(name)
 	if errors.Is(err, os.ErrNotExist) {
 		return
 	}
 	if compat.IsWindows {
 		args := []string{name, "/q", "/t", "/c", "/grant", os.Getenv("USERNAME") + ":F"}
-		exec.CommandContext(context.Background(), "icacls.exe", args...).Run() //nolint:gosec
+		_ = exec.CommandContext(context.Background(), "icacls.exe", args...).Run() //nolint:gosec
 		_ = compat.RemoveAll(name)
 	}
 }
@@ -414,7 +414,7 @@ func tempFile(t *testing.T) (string, error) {
 	return name, nil
 }
 
-func tempName(t *testing.T) (string, error) {
+func tempName(t *testing.T) (string, error) { //nolint:unparam
 	t.Helper()
 
 	name := filepath.Join(tempDir(t), randomBase36String(8)+".tmp")
@@ -427,7 +427,7 @@ func tempDir(t *testing.T) string {
 	if tempPath != "" {
 		parts := strings.Split(t.TempDir(), string(os.PathSeparator))
 
-		var idx int = -1
+		idx := -1
 		for i, p := range parts {
 			if strings.HasPrefix(p, "Test") {
 				idx = i

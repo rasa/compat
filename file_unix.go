@@ -71,7 +71,9 @@ func openFile(name string, flag int, perm os.FileMode) (*os.File, error) {
 
 var remove = os.Remove
 
-var removeAll = os.RemoveAll
+func removeAll(path string, _ ...Option) error {
+	return os.RemoveAll(path)
+}
 
 func symlink(oldname, newname string, _ bool) error {
 	return os.Symlink(oldname, newname)

@@ -306,7 +306,6 @@ func TestWriteFileAtomicCantRead(t *testing.T) {
 }
 
 func TestWriteFileAtomicReadOnlyDirectory(t *testing.T) {
-
 	file, err := tempFile(t)
 	if err != nil {
 		t.Fatalf("Failed to create temp file: %v", err)

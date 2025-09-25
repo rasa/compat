@@ -15,9 +15,27 @@ import (
 	"golang.org/x/sys/windows"
 
 	"github.com/rasa/compat/golang"
+	"github.com/rasa/compat/robustio"
 )
 
-func rename(src, dst string) error {
+func rename(src, dst string, opts ...Option) error {
+	fopts := Options{}
+
+	for _, opt := range opts {
+		opt(&fopts)
+	}
+
+	if fopts.retrySeconds <= 0 {
+		return moveFile(src, dst)
+	}
+
+	return robustio.Retry(func() (err error, mayRetry bool) {
+		err = moveFile(src, dst)
+		return err, robustio.IsEphemeralError(err)
+	}, fopts.retrySeconds)
+}
+
+func moveFile(src, dst string) error {
 	longsrc := golang.FixLongPath(src)
 
 	src16, err := syscall.UTF16PtrFromString(longsrc)
@@ -32,9 +50,9 @@ func rename(src, dst string) error {
 
 	var attrs uint32 = windows.MOVEFILE_REPLACE_EXISTING | windows.MOVEFILE_WRITE_THROUGH
 	// see http://msdn.microsoft.com/en-us/library/windows/desktop/aa365240(v=vs.85).aspx
-	if err := windows.MoveFileEx(src16, dst16, attrs); err != nil {
+	err = windows.MoveFileEx(src16, dst16, attrs)
+	if err != nil {
 		return &os.LinkError{Op: "rename", Old: src, New: dst, Err: err}
 	}
-
 	return nil
 }

@@ -17,6 +17,7 @@ type Options struct {
 	flags           int          // default 0
 	keepFileMode    bool         // default false
 	readOnlyMode    ReadOnlyMode // default 0
+	retrySeconds    float64      // default 0.0
 	setSymlinkOwner bool         // default false
 }
 
@@ -72,6 +73,15 @@ func WithKeepFileMode(keep bool) Option {
 func WithReadOnlyMode(mode ReadOnlyMode) Option {
 	return func(opts *Options) {
 		opts.readOnlyMode = mode
+	}
+}
+
+// WithRetrySeconds sets the retry timeout option in seconds. The default is 0
+// which means to not retry at all.
+// Used by the Rename and RemoveAll functions.
+func WithRetrySeconds(seconds float64) Option {
+	return func(opts *Options) {
+		opts.retrySeconds = seconds
 	}
 }
 

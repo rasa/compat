@@ -185,8 +185,8 @@ func Remove(name string) error {
 // it encounters. If the path does not exist, RemoveAll
 // returns nil (no error).
 // If there is an error, it will be of type [*PathError].
-func RemoveAll(path string) error {
-	return removeAll(path)
+func RemoveAll(path string, opts ...Option) error {
+	return removeAll(path, opts...)
 }
 
 // Symlink creates newname as a symbolic link to oldname.
