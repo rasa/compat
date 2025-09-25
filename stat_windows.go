@@ -21,6 +21,7 @@ import (
 
 const perm000 = os.FileMode(0o0)
 
+// Not supported: none.
 const supports supportsType = supportsLinks | supportsATime | supportsBTime | supportsCTime | supportsFstat | supportsNice | supportsSymlinks
 
 const userIDSource UserIDSourceType = UserIDSourceIsSID

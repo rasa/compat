@@ -5,5 +5,5 @@
 
 package compat
 
-// Not supported: Nice
+// Not supported: Nice.
 const supports supportsType = supportsATime | supportsBTime | supportsCTime | supportsFstat | supportsLinks | supportsSymlinks

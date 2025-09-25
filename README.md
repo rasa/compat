@@ -145,7 +145,7 @@ To install compat, use `go get`:
 # FileInfo Functions
 
 The `Stat()` and `Lstat()` functions return a `FileInfo` object.
-The table below lists the operating system support for each of the `FileInfo` functions:
+The table below lists the OS' support for each of the `FileInfo` functions:
 
 | OS           | PartitionID()/ <br/>FileID()* | Links()* | ATime()*<br/>(last<br/>*A*ccessed) | BTime()*<br/>(*B*irthed/<br/>created) | CTime()*<br/>(metadata<br/>last *C*hanged) | UID()/GID() |
 |--------------|--------|--------|------|--------|------|-------|
@@ -166,19 +166,48 @@ The table below lists the operating system support for each of the `FileInfo` fu
 | Windows      | ✅     | ✅    | ✅   | ✅    | ✅   | ✅‡  |
 <!--           | PartID+ | Links | ATime | BTime | CTime | UID+ | -->
 
-\* Support will depend on the underlying file system. See [Comparison of file systems](https://wikipedia.org/wiki/Comparison_of_file_systems#Metadata) for details.<br/>
-† Not supported if compiled using the Tinygo compiler.<br/>
-‡ Provides the same integer values as Cygwin/MSYS2/Git for Windows in mapping Windows SIDs (Security Identifiers).
-
+Key:<br/>
 ✅ fully supported.<br/>
 ☑️ the UID() and GID() values are 32-bit hashes of the user and group names.<br/>
 ✖️ not implemented (but if the OS supports it, so we could add support).<br/>
 ❌ not implemented (as it appears the OS doesn't support it).<br/>
 <!-- 🚧 planned to be implemented.<br/> -->
 
+\* Support will depend on the underlying file system. See [Comparison of file systems](https://wikipedia.org/wiki/Comparison_of_file_systems#Metadata) for details.<br/>
+† Not supported if compiled using the Tinygo compiler.<br/>
+‡ Provides the same integer values as Cygwin/MSYS2/Git for Windows in mapping Windows SIDs (Security Identifiers).<br/>
+
 # Other Functions
 
-All other functions provided by this library are fully supported by all the above operating systems.
+The table below lists the OS' support for other functions in this library:
+
+| OS           | Chmod()* | Fstat() | Nice()/<br/>Renice() | PartitionType() | Symlink() | Umask() |
+|--------------|---------|-------|------|------|------|
+| AIX          | ✅   | ❌     | ✅    | ✅*  | ✅   | ✅   |
+| Android      | ✅   | ✅     | ✅    | ✅   | ✅   | ✅   |
+| Dragonfly    | ✅   | ✅     | ✅    | ✅   | ✅   | ✅   |
+| FreeBSD      | ✅   | ✅     | ✅    | ✅‡  | ✅   | ✅   |
+| Illumos      | ✅   | ❌     | ✅    | ✅   | ✅   | ✅   |
+| iOS          | ✅   | ✅     | ☑️    | ✅   | ✅   | ✅   |
+| Js/<br/>WASM | ❌   | ❌     | ☑️    | ✅   | ❌   | ✅   |
+| Linux        | ✅   | ✅     | ✅    | ✅   | ✅   | ✅   |
+| macOS        | ✅   | ✅     | ✅    | ✅   | ✅   | ✅   |
+| NetBSD       | ✅   | ✅     | ✅    | ✅‡  | ✅   | ✅   |
+| OpenBSD      | ✅   | ❌     | ✅    | ✅‡  | ✅   | ✅   |
+| Plan9        | ✅   | ✅     | ✅    | ✅   | ✅   | ❌   |
+| Solaris      | ✅   | ❌     | ✅    | ✅   | ✅   | ✅   |
+| Wasip1/<br/>WASM | ❌   | ❌ | ☑️    | ✅   | ❌   | ✅†  |
+| Windows      | ✅   | ✅     | ✅    | ✅   | ✅   | ✅   |
+<!--           | Chmod | Fstat  | Nice  | Part | Symln | Umask -->
+
+Key:<br/>
+✅ fully supported.<br/>
+☑️ Nice() always returns 0. Renice() does nothing.<br/>
+❌ not implemented (as it appears the OS doesn't support it).<br/>
+
+\* Support will depend on the underlying file system. See [Comparison of file systems](https://wikipedia.org/wiki/Comparison_of_file_systems#Metadata) for details.<br/>
+† Not supported if compiled using the Tinygo compiler.<br/>
+‡ Not supported on openbsd/ppc64, netbsd/386, freebsd/riscv64, and aix/ppc64 (cgo only), due to compile issues.<br/>
 
 # Contributing
 

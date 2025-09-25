@@ -9,7 +9,7 @@ import (
 	"os"
 	"path/filepath"
 	"strconv"
-	"syscall"
+	"strings"
 )
 
 func fstat(f *os.File) (FileInfo, error) {
@@ -22,15 +22,21 @@ func fstat(f *os.File) (FileInfo, error) {
 		return nil, &os.PathError{Op: "stat", Path: f.Name(), Err: err}
 	}
 
-	pid := syscall.Getpid()
-	fd := f.Fd()
-	link := "/proc/" + strconv.Itoa(pid) + "/fd/" + strconv.Itoa(int(fd))
-	path, err := os.Readlink(link)
+	pid := os.Getpid()
+	fd := int(f.Fd())
+	fdinfo := "/proc/" + strconv.Itoa(pid) + "/fdinfo/" + strconv.Itoa(fd)
+
+	data, err := os.ReadFile(fdinfo)
 	if err != nil {
 		return nil, &os.PathError{Op: "stat", Path: f.Name(), Err: err}
 	}
 
-	path = filepath.Clean(path)
+	lines := strings.SplitN(string(data), "\n", 2)
+	if len(lines) == 0 {
+		return nil, &os.PathError{Op: "stat", Path: f.Name(), Err: os.ErrInvalid}
+	}
+	// First line is usually the path
+	path := filepath.Clean(lines[0])
 
 	return stat(fi, path, false)
 }
