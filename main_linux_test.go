@@ -134,6 +134,8 @@ func testMain(m *testing.M, fsToTest, nativeFSType, fsPath string) int { //nolin
 
 		if fsNameUpper == "NTFS" && os.Getenv("CI") != "" {
 			testEnv.noACLs = true
+			fmt.Println("Skipping NTFS on CI on Linux")
+			continue
 		}
 
 		if fsTest.fsName != nativeFS {
