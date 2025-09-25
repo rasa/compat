@@ -29,6 +29,7 @@ func TestFstat(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	defer f.Close() //nolint:errcheck
 
 	fi, err := compat.Fstat(f)
 	if err != nil {
