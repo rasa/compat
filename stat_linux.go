@@ -11,7 +11,7 @@ import (
 	"golang.org/x/sys/unix"
 )
 
-const supports supportsType = supportsATime | supportsBTime | supportsCTime | supportsLinks | supportsNice | supportsSymlinks
+const supports supportsType = supportsATime | supportsBTime | supportsCTime | supportsFstat | supportsLinks | supportsNice | supportsSymlinks
 
 const userIDSource UserIDSourceType = UserIDSourceIsInt
 
@@ -45,5 +45,3 @@ func (fs *fileStat) BTime() time.Time {
 
 	return fs.btime
 }
-
-// See https://github.com/golang/go/blob/d000963d/src/os/types_unix.go#L28

@@ -9,9 +9,6 @@ import (
 	"time"
 )
 
-// Not supported: BTime.
-const supports supportsType = supportsLinks | supportsATime | supportsCTime | supportsNice | supportsSymlinks
-
 const userIDSource UserIDSourceType = UserIDSourceIsInt
 
 func (fs *fileStat) times() {

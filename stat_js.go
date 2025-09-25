@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-// Not supported: BTime | Nice.
+// Not supported: BTime | Fstat | Nice.
 const supports supportsType = supportsATime | supportsCTime | supportsLinks | supportsSymlinks
 
 const userIDSource UserIDSourceType = UserIDSourceIsNone

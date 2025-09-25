@@ -3,8 +3,8 @@
 
 //go:build darwin && !ios
 
-// The darwin build flag includes ios
+// The darwin build flag includes ios (which doesn't support Nice())
 
 package compat
 
-const supports supportsType = supportsATime | supportsBTime | supportsCTime | supportsLinks | supportsNice | supportsSymlinks
+const supports supportsType = supportsATime | supportsBTime | supportsCTime | supportsFstat | supportsLinks | supportsNice | supportsSymlinks

@@ -41,6 +41,8 @@ const (
 	supportsSymlinks
 	// supportsNice defines if Nice() is supported by the OS.
 	supportsNice
+	// supportsFstat defines if Fstat() is supported by the OS.
+	supportsFstat
 )
 
 // UnknownID is returned when the UID or GID could not be determined.
@@ -147,6 +149,11 @@ func SupportsCTime() bool {
 	return supports&supportsCTime == supportsCTime
 }
 
+// SupportsFstat returns true if the Fstat() function is supported by the OS.
+func SupportsFstat() bool {
+	return supports&supportsFstat == supportsFstat
+}
+
 // SupportsLinks returns true if FileInfo's Links() function is supported by the OS.
 func SupportsLinks() bool {
 	return supports&supportsLinks == supportsLinks
@@ -188,6 +195,12 @@ func Lstat(name string) (FileInfo, error) {
 	}
 
 	return stat(fi, name, false)
+}
+
+// Fstat returns a [FileInfo] structure describing file.
+// If there is an error, it will be of type *PathError.
+func Fstat(f *os.File) (FileInfo, error) {
+	return fstat(f)
 }
 
 // SamePartition reports whether fi1 and fi2 describe files on the same disk

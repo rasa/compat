@@ -6,7 +6,6 @@
 package compat
 
 import (
-	"errors"
 	"os"
 	"syscall"
 	"time"
@@ -48,8 +47,7 @@ type fileStat struct {
 
 func stat(fi os.FileInfo, _ string, _ bool) (FileInfo, error) {
 	if fi == nil {
-		err := errors.New("fileInfo is nil")
-		return nil, &os.PathError{Op: "stat", Path: name, Err: err}
+		return nil, &os.PathError{Op: "stat", Path: "", Err: os.ErrInvalid}
 	}
 
 	var fs fileStat

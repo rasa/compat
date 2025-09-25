@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ### Added
 
 - Add `Fchmod()` function.
+- Add `Fstat()` function (not supported on aix, illumos, or solaris).
 - Add `Link()` function.
 - Add `SupportsNice()` function.
 - Add `WithRetrySeconds()` function.

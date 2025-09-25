@@ -6,4 +6,4 @@
 package compat
 
 // Not supported: Nice
-const supports supportsType = supportsATime | supportsBTime | supportsCTime | supportsLinks | supportsSymlinks
+const supports supportsType = supportsATime | supportsBTime | supportsCTime | supportsFstat | supportsLinks | supportsSymlinks
