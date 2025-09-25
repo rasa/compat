@@ -122,7 +122,6 @@ jobs:
       - name: Set SHOULD_RUN var for ${{ inputs.runner }}
         run: |
           echo "SHOULD_RUN=yes" >> "${GITHUB_ENV}"
-          printf "::notice::inputs.runner=%s\n" "${{ inputs.runner }}"
         if: >
           (
             matrix.os == inputs.runner ||
