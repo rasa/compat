@@ -1,6 +1,7 @@
 ignore:
   - "cmd"
   - "golang"
+  - "robustio"
   - "file_debug.go"
   - "file_debug_windows.go"
 component_management:
