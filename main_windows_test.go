@@ -20,9 +20,27 @@ import (
 const defaultMountPoint = `Z:\`
 
 var fsTests = []fsTest{
-	{nativeFS, testVars{}},
-	{"exFAT", testVars{true, true, true, 2, 2, -1, 2, -1, ""}},
-	{"FAT32", testVars{true, true, true, 86400, 2, -1, 2, -1, ""}},
+	{nativeFS, testVars{}}, // assume we are on NTFS
+	{"exFAT", testVars{
+		noACLs: true,
+		noSymlinks: true,
+		noHardLinks: true,
+		atimeGranularity: 2,
+		btimeGranularity: 2,
+		ctimeGranularity: -1,
+		mtimeGranularity: 2,
+		btimeSymlinkGranularity: -1,
+	}},
+	{"FAT32", testVars{
+		noACLs: true,
+		noSymlinks: true,
+		noHardLinks: true,
+		atimeGranularity: 86400,
+		btimeGranularity: 2,
+		ctimeGranularity: -1,
+		mtimeGranularity: 2,
+		btimeSymlinkGranularity: -1,
+	}},
 	// @TODO(rasa) determine why FAT fails more often than it succeeds.
 	// {"FAT", testVars{true, true, 86400, 2, -1, 2, -1, ""}},
 	{"NTFS", testVars{}},

@@ -25,14 +25,68 @@ var fsTests = []fsTest{
 	{"ext2", testVars{}},
 	{"ext3", testVars{}},
 	{"ext4", testVars{}},
-	{"F2FS", testVars{false, false, false, 0, -1, 0, 0, -1, ""}},
-	{"ReiserFS", testVars{false, false, false, 0, -1, 0, 0, -1, ""}},
+	{"F2FS", testVars{
+		noACLs: false,
+		noSymlinks: false,
+		noHardLinks: false,
+		atimeGranularity: 0,
+		btimeGranularity: -1,
+		ctimeGranularity: 0,
+		mtimeGranularity: 0,
+		btimeSymlinkGranularity: -1,
+	}},
+	{"ReiserFS", testVars{
+		noACLs: false,
+		noSymlinks: false,
+		noHardLinks: false,
+		atimeGranularity: 0,
+		btimeGranularity: -1,
+		ctimeGranularity: 0,
+		mtimeGranularity: 0,
+		btimeSymlinkGranularity: -1,
+	}},
 	{"XFS", testVars{}},
 	//
-	{"exFAT", testVars{true, true, true, 2, 2, 2, 2, -1, ""}},
-	{"FAT32", testVars{true, true, true, 86400, 2, 2, 2, -1, ""}},
-	{"FAT", testVars{true, true, true, 86400, 2, 2, 2, -1, ""}}, // aka FAT16
-	{"NTFS", testVars{true, false, false, 0, -1, 0, 0, -1, ""}}, // requires ntfs-3g/ntfsprogs
+	{"exFAT", testVars{
+		noACLs: true,
+		noSymlinks: true,
+		noHardLinks: true,
+		atimeGranularity: 2,
+		btimeGranularity: 2,
+		ctimeGranularity: 2,
+		mtimeGranularity: 2,
+		btimeSymlinkGranularity: -1,
+	}},
+	{"FAT32", testVars{
+		noACLs: true,
+		noSymlinks: true,
+		noHardLinks: true,
+		atimeGranularity: 86400,
+		btimeGranularity: 2,
+		ctimeGranularity: 2,
+		mtimeGranularity: 2,
+		btimeSymlinkGranularity: -1,
+	}},
+	{"FAT", testVars{
+		noACLs: true,
+		noSymlinks: true,
+		noHardLinks: true,
+		atimeGranularity: 86400,
+		btimeGranularity: 2,
+		ctimeGranularity: 2,
+		mtimeGranularity: 2,
+		btimeSymlinkGranularity: -1,
+	}}, // aka FAT16
+	{"NTFS", testVars{
+		noACLs: false,
+		noSymlinks: false,
+		noHardLinks: false,
+		atimeGranularity: 0,
+		btimeGranularity: 0,
+		ctimeGranularity: 0,
+		mtimeGranularity: 0,
+		btimeSymlinkGranularity: -1,
+	}}, // requires ntfs-3g/ntfsprogs
 }
 
 func testMain(m *testing.M, fsToTest, nativeFSType, fsPath string) int { //nolint:gocyclo
