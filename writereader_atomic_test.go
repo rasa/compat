@@ -307,6 +307,13 @@ func TestWriteReaderAtomicCantRead(t *testing.T) {
 }
 
 func TestWriteReaderAtomicReadOnlyDirectory(t *testing.T) {
+	isRoot, _ := compat.IsRoot()
+	if isRoot && !compat.IsWindows {
+		skipf(t, "Skipping test: doesn't fail when root")
+
+		return
+	}
+
 	file, err := tempFile(t)
 	if err != nil {
 		t.Fatalf("Failed to create temp file: %v", err)
@@ -341,6 +348,9 @@ func TestWriteReaderAtomicReadOnlyDirectory(t *testing.T) {
 
 		return // Tinygo doesn't support T.Fatal
 	}
+
+	perm = os.FileMode(0o777)
+	_ = compat.Chmod(dir, perm)
 }
 
 type errReader struct{}
