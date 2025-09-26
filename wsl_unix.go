@@ -1,13 +1,11 @@
 // SPDX-FileCopyrightText: Copyright © 2025 Ross Smith II <ross@smithii.com>
 // SPDX-License-Identifier: MIT
 
-//go:build !plan9 && !wasm && !windows
+//go:build !(plan9 || wasm || windows)
 
 package compat
 
 import (
-	"os"
-	"os/exec"
 	"strings"
 
 	"golang.org/x/sys/unix"
@@ -35,23 +33,7 @@ func IsWSL() bool {
 			return true
 		}
 	}
-
-	data, err := os.ReadFile("/proc/sys/kernel/osrelease")
-	if err == nil {
-		return strings.Contains(strings.ToLower(string(data)), "microsoft")
-	}
-
-	data, err = os.ReadFile("/proc/version")
-	if err == nil {
-		return strings.Contains(strings.ToLower(string(data)), "microsoft")
-	}
-
-	path, err := exec.LookPath("wslpath")
-	if err != nil {
-		return false
-	}
-
-	return path == "/usr/bin/wslpath"
+	return iswsl()
 }
 
 // Convert byte array to string.

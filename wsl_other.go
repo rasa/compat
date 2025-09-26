@@ -5,12 +5,6 @@
 
 package compat
 
-import (
-	"os"
-	"os/exec"
-	"strings"
-)
-
 // IsWSL returns true if run instead a Windows Subsystem for Linux (WSL)
 // environment, otherwise false.
 //
@@ -24,17 +18,5 @@ import (
 // the `WSL_DISTRO_NAME“ environment variable that other programs run inside
 // WSL see. Hence, this function must return false.
 func IsWSL() bool {
-	data, err := os.ReadFile("/proc/sys/kernel/osrelease")
-	if err == nil {
-		return strings.Contains(strings.ToLower(string(data)), "microsoft")
-	}
-	data, err = os.ReadFile("/proc/version")
-	if err == nil {
-		return strings.Contains(strings.ToLower(string(data)), "microsoft")
-	}
-	path, err := exec.LookPath("wslpath")
-	if err != nil {
-		return false
-	}
-	return path == "/usr/bin/wslpath"
+	return iswsl()
 }
