@@ -182,23 +182,23 @@ Key:<br/>
 The table below lists the OS' support for other functions in this library:
 
 | OS           | Chmod()* | Fstat() | Nice()/<br/>Renice() | PartitionType() | Symlink() | Umask() |
-|--------------|---------|-------|------|------|------|
-| AIX          | ✅   | ❌     | ✅    | ✅*  | ✅   | ✅   |
-| Android      | ✅   | ✅     | ✅    | ✅   | ✅   | ✅   |
-| Dragonfly    | ✅   | ✅     | ✅    | ✅   | ✅   | ✅   |
-| FreeBSD      | ✅   | ✅     | ✅    | ✅‡  | ✅   | ✅   |
-| Illumos      | ✅   | ❌     | ✅    | ✅   | ✅   | ✅   |
-| iOS          | ✅   | ✅     | ☑️    | ✅   | ✅   | ✅   |
-| Js/<br/>WASM | ❌   | ❌     | ☑️    | ✅   | ❌   | ✅   |
-| Linux        | ✅   | ✅     | ✅    | ✅   | ✅   | ✅   |
-| macOS        | ✅   | ✅     | ✅    | ✅   | ✅   | ✅   |
-| NetBSD       | ✅   | ✅     | ✅    | ✅‡  | ✅   | ✅   |
-| OpenBSD      | ✅   | ❌     | ✅    | ✅‡  | ✅   | ✅   |
-| Plan9        | ✅   | ✅     | ✅    | ✅   | ✅   | ❌   |
-| Solaris      | ✅   | ❌     | ✅    | ✅   | ✅   | ✅   |
-| Wasip1/<br/>WASM | ❌   | ❌ | ☑️    | ✅   | ❌   | ✅†  |
-| Windows      | ✅   | ✅     | ✅    | ✅   | ✅   | ✅   |
-<!--           | Chmod | Fstat  | Nice  | Part | Symln | Umask -->
+|--------------|----------|---------|-------|------|-------|------|
+| AIX          | ✅       | ❌      | ✅    | ✅*  | ✅   | ✅   |
+| Android      | ✅       | ✅      | ✅    | ✅   | ✅   | ✅   |
+| Dragonfly    | ✅       | ✅      | ✅    | ✅   | ✅   | ✅   |
+| FreeBSD      | ✅       | ✅      | ✅    | ✅‡  | ✅   | ✅   |
+| Illumos      | ✅       | ❌      | ✅    | ✅   | ✅   | ✅   |
+| iOS          | ✅       | ✅      | ☑️    | ✅   | ✅   | ✅   |
+| Js/<br/>WASM | ❌       | ❌      | ☑️    | ✅   | ❌   | ✅   |
+| Linux        | ✅       | ✅      | ✅    | ✅   | ✅   | ✅   |
+| macOS        | ✅       | ✅      | ✅    | ✅   | ✅   | ✅   |
+| NetBSD       | ✅       | ✅      | ✅    | ✅‡  | ✅   | ✅   |
+| OpenBSD      | ✅       | ❌      | ✅    | ✅‡  | ✅   | ✅   |
+| Plan9        | ✅       | ✅      | ✅    | ✅   | ✅   | ❌   |
+| Solaris      | ✅       | ❌      | ✅    | ✅   | ✅   | ✅   |
+| Wasip1/<br/>WASM | ❌   | ❌      | ☑️    | ✅   | ❌   | ✅†  |
+| Windows      | ✅       | ✅      | ✅    | ✅   | ✅   | ✅   |
+<!--           | Chmod    | Fstat   | Nice  | Part | Symln | Umask | -->
 
 Key:<br/>
 ✅ fully supported.<br/>
