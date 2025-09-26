@@ -4,6 +4,7 @@ ignore:
   - "robustio"
   - "file_debug.go"
   - "file_debug_windows.go"
+  - "fstat_na.go"
 component_management:
   individual_components:
     - component_id: windows
