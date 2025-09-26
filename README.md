@@ -185,14 +185,14 @@ The table below lists the OS' support for other functions in this library:
 |--------------|----------|---------|-------|------|-------|------|
 | AIX          | ✅       | ❌      | ✅    | ✅*  | ✅   | ✅   |
 | Android      | ✅       | ✅      | ✅    | ✅   | ✅   | ✅   |
-| Dragonfly    | ✅       | ✅      | ✅    | ✅   | ✅   | ✅   |
-| FreeBSD      | ✅       | ✅      | ✅    | ✅‡  | ✅   | ✅   |
+| Dragonfly    | ✅       | ✖️      | ✅    | ✅   | ✅   | ✅   |
+| FreeBSD      | ✅       | ✖️      | ✅    | ✅‡  | ✅   | ✅   |
 | Illumos      | ✅       | ❌      | ✅    | ✅   | ✅   | ✅   |
 | iOS          | ✅       | ✅      | ☑️    | ✅   | ✅   | ✅   |
 | Js/<br/>WASM | ❌       | ❌      | ☑️    | ✅   | ❌   | ✅   |
 | Linux        | ✅       | ✅      | ✅    | ✅   | ✅   | ✅   |
 | macOS        | ✅       | ✅      | ✅    | ✅   | ✅   | ✅   |
-| NetBSD       | ✅       | ✅      | ✅    | ✅‡  | ✅   | ✅   |
+| NetBSD       | ✅       | ✖️      | ✅    | ✅‡  | ✅   | ✅   |
 | OpenBSD      | ✅       | ❌      | ✅    | ✅‡  | ✅   | ✅   |
 | Plan9        | ✅       | ✅      | ✅    | ✅   | ✅   | ❌   |
 | Solaris      | ✅       | ❌      | ✅    | ✅   | ✅   | ✅   |
@@ -203,6 +203,7 @@ The table below lists the OS' support for other functions in this library:
 Key:<br/>
 ✅ fully supported.<br/>
 ☑️ Nice() always returns 0. Renice() does nothing.<br/>
+✖️ not implemented (but if the OS supports it, so we could add support).<br/>
 ❌ not implemented (as it appears the OS doesn't support it).<br/>
 
 \* Support will depend on the underlying file system. See [Comparison of file systems](https://wikipedia.org/wiki/Comparison_of_file_systems#Metadata) for details.<br/>

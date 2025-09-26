@@ -5,5 +5,5 @@
 
 package compat
 
-// Not supported: BTime.
-const supports supportsType = supportsLinks | supportsATime | supportsCTime | supportsFstat | supportsNice | supportsSymlinks
+// Not supported: BTime | Fstat.
+const supports supportsType = supportsLinks | supportsATime | supportsCTime | supportsNice | supportsSymlinks

@@ -1,7 +1,9 @@
 // SPDX-FileCopyrightText: Copyright © 2025 Ross Smith II <ross@smithii.com>
 // SPDX-License-Identifier: MIT
 
-//go:build dragonfly || netbsd
+//go:build ignore
+
+// was go:build dragonfly || netbsd
 
 package compat
 
