@@ -13,12 +13,6 @@ import (
 )
 
 func TestFstat(t *testing.T) {
-	if !compat.SupportsFstat() {
-		skipf(t, "Skipping test: Fstat() is not supported on %v/%v", runtime.GOOS, runtime.GOARCH)
-
-		return // tinygo doesn't support t.Skip
-	}
-
 	name, err := tempFile(t)
 	if err != nil {
 		t.Fatal(err)
@@ -33,7 +27,14 @@ func TestFstat(t *testing.T) {
 
 	fi, err := compat.Fstat(f)
 	if err != nil {
+		if !compat.SupportsFstat() {
+			return
+		}
 		t.Fatalf("Fstat: got %v, want nil", err)
+	}
+
+	if !compat.SupportsFstat() {
+		t.Fatalf("Fstat: got nil, want an error")
 	}
 
 	got := fi.Name()
@@ -44,12 +45,6 @@ func TestFstat(t *testing.T) {
 }
 
 func TestFstatInvalid(t *testing.T) {
-	if !compat.SupportsFstat() {
-		skipf(t, "Skipping test: Fstat() is not supported on %v/%v", runtime.GOOS, runtime.GOARCH)
-
-		return // tinygo doesn't support t.Skip
-	}
-
 	_, err := compat.Fstat(nil)
 	if err == nil {
 		t.Fatal("Fstat: got nil, want an error")
