@@ -6,7 +6,6 @@ package compat_test
 import (
 	"os"
 	"path/filepath"
-	"runtime"
 	"testing"
 
 	"github.com/rasa/compat"
