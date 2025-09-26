@@ -168,14 +168,14 @@ func mkdirTemp(dir, pattern string, perm os.FileMode) (string, error) {
 	if err != nil {
 		prefix, suffix, _ := golang.PrefixAndSuffix(pattern)
 
-		return "", &os.PathError{Op: "mkdirtmemp", Path: dir + string(os.PathSeparator) + prefix + "*" + suffix, Err: err}
+		return "", &os.PathError{Op: "mkdirtemp", Path: dir + string(os.PathSeparator) + prefix + "*" + suffix, Err: err}
 	}
 
 	path, err := golang.MkdirTemp(dir, pattern, sa)
 	if err != nil {
 		prefix, suffix, _ := golang.PrefixAndSuffix(pattern)
 
-		return "", &os.PathError{Op: "mkdirtmemp", Path: dir + string(os.PathSeparator) + prefix + "*" + suffix, Err: err}
+		return "", &os.PathError{Op: "mkdirtemp", Path: dir + string(os.PathSeparator) + prefix + "*" + suffix, Err: err}
 	}
 
 	return path, nil
