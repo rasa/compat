@@ -11,7 +11,7 @@ for target in "${targets[@]}"; do
   if [[ -v seen[${GOOS}] ]]; then
     continue
   fi
-  seen[${GOOS}]=1
+  test -z "${1:-}" && seen[${GOOS}]=1
   export GOARCH="${target#*/}"
   echo "Building for ${GOOS}/${GOARCH}"
   go build -v .

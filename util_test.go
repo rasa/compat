@@ -16,9 +16,12 @@ import (
 	"os/exec"
 	"path/filepath"
 	"runtime"
+	"strconv"
 	"strings"
 	"testing"
 	"time"
+
+	"github.com/shirou/gopsutil/v4/host"
 
 	"github.com/rasa/compat"
 )
@@ -166,7 +169,11 @@ func fixPerms(perm os.FileMode, isDir bool) os.FileMode {
 		case compat.IsWindows:
 			return compat.DefaultWindowsDirPerm
 		case compat.IsApple:
-			return compat.DefaultAppleDirPerm
+			ver, _ := osVersion()
+			if ver.major != 13 {
+				return compat.DefaultAppleDirPerm
+			}
+			fallthrough
 		default:
 			return compat.DefaultUnixDirPerm
 		}
@@ -176,7 +183,11 @@ func fixPerms(perm os.FileMode, isDir bool) os.FileMode {
 	case compat.IsWindows:
 		return compat.DefaultWindowsFilePerm
 	case compat.IsApple:
-		return compat.DefaultAppleFilePerm
+		ver, _ := osVersion()
+		if ver.major != 13 {
+			return compat.DefaultAppleFilePerm
+		}
+		fallthrough
 	default:
 		return compat.DefaultUnixFilePerm
 	}
@@ -448,4 +459,72 @@ func tempDir(t *testing.T) string {
 	}
 
 	return t.TempDir()
+}
+
+type ver struct {
+	major int
+	minor int
+	patch int
+}
+
+var macOSMap = map[int]ver{
+	20: {11, 0, 0},
+	21: {12, 0, 0},
+	22: {13, 0, 0},
+	23: {14, 0, 0},
+	24: {15, 0, 0},
+	25: {26, 0, 0},
+}
+
+func osVersion() (ver, error) {
+	info, err := host.Info()
+	if err != nil {
+		return ver{}, err
+	}
+
+	parts := strings.Split(info.PlatformVersion, ".")
+	if len(parts) == 0 {
+		return ver{}, fmt.Errorf("unable to parse %q", info.PlatformVersion)
+	}
+
+	var major, minor, patch int
+
+	major, _ = strconv.Atoi(parts[0])
+	if len(parts) > 1 {
+		minor, _ = strconv.Atoi(parts[1])
+	}
+	if len(parts) > 2 {
+		patch, _ = strconv.Atoi(parts[2])
+	}
+
+	if compat.IsApple {
+		v, ok := macOSMap[major]
+		if ok {
+			return v, nil
+		}
+
+		return ver{}, fmt.Errorf("unknown MacOS version %q", info.PlatformVersion)
+	}
+
+	if compat.IsWindows {
+		if len(parts) < 3 {
+			return ver{}, fmt.Errorf("unable to parse %q", info.PlatformVersion)
+		}
+
+		switch {
+		case major == 6 && minor == 1:
+			return ver{7, 0, 0}, nil
+		case major == 6 && (minor == 2 || minor == 3):
+			return ver{8, 0, 0}, nil
+		case major == 10 && patch < 22000:
+			return ver{10, 0, 0}, nil
+		case major == 10 && patch >= 22000:
+			return ver{11, 0, 0}, nil
+		default:
+			// fallthrough
+		}
+		return ver{}, fmt.Errorf("unknown Windows OS version %q", info.PlatformVersion)
+	}
+
+	return ver{major, minor, patch}, nil
 }
