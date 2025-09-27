@@ -476,15 +476,15 @@ var macOSMap = map[int]ver{
 	25: {26, 0, 0},
 }
 
-func osVersion() (ver, error) {
+func osVersion() (v ver, err error) { //nolint:gocyclo
 	info, err := host.Info()
 	if err != nil {
-		return ver{}, err
+		return v, err
 	}
 
 	parts := strings.Split(info.PlatformVersion, ".")
 	if len(parts) == 0 {
-		return ver{}, fmt.Errorf("unable to parse %q", info.PlatformVersion)
+		return v, fmt.Errorf("unable to parse %q", info.PlatformVersion)
 	}
 
 	var major, minor, patch int
@@ -498,17 +498,17 @@ func osVersion() (ver, error) {
 	}
 
 	if compat.IsApple {
-		v, ok := macOSMap[major]
+		val, ok := macOSMap[major]
 		if ok {
-			return v, nil
+			return val, nil
 		}
 
-		return ver{}, fmt.Errorf("unknown MacOS version %q", info.PlatformVersion)
+		return v, fmt.Errorf("unknown MacOS version %q", info.PlatformVersion)
 	}
 
 	if compat.IsWindows {
 		if len(parts) < 3 {
-			return ver{}, fmt.Errorf("unable to parse %q", info.PlatformVersion)
+			return v, fmt.Errorf("unable to parse %q", info.PlatformVersion)
 		}
 
 		switch {
@@ -520,10 +520,11 @@ func osVersion() (ver, error) {
 			return ver{10, 0, 0}, nil
 		case major == 10 && patch >= 22000:
 			return ver{11, 0, 0}, nil
+		case major >= 11:
+			return ver{major, minor, patch}, nil
 		default:
-			// fallthrough
+			return v, fmt.Errorf("unknown Windows OS version %q", info.PlatformVersion)
 		}
-		return ver{}, fmt.Errorf("unknown Windows OS version %q", info.PlatformVersion)
 	}
 
 	return ver{major, minor, patch}, nil
