@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 - Add `Fchmod()` function.
 - Add `Fstat()` function (support varies by OS).
+- Add `SupportsFstat()`.
 - Add `Link()` function (support varies by OS).
 - Add `SupportsNice()` function.
 - Add `WithRetrySeconds()` function.
