@@ -90,6 +90,7 @@ linters:
       - builtin$
       - examples$
       # don't lint upstream code:
+      - format\.go$
       - walk\.go$
       - walk_test\.go$
       - golang/golang_.*\.go$
@@ -110,6 +111,7 @@ formatters:
       - builtin$
       - examples$
       # don't lint upstream code:
+      - format\.go$
       - walk\.go$
       - walk_test\.go$
       - golang/golang_.*\.go$
