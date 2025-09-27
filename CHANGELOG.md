@@ -10,9 +10,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ### Added
 
 - Add `Fchmod()` function.
+- Add `FormatFileInfo()` function.
 - Add `Fstat()` function (support varies by OS).
-- Add `SupportsFstat()`.
-- Add `Link()` function (support varies by OS).
+- Add `Link()` function (not supported by tinygo compiler).
+- Add `SupportsFstat()` function.
 - Add `SupportsNice()` function.
 - Add `WithRetrySeconds()` function.
 - Add optional `Option` param to `Rename()`.
