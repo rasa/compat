@@ -13,6 +13,7 @@ jsonlintrc
 nocgo
 partitiontype
 pylintrc
+robustio
 textlintrc
 tinygo
 vhdx
