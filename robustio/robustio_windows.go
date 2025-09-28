@@ -1,6 +1,8 @@
 // SPDX-FileCopyrightText: Copyright © 2025 Ross Smith II <ross@smithii.com>
 // SPDX-License-Identifier: MIT
 
+// See also https://github.com/golang/go/blob/34e67623/src/testing/testing_windows.go#L17
+
 // SPDX-FileCopyrightText: Copyright 2019 The Go Authors.
 // SPDX-License-Identifier: BSD-3
 
