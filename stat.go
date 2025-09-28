@@ -27,16 +27,6 @@ const (
 	// supportsCTime defines if FileInfo's CTime() function is supported by
 	// the OS.
 	supportsCTime
-	// supportsUID defines if FileInfo's UID() function is supported by the
-	// OS.
-	// Deprecated: No longer used or needed, as UID() is effectively
-	// supported by all OSes.
-	supportsUID
-	// supportsGID defines if FileInfo's GID() function is supported by the
-	// OS.
-	// Deprecated: No longer used or needed, as GID() is effectively
-	// supported by all OSes.
-	supportsGID
 	// supportsSymlinks defines if symlinks are supported by the OS.
 	supportsSymlinks
 	// supportsNice defines if Nice() is supported by the OS.
