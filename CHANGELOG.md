@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Fixed
 
+- Remove deprecated code.
+
 ### Changed
 
 - Rename `UnderlyingGoVersion()` to `GoVersion()`. **BREAKING CHANGE**

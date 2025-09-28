@@ -134,82 +134,6 @@ func TestFilePosixCreateWithFileMode(t *testing.T) {
 	}
 }
 
-func TestFilePosixCreateEx(t *testing.T) {
-	perm := compat.CreatePerm
-	want := fixPosixPerms(perm, false)
-
-	name, err := tempName(t)
-	if err != nil {
-		t.Fatalf("tempName failed: %v", err)
-
-		return
-	}
-
-	fh, err := compat.CreateEx(name, perm, 0)
-	if err != nil {
-		t.Fatalf("CreateEx failed: %v", err)
-
-		return
-	}
-
-	err = fh.Close()
-	if err != nil {
-		t.Fatalf("Close failed: %v", err)
-
-		return
-	}
-
-	fi, err := os.Stat(name)
-	if err != nil {
-		if compat.IsTinygo && errors.Is(err, os.ErrNotExist) {
-			skip(t, "Skipping test: file is disappearing on tinygo")
-
-			return // tinygo doesn't support t.Skip
-		}
-
-		t.Fatalf("Stat failed: %v", err)
-
-		return
-	}
-
-	got := fi.Mode().Perm()
-	if got != want {
-		t.Fatalf("got 0%03o (%v), want 0%03o (%v)", got, got, want, want)
-
-		return
-	}
-}
-
-func TestFilePosixCreateExDelete(t *testing.T) {
-	name, err := tempName(t)
-	if err != nil {
-		t.Fatal(err)
-
-		return
-	}
-
-	fh, err := compat.CreateEx(name, compat.CreatePerm, os.O_CREATE|compat.O_FILE_FLAG_DELETE_ON_CLOSE)
-	if err != nil {
-		t.Fatal(err)
-
-		return
-	}
-
-	err = fh.Close()
-	if err != nil {
-		t.Fatal(err)
-
-		return
-	}
-
-	_, err = os.Stat(name)
-	if !errors.Is(err, os.ErrNotExist) {
-		t.Fatal("File exists, should not")
-
-		return
-	}
-}
-
 func TestFilePosixCreateTemp(t *testing.T) {
 	want := fixPosixPerms(compat.CreateTempPerm, false) // 0o600
 
@@ -241,69 +165,6 @@ func TestFilePosixCreateTemp(t *testing.T) {
 	got := fi.Mode().Perm()
 	if got != want {
 		t.Fatalf("got 0%03o (%v), want 0%03o (%v)", got, got, want, want)
-
-		return
-	}
-}
-
-func TestFilePosixCreateTempEx(t *testing.T) {
-	want := fixPosixPerms(compat.CreateTempPerm, false) // 0o600
-
-	dir := tempDir(t)
-
-	fh, err := compat.CreateTempEx(dir, "", 0)
-	if err != nil {
-		t.Fatal(err)
-
-		return
-	}
-
-	name := fh.Name()
-
-	err = fh.Close()
-	if err != nil {
-		t.Fatal(err)
-
-		return
-	}
-
-	fi, err := os.Stat(name)
-	if err != nil {
-		t.Fatal(err)
-
-		return
-	}
-
-	got := fi.Mode().Perm()
-	if got != want {
-		t.Fatalf("got 0%03o (%v), want 0%03o (%v)", got, got, want, want)
-
-		return
-	}
-}
-
-func TestFilePosixCreateTempExDelete(t *testing.T) {
-	dir := tempDir(t)
-
-	fh, err := compat.CreateTempEx(dir, "", compat.O_FILE_FLAG_DELETE_ON_CLOSE)
-	if err != nil {
-		t.Fatal(err)
-
-		return
-	}
-
-	name := fh.Name()
-
-	err = fh.Close()
-	if err != nil {
-		t.Fatal(err)
-
-		return
-	}
-
-	_, err = os.Stat(name)
-	if !errors.Is(err, os.ErrNotExist) {
-		t.Fatal("File exists, should not")
 
 		return
 	}
@@ -649,39 +510,6 @@ func TestFilePosixWriteFile(t *testing.T) {
 	}
 }
 
-func TestFilePosixWriteFileEx(t *testing.T) {
-	perm := os.FileMode(0o666)
-	want := fixPosixPerms(perm, false)
-
-	name, err := tempName(t)
-	if err != nil {
-		t.Fatal(err)
-
-		return
-	}
-
-	err = compat.WriteFileEx(name, helloBytes, perm, 0)
-	if err != nil {
-		t.Fatal(err)
-
-		return
-	}
-
-	fi, err := os.Stat(name)
-	if err != nil {
-		t.Fatal(err)
-
-		return
-	}
-
-	got := fi.Mode().Perm()
-	if got != want {
-		t.Fatalf("got 0%03o (%v), want 0%03o (%v)", got, got, want, want)
-
-		return
-	}
-}
-
 func TestFilePosixChmodInvalid(t *testing.T) {
 	err := compat.Chmod(invalidName, compat.CreatePerm)
 	if err == nil {
@@ -691,13 +519,6 @@ func TestFilePosixChmodInvalid(t *testing.T) {
 
 func TestFilePosixCreateInvalid(t *testing.T) {
 	_, err := compat.Create(invalidName)
-	if err == nil {
-		t.Fatal("got nil, want an error")
-	}
-}
-
-func TestFilePosixCreateExInvalid(t *testing.T) {
-	_, err := compat.CreateEx(invalidName, compat.CreatePerm, 0)
 	if err == nil {
 		t.Fatal("got nil, want an error")
 	}
@@ -777,13 +598,6 @@ func TestFilePosixSymlinkInvalidNew(t *testing.T) {
 
 func TestFilePosixWriteFileInvalid(t *testing.T) {
 	err := compat.WriteFile(invalidName, helloBytes, compat.CreatePerm)
-	if err == nil {
-		t.Fatal("got nil, want an error")
-	}
-}
-
-func TestFilePosixWriteFileExInvalid(t *testing.T) {
-	err := compat.WriteFileEx(invalidName, helloBytes, compat.CreatePerm, 0)
 	if err == nil {
 		t.Fatal("got nil, want an error")
 	}
