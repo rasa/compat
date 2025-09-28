@@ -12,6 +12,7 @@ import (
 
 // Options define the behavior of `WriteReaderAtomic()`, etc.
 type Options struct {
+	atomically      bool         // default false
 	defaultFileMode os.FileMode  // default 0
 	fileMode        os.FileMode  // default 0
 	flags           int          // default 0
@@ -23,6 +24,14 @@ type Options struct {
 
 // Option functions modify Options.
 type Option func(*Options)
+
+// WithAtomicity creates or renames a file atomicly.
+// Used by the WriteFile and WriteReader functions.
+func WithAtomicity(atomically bool) Option {
+	return func(opts *Options) {
+		opts.atomically = atomically
+	}
+}
 
 // WithDefaultFileMode sets the default file mode instead of using the
 // `os.CreateTemp()` default of `0600`.

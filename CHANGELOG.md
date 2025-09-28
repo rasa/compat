@@ -9,9 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Added
 
+- Add `WriteReader()` function.
+- Add `WithAtomicity()` option.
+- Deprecate `WriteFileAtomic()` and `WriteReaderAtomic()` functions.
+
 ### Fixed
 
-- Remove deprecated code.
+- Remove old deprecated code.
 
 ### Changed
 

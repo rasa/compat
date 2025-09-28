@@ -339,29 +339,6 @@ func TestFileWindowsCreate(t *testing.T) {
 	}
 }
 
-func TestFileWindowsCreateEx(t *testing.T) {
-	for _, perm := range perms {
-		name, err := tempName(t)
-		if err != nil {
-			t.Fatalf("perm=%3o (%v): %v", perm, perm, err)
-		}
-
-		cleanup(t, name)
-
-		fh, err := compat.CreateEx(name, perm, 0)
-		checkPerm(t, name, perm, false)
-		if err != nil {
-			t.Fatalf("perm=%3o (%v): %v", perm, perm, err)
-		}
-		_ = fh.Close()
-		err = compat.Remove(name)
-		checkDeleted(t, name, perm, err)
-		if err != nil {
-			t.Fatalf("perm=%3o (%v): %v", perm, perm, err)
-		}
-	}
-}
-
 func TestFileWindowsCreateReadOnlyModeSet(t *testing.T) {
 	perm := perm400
 
@@ -890,26 +867,6 @@ func TestFileWindowsWriteFile(t *testing.T) {
 		}
 		cleanup(t, name)
 		err = compat.WriteFile(name, helloBytes, perm)
-		checkPerm(t, name, perm, false)
-		if err != nil {
-			t.Fatal(err)
-		}
-		err = compat.Remove(name)
-		checkDeleted(t, name, perm, err)
-		if err != nil {
-			t.Fatal(err)
-		}
-	}
-}
-
-func TestFileWindowsWriteFileEx(t *testing.T) {
-	for _, perm := range perms {
-		name, err := tempName(t)
-		if err != nil {
-			t.Fatal(err)
-		}
-		cleanup(t, name)
-		err = compat.WriteFileEx(name, helloBytes, perm, 0)
 		checkPerm(t, name, perm, false)
 		if err != nil {
 			t.Fatal(err)

@@ -201,27 +201,3 @@ func Symlink(oldname, newname string, opts ...Option) error {
 
 	return symlink(oldname, newname, fopts.setSymlinkOwner)
 }
-
-// WriteFile writes data to the named file, creating it if necessary.
-// If the file does not exist, WriteFile creates it using perm's permissions bits (before umask);
-// otherwise WriteFile truncates it before writing, without changing permissions.
-// Since WriteFile requires multiple system calls to complete, a failure mid-operation
-// can leave the file in a partially written state. Use WriteFileAtomic() if this
-// is a concern.
-func WriteFile(name string, data []byte, perm os.FileMode, opts ...Option) error {
-	fopts := Options{
-		fileMode: perm,
-	}
-
-	for _, opt := range opts {
-		opt(&fopts)
-	}
-
-	if IsWindows {
-		if fopts.readOnlyMode != ReadOnlyModeSet {
-			fopts.flags |= O_FILE_FLAG_NO_RO_ATTR
-		}
-	}
-
-	return writeFile(name, data, fopts.fileMode, fopts.flags)
-}
