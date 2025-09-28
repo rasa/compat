@@ -140,7 +140,7 @@ func TestWriteReaderAtomicKeepFileMode(t *testing.T) { //nolint:dupl
 		t.Fatalf("Failed to create file: %q: %v", file, err)
 	}
 
-	err = compat.WriteReaderAtomic(file, helloBuf, compat.KeepFileMode(true))
+	err = compat.WriteReaderAtomic(file, helloBuf, compat.WithKeepFileMode(true))
 	if err != nil {
 		t.Fatalf("Failed to write file: %q: %v", file, err)
 	}
@@ -172,7 +172,7 @@ func TestWriteReaderAtomicKeepFileModeFalse(t *testing.T) { //nolint:dupl
 		t.Fatalf("Failed to create file: %q: %v", file, err)
 	}
 
-	err = compat.WriteReaderAtomic(file, helloBuf, compat.KeepFileMode(false))
+	err = compat.WriteReaderAtomic(file, helloBuf, compat.WithKeepFileMode(false))
 	if err != nil {
 		t.Fatalf("Failed to write file: %q: %v", file, err)
 	}
@@ -298,7 +298,7 @@ func TestWriteReaderAtomicCantRead(t *testing.T) {
 		t.Fatalf("Chmod: %v", err)
 	}
 
-	err = compat.WriteReaderAtomic(file, helloBuf, compat.KeepFileMode(true))
+	err = compat.WriteReaderAtomic(file, helloBuf, compat.WithKeepFileMode(true))
 	if err != nil {
 		fatalf(t, "WriteReaderAtomic: %v", err)
 
