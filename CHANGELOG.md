@@ -13,6 +13,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Changed
 
+- Rename `UnderlyingGoVersion()` to `GoVersion()`. **BREAKING CHANGE**
+
 ## [0.5.4](https://github.com/rasa/compat/compare/v0.5.3...v0.5.4)
 
 ### Added

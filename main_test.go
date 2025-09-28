@@ -63,7 +63,7 @@ func TestMain(m *testing.M) {
 	v := runtime.Version()
 	if compat.IsTinygo {
 		fmt.Printf("Tinygo ver: %v\n", runtime.Version())
-		v = compat.UnderlyingGoVersion()
+		v = compat.GoVersion()
 	}
 	fmt.Printf("Go version: %v\n", v)
 	fmt.Printf("GOOS:       %v\n", runtime.GOOS)

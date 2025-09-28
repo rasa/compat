@@ -131,7 +131,7 @@ func TestWalkDir(t *testing.T) {
 }
 
 func TestWalkDirSymlink(t *testing.T) {
-	goVer := compat.UnderlyingGoVersion()
+	goVer := compat.GoVersion()
 	if version.Compare(goVer, "go1.25") < 0 {
 		suffix := ""
 		if compat.IsTinygo {

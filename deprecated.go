@@ -98,3 +98,7 @@ const O_DELETE = O_FILE_FLAG_DELETE_ON_CLOSE
 // Deprecated: Use O_FILE_FLAG_NO_RO_ATTR instead.
 // This constant may be removed in the future.
 const O_NOROATTR = O_FILE_FLAG_NO_RO_ATTR
+
+// Deprecated: Use GoVersion() instead.
+// This function may be removed in the future.
+var UnderlyingGoVersion = GoVersion

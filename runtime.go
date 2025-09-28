@@ -101,11 +101,11 @@ var tinygoThresholds = []struct {
 	{"0.39.0", "go1.19", "go1.25"},
 }
 
-// UnderlyingGoVersion returns the effective Go toolchain version string ("goX.Y")
+// GoVersion returns the effective Go toolchain version string ("goX.Y")
 // for the current environment.
 // - On standard Go: returns runtime.Version() (already "go1.xx").
 // - On TinyGo: picks the highest Go version supported based on thresholds.
-func UnderlyingGoVersion() string {
+func GoVersion() string {
 	v := runtime.Version()
 
 	if !IsTinygo {
