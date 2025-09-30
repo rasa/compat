@@ -106,13 +106,17 @@ diff: ## git diff
 ifeq ($(OS),Windows_NT)
 	git config --local core.filemode false
 endif
-	git diff --exit-code
+	git --no-pager diff --exit-code
 	@RES=$$(git status --porcelain --untracked-files=no) ; if [ -n "$$RES" ]; then echo $$RES && exit 1 ; fi
 
 # Added by compat:
 
 .PHONY: check
-check: fmt fumpt lint modernize spell vet restore ## make fmt fumpt lint modernize spell vet restore
+check: fmt fumpt lint modernize spell vet restore diffx ## make fmt fumpt lint modernize spell vet restore
+
+.PHONY: diffx
+diffx: ## git diff -uw
+	-git --no-pager diff -uw
 
 .PHONY: download
 download: ## go mod download
@@ -128,20 +132,6 @@ fmt: ## go fmt ./...
 fumpt: ## gofumpt -w .
 	go tool $(TOOL_OPTS) gofumpt -w .
 
-.PHONY: gofumpt
-gofumpt: fumpt
-
-.PHONY: modernize
-modernize: ## modernize ./...
-	@echo modernize step skipped for now: requires go 1.25.1
-	# go tool $(TOOL_OPTS) modernize -fix ./...
-
-#	go run golang.org/x/tools/go/analysis/passes/modernize/cmd/modernize@latest -fix -test ./...
-
-.PHONY: restore
-restore: ##	git restore format.go walk.go walk_test.go golang/golang_*.go robustio/robustio*.go
-	git restore format.go walk.go walk_test.go golang/golang_*.go robustio/robustio*.go
-
 .PHONY: install
 install: ## install/update gofumpt, golangci-lint, goreleaser@2.11.2, govulncheck, misspell modernize@master
 	export GOFLAGS="$(GOFLAGS) $(TOOL_OPTS)" ;\
@@ -153,8 +143,26 @@ install: ## install/update gofumpt, golangci-lint, goreleaser@2.11.2, govulnchec
 	go get mvdan.cc/gofumpt@latest
 	make mod
 
+.PHONY: modernize
+modernize: ## modernize ./...
+	@echo modernize step skipped for now: requires go 1.25.1
+	# go tool $(TOOL_OPTS) modernize -fix ./...
+
+.PHONY: restore
+restore: ##	git restore format.go walk.go walk_test.go golang/golang_*.go robustio/robustio*.go
+	git restore format.go walk.go walk_test.go golang/golang_*.go robustio/robustio*.go
+
 .PHONY: update
 update: ## go get -u
 	go get -u
 	test -f go.tool.mod && go get -u $(TOOL_OPTS)
 	make mod
+
+# aliases
+
+.PHONY: tidy
+tidy: mod
+
+.PHONY: gofumpt
+gofumpt: fumpt
+
