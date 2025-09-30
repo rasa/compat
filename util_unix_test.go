@@ -20,7 +20,7 @@ var uname struct {
 }
 
 func getMacOSMajor() int {
-	uname.Once.Do(func() {
+	uname.Do(func() {
 		var u unix.Utsname
 		err := unix.Uname(&u)
 		if err != nil {
