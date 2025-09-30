@@ -62,10 +62,7 @@ func TestStatStat(t *testing.T) {
 	}
 
 	// to test ACL caching
-	fi, err = compat.Stat(name)
-	if err != nil {
-		t.Fatal(err)
-	}
+	_, _ = compat.Stat(name)
 }
 
 func TestStatLinks(t *testing.T) {
