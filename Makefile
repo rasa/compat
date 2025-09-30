@@ -131,8 +131,8 @@ fumpt: ## gofumpt -w .
 .PHONY: gofumpt
 gofumpt: fumpt
 
-.PHONY: modernize ./...
-modernize: ## modernize
+.PHONY: modernize
+modernize: ## modernize ./...
 	@echo modernize step skipped for now: requires go 1.25.1
 	# go tool $(TOOL_OPTS) modernize -fix ./...
 
