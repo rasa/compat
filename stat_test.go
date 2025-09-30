@@ -763,10 +763,10 @@ func TestStatExportedStatInvalidFileInfo(t *testing.T) {
 }
 
 func TestStatExportedStatInvalidName(t *testing.T) {
-	// if !compat.IsWindows {
-	// 	skip(t, "skipping test: requires Windows")
-	// 	return
-	// }
+	if !compat.IsWindows {
+		skip(t, "skipping test: requires Windows")
+		return
+	}
 	name, err := createTempFile(t)
 	if err != nil {
 		t.Fatal(err)
