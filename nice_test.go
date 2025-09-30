@@ -37,10 +37,12 @@ func TestNiceRenice(t *testing.T) {
 }
 
 func TestNiceReniceIfRootValid(t *testing.T) {
-	isRoot, _ := compat.IsRoot()
-
-	if !compat.IsWindows && !isRoot {
-		t.Skip("Skipping test: we aren't the root/admin user")
+	if !compat.IsWindows {
+		isRoot, _ := compat.IsRoot()
+		if !isRoot {
+			skip(t, "Skipping test: we aren't the root/admin user")
+			return
+		}
 	}
 
 	nice, err := compat.Nice()
@@ -70,11 +72,12 @@ func TestNiceReniceIfRootValid(t *testing.T) {
 }
 
 func TestNiceReniceIfRootInvalid(t *testing.T) {
-	isRoot, _ := compat.IsRoot()
-
-	if !compat.IsWindows && !isRoot {
-		skip(t, "Skipping test: we aren't the root/admin user")
-		return
+	if !compat.IsWindows {
+		isRoot, _ := compat.IsRoot()
+		if !isRoot {
+			skip(t, "Skipping test: we aren't the root/admin user")
+			return
+		}
 	}
 
 	const invalidNice = compat.MinNice - 1024
