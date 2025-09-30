@@ -65,13 +65,10 @@ func stat(fi os.FileInfo, name string, followSymlinks bool) (FileInfo, error) {
 		err := errors.New("fileInfo is nil")
 		return nil, &os.PathError{Op: "stat", Path: name, Err: err}
 	}
-	var fs fileStat
-
-	fs.followSymlinks = followSymlinks
 
 	name = golang.FixLongPath(name)
 
-	pathp, err := windows.UTF16PtrFromString(name)
+	path16, err := windows.UTF16PtrFromString(name)
 	if err != nil {
 		return nil, &os.PathError{Op: "stat", Path: name, Err: err}
 	}
@@ -86,7 +83,7 @@ func stat(fi os.FileInfo, name string, followSymlinks bool) (FileInfo, error) {
 	fs.mux.Lock()
 	defer fs.mux.Unlock()
 
-	h, err := windows.CreateFile(pathp, 0, 0, nil, windows.OPEN_EXISTING, attrs, 0)
+	h, err := windows.CreateFile(path16, 0, 0, nil, windows.OPEN_EXISTING, attrs, 0)
 	if err != nil {
 		return nil, &os.PathError{Op: "stat", Path: name, Err: err}
 	}
@@ -97,10 +94,20 @@ func stat(fi os.FileInfo, name string, followSymlinks bool) (FileInfo, error) {
 		return nil, &os.PathError{Op: "stat", Path: name, Err: err}
 	}
 
+	perm, err := fs.stat()
+	if err != nil {
+		return nil, &os.PathError{Op: "stat", Path: name, Err: err}
+	}
+
+	var fs fileStat
+	fs.followSymlinks = followSymlinks
 	fs.path = name
+	fs.path16 = path16
 	fs.name = fi.Name()
 	fs.size = fi.Size()
 	fs.mode = fi.Mode()
+	fs.mode &^= ModePerm // os.FileMode(^uint32(0o777)) //nolint:mnd // quiet
+	fs.mode |= perm.Perm()
 	fs.mtime = fi.ModTime()
 	// See https://github.com/golang/go/blob/3cf1aaf8/src/os/types_windows.go#L367
 	fs.sys = *(fi.Sys().(*syscall.Win32FileAttributeData)) //nolint:staticcheck
@@ -110,13 +117,6 @@ func stat(fi os.FileInfo, name string, followSymlinks bool) (FileInfo, error) {
 	fs.links = uint(i.NumberOfLinks)
 	fs.atime = time.Unix(0, fs.sys.LastAccessTime.Nanoseconds())
 	fs.btime = time.Unix(0, fs.sys.CreationTime.Nanoseconds())
-
-	perm, err := fs.stat()
-	if err != nil {
-		return nil, &os.PathError{Op: "stat", Path: name, Err: err}
-	}
-	fs.mode &^= ModePerm // os.FileMode(^uint32(0o777)) //nolint:mnd // quiet
-	fs.mode |= perm.Perm()
 
 	return &fs, nil
 }
@@ -128,15 +128,7 @@ func (fs *fileStat) BTime() time.Time {
 func (fs *fileStat) CTime() time.Time {
 	if !fs.ctimed {
 		fs.ctimed = true
-		pathp, err := windows.UTF16PtrFromString(fs.path)
-		if err != nil {
-			fs.err = &os.PathError{Op: "stat", Path: fs.path, Err: err}
-
-			return fs.ctime
-		}
-
 		attrs := uint32(syscall.FILE_FLAG_BACKUP_SEMANTICS)
-
 		if !fs.followSymlinks {
 			attrs |= syscall.FILE_FLAG_OPEN_REPARSE_POINT
 		}
@@ -145,7 +137,7 @@ func (fs *fileStat) CTime() time.Time {
 		fs.mux.Lock()
 		defer fs.mux.Unlock()
 
-		h, err := windows.CreateFile(pathp, 0, 0, nil, windows.OPEN_EXISTING, attrs, 0)
+		h, err := windows.CreateFile(fs.path16, 0, 0, nil, windows.OPEN_EXISTING, attrs, 0)
 		if err != nil {
 			fs.err = &os.PathError{Op: "stat", Path: fs.path, Err: err}
 
