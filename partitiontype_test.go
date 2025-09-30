@@ -95,6 +95,7 @@ func TestPartitionTypeUNC(t *testing.T) {
 func TestPartitionTypeRoot(t *testing.T) {
 	if !compat.IsWindows {
 		skip(t, "Skipping test: requires Windows")
+		return
 	}
 
 	systemDrive := os.Getenv("SystemDrive")
