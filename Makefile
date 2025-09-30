@@ -112,7 +112,7 @@ endif
 # Added by compat:
 
 .PHONY: check
-check: fmt fumpt lint moderize spell vet restore ## make fmt fumpt lint modernize spell vet restore
+check: fmt fumpt lint modernize spell vet restore ## make fmt fumpt lint modernize spell vet restore
 
 .PHONY: download
 download: ## go mod download
