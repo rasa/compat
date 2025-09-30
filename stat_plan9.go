@@ -13,11 +13,6 @@ import (
 	"github.com/OneOfOne/xxhash"
 )
 
-// Not supported: BTime | CTime | Links | Symlinks
-const supports supportsType = supportsATime | supportsNice
-
-const userIDSource UserIDSourceType = UserIDSourceIsString
-
 // A fileStat is the implementation of FileInfo returned by Stat and Lstat.
 // See https://github.com/golang/go/blob/8cd6d68a/src/os/types_plan9.go#L13
 type fileStat struct {

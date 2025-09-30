@@ -7,6 +7,7 @@
 package compat_test
 
 import (
+	"errors"
 	"os"
 	"path/filepath"
 	"runtime"
@@ -15,7 +16,7 @@ import (
 	"github.com/rasa/compat"
 )
 
-func TestWriteFileAtomic(t *testing.T) {
+func TestWriteReaderWithAtomicity(t *testing.T) {
 	file, err := tempName(t)
 	if err != nil {
 		t.Fatalf("Failed to create temp file: %v", err)
@@ -25,7 +26,7 @@ func TestWriteFileAtomic(t *testing.T) {
 
 	perm := compat.CreatePerm // 0o666
 	opts := []compat.Option{compat.WithAtomicity(true)}
-	err = compat.WriteFile(file, helloBytes, perm, opts...)
+	err = compat.WriteReader(file, helloBuf, perm, opts...)
 	if err != nil {
 		fatalf(t, "Failed to write file: %q: %v", file, err)
 
@@ -44,7 +45,7 @@ func TestWriteFileAtomic(t *testing.T) {
 	}
 }
 
-func TestWriteFileAtomicCurrentDir(t *testing.T) {
+func TestWriteReaderWithAtomicityCurrentDir(t *testing.T) {
 	file, err := tempName(t)
 	if err != nil {
 		t.Fatalf("Failed to create temp file: %v", err)
@@ -56,7 +57,7 @@ func TestWriteFileAtomicCurrentDir(t *testing.T) {
 
 	perm := compat.CreatePerm // 0o666
 	opts := []compat.Option{compat.WithAtomicity(true)}
-	err = compat.WriteFile(base, helloBytes, perm, opts...)
+	err = compat.WriteReader(base, helloBuf, perm, opts...)
 	if err != nil {
 		fatalf(t, "Failed to write file: %q: %v", file, err)
 
@@ -75,7 +76,7 @@ func TestWriteFileAtomicCurrentDir(t *testing.T) {
 	}
 }
 
-func TestWriteFileAtomicNoPerms(t *testing.T) {
+func TestWriteReaderWithAtomicityNoPerms(t *testing.T) {
 	file, err := tempName(t)
 	if err != nil {
 		t.Fatalf("Failed to create temp file: %v", err)
@@ -85,7 +86,7 @@ func TestWriteFileAtomicNoPerms(t *testing.T) {
 
 	perm := compat.CreatePerm // 0o600
 	opts := []compat.Option{compat.WithAtomicity(true)}
-	err = compat.WriteFile(file, helloBytes, 0, opts...)
+	err = compat.WriteReader(file, helloBuf, 0, opts...)
 	if err != nil {
 		fatalf(t, "Failed to write file: %q: %v", file, err)
 
@@ -104,7 +105,7 @@ func TestWriteFileAtomicNoPerms(t *testing.T) {
 	}
 }
 
-func TestWriteFileAtomicWithDefaultFileMode(t *testing.T) {
+func TestWriteReaderWithAtomicityWithDefaultFileMode(t *testing.T) {
 	file, err := tempName(t)
 	if err != nil {
 		t.Fatalf("Failed to create temp file: %v", err)
@@ -116,7 +117,7 @@ func TestWriteFileAtomicWithDefaultFileMode(t *testing.T) {
 		compat.WithAtomicity(true),
 		compat.WithDefaultFileMode(perm644),
 	}
-	err = compat.WriteFile(file, helloBytes, 0, opts...)
+	err = compat.WriteReader(file, helloBuf, 0, opts...)
 	if err != nil {
 		t.Fatalf("Failed to write file: %q: %v", file, err)
 	}
@@ -140,7 +141,7 @@ func TestWriteFileAtomicWithDefaultFileMode(t *testing.T) {
 		t.Fatalf("Failed to change file mode: %q: %v", file, err)
 	}
 
-	err = compat.WriteFile(file, helloBytes, 0, opts...)
+	err = compat.WriteReader(file, helloBuf, 0, opts...)
 	if err != nil {
 		t.Fatalf("Failed to write file: %q: %v", file, err)
 	}
@@ -159,7 +160,7 @@ func TestWriteFileAtomicWithDefaultFileMode(t *testing.T) {
 	}
 }
 
-func TestWriteFileAtomicWithKeepFileMode(t *testing.T) { //nolint:dupl
+func TestWriteReaderWithAtomicityWithKeepFileMode(t *testing.T) { //nolint:dupl
 	file, err := tempName(t)
 	if err != nil {
 		t.Fatalf("Failed to create temp file: %v", err)
@@ -178,7 +179,7 @@ func TestWriteFileAtomicWithKeepFileMode(t *testing.T) { //nolint:dupl
 		compat.WithAtomicity(true),
 		compat.WithKeepFileMode(true),
 	}
-	err = compat.WriteFile(file, helloBytes, 0, opts...)
+	err = compat.WriteReader(file, helloBuf, 0, opts...)
 	if err != nil {
 		t.Fatalf("Failed to write file: %q: %v", file, err)
 	}
@@ -195,7 +196,7 @@ func TestWriteFileAtomicWithKeepFileMode(t *testing.T) { //nolint:dupl
 	}
 }
 
-func TestWriteFileAtomicWithKeepFileModeFalse(t *testing.T) { //nolint:dupl
+func TestWriteReaderWithAtomicityWithKeepFileModeFalse(t *testing.T) { //nolint:dupl
 	file, err := tempName(t)
 	if err != nil {
 		t.Fatalf("Failed to create temp file: %v", err)
@@ -214,7 +215,7 @@ func TestWriteFileAtomicWithKeepFileModeFalse(t *testing.T) { //nolint:dupl
 		compat.WithAtomicity(true),
 		compat.WithKeepFileMode(false),
 	}
-	err = compat.WriteFile(file, helloBytes, 0, opts...)
+	err = compat.WriteReader(file, helloBuf, 0, opts...)
 	if err != nil {
 		t.Fatalf("Failed to write file: %q: %v", file, err)
 	}
@@ -236,7 +237,7 @@ func TestWriteFileAtomicWithKeepFileModeFalse(t *testing.T) { //nolint:dupl
 	}
 }
 
-func TestWriteFileAtomicWithFileMode(t *testing.T) { //nolint:dupl
+func TestWriteReaderWithAtomicityWithFileMode(t *testing.T) { //nolint:dupl
 	file, err := tempName(t)
 	if err != nil {
 		t.Fatalf("Failed to create temp file: %v", err)
@@ -248,7 +249,7 @@ func TestWriteFileAtomicWithFileMode(t *testing.T) { //nolint:dupl
 		compat.WithAtomicity(true),
 		compat.WithFileMode(perm644),
 	}
-	err = compat.WriteFile(file, helloBytes, 0, opts...)
+	err = compat.WriteReader(file, helloBuf, 0, opts...)
 	if err != nil {
 		t.Fatalf("Failed to write file: %q: %v", file, err)
 	}
@@ -270,7 +271,7 @@ func TestWriteFileAtomicWithFileMode(t *testing.T) { //nolint:dupl
 		t.Fatalf("Failed to change file mode: %q: %v", file, err)
 	}
 
-	err = compat.WriteFile(file, helloBytes, 0, opts...)
+	err = compat.WriteReader(file, helloBuf, 0, opts...)
 	if err != nil {
 		t.Fatalf("Failed to write file: %q: %v", file, err)
 	}
@@ -286,7 +287,7 @@ func TestWriteFileAtomicWithFileMode(t *testing.T) { //nolint:dupl
 	}
 }
 
-func TestWriteFileAtomicWithReadOnlyModeReset(t *testing.T) {
+func TestWriteReaderWithAtomicityWithReadOnlyModeReset(t *testing.T) {
 	if !compat.IsWindows {
 		skip(t, "Skipping test: requires Windows")
 
@@ -305,7 +306,7 @@ func TestWriteFileAtomicWithReadOnlyModeReset(t *testing.T) {
 		compat.WithFileMode(perm400),
 		compat.WithReadOnlyMode(compat.ReadOnlyModeReset),
 	}
-	err = compat.WriteFile(file, helloBytes, 0, opts...)
+	err = compat.WriteReader(file, helloBuf, 0, opts...)
 	if err != nil {
 		t.Fatalf("Failed to write file: %q: %v", file, err)
 	}
@@ -324,15 +325,15 @@ func TestWriteFileAtomicWithReadOnlyModeReset(t *testing.T) {
 
 // Invalid tests
 
-func TestWriteFileAtomicInvalid(t *testing.T) {
+func TestWriteReaderWithAtomicityInvalid(t *testing.T) {
 	opts := []compat.Option{compat.WithAtomicity(true)}
-	err := compat.WriteFile(invalidName, helloBytes, 0, opts...)
+	err := compat.WriteReader(invalidName, helloBuf, 0, opts...)
 	if err == nil {
 		t.Fatalf("got nil, want an error")
 	}
 }
 
-func TestWriteFileAtomicInvalidCantRead(t *testing.T) {
+func TestWriteReaderWithAtomicityInvalidCantRead(t *testing.T) {
 	file, err := tempFile(t)
 	if err != nil {
 		t.Fatalf("Failed to create temp file: %v", err)
@@ -356,15 +357,15 @@ func TestWriteFileAtomicInvalidCantRead(t *testing.T) {
 		compat.WithAtomicity(true),
 		compat.WithKeepFileMode(true),
 	}
-	err = compat.WriteFile(file, helloBytes, 0, opts...)
+	err = compat.WriteReader(file, helloBuf, 0, opts...)
 	if err != nil {
-		fatalf(t, "WriteFile: %v", err)
+		fatalf(t, "WriteReader: %v", err)
 
 		return // Tinygo doesn't support T.Fatal
 	}
 }
 
-func TestWriteFileAtomicInvalidReadOnlyDirectory(t *testing.T) {
+func TestWriteReaderWithAtomicityInvalidReadOnlyDirectory(t *testing.T) {
 	if !compat.IsWindows {
 		isRoot, _ := compat.IsRoot()
 		if isRoot {
@@ -407,7 +408,7 @@ func TestWriteFileAtomicInvalidReadOnlyDirectory(t *testing.T) {
 	}
 
 	opts = []compat.Option{compat.WithAtomicity(true)}
-	err = compat.WriteFile(file, helloBytes, 0, opts...)
+	err = compat.WriteReader(file, helloBuf, 0, opts...)
 	if err == nil {
 		// @TODO determine why test passes when run individually, but fails when running alongside other tests
 		t.Log("got nil, want an error")
@@ -417,4 +418,27 @@ func TestWriteFileAtomicInvalidReadOnlyDirectory(t *testing.T) {
 
 	perm = os.FileMode(perm777)
 	_ = compat.Chmod(dir, perm)
+}
+
+type errReader struct{}
+
+func (errReader) Read(p []byte) (int, error) {
+	return 0, errors.New("simulated read failure")
+}
+
+func TestWriteReaderWithAtomicityError(t *testing.T) {
+	file, err := tempName(t)
+	if err != nil {
+		t.Fatalf("Failed to create temp file: %v", err)
+	}
+
+	cleanup(t, file)
+
+	opts := []compat.Option{compat.WithAtomicity(true)}
+	err = compat.WriteReader(file, errReader{}, 0, opts...)
+	if err == nil {
+		fatal(t, "got nil, want an error")
+
+		return // Tinygo doesn't support T.Fatal
+	}
 }

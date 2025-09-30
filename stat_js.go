@@ -9,11 +9,6 @@ import (
 	"time"
 )
 
-// Not supported: BTime | Fstat | Nice.
-const supports supportsType = supportsATime | supportsCTime | supportsLinks | supportsSymlinks
-
-const userIDSource UserIDSourceType = UserIDSourceIsNone
-
 func (fs *fileStat) times() {
 	fs.atime = time.Unix(fs.sys.Atime, int64(fs.sys.AtimeNsec))
 	fs.ctime = time.Unix(fs.sys.Ctime, int64(fs.sys.CtimeNsec))

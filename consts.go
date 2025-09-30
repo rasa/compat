@@ -115,7 +115,7 @@ const (
 	ReadOnlyModeReset
 )
 
-func (r ReadOnlyMode) String() string {
+func (r ReadOnlyMode) String() string { //nolint:unused
 	switch r {
 	case ReadOnlyModeIgnore:
 		return "ReadOnlyModeIgnore"

@@ -21,11 +21,6 @@ import (
 
 const perm000 = os.FileMode(0o0)
 
-// Not supported: none.
-const supports supportsType = supportsLinks | supportsATime | supportsBTime | supportsCTime | supportsFstat | supportsNice | supportsSymlinks
-
-const userIDSource UserIDSourceType = UserIDSourceIsSID
-
 // A fileStat is the implementation of FileInfo returned by Stat and Lstat.
 // See https://github.com/golang/go/blob/8cd6d68a/src/os/types_windows.go#L18
 type fileStat struct {

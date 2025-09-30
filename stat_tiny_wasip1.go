@@ -5,12 +5,9 @@
 
 package compat
 
-import "time"
-
-// Not supported: ATime | BTime | CTime | Fstat | Links | Nice | Symlinks.
-const supports supportsType = 0
-
-const userIDSource UserIDSourceType = UserIDSourceIsNone
+import (
+	"time"
+)
 
 func (fs *fileStat) times() {}
 
