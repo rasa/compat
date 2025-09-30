@@ -60,6 +60,12 @@ func TestStatStat(t *testing.T) {
 	if got := fi.Sys(); got == nil {
 		t.Error("Sys(): got nil, want not-nil")
 	}
+
+	// to test ACL caching
+	fi, err = compat.Stat(name)
+	if err != nil {
+		t.Fatal(err)
+	}
 }
 
 func TestStatLinks(t *testing.T) {
