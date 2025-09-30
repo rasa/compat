@@ -116,7 +116,7 @@ func debugf(t *testing.T, format string, a ...any) { //nolint:unused
 	debugln(t, fmt.Sprintf(format, a...))
 }
 
-func fatal(t *testing.T, msg any) { //nolint:unused
+func _fatal(t *testing.T, msg any) { //nolint:unused
 	t.Helper()
 
 	s := fmt.Sprint(msg)
@@ -131,10 +131,10 @@ func fatal(t *testing.T, msg any) { //nolint:unused
 	t.Fatal(s)
 }
 
-func fatalf(t *testing.T, format string, a ...any) { //nolint:unused
+func _fatalf(t *testing.T, format string, a ...any) { //nolint:unused
 	t.Helper()
 
-	fatal(t, fmt.Sprintf(format, a...))
+	t.Fatal(fmt.Sprintf(format, a...))
 }
 
 func fatalTimes(t *testing.T, prefix string, got, want time.Time, granularity int) { //nolint:unused
@@ -360,26 +360,26 @@ func skip(t *testing.T, msg any) {
 func skipf(t *testing.T, format string, a ...any) {
 	t.Helper()
 
-	skip(t, fmt.Sprintf(format, a...))
+	t.Skip(fmt.Sprintf(format, a...))
 }
 
 func supportsHardLinks(t *testing.T) bool {
 	t.Helper()
 
+	if compat.IsTinygo {
+		skip(t, "Skipping test: hard links are not supported on tinygo")
+
+		return false // tinygo doesn't support t.Skip
+	}
+
 	if !compat.SupportsLinks() {
-		skip(t, "Skipping test: Links() not supported on "+runtime.GOOS)
+		t.Skipf("Skipping test: Links() not supported on %v", runtime.GOOS)
 
 		return false // tinygo doesn't support t.Skip
 	}
 
 	if testEnv.noHardLinks {
-		skipf(t, "Skipping test: hard links are not supported on a %v filesystem", testEnv.fsType)
-
-		return false // tinygo doesn't support t.Skip
-	}
-
-	if compat.IsTinygo {
-		skip(t, "Skipping test: hard links are not supported on tinygo")
+		t.Skipf("Skipping test: hard links are not supported on a %v filesystem", testEnv.fsType)
 
 		return false // tinygo doesn't support t.Skip
 	}
@@ -390,20 +390,20 @@ func supportsHardLinks(t *testing.T) bool {
 func supportsSymlinks(t *testing.T) bool {
 	t.Helper()
 
+	if compat.IsTinygo {
+		skip(t, "Skipping test: symlinks are not supported on tinygo")
+
+		return false // tinygo doesn't support t.Skip
+	}
+
 	if !compat.SupportsSymlinks() {
-		skipf(t, "Skipping test: symlinks are not supported on %v", runtime.GOOS)
+		t.Skipf("Skipping test: symlinks are not supported on %v", runtime.GOOS)
 
 		return false // tinygo doesn't support t.Skip
 	}
 
 	if testEnv.noSymlinks {
-		skipf(t, "Skipping test: symlinks are not supported on a %v filesystem", testEnv.fsType)
-
-		return false // tinygo doesn't support t.Skip
-	}
-
-	if compat.IsTinygo {
-		skip(t, "Skipping test: symlinks are not supported on tinygo")
+		t.Skipf("Skipping test: symlinks are not supported on a %v filesystem", testEnv.fsType)
 
 		return false // tinygo doesn't support t.Skip
 	}

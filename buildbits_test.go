@@ -17,7 +17,5 @@ func TestBuildBits(t *testing.T) {
 
 	if got != want {
 		t.Fatalf("BuildBits: got %v, want %v", got, want)
-
-		return
 	}
 }

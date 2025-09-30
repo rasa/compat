@@ -28,9 +28,7 @@ func TestWriteReaderWithAtomicity(t *testing.T) {
 	opts := []compat.Option{compat.WithAtomicity(true)}
 	err = compat.WriteReader(file, helloBuf, perm, opts...)
 	if err != nil {
-		fatalf(t, "Failed to write file: %q: %v", file, err)
-
-		return // Tinygo doesn't support T.Fatal
+		t.Fatalf("Failed to write file: %q: %v", file, err)
 	}
 
 	fi, err := compat.Stat(file)
@@ -59,9 +57,7 @@ func TestWriteReaderWithAtomicityCurrentDir(t *testing.T) {
 	opts := []compat.Option{compat.WithAtomicity(true)}
 	err = compat.WriteReader(base, helloBuf, perm, opts...)
 	if err != nil {
-		fatalf(t, "Failed to write file: %q: %v", file, err)
-
-		return // Tinygo doesn't support T.Fatal
+		t.Fatalf("Failed to write file: %q: %v", file, err)
 	}
 
 	fi, err := compat.Stat(file)
@@ -88,9 +84,7 @@ func TestWriteReaderWithAtomicityNoPerms(t *testing.T) {
 	opts := []compat.Option{compat.WithAtomicity(true)}
 	err = compat.WriteReader(file, helloBuf, 0, opts...)
 	if err != nil {
-		fatalf(t, "Failed to write file: %q: %v", file, err)
-
-		return // Tinygo doesn't support T.Fatal
+		t.Fatalf("Failed to write file: %q: %v", file, err)
 	}
 
 	fi, err := compat.Stat(file)
@@ -290,7 +284,6 @@ func TestWriteReaderWithAtomicityWithFileMode(t *testing.T) { //nolint:dupl
 func TestWriteReaderWithAtomicityWithReadOnlyModeReset(t *testing.T) {
 	if !compat.IsWindows {
 		skip(t, "Skipping test: requires Windows")
-
 		return
 	}
 
@@ -344,9 +337,7 @@ func TestWriteReaderWithAtomicityInvalidCantRead(t *testing.T) {
 	perm := fixPerms(perm100, false)
 	if perm != perm100 {
 		partType := partitionType(file)
-		skipf(t, "Skipping test: ACLs are not supported on a %v filesystem", partType)
-
-		return
+		t.Skipf("Skipping test: ACLs are not supported on a %v filesystem", partType)
 	}
 	err = compat.Chmod(file, perm)
 	if err != nil {
@@ -359,7 +350,7 @@ func TestWriteReaderWithAtomicityInvalidCantRead(t *testing.T) {
 	}
 	err = compat.WriteReader(file, helloBuf, 0, opts...)
 	if err != nil {
-		fatalf(t, "WriteReader: %v", err)
+		t.Fatalf("WriteReader: %v", err)
 
 		return // Tinygo doesn't support T.Fatal
 	}
@@ -369,8 +360,7 @@ func TestWriteReaderWithAtomicityInvalidReadOnlyDirectory(t *testing.T) {
 	if !compat.IsWindows {
 		isRoot, _ := compat.IsRoot()
 		if isRoot {
-			skipf(t, "Skipping test: doesn't fail when root")
-
+			skip(t, "Skipping test: doesn't fail when root")
 			return
 		}
 	}
@@ -388,23 +378,19 @@ func TestWriteReaderWithAtomicityInvalidReadOnlyDirectory(t *testing.T) {
 	}
 	dir, err = compat.MkdirTemp(dir, "~*.tmp", opts...)
 	if err != nil {
-		fatalf(t, "MkdirTemp(%v, 0o%o) failed: %v", dir, perm, err)
-
-		return // Tinygo doesn't support T.Fatal
+		t.Fatalf("MkdirTemp(%v, 0o%o) failed: %v", dir, perm, err)
 	}
 
 	file := filepath.Join(dir, base)
 	fi, err := compat.Stat(dir)
 	if err != nil {
-		fatalf(t, "Failed to stat: %v", err)
+		t.Fatalf("Failed to stat: %v", err)
 
 		return
 	}
 	if fi.Mode().Perm() != perm {
 		partType := partitionType(dir)
-		skipf(t, "Skipping test: the %v filesystem does not support permissions", partType)
-
-		return
+		t.Skipf("Skipping test: the %v filesystem does not support permissions", partType)
 	}
 
 	opts = []compat.Option{compat.WithAtomicity(true)}
@@ -437,8 +423,6 @@ func TestWriteReaderWithAtomicityError(t *testing.T) {
 	opts := []compat.Option{compat.WithAtomicity(true)}
 	err = compat.WriteReader(file, errReader{}, 0, opts...)
 	if err == nil {
-		fatal(t, "got nil, want an error")
-
-		return // Tinygo doesn't support T.Fatal
+		t.Fatal("got nil, want an error")
 	}
 }

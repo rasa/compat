@@ -19,9 +19,7 @@ import (
 func TestPartitionType(t *testing.T) {
 	f, err := os.CreateTemp(tempDir(t), "")
 	if err != nil {
-		t.Error(err)
-
-		return
+		t.Fatal(err)
 	}
 	name := f.Name()
 	_ = f.Close()
@@ -32,9 +30,7 @@ func TestPartitionTypeRel(t *testing.T) {
 	dir := tempDir(t)
 	f, err := os.CreateTemp(dir, "")
 	if err != nil {
-		t.Error(err)
-
-		return
+		t.Fatal(err)
 	}
 	t.Chdir(dir)
 
@@ -46,15 +42,12 @@ func TestPartitionTypeRel(t *testing.T) {
 func TestPartitionTypePrefix(t *testing.T) {
 	if !compat.IsWindows {
 		skip(t, "Skipping test: requires Windows")
-
 		return
 	}
 
 	f, err := os.CreateTemp(tempDir(t), "")
 	if err != nil {
 		t.Fatal(err)
-
-		return
 	}
 	name := `\\?\` + f.Name()
 	_ = f.Close()
@@ -64,15 +57,12 @@ func TestPartitionTypePrefix(t *testing.T) {
 func TestPartitionTypeUNC(t *testing.T) {
 	if !compat.IsWindows {
 		skip(t, "Skipping test: requires Windows")
-
 		return
 	}
 
 	usr, err := user.Current()
 	if err != nil {
 		t.Fatal(err)
-
-		return
 	}
 
 	dir := tempDir(t)
@@ -82,8 +72,6 @@ func TestPartitionTypeUNC(t *testing.T) {
 	err = exec.CommandContext(ctx, "net.exe", args...).Run()
 	if err != nil {
 		t.Fatal(err)
-
-		return
 	}
 
 	defer func() {
@@ -97,8 +85,6 @@ func TestPartitionTypeUNC(t *testing.T) {
 	f, err := os.CreateTemp(dir, "")
 	if err != nil {
 		t.Fatal(err)
-
-		return
 	}
 
 	name := `\\?\UNC\127.0.0.1\` + sharename + `\` + filepath.Base(f.Name())
@@ -109,8 +95,6 @@ func TestPartitionTypeUNC(t *testing.T) {
 func TestPartitionTypeRoot(t *testing.T) {
 	if !compat.IsWindows {
 		skip(t, "Skipping test: requires Windows")
-
-		return
 	}
 
 	systemDrive := os.Getenv("SystemDrive")
@@ -134,14 +118,10 @@ func testPartitionType(t *testing.T, name string) {
 	partitionType, err := compat.PartitionType(ctx, name)
 	if err != nil {
 		if strings.Contains(err.Error(), "not implemented") {
-			skipf(t, "Skipping test on %v/%v: %v", runtime.GOOS, runtime.GOARCH, err)
-
-			return
+			t.Skipf("Skipping test on %v/%v: %v", runtime.GOOS, runtime.GOARCH, err)
 		}
 
-		t.Error(err)
-
-		return
+		t.Fatal(err)
 	}
 	if testEnv.fsType == "" || testEnv.fsType == nativeFS {
 		return

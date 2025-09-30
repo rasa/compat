@@ -345,8 +345,6 @@ func TestFileWindowsCreateReadOnlyModeSet(t *testing.T) {
 	name, err := tempName(t)
 	if err != nil {
 		t.Fatal(err)
-
-		return
 	}
 
 	cleanup(t, name)
@@ -354,30 +352,22 @@ func TestFileWindowsCreateReadOnlyModeSet(t *testing.T) {
 	fh, err := compat.Create(name, compat.WithFileMode(perm), compat.WithReadOnlyMode(compat.ReadOnlyModeSet))
 	if err != nil {
 		t.Fatal(err)
-
-		return
 	}
 
 	err = fh.Close()
 	if err != nil {
 		t.Fatal(err)
-
-		return
 	}
 
 	fi, err := os.Stat(name)
 	if err != nil {
 		t.Fatal(err)
-
-		return
 	}
 
 	want := false // the user-writable bit is not set.
 	got := fi.Mode().Perm()&perm200 == perm200
 	if got != want {
 		t.Fatalf("got %v, want %v", got, want)
-
-		return
 	}
 }
 
@@ -949,7 +939,6 @@ func checkPerm(t *testing.T, name string, perm os.FileMode, isDir bool) {
 	if got != want {
 		logACLs(t, name, false)
 		t.Fatalf("got 0o%03o (%v), want 0o%03o (%v): %v", got, got, want, want, name)
-		return
 	}
 }
 

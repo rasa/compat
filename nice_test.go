@@ -16,11 +16,10 @@ func TestNice(t *testing.T) {
 	if err != nil {
 		if !compat.SupportsNice() {
 			skipf(t, "Skipping test: Nice() is not supported on %v/%v", runtime.GOOS, runtime.GOARCH)
-
-			return // tinygo doesn't support t.Skip
+			return
 		}
 
-		fatalf(t, "Nice; got %v, want nil", err)
+		t.Fatalf("Nice; got %v, want nil", err)
 	}
 }
 
@@ -29,12 +28,11 @@ func TestNiceRenice(t *testing.T) {
 	if err != nil {
 		if !compat.SupportsNice() {
 			skipf(t, "Skipping test: Renice() is not supported on %v/%v", runtime.GOOS, runtime.GOARCH)
-
-			return // tinygo doesn't support t.Skip
+			return
 		}
 
 		// Don't fail on "permission denied" on Linux
-		skipf(t, "Renice: got %v, want nil", err)
+		t.Skipf("Renice: got %v, want nil", err)
 	}
 }
 
@@ -42,20 +40,17 @@ func TestNiceReniceIfRootValid(t *testing.T) {
 	isRoot, _ := compat.IsRoot()
 
 	if !compat.IsWindows && !isRoot {
-		skip(t, "Skipping test: we aren't the root/admin user")
-
-		return // tinygo doesn't support t.Skip
+		t.Skip("Skipping test: we aren't the root/admin user")
 	}
 
 	nice, err := compat.Nice()
 	if err != nil {
 		if !compat.SupportsNice() {
 			skipf(t, "Skipping test: Nice() is not supported on %v/%v", runtime.GOOS, runtime.GOARCH)
-
-			return // tinygo doesn't support t.Skip
+			return
 		}
 
-		fatalf(t, "Nice; got %v, want nil", err)
+		t.Fatalf("Nice; got %v, want nil", err)
 	}
 
 	for n := 0; n >= compat.MinNice; n-- {
@@ -63,14 +58,11 @@ func TestNiceReniceIfRootValid(t *testing.T) {
 		if err != nil {
 			if !compat.SupportsNice() {
 				skipf(t, "Skipping test: Renice() is not supported on %v/%v", runtime.GOOS, runtime.GOARCH)
-
-				return // tinygo doesn't support t.Skip
+				return
 			}
 
 			// under act, "permission denied" is returned, even though we root.
-			skipf(t, "Renice: got %v, want nil", err)
-
-			return // tinygo doesn't support t.Skip
+			t.Skipf("Renice: got %v, want nil", err)
 		}
 	}
 
@@ -82,8 +74,7 @@ func TestNiceReniceIfRootInvalid(t *testing.T) {
 
 	if !compat.IsWindows && !isRoot {
 		skip(t, "Skipping test: we aren't the root/admin user")
-
-		return // tinygo doesn't support t.Skip
+		return
 	}
 
 	const invalidNice = compat.MinNice - 1024
@@ -92,19 +83,14 @@ func TestNiceReniceIfRootInvalid(t *testing.T) {
 	if err == nil {
 		if !compat.SupportsNice() {
 			skipf(t, "Skipping test: Nice() is not supported on %v/%v", runtime.GOOS, runtime.GOARCH)
-
-			return // tinygo doesn't support t.Skip
-		}
-
-		if !compat.IsWindows && !compat.IsPlan9 {
-			skipf(t, "Renice(%v): got nil, want error (ignoring: doesn't fail on %v)", invalidNice, runtime.GOOS)
-
 			return
 		}
 
-		fatalf(t, "Renice(%v): got nil, want error", invalidNice)
+		if !compat.IsWindows && !compat.IsPlan9 {
+			t.Skipf("Renice(%v): got nil, want error (ignoring: doesn't fail on %v)", invalidNice, runtime.GOOS)
+		}
 
-		return // tinygo doesn't support t.Skip
+		t.Fatalf("Renice(%v): got nil, want error", invalidNice)
 	}
 }
 
@@ -113,16 +99,16 @@ func TestNiceErrors(t *testing.T) {
 
 	e1 := &compat.NiceError{err}
 	if e1.Error() == "" {
-		fatal(t, "NiceError: got '', want non-empty string")
+		t.Fatal("NiceError: got '', want non-empty string")
 	}
 
 	e2 := &compat.InvalidNiceError{1024}
 	if e2.Error() == "" {
-		fatal(t, "InvalidNiceError: got '', want non-empty string")
+		t.Fatal("InvalidNiceError: got '', want non-empty string")
 	}
 
 	e3 := &compat.ReniceError{1024, err}
 	if e3.Error() == "" {
-		fatal(t, "ReniceError: got '', want non-empty string")
+		t.Fatal("ReniceError: got '', want non-empty string")
 	}
 }

@@ -58,8 +58,6 @@ func TestRuntime(t *testing.T) { //nolint:funlen,gocyclo
 		}
 
 		t.Fatal(err)
-
-		return
 	}
 
 	out, err := exec.Command(goExe, "tool", "dist", "list").Output() //nolint:noctx
@@ -71,8 +69,6 @@ func TestRuntime(t *testing.T) { //nolint:funlen,gocyclo
 		}
 
 		t.Fatal(err)
-
-		return
 	}
 
 	gooses := make(map[string]struct{})
@@ -93,8 +89,6 @@ func TestRuntime(t *testing.T) { //nolint:funlen,gocyclo
 
 	if len(gooses) == 0 {
 		t.Fatal("failed to parse output of: go tool dist list")
-
-		return
 	}
 
 	for goos := range gooses {

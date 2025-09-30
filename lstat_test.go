@@ -240,8 +240,7 @@ func TestLstatATime(t *testing.T) { //nolint:dupl
 
 func TestLstatBTime(t *testing.T) {
 	if !compat.SupportsBTime() {
-		skip(t, "Skipping test: BTime() not supported on "+runtime.GOOS)
-
+		skipf(t, "Skipping test: BTime() not supported on %v", runtime.GOOS)
 		return
 	}
 
@@ -268,8 +267,7 @@ func TestLstatBTime(t *testing.T) {
 
 func TestLstatCTime(t *testing.T) {
 	if !compat.SupportsCTime() {
-		skip(t, "Skipping test: CTime() not supported on "+runtime.GOOS)
-
+		skipf(t, "Skipping test: CTime() not supported on %v", runtime.GOOS)
 		return
 	}
 
@@ -424,8 +422,6 @@ func TestLstatUser(t *testing.T) {
 	if compat.IsTinygo {
 		// tinygo: Current requires cgo or $USER, $HOME set in environment
 		skip(t, "Skipping test: User() not supported on tinygo")
-
-		return
 	}
 
 	_, name, err := createTempSymlink(t, compat.WithSetSymlinkOwner(false))
@@ -449,7 +445,7 @@ func TestLstatUser(t *testing.T) {
 	if compareNames(got, want) == compat.IsWindows {
 		if compat.IsWindows {
 			t.Logf("User(): got %v, want %v (ignoring: User() will be indeterminate on %v)", got, want, runtime.GOOS)
-			// skip(t, "Skipping test: User() will be indeterminate on Windows")
+			// t.Skip("Skipping test: User() will be indeterminate on Windows")
 
 			return
 		}
@@ -465,9 +461,7 @@ func TestLstatUserSetOwner(t *testing.T) {
 
 	if !compat.IsWindows {
 		// tinygo: Current requires cgo or $USER, $HOME set in environment
-		skip(t, "Skipping test: Windows only test")
-
-		return
+		t.Skip("Skipping test: Windows only test")
 	}
 
 	_, name, err := createTempSymlink(t, compat.WithSetSymlinkOwner(true))
@@ -545,17 +539,14 @@ func TestLstatGroupSetOwner(t *testing.T) {
 		return
 	}
 
-	if !compat.IsWindows {
-		// tinygo: Current requires cgo or $USER, $HOME set in environment
-		skip(t, "Skipping test: Windows only test")
-
+	if compat.IsTinygo {
+		skip(t, "Skipping test: Group() not supported on tinygo")
 		return
 	}
 
-	if compat.IsTinygo {
-		skip(t, "Skipping test: Group() not supported on tinygo")
-
-		return
+	if !compat.IsWindows {
+		// tinygo: Current requires cgo or $USER, $HOME set in environment
+		t.Skip("Skipping test: Windows only test")
 	}
 
 	_, name, err := createTempSymlink(t, compat.WithSetSymlinkOwner(true))
