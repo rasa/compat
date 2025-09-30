@@ -371,7 +371,7 @@ func TestWriteReaderWithAtomicityInvalidReadOnlyDirectory(t *testing.T) {
 	}
 	dir, base := filepath.Split(name)
 	cleanup(t, dir)
-	perm := os.FileMode(perm400)
+	perm := perm400
 	opts := []compat.Option{
 		compat.WithFileMode(perm),
 		compat.WithReadOnlyMode(compat.ReadOnlyModeSet),
@@ -402,7 +402,7 @@ func TestWriteReaderWithAtomicityInvalidReadOnlyDirectory(t *testing.T) {
 		// return
 	}
 
-	perm = os.FileMode(perm777)
+	perm = perm777
 	_ = compat.Chmod(dir, perm)
 }
 

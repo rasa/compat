@@ -44,8 +44,8 @@ var (
 
 type ver struct {
 	major int
-	minor int
-	patch int
+	minor int //nolint:unused
+	patch int //nolint:unused
 }
 
 func init() {
@@ -134,7 +134,7 @@ func _fatal(t *testing.T, msg any) { //nolint:unused
 func _fatalf(t *testing.T, format string, a ...any) { //nolint:unused
 	t.Helper()
 
-	t.Fatal(fmt.Sprintf(format, a...))
+	t.Fatalf(format, a...)
 }
 
 func fatalTimes(t *testing.T, prefix string, got, want time.Time, granularity int) { //nolint:unused
@@ -360,7 +360,7 @@ func skip(t *testing.T, msg any) {
 func skipf(t *testing.T, format string, a ...any) {
 	t.Helper()
 
-	t.Skip(fmt.Sprintf(format, a...))
+	t.Skipf(format, a...)
 }
 
 func supportsHardLinks(t *testing.T) bool {

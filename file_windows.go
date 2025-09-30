@@ -256,23 +256,6 @@ func symlink(oldname, newname string, opts ...Option) error {
 	return nil
 }
 
-func writeFile(name string, data []byte, perm os.FileMode, flag int) error {
-	flag |= os.O_CREATE
-
-	f, err := openFile(name, flag, perm)
-	if err != nil {
-		return err
-	}
-	defer f.Close() //nolint:errcheck
-
-	_, err = f.Write(data)
-	if err != nil {
-		return err
-	}
-
-	return f.Close()
-}
-
 // saFromPerm converts a perm (FileMode) to an *sa (*syscall.SecurityAttributes).
 // @TODO return a *windows.SecurityAttributes.
 func saFromPerm(perm os.FileMode, create bool) (*syscall.SecurityAttributes, error) {
@@ -393,9 +376,12 @@ func sdFromSi(si securityInfo) (*windows.SECURITY_DESCRIPTOR, error) {
 	if err != nil {
 		return nil, fmt.Errorf("failed to set ACL in security descriptor: %w", err)
 	}
-	sd.SetControl(windows.SE_DACL_PROTECTED,
+	err = sd.SetControl(windows.SE_DACL_PROTECTED,
 		windows.SE_DACL_PROTECTED,
 	)
+	if err != nil {
+		return nil, fmt.Errorf("failed to set control on security descriptor: %w", err)
+	}
 
 	return sd, nil
 }
