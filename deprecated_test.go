@@ -19,9 +19,10 @@ func TestWriteFileAtomic(t *testing.T) { //nolint:dupl
 	}
 
 	cleanup(t, file)
-
 	perm := compat.CreatePerm // 0o666
-	err = compat.WriteFileAtomic(file, helloBytes, perm)
+	opts := []compat.Option{compat.WithFileMode(perm)}
+
+	err = compat.WriteFileAtomic(file, helloBytes, opts...)
 	if err != nil {
 		t.Fatalf("Failed to write file: %q: %v", file, err)
 	}
@@ -47,7 +48,8 @@ func TestWriteReaderAtomic(t *testing.T) { //nolint:dupl
 	cleanup(t, file)
 
 	perm := compat.CreatePerm // 0o666
-	err = compat.WriteReaderAtomic(file, helloBuf, perm)
+	opts := []compat.Option{compat.WithFileMode(perm)}
+	err = compat.WriteReaderAtomic(file, helloBuf, opts...)
 	if err != nil {
 		t.Fatalf("Failed to write file: %q: %v", file, err)
 	}
