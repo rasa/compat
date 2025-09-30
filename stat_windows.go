@@ -41,6 +41,7 @@ type fileStat struct {
 	user   string
 	group  string
 	path   string
+	path16 []uint16
 	// btimed bool unused
 	ctimed bool
 	usered bool
@@ -79,6 +80,8 @@ func stat(fi os.FileInfo, name string, followSymlinks bool) (FileInfo, error) {
 		attrs |= syscall.FILE_FLAG_OPEN_REPARSE_POINT
 	}
 
+	var fs fileStat
+
 	// See https://github.com/golang/go/blob/3cf1aaf8/src/os/types_windows.go#L288
 	fs.mux.Lock()
 	defer fs.mux.Unlock()
@@ -99,14 +102,13 @@ func stat(fi os.FileInfo, name string, followSymlinks bool) (FileInfo, error) {
 		return nil, &os.PathError{Op: "stat", Path: name, Err: err}
 	}
 
-	var fs fileStat
 	fs.followSymlinks = followSymlinks
 	fs.path = name
 	fs.path16 = path16
 	fs.name = fi.Name()
 	fs.size = fi.Size()
 	fs.mode = fi.Mode()
-	fs.mode &^= ModePerm // os.FileMode(^uint32(0o777)) //nolint:mnd // quiet
+	fs.mode &^= os.ModePerm // os.FileMode(^uint32(0o777)) //nolint:mnd // quiet
 	fs.mode |= perm.Perm()
 	fs.mtime = fi.ModTime()
 	// See https://github.com/golang/go/blob/3cf1aaf8/src/os/types_windows.go#L367
