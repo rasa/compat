@@ -316,10 +316,13 @@ func TestWriteReaderWithAtomicityWithReadOnlyModeReset(t *testing.T) { //nolint:
 	}
 }
 
-// Invalid tests
+// Tests that succeed when err != nil.
 
 func TestWriteReaderWithAtomicityInvalid(t *testing.T) { //nolint:dupl
-	opts := []compat.Option{compat.WithAtomicity(true)}
+	opts := []compat.Option{
+		compat.WithAtomicity(true),
+		compat.WithFileMode(perm600),
+	}
 	err := compat.WriteReader(invalidName, helloBuf, 0, opts...)
 	if err == nil {
 		t.Fatalf("got nil, want an error")
