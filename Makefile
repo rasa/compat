@@ -17,8 +17,8 @@ export TOOL_OPTS
 .DEFAULT_GOAL := all
 
 .PHONY: all
-all: ## make download gen build spell lint fix test
-all: download gen build spell lint fix test vet
+all: ## make download gen build check test
+all: download gen build check test
 
 .PHONY: precommit
 precommit: ## make all vuln
@@ -62,50 +62,16 @@ spell: ## misspell -error -locale=US -w **.md
 	go tool $(TOOL_OPTS) misspell -error -locale=US -w **.md
 
 .PHONY: lint
-lint: ## golangci-lint run --fix
-	go tool $(TOOL_OPTS) golangci-lint run --fix
-
-.PHONY: fix
-fix: ## gofumpt
-	go tool $(TOOL_OPTS) gofumpt -w .
-	git restore walk.go walk_test.go golang/golang_*.go
+lint: ## golangci-lint run --fix ./...
+	go tool $(TOOL_OPTS) golangci-lint run --fix ./...
 
 .PHONY: vuln
-vuln: ## govulncheck
+vuln: ## govulncheck ./...
 	go tool $(TOOL_OPTS) govulncheck ./...
 
-.PHONY: modernize
-modernize: ## modernize
-	go tool $(TOOL_OPTS) modernize -fix ./...
-
 .PHONY: vet
-vet: ## vet
+vet: ## go vet ./...
 	go vet ./...
-
-# Added by compat:
-
-.PHONY: download
-download: ## go mod download
-	go mod download
-	test -f go.tool.mod && go mod download $(TOOL_OPTS)
-	# make mod
-
-.PHONY: get
-get: ## go get -u
-	go get -u
-	test -f go.tool.mod && go get -u $(TOOL_OPTS)
-	make mod
-
-.PHONY: tools
-tools: ## freshen tools (misspell, golangci-lint, goreleaser, govulncheck, gofumpt)
-	export GOFLAGS="$(GOFLAGS) $(TOOL_OPTS)" ;\
-	go get github.com/golangci/golangci-lint/v2/cmd/golangci-lint@latest ;\
-	go get github.com/goreleaser/goreleaser/v2@2.11.2 ;\
-	go get golang.org/x/tools/gopls/internal/analysis/modernize/cmd/modernize@latest ;\
-	go get github.com/client9/misspell/cmd/misspell@latest ;\
-	go get golang.org/x/vuln/cmd/govulncheck@latest ;\
-	go get mvdan.cc/gofumpt@latest
-	make mod
 
 RACE_OPT := -race
 
@@ -128,7 +94,7 @@ RACE_OPT =
 endif
 
 .PHONY: test
-test: ## go test
+test: ## go test .
 	go test $(TEST_OPTS) -tags "$(TEST_TAGS)" $(RACE_OPT) -covermode=atomic -coverprofile=coverage.out -coverpkg=. .
 	sed -i.bak "/compat\/cmd\//d; /compat\/golang\//d;" coverage.out
 	rm -f *.bak
@@ -141,3 +107,52 @@ ifeq ($(OS),Windows_NT)
 endif
 	git diff --exit-code
 	@RES=$$(git status --porcelain --untracked-files=no) ; if [ -n "$$RES" ]; then echo $$RES && exit 1 ; fi
+
+# Added by compat:
+
+.PHONY: check
+check: fmt fumpt lint spell vet restore ## make fmt fumpt lint moderize spell vet restore
+	-make modernize
+	@echo All tests pass
+
+.PHONY: download
+download: ## go mod download
+	go mod download
+	test -f go.tool.mod && go mod download $(TOOL_OPTS)
+	# make mod
+
+.PHONY: fmt
+fmt: ## go fmt ./...
+	go fmt ./...
+
+.PHONY: fumpt
+fumpt: ## gofumpt -w .
+	go tool $(TOOL_OPTS) gofumpt -w .
+
+.PHONY: gofumpt
+gofumpt: fumpt
+
+.PHONY: modernize ./...
+modernize: ## modernize
+	go tool $(TOOL_OPTS) modernize -fix ./...
+
+.PHONY: restore
+restore: ##	git restore format.go walk.go walk_test.go golang/golang_*.go robustio/robustio*.go
+	git restore format.go walk.go walk_test.go golang/golang_*.go robustio/robustio*.go
+
+.PHONY: install
+install: ## install/update gofumpt, golangci-lint, goreleaser@2.11.2, govulncheck, misspell modernize
+	export GOFLAGS="$(GOFLAGS) $(TOOL_OPTS)" ;\
+	go get github.com/golangci/golangci-lint/v2/cmd/golangci-lint@latest ;\
+	go get github.com/goreleaser/goreleaser/v2@v2.11.2 ;\
+	go get golang.org/x/tools/gopls/internal/analysis/modernize/cmd/modernize@latest ;\
+	go get github.com/client9/misspell/cmd/misspell@latest ;\
+	go get golang.org/x/vuln/cmd/govulncheck@latest ;\
+	go get mvdan.cc/gofumpt@latest
+	make mod
+
+.PHONY: update
+update: ## go get -u
+	go get -u
+	test -f go.tool.mod && go get -u $(TOOL_OPTS)
+	make mod
