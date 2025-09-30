@@ -7,7 +7,6 @@
 package compat_test
 
 import (
-	"os"
 	"testing"
 
 	"github.com/rasa/compat"
