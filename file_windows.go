@@ -34,13 +34,21 @@ type securityInfo struct {
 	perm     os.FileMode
 }
 
-func chmod(name string, perm os.FileMode, mask ReadOnlyMode) error {
+func chmod(name string, perm os.FileMode, opts ...Option) error {
+	fopts := Options{
+		fileMode: perm,
+	}
+
+	for _, opt := range opts {
+		opt(&fopts)
+	}
+
 	_, err := syscall.UTF16PtrFromString(name)
 	if err != nil {
 		return &os.PathError{Op: "chmod", Path: name, Err: os.ErrInvalid}
 	}
 
-	perm = perm.Perm()
+	perm = fopts.fileMode.Perm()
 
 	// set Windows' ACLs
 	err = acl.Chmod(name, perm)
@@ -48,7 +56,7 @@ func chmod(name string, perm os.FileMode, mask ReadOnlyMode) error {
 		return &os.PathError{Op: "chmod", Path: name, Err: fmt.Errorf("%w (acl)", err)}
 	}
 
-	if mask == ReadOnlyModeIgnore {
+	if fopts.readOnlyMode == ReadOnlyModeIgnore {
 		return nil
 	}
 
@@ -60,7 +68,7 @@ func chmod(name string, perm os.FileMode, mask ReadOnlyMode) error {
 	// Set or clear Windows' read-only attribute
 	want := perm&syscall.S_IWRITE != 0 // 0x80 (0o200)
 	got := fi.Mode().Perm()&syscall.S_IWRITE != 0
-	if mask == ReadOnlyModeReset {
+	if fopts.readOnlyMode == ReadOnlyModeReset {
 		if !got {
 			return nil
 		}
@@ -84,17 +92,30 @@ func chmod(name string, perm os.FileMode, mask ReadOnlyMode) error {
 	return nil
 }
 
-func create(name string, perm os.FileMode, flag int) (*os.File, error) {
-	if perm == 0 {
-		perm = CreatePerm
+func create(name string, opts ...Option) (*os.File, error) {
+	fopts := Options{
+		fileMode: CreatePerm,
+		flags:    os.O_CREATE | os.O_TRUNC,
 	}
-	flag |= os.O_CREATE
-	sa, err := saFromPerm(perm, true)
+
+	for _, opt := range opts {
+		opt(&fopts)
+	}
+
+	if fopts.flags&os.O_WRONLY != os.O_WRONLY {
+		fopts.flags |= os.O_RDWR
+	}
+
+	if fopts.readOnlyMode != ReadOnlyModeSet {
+		fopts.flags |= O_FILE_FLAG_NO_RO_ATTR
+	}
+
+	sa, err := saFromPerm(fopts.fileMode, true)
 	if err != nil {
 		return nil, &os.PathError{Op: "create", Path: name, Err: err}
 	}
 
-	return golang.OpenFileNolog(name, flag, perm, sa)
+	return golang.OpenFileNolog(name, fopts.flags, fopts.fileMode, sa)
 }
 
 func createTemp(dir, pattern string, perm os.FileMode, flag int) (*os.File, error) {
@@ -114,7 +135,7 @@ func createTemp(dir, pattern string, perm os.FileMode, flag int) (*os.File, erro
 	return f, nil
 }
 
-func fchmod(f *os.File, mode os.FileMode, mask ReadOnlyMode) error {
+func fchmod(f *os.File, mode os.FileMode, opts ...Option) error {
 	if f == nil {
 		return &os.PathError{Op: "chmod", Path: "", Err: os.ErrInvalid}
 	}
@@ -123,7 +144,7 @@ func fchmod(f *os.File, mode os.FileMode, mask ReadOnlyMode) error {
 		return &os.PathError{Op: "chmod", Path: f.Name(), Err: err}
 	}
 
-	err = chmod(path, mode, mask)
+	err = chmod(path, mode, opts...)
 	if err != nil {
 		return &os.PathError{Op: "chmod", Path: path, Err: err}
 	}
@@ -137,7 +158,7 @@ func mkdir(name string, perm os.FileMode) error {
 		return &os.PathError{Op: "mkdir", Path: name, Err: err}
 	}
 
-	err = golang.Mkdir(name, 0o700, sa) //nolint:mnd
+	err = golang.Mkdir(name, MkdirTempPerm, sa)
 	if err != nil {
 		return &os.PathError{Op: "mkdir", Path: name, Err: err}
 	}
@@ -151,7 +172,7 @@ func mkdirAll(name string, perm os.FileMode) error {
 		return &os.PathError{Op: "mkdirall", Path: name, Err: err}
 	}
 
-	err = golang.MkdirAll(name, 0o700, sa) //nolint:mnd
+	err = golang.MkdirAll(name, MkdirTempPerm, sa)
 	if err != nil {
 		return &os.PathError{Op: "mkdirall", Path: name, Err: err}
 	}
@@ -159,12 +180,16 @@ func mkdirAll(name string, perm os.FileMode) error {
 	return nil
 }
 
-func mkdirTemp(dir, pattern string, perm os.FileMode) (string, error) {
-	if perm == 0 {
-		perm = MkdirTempPerm
+func mkdirTemp(dir, pattern string, opts ...Option) (string, error) {
+	fopts := Options{
+		fileMode: MkdirTempPerm,
 	}
 
-	sa, err := saFromPerm(perm, true)
+	for _, opt := range opts {
+		opt(&fopts)
+	}
+
+	sa, err := saFromPerm(fopts.fileMode, true)
 	if err != nil {
 		prefix, suffix, _ := golang.PrefixAndSuffix(pattern)
 
@@ -196,7 +221,6 @@ func remove(name string) error {
 
 func removeAll(path string, opts ...Option) error {
 	fopts := Options{}
-
 	for _, opt := range opts {
 		opt(&fopts)
 	}
@@ -211,13 +235,18 @@ func removeAll(path string, opts ...Option) error {
 	}, fopts.retrySeconds)
 }
 
-func symlink(oldname, newname string, setSymlinkOwner bool) error {
+func symlink(oldname, newname string, opts ...Option) error {
+	fopts := Options{}
+	for _, opt := range opts {
+		opt(&fopts)
+	}
+
 	err := os.Symlink(oldname, newname)
 	if err != nil {
 		return err
 	}
 
-	if setSymlinkOwner {
+	if fopts.setSymlinkOwner {
 		err = setOwnerToCurrentUser(newname)
 		if err != nil {
 			return &os.LinkError{Op: "symlink", Old: oldname, New: newname, Err: err}
@@ -351,6 +380,7 @@ func sdFromSi(si securityInfo) (*windows.SECURITY_DESCRIPTOR, error) {
 	if err != nil {
 		return nil, fmt.Errorf("failed to create security descriptor: %w", err)
 	}
+
 	err = sd.SetOwner(si.ownerSid, false)
 	if err != nil {
 		return nil, fmt.Errorf("failed to set ACL owner in security descriptor: %w", err)
@@ -363,6 +393,9 @@ func sdFromSi(si securityInfo) (*windows.SECURITY_DESCRIPTOR, error) {
 	if err != nil {
 		return nil, fmt.Errorf("failed to set ACL in security descriptor: %w", err)
 	}
+	sd.SetControl(windows.SE_DACL_PROTECTED,
+		windows.SE_DACL_PROTECTED,
+	)
 
 	return sd, nil
 }

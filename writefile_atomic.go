@@ -29,28 +29,5 @@ import (
 // Additional option arguments can be used to change the default configuration
 // for the target file.
 func WriteFile(name string, data []byte, perm os.FileMode, opts ...Option) error {
-	if perm.Perm() == 0 {
-		perm |= CreatePerm // 0o666
-	}
-
-	fopts := Options{
-		flags:    os.O_CREATE | os.O_WRONLY | os.O_TRUNC,
-		fileMode: perm,
-	}
-
-	for _, opt := range opts {
-		opt(&fopts)
-	}
-
-	if !fopts.atomically {
-		if IsWindows {
-			if fopts.readOnlyMode != ReadOnlyModeSet {
-				fopts.flags |= O_FILE_FLAG_NO_RO_ATTR
-			}
-		}
-
-		return writeFile(name, data, fopts.fileMode, fopts.flags)
-	}
-
-	return writeReaderAtomic(name, bytes.NewReader(data), opts...)
+	return WriteReader(name, bytes.NewReader(data), perm, opts...)
 }

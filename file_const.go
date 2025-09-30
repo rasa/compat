@@ -4,6 +4,7 @@
 package compat
 
 import (
+	"fmt"
 	"io/fs"
 	"os"
 
@@ -113,3 +114,16 @@ const (
 	// set, it resets (clears) it. (Windows only).
 	ReadOnlyModeReset
 )
+
+func (r ReadOnlyMode) String() string {
+	switch r {
+	case ReadOnlyModeIgnore:
+		return "ReadOnlyModeIgnore"
+	case ReadOnlyModeSet:
+		return "ReadOnlyModeSet"
+	case ReadOnlyModeReset:
+		return "ReadOnlyModeReset"
+	default:
+		return fmt.Sprintf("unknown ReadOnlyMode %d", int(r))
+	}
+}

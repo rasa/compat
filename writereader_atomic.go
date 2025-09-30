@@ -33,36 +33,10 @@ import (
 //
 // Additional option arguments can be used to change the default configuration
 // for the target file.
-func WriteReader(name string, r io.Reader, perm os.FileMode, opts ...Option) error {
-	if perm.Perm() == 0 {
-		perm |= CreatePerm // 0o666
-	}
-
+func WriteReader(name string, r io.Reader, perm os.FileMode, opts ...Option) (err error) { //nolint:funlen,gocyclo
 	fopts := Options{
-		flags:    os.O_CREATE | os.O_WRONLY | os.O_TRUNC,
-		fileMode: perm,
-	}
-
-	for _, opt := range opts {
-		opt(&fopts)
-	}
-
-	if !fopts.atomically {
-		if IsWindows {
-			if fopts.readOnlyMode != ReadOnlyModeSet {
-				fopts.flags |= O_FILE_FLAG_NO_RO_ATTR
-			}
-		}
-
-		return writeReader(name, r, fopts.flags, fopts.fileMode)
-	}
-
-	return writeReaderAtomic(name, r, opts...)
-}
-
-func writeReaderAtomic(filename string, r io.Reader, opts ...Option) (err error) { //nolint:funlen,gocyclo
-	// original behavior is to preserve the mode of an existing file.
-	fopts := Options{
+		flags:        os.O_CREATE | os.O_WRONLY | os.O_TRUNC,
+		fileMode:     perm,
 		keepFileMode: true,
 	}
 
@@ -81,7 +55,7 @@ func writeReaderAtomic(filename string, r io.Reader, opts ...Option) (err error)
 	if fopts.keepFileMode {
 		var destInfo os.FileInfo
 
-		destInfo, err = Stat(filename)
+		destInfo, err = Stat(name)
 		if err != nil && !os.IsNotExist(err) {
 			return err
 		}
@@ -105,9 +79,13 @@ func writeReaderAtomic(filename string, r io.Reader, opts ...Option) (err error)
 		}
 	}
 
+	if !fopts.atomically {
+		return writeReader(name, r, fopts.flags, fileMode)
+	}
+
 	// write to a temp file first, then we'll atomically replace the target file
 	// with the temp file.
-	dir, _ := filepath.Split(filename)
+	dir, _ := filepath.Split(name)
 	if dir == "" {
 		dir = "."
 	}
@@ -115,16 +93,16 @@ func writeReaderAtomic(filename string, r io.Reader, opts ...Option) (err error)
 	f, err := createTemp(dir, "~*.tmp", fileMode, fopts.flags)
 	if err != nil {
 		err = fmt.Errorf("cannot create temp file: %w", err)
-		return &os.PathError{Op: "write", Path: filename, Err: err}
+		return &os.PathError{Op: "write", Path: name, Err: err}
 	}
 
-	name := f.Name()
+	tempFileName := f.Name()
 
 	defer func() {
 		if err != nil {
 			// Don't leave the temp file lying around on error.
-			_ = Chmod(name, CreateTempPerm) // 0o600
-			_ = Remove(name)
+			_ = Chmod(tempFileName, CreateTempPerm) // 0o600
+			_ = Remove(tempFileName)
 		}
 	}()
 	// ensure we always close f. Note that this does not conflict with the
@@ -133,33 +111,33 @@ func writeReaderAtomic(filename string, r io.Reader, opts ...Option) (err error)
 
 	_, err = io.Copy(f, r)
 	if err != nil {
-		err = fmt.Errorf("cannot write data to tempfile '%v': %w", name, err)
-		return &os.PathError{Op: "write", Path: filename, Err: err}
+		err = fmt.Errorf("cannot write data to tempfile '%v': %w", tempFileName, err)
+		return &os.PathError{Op: "write", Path: name, Err: err}
 	}
 	// fsync is important, otherwise os.Rename could rename a zero-length file
 	err = f.Sync()
 	if err != nil {
-		err = fmt.Errorf("cannot flush tempfile '%v': %w", name, err)
-		return &os.PathError{Op: "write", Path: filename, Err: err}
+		err = fmt.Errorf("cannot flush tempfile '%v': %w", tempFileName, err)
+		return &os.PathError{Op: "write", Path: name, Err: err}
 	}
 
 	err = f.Close()
 	if err != nil {
-		err = fmt.Errorf("cannot close tempfile '%v': %w", name, err)
-		return &os.PathError{Op: "write", Path: filename, Err: err}
+		err = fmt.Errorf("cannot close tempfile '%v': %w", tempFileName, err)
+		return &os.PathError{Op: "write", Path: name, Err: err}
 	}
 
-	err = Rename(name, filename)
+	err = Rename(tempFileName, name)
 	if err != nil {
-		err = fmt.Errorf("cannot replace '%v' with tempfile '%v': %w", filename, name, err)
-		return &os.PathError{Op: "write", Path: filename, Err: err}
+		err = fmt.Errorf("cannot replace '%v' with tempfile '%v': %w", name, tempFileName, err)
+		return &os.PathError{Op: "write", Path: name, Err: err}
 	}
 
 	return nil
 }
 
-func writeReader(filename string, r io.Reader, flag int, perm os.FileMode) error {
-	f, err := openFile(filename, flag, perm)
+func writeReader(name string, r io.Reader, flag int, perm os.FileMode) error {
+	f, err := openFile(name, flag, perm)
 	if err != nil {
 		return err
 	}
@@ -167,12 +145,12 @@ func writeReader(filename string, r io.Reader, flag int, perm os.FileMode) error
 
 	_, err = io.Copy(f, r)
 	if err != nil {
-		return &os.PathError{Op: "write", Path: filename, Err: err}
+		return &os.PathError{Op: "write", Path: name, Err: err}
 	}
 
 	err = f.Sync()
 	if err != nil {
-		return &os.PathError{Op: "write", Path: filename, Err: err}
+		return &os.PathError{Op: "write", Path: name, Err: err}
 	}
 
 	return nil

@@ -53,7 +53,7 @@ func TestMain(m *testing.M) {
 		os.Exit(0)
 	}
 
-	if !strings.Contains(compatDebug, "DEBUG") {
+	if !strings.Contains(compatDebug, "ONEXIT") {
 		os.Exit(code)
 	}
 

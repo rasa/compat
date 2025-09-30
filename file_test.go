@@ -90,7 +90,8 @@ func TestFilePosixCreate(t *testing.T) {
 }
 
 func TestFilePosixCreateWithFileMode(t *testing.T) {
-	want := fixPosixPerms(compat.CreatePerm, false) // 0o666
+	perm := compat.CreatePerm
+	want := fixPosixPerms(perm, false) // 0o666
 
 	name, err := tempName(t)
 	if err != nil {
@@ -99,7 +100,7 @@ func TestFilePosixCreateWithFileMode(t *testing.T) {
 		return
 	}
 
-	fh, err := compat.Create(name, compat.WithFileMode(perm000))
+	fh, err := compat.Create(name, compat.WithFileMode(perm))
 	if err != nil {
 		t.Fatalf("Create failed: %v", err)
 
@@ -306,11 +307,12 @@ func TestFilePosixMkdirTemp(t *testing.T) {
 }
 
 func TestFilePosixMkdirTempWithFileMode(t *testing.T) {
-	want := fixPosixPerms(compat.MkdirTempPerm, true) // 0o700
+	perm := compat.MkdirTempPerm // 0o700
+	want := fixPosixPerms(perm, true)
 	dir := tempDir(t)
 	pattern := ""
 
-	name, err := compat.MkdirTemp(dir, pattern, compat.WithFileMode(perm000))
+	name, err := compat.MkdirTemp(dir, pattern, compat.WithFileMode(perm))
 	if err != nil {
 		t.Fatal(err)
 
