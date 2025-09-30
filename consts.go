@@ -4,7 +4,6 @@
 package compat
 
 import (
-	"fmt"
 	"io/fs"
 	"os"
 
