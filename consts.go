@@ -114,16 +114,3 @@ const (
 	// set, it resets (clears) it. (Windows only).
 	ReadOnlyModeReset
 )
-
-func (r ReadOnlyMode) String() string { //nolint:unused
-	switch r {
-	case ReadOnlyModeIgnore:
-		return "ReadOnlyModeIgnore"
-	case ReadOnlyModeSet:
-		return "ReadOnlyModeSet"
-	case ReadOnlyModeReset:
-		return "ReadOnlyModeReset"
-	default:
-		return fmt.Sprintf("unknown ReadOnlyMode %d", int(r))
-	}
-}
