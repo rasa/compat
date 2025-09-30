@@ -35,8 +35,9 @@ help:
 .PHONY: clean
 clean: ## remove files created during build pipeline
 	rm -rf dist
+	rm -f *.bak
 	rm -f coverage.*
-	rm -f '"$(shell go env GOCACHE)/../golangci-lint"'
+	rm -rf '"$(shell go env GOCACHE)/../golangci-lint"'
 	go clean -i -cache -testcache -modcache -fuzzcache -x
 
 .PHONY: run
@@ -111,9 +112,7 @@ endif
 # Added by compat:
 
 .PHONY: check
-check: fmt fumpt lint spell vet restore ## make fmt fumpt lint moderize spell vet restore
-	-make modernize
-	@echo All tests pass
+check: fmt fumpt lint moderize spell vet restore ## make fmt fumpt lint modernize spell vet restore
 
 .PHONY: download
 download: ## go mod download
@@ -134,19 +133,22 @@ gofumpt: fumpt
 
 .PHONY: modernize ./...
 modernize: ## modernize
-	go tool $(TOOL_OPTS) modernize -fix ./...
+	@echo modernize step skipped for now: requires go 1.25.1
+	# go tool $(TOOL_OPTS) modernize -fix ./...
+
+#	go run golang.org/x/tools/go/analysis/passes/modernize/cmd/modernize@latest -fix -test ./...
 
 .PHONY: restore
 restore: ##	git restore format.go walk.go walk_test.go golang/golang_*.go robustio/robustio*.go
 	git restore format.go walk.go walk_test.go golang/golang_*.go robustio/robustio*.go
 
 .PHONY: install
-install: ## install/update gofumpt, golangci-lint, goreleaser@2.11.2, govulncheck, misspell modernize
+install: ## install/update gofumpt, golangci-lint, goreleaser@2.11.2, govulncheck, misspell modernize@master
 	export GOFLAGS="$(GOFLAGS) $(TOOL_OPTS)" ;\
 	go get github.com/golangci/golangci-lint/v2/cmd/golangci-lint@latest ;\
 	go get github.com/goreleaser/goreleaser/v2@v2.11.2 ;\
-	go get golang.org/x/tools/gopls/internal/analysis/modernize/cmd/modernize@latest ;\
 	go get github.com/client9/misspell/cmd/misspell@latest ;\
+	echo go get golang.org/x/tools/gopls/internal/analysis/modernize/cmd/modernize@master ;\
 	go get golang.org/x/vuln/cmd/govulncheck@latest ;\
 	go get mvdan.cc/gofumpt@latest
 	make mod
