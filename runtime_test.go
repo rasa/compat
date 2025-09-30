@@ -52,9 +52,8 @@ func TestRuntime(t *testing.T) { //nolint:funlen,gocyclo
 	goExe, err := exec.LookPath("go")
 	if err != nil {
 		if compat.IsTinygo || compat.IsWasm {
-			skipf(t, "Skipping test: %v", err)
-
-			return // tinygo doesn't support t.Fatal
+			skipf(t, "Skipping test: %v (1)", err)
+			return
 		}
 
 		t.Fatal(err)
@@ -63,9 +62,8 @@ func TestRuntime(t *testing.T) { //nolint:funlen,gocyclo
 	out, err := exec.Command(goExe, "tool", "dist", "list").Output() //nolint:noctx
 	if err != nil {
 		if compat.IsTinygo || compat.IsWasm {
-			skipf(t, "Skipping test: %v", err)
-
-			return // tinygo doesn't support t.Fatal
+			skipf(t, "Skipping test: %v (2)", err)
+			return
 		}
 
 		t.Fatal(err)
