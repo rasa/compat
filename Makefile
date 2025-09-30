@@ -100,8 +100,8 @@ get: ## go get -u
 tools: ## freshen tools (misspell, golangci-lint, goreleaser, govulncheck, gofumpt)
 	export GOFLAGS="$(GOFLAGS) $(TOOL_OPTS)" ;\
 	go get github.com/golangci/golangci-lint/v2/cmd/golangci-lint@latest ;\
-	go get github.com/goreleaser/goreleaser/v2@latest ;\
-	go get golang.org/x/tools/gopls/internal/analysis/modernize/cmd/modernize ;\
+	go get github.com/goreleaser/goreleaser/v2@2.11.2 ;\
+	go get golang.org/x/tools/gopls/internal/analysis/modernize/cmd/modernize@latest ;\
 	go get github.com/client9/misspell/cmd/misspell@latest ;\
 	go get golang.org/x/vuln/cmd/govulncheck@latest ;\
 	go get mvdan.cc/gofumpt@latest

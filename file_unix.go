@@ -105,10 +105,6 @@ func symlink(oldname, newname string, _ ...Option) error {
 	return os.Symlink(oldname, newname)
 }
 
-func writeFile(name string, data []byte, perm os.FileMode, _ int) error {
-	return os.WriteFile(name, data, perm)
-}
-
 func wrap(name string, flag int, f *os.File) (*os.File, error) {
 	if flag&O_FILE_FLAG_DELETE_ON_CLOSE == 0 {
 		return f, nil

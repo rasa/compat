@@ -172,8 +172,8 @@ func fixPerms(perm os.FileMode, isDir bool) os.FileMode {
 		case compat.IsWindows:
 			return compat.DefaultWindowsDirPerm
 		case compat.IsApple:
-			ver, _ := osVersion()
-			if ver.major != 13 {
+			v, _ := osVersion()
+			if v.major != 13 {
 				return compat.DefaultAppleDirPerm
 			}
 			fallthrough
@@ -186,8 +186,8 @@ func fixPerms(perm os.FileMode, isDir bool) os.FileMode {
 	case compat.IsWindows:
 		return compat.DefaultWindowsFilePerm
 	case compat.IsApple:
-		ver, _ := osVersion()
-		if ver.major != 13 {
+		v, _ := osVersion()
+		if v.major != 13 {
 			return compat.DefaultAppleFilePerm
 		}
 		fallthrough
