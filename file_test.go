@@ -402,7 +402,9 @@ func TestFilePosixWriteFile(t *testing.T) {
 	}
 }
 
-// Invalid tests
+//////////////////////////////////////
+// Tests that succeed when err != nil.
+//////////////////////////////////////
 
 func TestFilePosixChmodInvalid(t *testing.T) {
 	err := compat.Chmod(invalidName, compat.CreatePerm)

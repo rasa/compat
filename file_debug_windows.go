@@ -86,6 +86,7 @@ func lookupAccountSid(sidString string) (name, domain string, use uint32, err er
 		return "", "", 0, err
 	}
 
+	// @TODO(rasa) use a reasonable size to start, to avoid the duplicate call.
 	var nLen, dLen uint32
 	_ = windows.LookupAccountSid(nil, sid, nil, &nLen, nil, &dLen, &use) // size query
 

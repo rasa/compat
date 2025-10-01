@@ -315,7 +315,9 @@ func TestWriteFileWithAtomicityWithReadOnlyModeReset(t *testing.T) { //nolint:du
 	}
 }
 
-// Invalid tests
+//////////////////////////////////////
+// Tests that succeed when err != nil.
+//////////////////////////////////////
 
 func TestWriteFileWithAtomicityInvalid(t *testing.T) { //nolint:dupl
 	opts := []compat.Option{compat.WithAtomicity(true)}

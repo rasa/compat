@@ -5,14 +5,15 @@
 
 package compat_test
 
-// "github.com/shirou/gopsutil/v4/host"
-
-func osVersion() (v ver, err error) { //nolint:gocyclo
-	return v, err
+func getOSVersion() (ver semanticVersion, err error) { //nolint:gocyclo
+	return ver, err
 }
 
 /*
-func osVersion() (v ver, err error) { //nolint:gocyclo
+
+import "github.com/shirou/gopsutil/v4/host"
+
+func getOSVersion() (v ver, err error) { //nolint:gocyclo
 	info, err := host.Info()
 	if err != nil {
 		return v, err

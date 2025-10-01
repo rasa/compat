@@ -44,22 +44,22 @@ var macOSMap = map[int]ver{
 	25: {26, 0, 0},
 }
 
-func osVersion() (v ver, err error) { //nolint:gocyclo
+func getOSVersion() (ver semanticVersion, err error) { //nolint:gocyclo
 	major := getMacOSMajor()
 
-	val, ok := macOSMap[major]
+	v, ok := macOSMap[major]
 	if ok {
-		return val, nil
+		return v, nil
 	}
 
 	var u unix.Utsname
 	err = unix.Uname(&u)
 	if err != nil {
-		return v, err
+		return ver, err
 	}
 	rel := unix.ByteSliceToString(u.Release[:])
 
-	return v, fmt.Errorf("cannot parse '%v'", rel)
+	return ver, fmt.Errorf("cannot parse '%v'", rel)
 }
 
 /*

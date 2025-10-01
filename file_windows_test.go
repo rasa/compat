@@ -14,7 +14,6 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
-	"syscall"
 	"testing"
 
 	"golang.org/x/sys/windows"
@@ -1013,7 +1012,7 @@ func errno(err error) uint32 { //nolint:unused
 	if err == nil {
 		return 0
 	}
-	var errno syscall.Errno
+	var errno windows.Errno
 	if errors.As(err, &errno) {
 		return uint32(errno)
 	}

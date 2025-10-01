@@ -42,12 +42,6 @@ var (
 	helloBuf    = bytes.NewBuffer(helloBytes)
 )
 
-type ver struct {
-	major int
-	minor int //nolint:unused
-	patch int //nolint:unused
-}
-
 func init() {
 	// Needed for testing.Verbose() and testing.Short() to be available.
 	testing.Init()
@@ -99,7 +93,7 @@ func compareTimes(a, b time.Time, granularity int) bool {
 	// add 1 second for fractional seconds
 	granularity += 1
 
-	return a.Sub(b).Abs() < time.Duration(granularity)*time.Second
+	return a.Sub(b).Abs() <= time.Duration(granularity)*time.Second
 }
 
 func debugln(t *testing.T, msg string) { //nolint:unused
@@ -142,13 +136,25 @@ func fatalTimes(t *testing.T, prefix string, got, want time.Time, granularity in
 
 	diff := got.Sub(want).Abs().Seconds()
 
-	t.Fatalf("%v: got %.2fs difference, want <%ds (%v vs %v)", prefix, diff, granularity, got, want)
+	t.Fatalf("%v: got %fs difference, want <%ds (%v vs %v)", prefix, diff, granularity, got, want)
 }
 
 func fclose(f *os.File) {
 	if f != nil {
 		_ = f.Close()
 	}
+}
+
+type semanticVersion struct {
+	major int
+	minor int //nolint:unused
+	patch int //nolint:unused
+}
+
+var osVersion semanticVersion
+
+func init() {
+	osVersion, _ = getOSVersion()
 }
 
 func fixPerms(perm os.FileMode, isDir bool) os.FileMode {
@@ -172,8 +178,7 @@ func fixPerms(perm os.FileMode, isDir bool) os.FileMode {
 		case compat.IsWindows:
 			return compat.DefaultWindowsDirPerm
 		case compat.IsApple:
-			v, _ := osVersion()
-			if v.major != 13 {
+			if osVersion.major != 13 {
 				return compat.DefaultAppleDirPerm
 			}
 			fallthrough
@@ -186,8 +191,7 @@ func fixPerms(perm os.FileMode, isDir bool) os.FileMode {
 	case compat.IsWindows:
 		return compat.DefaultWindowsFilePerm
 	case compat.IsApple:
-		v, _ := osVersion()
-		if v.major != 13 {
+		if osVersion.major != 13 {
 			return compat.DefaultAppleFilePerm
 		}
 		fallthrough

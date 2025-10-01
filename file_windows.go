@@ -43,7 +43,8 @@ func chmod(name string, perm os.FileMode, opts ...Option) error {
 		opt(&fopts)
 	}
 
-	_, err := syscall.UTF16PtrFromString(name)
+	// acl.Chmod will panic otherwise
+	_, err := windows.UTF16PtrFromString(name)
 	if err != nil {
 		return &os.PathError{Op: "chmod", Path: name, Err: os.ErrInvalid}
 	}
@@ -66,8 +67,8 @@ func chmod(name string, perm os.FileMode, opts ...Option) error {
 	}
 
 	// Set or clear Windows' read-only attribute
-	want := perm&syscall.S_IWRITE != 0 // 0x80 (0o200)
-	got := fi.Mode().Perm()&syscall.S_IWRITE != 0
+	want := perm&windows.S_IWRITE != 0 // 0x80 (0o200)
+	got := fi.Mode().Perm()&windows.S_IWRITE != 0
 	if fopts.readOnlyMode == ReadOnlyModeReset {
 		if !got {
 			return nil
@@ -80,9 +81,9 @@ func chmod(name string, perm os.FileMode, opts ...Option) error {
 	}
 
 	if want {
-		perm |= syscall.S_IWRITE
+		perm |= windows.S_IWRITE
 	} else {
-		perm &^= os.FileMode(syscall.S_IWRITE)
+		perm &^= os.FileMode(windows.S_IWRITE)
 	}
 	err = os.Chmod(name, perm)
 	if err != nil {
@@ -291,7 +292,7 @@ func siFromPerm(perm os.FileMode) (*securityInfo, error) {
 	defer token.Close()
 
 	var size uint32
-	// First call to get required buffer size
+	// @TODO(rasa) use a reasonable size to start, to avoid the duplicate call.
 	_ = windows.GetTokenInformation(token, windows.TokenUser, nil, 0, &size)
 
 	buf := make([]byte, size)
@@ -303,6 +304,7 @@ func siFromPerm(perm os.FileMode) (*securityInfo, error) {
 	tu := (*windows.Tokenuser)(unsafe.Pointer(&buf[0]))
 	ownerSid := tu.User.Sid
 
+	// @TODO(rasa) use a reasonable size to start, to avoid the duplicate call.
 	_ = windows.GetTokenInformation(token, windows.TokenPrimaryGroup, nil, 0, &size)
 
 	buf = make([]byte, size)

@@ -128,7 +128,6 @@ func openForQuery(path string) (windows.Handle, error) {
 // getFinalPathNameByHandleGUID returns a path that starts with a volume GUID root
 // ("\\?\Volume{GUID}\...") for local volumes, or "\\?\UNC\server\share\..." for UNC.
 func getFinalPathNameByHandleGUID(h windows.Handle) (string, error) {
-	// Probe size (n is the required length excluding NUL).
 	// See https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-getfinalpathnamebyhandlea#parameters
 	const FILE_NAME_NORMALIZED = 0x0
 	const VOLUME_NAME_GUID = 0x1
