@@ -35,7 +35,7 @@ func getMacOSMajor() int {
 }
 
 // See https://en.wikipedia.org/wiki/MacOS_version_history#Overview
-var macOSMap = map[int]ver{
+var macOSMap = map[int]semanticVersion{
 	20: {11, 0, 0},
 	21: {12, 0, 0},
 	22: {13, 0, 0},
