@@ -11,7 +11,7 @@ import (
 	"golang.org/x/sys/unix"
 )
 
-// IsWSL returns true if run instead a Windows Subsystem for Linux (WSL)
+// IsWSL returns true if running inside a Windows Subsystem for Linux (WSL)
 // environment, otherwise false.
 //
 // It's counter-intuitive that IsWSL() returns false in Windows, but here's why:
@@ -36,25 +36,11 @@ func isWSLUnix() bool {
 
 	err := unix.Uname(&uts)
 	if err == nil {
-		release := byteToString(uts.Release[:])
+		release := unix.ByteSliceToString(uts.Release[:])
 		if strings.Contains(strings.ToLower(release), "microsoft") {
 			return true
 		}
 	}
 
 	return isWSL()
-}
-
-// Convert byte array to string.
-func byteToString(b []byte) string {
-	n := len(b)
-	for i := 0; i < n; i++ {
-		if b[i] == 0 {
-			n = i
-
-			break
-		}
-	}
-
-	return string(b[:n])
 }
