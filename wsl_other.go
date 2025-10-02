@@ -18,5 +18,8 @@ package compat
 // the `WSL_DISTRO_NAME“ environment variable that other programs run inside
 // WSL see. Hence, this function must return false.
 func IsWSL() bool {
-	return iswsl()
+	isWSLOnce.Do(func() {
+		isWSLOnce.isWSL = isWSL()
+	})
+	return isWSLOnce.isWSL
 }

@@ -6,11 +6,27 @@
 package compat
 
 import (
+	"sync"
+
 	"golang.org/x/sys/windows"
 )
 
+var isRootOnce struct {
+	sync.Once
+	isRoot bool
+	err    error
+}
+
 // IsRoot returns true if the user is root, or has Windows administrator rights.
 func IsRoot() (bool, error) {
+	isRootOnce.Do(func() {
+		isRootOnce.isRoot, isRootOnce.err = isRoot()
+	})
+
+	return isRootOnce.isRoot, isRootOnce.err
+}
+
+func isRoot() (bool, error) {
 	// Source: https://github.com/golang/go/issues/28804#issuecomment-505326268
 	var sid *windows.SID
 

@@ -6,18 +6,30 @@
 package compat
 
 import (
-	"errors"
 	"fmt"
-	"unsafe"
+	"sync"
 
 	"golang.org/x/sys/windows"
 )
+
+var getuidOnce struct {
+	sync.Once
+	uid int
+	err error
+}
 
 // Getuid returns the User ID for the current user.
 // On Windows, the user's SID is converted to its POSIX equivalent, which is
 // compatible with Cygwin, Git for Windows, MSYS2, etc.
 // On Plan9, Getuid returns a 32-bit hash of the user's name.
 func Getuid() (int, error) {
+	getuidOnce.Do(func() {
+		getuidOnce.uid, getuidOnce.err = getuid()
+	})
+	return getuidOnce.uid, getuidOnce.err
+}
+
+func getuid() (int, error) {
 	var token windows.Token
 	err := windows.OpenProcessToken(windows.CurrentProcess(), windows.TOKEN_QUERY, &token)
 	if err != nil {
@@ -44,18 +56,38 @@ func Getuid() (int, error) {
 	return uid, nil
 }
 
+var getgidOnce struct {
+	sync.Once
+	gid int
+	err error
+}
+
 // Getgid returns the default Group ID for the current user.
 // On Windows, the user's primary group's SID is converted to its POSIX
 // equivalent, which is compatible with Cygwin, Git for Windows, MSYS2, etc.
 // On Plan9, Getgid returns a 32-bit hash of the user's group's name, as
 // provided by golang's os/user package.
 func Getgid() (int, error) {
+	getgidOnce.Do(func() {
+		getgidOnce.gid, getgidOnce.err = getgid()
+	})
+	return getgidOnce.gid, getgidOnce.err
+}
+
+func getgid() (int, error) {
+	var token windows.Token
+	err := windows.OpenProcessToken(windows.CurrentProcess(), windows.TOKEN_QUERY, &token)
+	if err != nil {
+		return UnknownID, fmt.Errorf("failed to open process token: %w", err)
+	}
+	defer token.Close()
+
 	primaryDomainSID, err := getPrimaryDomainSID()
 	if err != nil {
 		return UnknownID, fmt.Errorf("failed to get primary domain SID: %w", err)
 	}
 
-	groupSID, err := getPrimaryGroupSID()
+	groupSID, err := getPrimaryGroupSID(token)
 	if err != nil {
 		return UnknownID, fmt.Errorf("failed to get primary group SID: %w", err)
 	}
@@ -83,48 +115,4 @@ func Geteuid() (int, error) {
 // provided by golang's os/user package.
 func Getegid() (int, error) {
 	return Getgid()
-}
-
-// @TODO(rasa) improve this logic per
-// https://github.com/golang/go/blob/cc8a6780/src/os/user/lookup_windows.go#L351
-func getPrimaryGroupSID() (*windows.SID, error) {
-	var token windows.Token
-	err := windows.OpenProcessToken(windows.CurrentProcess(), windows.TOKEN_QUERY, &token)
-	if err != nil {
-		return nil, fmt.Errorf("failed to open process token: %w", err)
-	}
-	defer token.Close()
-
-	bufSize := initialBufSize
-	for {
-		var newBufSize uint32
-		buf := make([]byte, bufSize)
-		if bufSize <= 1 {
-			err = windows.GetTokenInformation(
-				token,
-				windows.TokenPrimaryGroup,
-				nil,
-				0,
-				&newBufSize)
-		} else {
-			err = windows.GetTokenInformation(
-				token,
-				windows.TokenPrimaryGroup,
-				&buf[0],
-				bufSize,
-				&newBufSize)
-		}
-		if err == nil {
-			pg := (*windows.Tokenprimarygroup)(unsafe.Pointer(&buf[0]))
-			return pg.PrimaryGroup, nil
-		}
-		if !errors.Is(err, windows.ERROR_INSUFFICIENT_BUFFER) {
-			return nil, fmt.Errorf("failed to get token information: %w", err)
-		}
-		if newBufSize > bufSize {
-			bufSize = newBufSize
-		} else {
-			bufSize *= 2
-		}
-	}
 }

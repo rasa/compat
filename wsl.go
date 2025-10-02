@@ -9,9 +9,15 @@ import (
 	"os"
 	"os/exec"
 	"strings"
+	"sync"
 )
 
-func iswsl() bool {
+var isWSLOnce struct {
+	sync.Once
+	isWSL bool
+}
+
+func isWSL() bool {
 	data, err := os.ReadFile("/proc/sys/kernel/osrelease")
 	if err == nil {
 		return strings.Contains(strings.ToLower(string(data)), "microsoft")

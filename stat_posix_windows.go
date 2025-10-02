@@ -176,10 +176,14 @@ func nameFromSID(sid *windows.SID) (string, error) {
 	if sid == nil {
 		return "", os.ErrInvalid
 	}
-	name16 := make([]uint16, 256)      //nolint:mnd
-	domain16 := make([]uint16, 256)    //nolint:mnd
-	nameLen := uint32(len(name16))     //nolint:gosec
-	domainLen := uint32(len(domain16)) //nolint:gosec
+
+	// See https://learn.microsoft.com/en-us/windows/win32/secauthz/searching-for-a-sid-in-an-access-token-in-c--
+	const MAX_NAME = 256
+	var nameLen uint32 = MAX_NAME
+	var domainLen uint32 = MAX_NAME
+
+	name16 := make([]uint16, nameLen)
+	domain16 := make([]uint16, domainLen)
 	var sidUse uint32
 
 	err := windows.LookupAccountSid(

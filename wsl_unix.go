@@ -24,6 +24,14 @@ import (
 // the `WSL_DISTRO_NAME“ environment variable that other programs run inside
 // WSL see. Hence, this function must return false.
 func IsWSL() bool {
+	isWSLOnce.Do(func() {
+		isWSLOnce.isWSL = isWSLUnix()
+	})
+
+	return isWSLOnce.isWSL
+}
+
+func isWSLUnix() bool {
 	var uts unix.Utsname
 
 	err := unix.Uname(&uts)
@@ -33,7 +41,8 @@ func IsWSL() bool {
 			return true
 		}
 	}
-	return iswsl()
+
+	return _isWSL()
 }
 
 // Convert byte array to string.
