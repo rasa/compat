@@ -24,9 +24,9 @@ import (
 // UnknownUsername is returned when the current username is not available.
 const UnknownUsername = "n/a"
 
-type tokenPrimaryGroup struct {
-	PrimaryGroup *windows.SID
-}
+// type tokenPrimaryGroup struct {
+//	PrimaryGroup *windows.SID
+// }
 
 type securityInfo struct {
 	ownerSid *windows.SID

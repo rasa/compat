@@ -63,8 +63,8 @@ spell: ## misspell -error -locale=US -w **.md
 	go tool $(TOOL_OPTS) misspell -error -locale=US -w **.md
 
 .PHONY: lint
-lint: ## golangci-lint run --fix ./...
-	go tool $(TOOL_OPTS) golangci-lint run --fix ./...
+lint: ## golangci-lint run --fix .
+	go tool $(TOOL_OPTS) golangci-lint run --fix .
 
 .PHONY: vuln
 vuln: ## govulncheck ./...
