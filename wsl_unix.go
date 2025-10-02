@@ -42,7 +42,7 @@ func isWSLUnix() bool {
 		}
 	}
 
-	return _isWSL()
+	return isWSL()
 }
 
 // Convert byte array to string.
