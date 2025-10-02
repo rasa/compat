@@ -5,7 +5,7 @@
 
 package compat
 
-// IsWSL returns true if run instead a Windows Subsystem for Linux (WSL)
+// IsWSL returns true if running inside a Windows Subsystem for Linux (WSL)
 // environment, otherwise false.
 //
 // It's counter-intuitive that IsWSL() returns false in Windows, but here's why:
