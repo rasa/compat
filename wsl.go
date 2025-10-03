@@ -26,6 +26,6 @@ func isWSL() bool {
 		return strings.Contains(strings.ToLower(string(data)), "microsoft")
 	}
 
-	_, err := exec.LookPath("wslpath")
+	_, err = exec.LookPath("wslpath")
 	return err == nil
 }
