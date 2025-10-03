@@ -13,7 +13,7 @@ for target in "${targets[@]}"; do
   fi
   test -z "${1:-}" && seen[${GOOS}]=1
   export GOARCH="${target#*/}"
-  echo "Building for ${GOOS}/${GOARCH}"
+  echo "*** Building for ${GOOS}/${GOARCH}"
   go build -v .
   ((rv |= $?))
 done
