@@ -13,8 +13,6 @@ func TestGetuid(t *testing.T) {
 	uid, err := compat.Getuid()
 	if err != nil {
 		t.Errorf("Getuid: got %q, want nil", err)
-
-		return // tinygo doesn't support t.Fatal
 	}
 
 	if compat.IsWasip1 {
@@ -30,9 +28,7 @@ func TestGetuid(t *testing.T) {
 func TestGetgid(t *testing.T) {
 	gid, err := compat.Getgid()
 	if err != nil {
-		t.Errorf("Getgid: got %q, want nil", err)
-
-		return // tinygo doesn't support t.Fatal
+		t.Fatalf("Getgid: got %q, want nil", err)
 	}
 
 	if compat.IsWasip1 {
@@ -48,9 +44,7 @@ func TestGetgid(t *testing.T) {
 func TestGeteuid(t *testing.T) {
 	uid, err := compat.Geteuid()
 	if err != nil {
-		t.Errorf("Geteuid: got %q, want nil", err)
-
-		return // tinygo doesn't support t.Fatal
+		t.Fatalf("Geteuid: got %q, want nil", err)
 	}
 
 	if compat.IsWasip1 {
@@ -66,9 +60,7 @@ func TestGeteuid(t *testing.T) {
 func TestGetegid(t *testing.T) {
 	gid, err := compat.Getegid()
 	if err != nil {
-		t.Errorf("Getegid: got %q, want nil", err)
-
-		return // tinygo doesn't support t.Fatal
+		t.Fatalf("Getegid: got %q, want nil", err)
 	}
 
 	if compat.IsWasip1 {

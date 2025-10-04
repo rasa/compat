@@ -14,7 +14,6 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
-	"syscall"
 	"testing"
 
 	"golang.org/x/sys/windows"
@@ -339,37 +338,12 @@ func TestFileWindowsCreate(t *testing.T) {
 	}
 }
 
-func TestFileWindowsCreateEx(t *testing.T) {
-	for _, perm := range perms {
-		name, err := tempName(t)
-		if err != nil {
-			t.Fatalf("perm=%3o (%v): %v", perm, perm, err)
-		}
-
-		cleanup(t, name)
-
-		fh, err := compat.CreateEx(name, perm, 0)
-		checkPerm(t, name, perm, false)
-		if err != nil {
-			t.Fatalf("perm=%3o (%v): %v", perm, perm, err)
-		}
-		_ = fh.Close()
-		err = compat.Remove(name)
-		checkDeleted(t, name, perm, err)
-		if err != nil {
-			t.Fatalf("perm=%3o (%v): %v", perm, perm, err)
-		}
-	}
-}
-
 func TestFileWindowsCreateReadOnlyModeSet(t *testing.T) {
 	perm := perm400
 
 	name, err := tempName(t)
 	if err != nil {
 		t.Fatal(err)
-
-		return
 	}
 
 	cleanup(t, name)
@@ -377,30 +351,22 @@ func TestFileWindowsCreateReadOnlyModeSet(t *testing.T) {
 	fh, err := compat.Create(name, compat.WithFileMode(perm), compat.WithReadOnlyMode(compat.ReadOnlyModeSet))
 	if err != nil {
 		t.Fatal(err)
-
-		return
 	}
 
 	err = fh.Close()
 	if err != nil {
 		t.Fatal(err)
-
-		return
 	}
 
 	fi, err := os.Stat(name)
 	if err != nil {
 		t.Fatal(err)
-
-		return
 	}
 
 	want := false // the user-writable bit is not set.
 	got := fi.Mode().Perm()&perm200 == perm200
 	if got != want {
 		t.Fatalf("got %v, want %v", got, want)
-
-		return
 	}
 }
 
@@ -902,26 +868,6 @@ func TestFileWindowsWriteFile(t *testing.T) {
 	}
 }
 
-func TestFileWindowsWriteFileEx(t *testing.T) {
-	for _, perm := range perms {
-		name, err := tempName(t)
-		if err != nil {
-			t.Fatal(err)
-		}
-		cleanup(t, name)
-		err = compat.WriteFileEx(name, helloBytes, perm, 0)
-		checkPerm(t, name, perm, false)
-		if err != nil {
-			t.Fatal(err)
-		}
-		err = compat.Remove(name)
-		checkDeleted(t, name, perm, err)
-		if err != nil {
-			t.Fatal(err)
-		}
-	}
-}
-
 func TestFileWindowsCurrentUsername(t *testing.T) {
 	username := compat.CurrentUsername()
 	if username == "" {
@@ -992,7 +938,6 @@ func checkPerm(t *testing.T, name string, perm os.FileMode, isDir bool) {
 	if got != want {
 		logACLs(t, name, false)
 		t.Fatalf("got 0o%03o (%v), want 0o%03o (%v): %v", got, got, want, want, name)
-		return
 	}
 }
 
@@ -1067,7 +1012,7 @@ func errno(err error) uint32 { //nolint:unused
 	if err == nil {
 		return 0
 	}
-	var errno syscall.Errno
+	var errno windows.Errno
 	if errors.As(err, &errno) {
 		return uint32(errno)
 	}

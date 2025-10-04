@@ -128,7 +128,6 @@ func openForQuery(path string) (windows.Handle, error) {
 // getFinalPathNameByHandleGUID returns a path that starts with a volume GUID root
 // ("\\?\Volume{GUID}\...") for local volumes, or "\\?\UNC\server\share\..." for UNC.
 func getFinalPathNameByHandleGUID(h windows.Handle) (string, error) {
-	// Probe size (n is the required length excluding NUL).
 	// See https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-getfinalpathnamebyhandlea#parameters
 	const FILE_NAME_NORMALIZED = 0x0
 	const VOLUME_NAME_GUID = 0x1
@@ -161,21 +160,21 @@ func getFinalPathNameByHandleGUID(h windows.Handle) (string, error) {
 }
 
 // getVolumePathNamesForVolumeName fetches all mount points for a volume GUID.
-func getVolumePathNamesForVolumeName(volGUID string) ([]string, error) {
-	g16, err := windows.UTF16PtrFromString(volGUID)
+func getVolumePathNamesForVolumeName(guid string) ([]string, error) {
+	guid16, err := windows.UTF16PtrFromString(guid)
 	if err != nil {
 		return nil, err
 	}
 
 	bufSize := initialBufSize
+	var buf0 *uint16
 	for {
 		var newBufSize uint32
 		buf := make([]uint16, bufSize)
-		if bufSize == 0 {
-			err = windows.GetVolumePathNamesForVolumeName(g16, nil, bufSize, &newBufSize)
-		} else {
-			err = windows.GetVolumePathNamesForVolumeName(g16, &buf[0], bufSize, &newBufSize)
+		if bufSize > 0 {
+			buf0 = &buf[0]
 		}
+		err = windows.GetVolumePathNamesForVolumeName(guid16, buf0, bufSize, &newBufSize)
 		if err == nil {
 			return multiSZToStrings(buf), nil
 		}

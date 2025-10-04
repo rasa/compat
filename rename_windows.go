@@ -10,7 +10,6 @@ package compat
 
 import (
 	"os"
-	"syscall"
 
 	"golang.org/x/sys/windows"
 
@@ -38,12 +37,12 @@ func rename(src, dst string, opts ...Option) error {
 func moveFile(src, dst string) error {
 	longsrc := golang.FixLongPath(src)
 
-	src16, err := syscall.UTF16PtrFromString(longsrc)
+	src16, err := windows.UTF16PtrFromString(longsrc)
 	if err != nil {
 		return &os.LinkError{Op: "rename", Old: src, New: dst, Err: err}
 	}
 	longdst := golang.FixLongPath(dst)
-	dst16, err := syscall.UTF16PtrFromString(longdst)
+	dst16, err := windows.UTF16PtrFromString(longdst)
 	if err != nil {
 		return &os.LinkError{Op: "rename", Old: src, New: dst, Err: err}
 	}

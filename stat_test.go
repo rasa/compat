@@ -60,6 +60,9 @@ func TestStatStat(t *testing.T) {
 	if got := fi.Sys(); got == nil {
 		t.Error("Sys(): got nil, want not-nil")
 	}
+
+	// to test ACL caching
+	_, _ = compat.Stat(name)
 }
 
 func TestStatLinks(t *testing.T) {
@@ -118,9 +121,8 @@ func TestStatLinks(t *testing.T) {
 
 func TestStatATime(t *testing.T) { //nolint:dupl
 	if !compat.SupportsATime() {
-		skip(t, "Skipping test: ATime() not supported on "+runtime.GOOS)
-
-		return // tinygo doesn't support t.Skip
+		skipf(t, "Skipping test: ATime() not supported on %v", runtime.GOOS)
+		return
 	}
 
 	now := time.Now()
@@ -163,9 +165,8 @@ func TestStatATime(t *testing.T) { //nolint:dupl
 
 func TestStatBTime(t *testing.T) {
 	if !compat.SupportsBTime() {
-		skip(t, "Skipping test: BTime() not supported on "+runtime.GOOS)
-
-		return // tinygo doesn't support t.Skip
+		skipf(t, "Skipping test: BTime() not supported on %v", runtime.GOOS)
+		return
 	}
 
 	now := time.Now()
@@ -187,9 +188,8 @@ func TestStatBTime(t *testing.T) {
 
 func TestStatCTime(t *testing.T) {
 	if !compat.SupportsCTime() {
-		skip(t, "Skipping test: CTime() not supported on "+runtime.GOOS)
-
-		return // tinygo doesn't support t.Skip
+		skipf(t, "Skipping test: CTime() not supported on %v", runtime.GOOS)
+		return
 	}
 
 	now := time.Now()
@@ -321,8 +321,7 @@ func TestStatUser(t *testing.T) {
 	if compat.IsTinygo {
 		// tinygo: Current requires cgo or $USER, $HOME set in environment
 		skip(t, "Skipping test: User() not supported on tinygo")
-
-		return // tinygo doesn't support t.Skip
+		return
 	}
 
 	name, err := createTempFile(t)
@@ -358,8 +357,7 @@ func TestStatUser(t *testing.T) {
 func TestStatGroup(t *testing.T) {
 	if compat.IsTinygo {
 		skip(t, "Skipping test: Group() not supported on tinygo")
-
-		return // tinygo doesn't support t.Skip
+		return
 	}
 
 	name, err := createTempFile(t)

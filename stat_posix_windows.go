@@ -56,12 +56,12 @@ var (
 
 func getFileOwnerAndGroupSIDs(name string) (*windows.SID, *windows.SID, error) {
 	var owner, group *windows.SID
-	pPath, err := syscall.UTF16PtrFromString(name)
+	name16, err := windows.UTF16PtrFromString(name)
 	if err != nil {
 		return nil, nil, fmt.Errorf("invalid file path: %w", err)
 	}
 	r0, _, _ := procGetNamedSecurityInfoW.Call(
-		uintptr(unsafe.Pointer(pPath)),
+		uintptr(unsafe.Pointer(name16)),
 		1, // SE_FILE_OBJECT
 		OWNER_SECURITY_INFORMATION|GROUP_SECURITY_INFORMATION,
 		uintptr(unsafe.Pointer(&owner)),
@@ -69,7 +69,7 @@ func getFileOwnerAndGroupSIDs(name string) (*windows.SID, *windows.SID, error) {
 		0, 0, 0,
 	)
 	if r0 != 0 {
-		return nil, nil, fmt.Errorf("failed to get named security info: %w", syscall.Errno(r0))
+		return nil, nil, fmt.Errorf("failed to get named security info: %w", windows.Errno(r0))
 	}
 
 	return owner, group, nil
@@ -89,7 +89,7 @@ func getPrimaryDomainSID() (*windows.SID, error) {
 		uintptr(unsafe.Pointer(&buffer)),
 	)
 	if r0 != 0 {
-		return nil, fmt.Errorf("failed to query information policy: %w", syscall.Errno(r0))
+		return nil, fmt.Errorf("failed to query information policy: %w", windows.Errno(r0))
 	}
 	defer procLsaFreeMemory.Call(uintptr(buffer)) //nolint:errcheck
 
@@ -176,10 +176,14 @@ func nameFromSID(sid *windows.SID) (string, error) {
 	if sid == nil {
 		return "", os.ErrInvalid
 	}
-	name16 := make([]uint16, 256)      //nolint:mnd
-	domain16 := make([]uint16, 256)    //nolint:mnd
-	nameLen := uint32(len(name16))     //nolint:gosec
-	domainLen := uint32(len(domain16)) //nolint:gosec
+
+	// See https://learn.microsoft.com/en-us/windows/win32/secauthz/searching-for-a-sid-in-an-access-token-in-c--
+	const MAX_NAME = 256
+	var nameLen uint32 = MAX_NAME
+	var domainLen uint32 = MAX_NAME
+
+	name16 := make([]uint16, nameLen)
+	domain16 := make([]uint16, domainLen)
 	var sidUse uint32
 
 	err := windows.LookupAccountSid(
@@ -195,8 +199,8 @@ func nameFromSID(sid *windows.SID) (string, error) {
 		return "", fmt.Errorf("cannot get name from SID %q: %w", sid.String(), err)
 	}
 
-	name := syscall.UTF16ToString(name16[:nameLen])
-	domain := syscall.UTF16ToString(domain16[:domainLen])
+	name := windows.UTF16ToString(name16[:nameLen])
+	domain := windows.UTF16ToString(domain16[:domainLen])
 
 	if domain != "" {
 		name = domain + `\` + name
@@ -275,7 +279,7 @@ func isValidSid(sid *windows.SID) bool { //nolint:unused
 	return r1 != 0
 }
 
-func lsaOpenPolicy(systemName *uint16, access uint32) (handle syscall.Handle, err error) {
+func lsaOpenPolicy(systemName *uint16, access uint32) (handle windows.Handle, err error) {
 	var objectAttrs LSA_OBJECT_ATTRIBUTES
 	r0, _, _ := procLsaOpenPolicy.Call(
 		uintptr(unsafe.Pointer(systemName)),
@@ -284,7 +288,7 @@ func lsaOpenPolicy(systemName *uint16, access uint32) (handle syscall.Handle, er
 		uintptr(unsafe.Pointer(&handle)),
 	)
 	if r0 != 0 {
-		return syscall.InvalidHandle, fmt.Errorf("failed to open LSA policy: %w", syscall.Errno(r0))
+		return windows.InvalidHandle, fmt.Errorf("failed to open LSA policy: %w", windows.Errno(r0))
 	}
 
 	return handle, nil

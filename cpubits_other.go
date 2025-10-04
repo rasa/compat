@@ -5,8 +5,6 @@
 
 package compat
 
-// CPUBits returns the number of bits on the CPU. Currently, on plan9, and wasm,
-// BuildBits() is returned.
-func CPUBits() (int, error) {
+func cpuBits() (int, error) {
 	return BuildBits(), nil
 }

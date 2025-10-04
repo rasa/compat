@@ -11,8 +11,6 @@ import (
 	"time"
 )
 
-const userIDSource UserIDSourceType = UserIDSourceIsInt
-
 func (fs *fileStat) times() {
 	fs.atime = time.Unix(int64(fs.sys.Atimespec.Sec), int64(fs.sys.Atimespec.Nsec))         //nolint:unconvert // needed conversion
 	fs.btime = time.Unix(int64(fs.sys.Birthtimespec.Sec), int64(fs.sys.Birthtimespec.Nsec)) //nolint:unconvert // needed conversion

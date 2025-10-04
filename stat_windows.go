@@ -21,11 +21,6 @@ import (
 
 const perm000 = os.FileMode(0o0)
 
-// Not supported: none.
-const supports supportsType = supportsLinks | supportsATime | supportsBTime | supportsCTime | supportsFstat | supportsNice | supportsSymlinks
-
-const userIDSource UserIDSourceType = UserIDSourceIsSID
-
 // A fileStat is the implementation of FileInfo returned by Stat and Lstat.
 // See https://github.com/golang/go/blob/8cd6d68a/src/os/types_windows.go#L18
 type fileStat struct {
@@ -53,6 +48,8 @@ type fileStat struct {
 	followSymlinks bool
 	err            error
 	mux            sync.Mutex // Windows only
+	path16         []uint16   // Windows only
+	origName       string     // Windows only
 }
 
 // Portions of the following code is:
@@ -66,32 +63,30 @@ type fileStat struct {
 ////////////////////////////////////////////////////////////////////////////////
 
 func stat(fi os.FileInfo, name string, followSymlinks bool) (FileInfo, error) {
+	var err error
 	if fi == nil {
-		err := errors.New("fileInfo is nil")
+		err = errors.New("fileInfo is nil")
 		return nil, &os.PathError{Op: "stat", Path: name, Err: err}
 	}
+
 	var fs fileStat
-
-	fs.followSymlinks = followSymlinks
-
-	name = golang.FixLongPath(name)
-
-	pathp, err := windows.UTF16PtrFromString(name)
+	fs.path = golang.FixLongPath(name)
+	fs.path16, err = windows.UTF16FromString(fs.path)
 	if err != nil {
 		return nil, &os.PathError{Op: "stat", Path: name, Err: err}
 	}
 
-	attrs := uint32(syscall.FILE_FLAG_BACKUP_SEMANTICS)
+	attrs := uint32(windows.FILE_FLAG_BACKUP_SEMANTICS)
 
 	if !followSymlinks {
-		attrs |= syscall.FILE_FLAG_OPEN_REPARSE_POINT
+		attrs |= windows.FILE_FLAG_OPEN_REPARSE_POINT
 	}
 
 	// See https://github.com/golang/go/blob/3cf1aaf8/src/os/types_windows.go#L288
 	fs.mux.Lock()
 	defer fs.mux.Unlock()
 
-	h, err := windows.CreateFile(pathp, 0, 0, nil, windows.OPEN_EXISTING, attrs, 0)
+	h, err := windows.CreateFile(&fs.path16[0], 0, 0, nil, windows.OPEN_EXISTING, attrs, 0)
 	if err != nil {
 		return nil, &os.PathError{Op: "stat", Path: name, Err: err}
 	}
@@ -102,11 +97,21 @@ func stat(fi os.FileInfo, name string, followSymlinks bool) (FileInfo, error) {
 		return nil, &os.PathError{Op: "stat", Path: name, Err: err}
 	}
 
-	fs.path = name
+	fs.origName = name
+	fs.mode = fi.Mode()
+
+	// fs.stat() needs fs.origName, fs.mode, and fs.path16 set
+	perm, err := fs.stat()
+	if err != nil {
+		return nil, &os.PathError{Op: "stat", Path: name, Err: err}
+	}
+
 	fs.name = fi.Name()
 	fs.size = fi.Size()
-	fs.mode = fi.Mode()
 	fs.mtime = fi.ModTime()
+	fs.mode &^= ModePerm // os.FileMode(^uint32(0o777)) //nolint:mnd // quiet
+	fs.mode |= perm.Perm()
+
 	// See https://github.com/golang/go/blob/3cf1aaf8/src/os/types_windows.go#L367
 	fs.sys = *(fi.Sys().(*syscall.Win32FileAttributeData)) //nolint:staticcheck
 
@@ -115,13 +120,7 @@ func stat(fi os.FileInfo, name string, followSymlinks bool) (FileInfo, error) {
 	fs.links = uint(i.NumberOfLinks)
 	fs.atime = time.Unix(0, fs.sys.LastAccessTime.Nanoseconds())
 	fs.btime = time.Unix(0, fs.sys.CreationTime.Nanoseconds())
-
-	perm, err := fs.stat()
-	if err != nil {
-		return nil, &os.PathError{Op: "stat", Path: name, Err: err}
-	}
-	fs.mode &^= ModePerm // os.FileMode(^uint32(0o777)) //nolint:mnd // quiet
-	fs.mode |= perm.Perm()
+	fs.followSymlinks = followSymlinks
 
 	return &fs, nil
 }
@@ -133,26 +132,19 @@ func (fs *fileStat) BTime() time.Time {
 func (fs *fileStat) CTime() time.Time {
 	if !fs.ctimed {
 		fs.ctimed = true
-		pathp, err := windows.UTF16PtrFromString(fs.path)
-		if err != nil {
-			fs.err = &os.PathError{Op: "stat", Path: fs.path, Err: err}
 
-			return fs.ctime
-		}
-
-		attrs := uint32(syscall.FILE_FLAG_BACKUP_SEMANTICS)
-
+		attrs := uint32(windows.FILE_FLAG_BACKUP_SEMANTICS)
 		if !fs.followSymlinks {
-			attrs |= syscall.FILE_FLAG_OPEN_REPARSE_POINT
+			attrs |= windows.FILE_FLAG_OPEN_REPARSE_POINT
 		}
 
 		// See https://github.com/golang/go/blob/3cf1aaf8/src/os/types_windows.go#L288
 		fs.mux.Lock()
 		defer fs.mux.Unlock()
 
-		h, err := windows.CreateFile(pathp, 0, 0, nil, windows.OPEN_EXISTING, attrs, 0)
+		h, err := windows.CreateFile(&fs.path16[0], 0, 0, nil, windows.OPEN_EXISTING, attrs, 0)
 		if err != nil {
-			fs.err = &os.PathError{Op: "stat", Path: fs.path, Err: err}
+			fs.err = &os.PathError{Op: "stat", Path: fs.origName, Err: err}
 
 			return fs.ctime
 		}
@@ -162,7 +154,7 @@ func (fs *fileStat) CTime() time.Time {
 
 		err = windows.GetFileInformationByHandleEx(h, windows.FileBasicInfo, (*byte)(unsafe.Pointer(&bi)), uint32(unsafe.Sizeof(bi)))
 		if err != nil {
-			fs.err = &os.PathError{Op: "stat", Path: fs.path, Err: err}
+			fs.err = &os.PathError{Op: "stat", Path: fs.origName, Err: err}
 
 			return fs.ctime
 		}
@@ -190,7 +182,7 @@ func (fs *fileStat) UID() int {
 		var err error
 		fs.uid, fs.gid, fs.user, fs.group, err = getUserGroup(fs.path)
 		if err != nil {
-			fs.err = &os.PathError{Op: "stat", Path: fs.path, Err: err}
+			fs.err = &os.PathError{Op: "stat", Path: fs.origName, Err: err}
 		}
 	}
 
@@ -203,7 +195,7 @@ func (fs *fileStat) GID() int {
 		var err error
 		fs.uid, fs.gid, fs.user, fs.group, err = getUserGroup(fs.path)
 		if err != nil {
-			fs.err = &os.PathError{Op: "stat", Path: fs.path, Err: err}
+			fs.err = &os.PathError{Op: "stat", Path: fs.origName, Err: err}
 		}
 	}
 
@@ -216,7 +208,7 @@ func (fs *fileStat) User() string {
 		var err error
 		fs.uid, fs.gid, fs.user, fs.group, err = getUserGroup(fs.path)
 		if err != nil {
-			fs.err = &os.PathError{Op: "stat", Path: fs.path, Err: err}
+			fs.err = &os.PathError{Op: "stat", Path: fs.origName, Err: err}
 		}
 	}
 
@@ -229,7 +221,7 @@ func (fs *fileStat) Group() string {
 		var err error
 		fs.uid, fs.gid, fs.user, fs.group, err = getUserGroup(fs.path)
 		if err != nil {
-			fs.err = &os.PathError{Op: "stat", Path: fs.path, Err: err}
+			fs.err = &os.PathError{Op: "stat", Path: fs.origName, Err: err}
 		}
 	}
 
@@ -248,13 +240,13 @@ func (fs *fileStat) stat() (os.FileMode, error) {
 
 	perm, err := acl.GetExplicitFileAccessMode(fs.path)
 	if err != nil {
-		fs.err = &os.PathError{Op: "stat", Path: fs.path, Err: err}
+		fs.err = &os.PathError{Op: "stat", Path: fs.origName, Err: err}
 		return perm, fs.err
 	}
 	if perm == perm000 {
 		b, err = supportsACLs(fs.path)
 		if err != nil {
-			fs.err = &os.PathError{Op: "stat", Path: fs.path, Err: err}
+			fs.err = &os.PathError{Op: "stat", Path: fs.origName, Err: err}
 			return perm, fs.err
 		}
 		if !b {
