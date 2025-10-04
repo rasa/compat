@@ -4,6 +4,7 @@
 [![MegaLinter](https://github.com/rasa/compat/actions/workflows/mega-linter.yml/badge.svg)](https://github.com/rasa/compat/actions/workflows/mega-linter.yml)
 [![Last Commit](https://img.shields.io/github/last-commit/rasa/compat.svg)](https://github.com/rasa/compat/commits)
 [![Codecov](https://codecov.io/gh/rasa/compat/branch/main/graph/badge.svg)](https://codecov.io/gh/rasa/compat)
+[![CodeQL](https://github.com/rasa/compat/workflows/CodeQL/badge.svg)](https://github.com/rasa/compat/actions?query=workflow%3ACodeQL)
 [![Release](https://img.shields.io/github/v/release/rasa/compat.svg?style=flat)](https://github.com/rasa/compat/releases)
 [![go.mod](https://img.shields.io/github/go-mod/go-version/rasa/compat)](go.mod)
 [![Go Report Card](https://goreportcard.com/badge/github.com/rasa/compat)](https://goreportcard.com/report/github.com/rasa/compat)
