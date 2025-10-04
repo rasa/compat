@@ -80,15 +80,18 @@ func (a aMask) String() string { //nolint:unused
 	return rv
 }
 
+/*
+// See https://learn.microsoft.com/en-us/windows/win32/secauthz/searching-for-a-sid-in-an-access-token-in-c--
+const MAX_NAME = 256
+
 func lookupAccountSid(sidString string) (name, domain string, use uint32, err error) {
 	sid, err := windows.StringToSid(sidString)
 	if err != nil {
 		return "", "", 0, err
 	}
 
-	// @TODO(rasa) use a reasonable size to start, to avoid the duplicate call.
-	var nLen, dLen uint32
-	_ = windows.LookupAccountSid(nil, sid, nil, &nLen, nil, &dLen, &use) // size query
+	var nLen uint32 = MAX_NAME
+	var dLen uint32 = MAX_NAME
 
 	nameBuf := make([]uint16, nLen)
 	domBuf := make([]uint16, dLen)
@@ -99,3 +102,4 @@ func lookupAccountSid(sidString string) (name, domain string, use uint32, err er
 
 	return windows.UTF16ToString(nameBuf), windows.UTF16ToString(domBuf), use, nil
 }
+*/

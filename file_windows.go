@@ -10,6 +10,7 @@ import (
 	"fmt"
 	"os"
 	"os/user"
+	"sync"
 	"syscall"
 	"unsafe"
 
@@ -23,9 +24,9 @@ import (
 // UnknownUsername is returned when the current username is not available.
 const UnknownUsername = "n/a"
 
-type tokenPrimaryGroup struct {
-	PrimaryGroup *windows.SID
-}
+// type tokenPrimaryGroup struct {
+//	PrimaryGroup *windows.SID
+// }
 
 type securityInfo struct {
 	ownerSid *windows.SID
@@ -283,42 +284,9 @@ func saFromPerm(perm os.FileMode, create bool) (*syscall.SecurityAttributes, err
 func siFromPerm(perm os.FileMode) (*securityInfo, error) {
 	perm &^= os.FileMode(GetUmask()) //nolint:gosec
 
-	// Get current user's SID
-	token := windows.Token(0)
-	err := windows.OpenProcessToken(windows.CurrentProcess(), windows.TOKEN_QUERY, &token)
+	ownerSid, groupSid, worldSid, err := getSIDs()
 	if err != nil {
-		return nil, fmt.Errorf("failed to get process token for %s: %w", currentUsername(), err)
-	}
-	defer token.Close()
-
-	var size uint32
-	// @TODO(rasa) use a reasonable size to start, to avoid the duplicate call.
-	_ = windows.GetTokenInformation(token, windows.TokenUser, nil, 0, &size)
-
-	buf := make([]byte, size)
-	err = windows.GetTokenInformation(token, windows.TokenUser, &buf[0], size, &size)
-	if err != nil {
-		return nil, fmt.Errorf("failed to get user token information for %s: %w", currentUsername(), err)
-	}
-
-	tu := (*windows.Tokenuser)(unsafe.Pointer(&buf[0]))
-	ownerSid := tu.User.Sid
-
-	// @TODO(rasa) use a reasonable size to start, to avoid the duplicate call.
-	_ = windows.GetTokenInformation(token, windows.TokenPrimaryGroup, nil, 0, &size)
-
-	buf = make([]byte, size)
-	err = windows.GetTokenInformation(token, windows.TokenPrimaryGroup, &buf[0], size, &size)
-	if err != nil {
-		return nil, fmt.Errorf("failed to get group token information for %s: %w", currentUsername(), err)
-	}
-
-	tg := (*tokenPrimaryGroup)(unsafe.Pointer(&buf[0]))
-	groupSid := tg.PrimaryGroup
-
-	worldSid, err := windows.CreateWellKnownSid(windows.WinWorldSid)
-	if err != nil {
-		return nil, fmt.Errorf("failed to create world SID: %w", err)
+		return nil, err
 	}
 
 	var ea [3]windows.EXPLICIT_ACCESS
@@ -342,6 +310,113 @@ func siFromPerm(perm os.FileMode) (*securityInfo, error) {
 	si := securityInfo{ownerSid, groupSid, acl, perm}
 
 	return &si, nil
+}
+
+var getSIDsOnce struct {
+	sync.Once
+	ownerSID *windows.SID
+	groupSID *windows.SID
+	worldSID *windows.SID
+	err      error
+}
+
+func getSIDs() (*windows.SID, *windows.SID, *windows.SID, error) {
+	getSIDsOnce.Do(func() {
+		getSIDsOnce.ownerSID, getSIDsOnce.groupSID, getSIDsOnce.worldSID, getSIDsOnce.err = _getSIDs()
+	})
+	return getSIDsOnce.ownerSID, getSIDsOnce.groupSID, getSIDsOnce.worldSID, getSIDsOnce.err
+}
+
+func _getSIDs() (*windows.SID, *windows.SID, *windows.SID, error) {
+	// // Get current user's SID
+	token := windows.Token(0)
+	err := windows.OpenProcessToken(windows.CurrentProcess(), windows.TOKEN_QUERY, &token)
+	if err != nil {
+		return nil, nil, nil, fmt.Errorf("failed to get process token for %s: %w", currentUsername(), err)
+	}
+	defer token.Close()
+
+	ownerSID, err := getOwnerSID(token) // works: getOwnerSID(token)
+	if err != nil {
+		return nil, nil, nil, err
+	}
+	groupSID, err := getPrimaryGroupSID(token) // works: getGroupSID(token)
+	if err != nil {
+		return nil, nil, nil, err
+	}
+
+	worldSID, err := windows.CreateWellKnownSid(windows.WinWorldSid)
+	if err != nil {
+		return nil, nil, nil, fmt.Errorf("failed to create world SID: %w", err)
+	}
+
+	return ownerSID, groupSID, worldSID, nil
+}
+
+func getOwnerSID(token windows.Token) (*windows.SID, error) {
+	var err error
+	bufSize := initialBufSize
+	var buf0 *byte
+	for {
+		var newBufSize uint32
+		buf := make([]byte, bufSize)
+		if bufSize > 0 {
+			buf0 = &buf[0]
+		}
+		err = windows.GetTokenInformation(
+			token,
+			windows.TokenUser,
+			buf0,
+			bufSize,
+			&newBufSize)
+		if err == nil {
+			tu := (*windows.Tokenuser)(unsafe.Pointer(&buf[0]))
+			return tu.User.Sid, nil
+		}
+		if !errors.Is(err, windows.ERROR_INSUFFICIENT_BUFFER) {
+			return nil, fmt.Errorf("failed to get token information: %w", err)
+		}
+		if newBufSize > bufSize {
+			bufSize = newBufSize
+		} else {
+			bufSize *= 2
+		}
+	}
+}
+
+// @TODO(rasa) improve this logic per
+// https://github.com/golang/go/blob/cc8a6780/src/os/user/lookup_windows.go#L351
+func getPrimaryGroupSID(token windows.Token) (*windows.SID, error) {
+	// @TODO TEST IF  windows.GetTokenPrimaryGroup() can replace.
+
+	var err error
+	bufSize := initialBufSize
+	var buf0 *byte
+	for {
+		var newBufSize uint32
+		buf := make([]byte, bufSize)
+		if bufSize > 0 {
+			buf0 = &buf[0]
+		}
+		err = windows.GetTokenInformation(
+			token,
+			windows.TokenPrimaryGroup,
+			buf0,
+			bufSize,
+			&newBufSize)
+		if err == nil {
+			pg := (*windows.Tokenprimarygroup)(unsafe.Pointer(&buf[0]))
+			return pg.PrimaryGroup, nil
+		}
+		if !errors.Is(err, windows.ERROR_INSUFFICIENT_BUFFER) {
+			return nil, fmt.Errorf("failed to get token information: %w", err)
+		}
+		if newBufSize > bufSize {
+			bufSize = newBufSize
+		} else {
+			bufSize *= 2
+		}
+	}
 }
 
 // sdFromPerm converts a perm (FileMode) to an *sd (*windows.SECURITY_DESCRIPTOR).

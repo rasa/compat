@@ -7,6 +7,7 @@ import (
 	"go/version"
 	"os"
 	"runtime"
+	"sync"
 )
 
 // IsTinygo is true if the go compiler is tinygo.
@@ -101,19 +102,28 @@ var tinygoThresholds = []struct {
 	{"0.39.0", "go1.19", "go1.25"},
 }
 
+var goVersionOnce struct {
+	sync.Once
+	goVersion string
+}
+
 // GoVersion returns the effective Go toolchain version string ("goX.Y")
 // for the current environment.
 // - On standard Go: returns runtime.Version() (already "go1.xx").
 // - On TinyGo: picks the highest Go version supported based on thresholds.
 func GoVersion() string {
-	v := runtime.Version()
+	goVersionOnce.Do(func() {
+		goVersionOnce.goVersion = goVersion(runtime.Version(), IsTinygo)
+	})
+	return goVersionOnce.goVersion
+}
 
-	if !IsTinygo {
+func goVersion(v string, isTinygo bool) string {
+	if !isTinygo {
 		return v
 	}
 
 	v = "go" + v
-
 	// TinyGo: runtime.Version() is like "0.39.1"
 	best := ""
 	for _, th := range tinygoThresholds {

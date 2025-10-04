@@ -3,7 +3,8 @@
 
 //go:build js || unix
 
-// unix == aix || darwin || dragonfly || freebsd || illumos || linux || netbsd || openbsd || solaris
+// https://github.com/golang/go/blob/8ad27fb6/src/cmd/dist/build.go#L1070
+// unix == aix || android || darwin || dragonfly || freebsd || illumos || ios || linux || netbsd || openbsd || solaris
 
 package compat
 

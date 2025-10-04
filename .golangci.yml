@@ -93,8 +93,8 @@ linters:
       - format\.go$
       - walk\.go$
       - walk_test\.go$
-      - golang/golang_.*\.go$
-      - robustio/robustio.*
+      - golang
+      - robustio
 
 formatters:
   enable:
@@ -114,5 +114,5 @@ formatters:
       - format\.go$
       - walk\.go$
       - walk_test\.go$
-      - golang/golang_.*\.go$
-      - robustio/robustio.*
+      - golang
+      - robustio
