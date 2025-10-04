@@ -17,15 +17,15 @@ import (
 
 func TestReadDir(t *testing.T) {
 	// t.Parallel()
-	dirname := "rumpelstilzchen"
-	if _, err := compat.ReadDir(dirname); err == nil { // compat: s|ReadDir|compat.ReadDir|
-		t.Fatalf("ReadDir %s: error expected, none found", dirname)
-	}
-
 	if compat.IsTinygo {
 		skip(t, "Skipping test: fdopendir /tmp/TestReadDir256423683/000/foo: errno 8")
 
-		return
+		return // tinygo doesn't support t.Skip
+	}
+
+	dirname := "rumpelstilzchen"
+	if _, err := compat.ReadDir(dirname); err == nil { // compat: s|ReadDir|compat.ReadDir|
+		t.Fatalf("ReadDir %s: error expected, none found", dirname)
 	}
 
 	filename := filepath.Join(t.TempDir(), "foo")

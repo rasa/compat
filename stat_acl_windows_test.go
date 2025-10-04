@@ -87,8 +87,6 @@ func TestACLWindowsResolveCanonicalRootFromHandleUNC(t *testing.T) {
 	usr, err := user.Current()
 	if err != nil {
 		t.Fatal(err)
-
-		return
 	}
 
 	dir := tempDir(t)
@@ -98,8 +96,6 @@ func TestACLWindowsResolveCanonicalRootFromHandleUNC(t *testing.T) {
 	err = exec.CommandContext(ctx, "net.exe", args...).Run()
 	if err != nil {
 		t.Fatal(err)
-
-		return
 	}
 
 	defer func() {
@@ -113,8 +109,6 @@ func TestACLWindowsResolveCanonicalRootFromHandleUNC(t *testing.T) {
 	fh, err := os.CreateTemp(dir, "")
 	if err != nil {
 		t.Fatal(err)
-
-		return
 	}
 	path := `\\?\UNC\127.0.0.1\` + sharename + `\` + filepath.Base(fh.Name())
 	_ = fh.Close()
@@ -122,8 +116,6 @@ func TestACLWindowsResolveCanonicalRootFromHandleUNC(t *testing.T) {
 	f, err := os.Open(path)
 	if err != nil {
 		t.Fatal(err)
-
-		return
 	}
 	defer func() { _ = f.Close() }()
 

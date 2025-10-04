@@ -138,8 +138,7 @@ func TestWalkDirSymlink(t *testing.T) {
 			suffix = fmt.Sprintf(" (tinygo %v)", runtime.Version())
 		}
 		skipf(t, "Skipping test: test requires go 1.25+, it fails on %v%v", goVer, suffix)
-
-		return // tinygo doesn't support t.Skip
+		return
 	}
 
 	fsys := fstest.MapFS{

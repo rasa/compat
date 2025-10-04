@@ -12,17 +12,32 @@ import (
 	"github.com/rasa/compat/golang"
 )
 
-func chmod(name string, mode os.FileMode, _ ReadOnlyMode) error {
-	return os.Chmod(name, mode)
-}
-
-func create(name string, perm os.FileMode, flag int) (*os.File, error) {
-	if perm == 0 {
-		perm = CreatePerm
+func chmod(name string, mode os.FileMode, opts ...Option) error {
+	fopts := Options{
+		fileMode: mode,
+	}
+	for _, opt := range opts {
+		opt(&fopts)
 	}
 
-	flag |= O_CREATE // & ^O_EXCL
-	return openFile(name, flag, perm)
+	return os.Chmod(name, fopts.fileMode)
+}
+
+func create(name string, opts ...Option) (*os.File, error) {
+	fopts := Options{
+		fileMode: CreatePerm,
+		flags:    os.O_CREATE | os.O_TRUNC,
+	}
+
+	for _, opt := range opts {
+		opt(&fopts)
+	}
+
+	if fopts.flags&os.O_WRONLY != os.O_WRONLY {
+		fopts.flags |= os.O_RDWR
+	}
+
+	return openFile(name, fopts.flags, fopts.fileMode)
 }
 
 func createTemp(dir, pattern string, perm os.FileMode, flag int) (*os.File, error) {
@@ -38,24 +53,35 @@ func createTemp(dir, pattern string, perm os.FileMode, flag int) (*os.File, erro
 	return wrap(f.Name(), flag, f)
 }
 
-func fchmod(f *os.File, mode os.FileMode, _ ReadOnlyMode) error {
+func fchmod(f *os.File, mode os.FileMode, opts ...Option) error {
 	if f == nil {
 		return errors.New("nil file pointer")
 	}
 
-	return f.Chmod(mode)
+	fopts := Options{
+		fileMode: mode,
+	}
+	for _, opt := range opts {
+		opt(&fopts)
+	}
+
+	return f.Chmod(fopts.fileMode)
 }
 
 var mkdir = os.Mkdir
 
 var mkdirAll = os.MkdirAll
 
-func mkdirTemp(dir, pattern string, perm os.FileMode) (string, error) {
-	if perm == 0 {
-		perm = MkdirTempPerm
+func mkdirTemp(dir, pattern string, opts ...Option) (string, error) {
+	fopts := Options{
+		fileMode: MkdirTempPerm,
 	}
 
-	return golang.MkdirTemp(dir, pattern, perm)
+	for _, opt := range opts {
+		opt(&fopts)
+	}
+
+	return golang.MkdirTemp(dir, pattern, fopts.fileMode)
 }
 
 func openFile(name string, flag int, perm os.FileMode) (*os.File, error) {
@@ -75,12 +101,8 @@ func removeAll(path string, _ ...Option) error {
 	return os.RemoveAll(path)
 }
 
-func symlink(oldname, newname string, _ bool) error {
+func symlink(oldname, newname string, _ ...Option) error {
 	return os.Symlink(oldname, newname)
-}
-
-func writeFile(name string, data []byte, perm os.FileMode, _ int) error {
-	return os.WriteFile(name, data, perm)
 }
 
 func wrap(name string, flag int, f *os.File) (*os.File, error) {

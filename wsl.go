@@ -9,23 +9,23 @@ import (
 	"os"
 	"os/exec"
 	"strings"
+	"sync"
 )
 
-func iswsl() bool {
+var isWSLOnce struct {
+	sync.Once
+	isWSL bool
+}
+
+func isWSL() bool {
 	data, err := os.ReadFile("/proc/sys/kernel/osrelease")
-	if err == nil {
-		return strings.Contains(strings.ToLower(string(data)), "microsoft")
-	}
-
-	data, err = os.ReadFile("/proc/version")
-	if err == nil {
-		return strings.Contains(strings.ToLower(string(data)), "microsoft")
-	}
-
-	path, err := exec.LookPath("wslpath")
 	if err != nil {
-		return false
+		data, err = os.ReadFile("/proc/version")
+	}
+	if err == nil {
+		return strings.Contains(strings.ToLower(string(data)), "microsoft")
 	}
 
-	return path == "/usr/bin/wslpath"
+	_, err = exec.LookPath("wslpath")
+	return err == nil
 }

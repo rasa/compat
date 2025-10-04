@@ -21,14 +21,11 @@ func TestRootIsRoot(t *testing.T) {
 	}
 
 	if !isRoot {
-		skipf(t, "Skipping test: we aren't the root/admin user")
-
+		skip(t, "Skipping test: we aren't the root/admin user")
 		return
 	}
 
 	if got != isRoot {
 		t.Fatalf("IsRoot(): got %v, want %v", got, isRoot)
-
-		return
 	}
 }

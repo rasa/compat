@@ -6,6 +6,7 @@ package compat_test
 import (
 	"bytes"
 	"os/exec"
+	"runtime"
 	"slices"
 	"strings"
 	"testing"
@@ -48,31 +49,25 @@ var arches = []string{
 	"wasm",
 }
 
-func TestRuntime(t *testing.T) { //nolint:funlen,gocyclo
+func TestRuntimeConsts(t *testing.T) { //nolint:funlen,gocyclo
 	goExe, err := exec.LookPath("go")
 	if err != nil {
 		if compat.IsTinygo || compat.IsWasm {
-			skipf(t, "Skipping test: %v", err)
-
-			return // tinygo doesn't support t.Fatal
+			skipf(t, "Skipping test: %v (1)", err)
+			return
 		}
 
 		t.Fatal(err)
-
-		return
 	}
 
 	out, err := exec.Command(goExe, "tool", "dist", "list").Output() //nolint:noctx
 	if err != nil {
 		if compat.IsTinygo || compat.IsWasm {
-			skipf(t, "Skipping test: %v", err)
-
-			return // tinygo doesn't support t.Fatal
+			skipf(t, "Skipping test: %v (2)", err)
+			return
 		}
 
 		t.Fatal(err)
-
-		return
 	}
 
 	gooses := make(map[string]struct{})
@@ -93,8 +88,6 @@ func TestRuntime(t *testing.T) { //nolint:funlen,gocyclo
 
 	if len(gooses) == 0 {
 		t.Fatal("failed to parse output of: go tool dist list")
-
-		return
 	}
 
 	for goos := range gooses {
@@ -121,5 +114,34 @@ func TestRuntime(t *testing.T) { //nolint:funlen,gocyclo
 		if !ok {
 			t.Logf("go no longer supports GOARCH: %q", goarch)
 		}
+	}
+}
+
+func TestRuntimeGoVersion(t *testing.T) {
+	if compat.IsTinygo {
+		skip(t, "Skipping test: fails on tinygo")
+		return
+	}
+
+	want := runtime.Version()
+	got := compat.GoVersion()
+	if got != want {
+		t.Fatalf("got %v, want %v", got, want)
+	}
+}
+
+func TestRuntimeGetGoVersionFalse(t *testing.T) {
+	want := runtime.Version()
+	got := compat.ExportedGoVersion(want, false)
+	if got != want {
+		t.Fatalf("got %v, want %v", got, want)
+	}
+}
+
+func TestRuntimeGetGoVersionTrue(t *testing.T) {
+	want := "go1.25"
+	got := compat.ExportedGoVersion("0.39.1", true)
+	if got != want {
+		t.Fatalf("got %v, want %v", got, want)
 	}
 }

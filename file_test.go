@@ -18,29 +18,21 @@ func TestFilePosixChmod(t *testing.T) {
 	name, err := tempFile(t)
 	if err != nil {
 		t.Fatal(err)
-
-		return
 	}
 
 	err = compat.Chmod(name, perm)
 	if err != nil {
 		t.Fatal(err)
-
-		return
 	}
 
 	fi, err := os.Stat(name)
 	if err != nil {
 		t.Fatal(err)
-
-		return
 	}
 
 	got := fi.Mode().Perm()
 	if got != want {
 		t.Fatalf("got 0%03o (%v), want 0%03o (%v)", got, got, want, want)
-
-		return
 	}
 }
 
@@ -50,22 +42,16 @@ func TestFilePosixCreate(t *testing.T) {
 	name, err := tempName(t)
 	if err != nil {
 		t.Fatalf("tempName failed: %v", err)
-
-		return
 	}
 
 	fh, err := compat.Create(name)
 	if err != nil {
 		t.Fatalf("Create failed: %v", err)
-
-		return
 	}
 
 	err = fh.Close()
 	if err != nil {
 		t.Fatalf("Close failed: %v", err)
-
-		return
 	}
 
 	fi, err := os.Stat(name)
@@ -77,40 +63,31 @@ func TestFilePosixCreate(t *testing.T) {
 		}
 
 		t.Fatalf("Stat failed: %v", err)
-
-		return
 	}
 
 	got := fi.Mode().Perm()
 	if got != want {
 		t.Fatalf("got 0%03o (%v), want 0%03o (%v)", got, got, want, want)
-
-		return
 	}
 }
 
 func TestFilePosixCreateWithFileMode(t *testing.T) {
-	want := fixPosixPerms(compat.CreatePerm, false) // 0o666
+	perm := compat.CreatePerm
+	want := fixPosixPerms(perm, false) // 0o666
 
 	name, err := tempName(t)
 	if err != nil {
 		t.Fatalf("tempName failed: %v", err)
-
-		return
 	}
 
-	fh, err := compat.Create(name, compat.WithFileMode(perm000))
+	fh, err := compat.Create(name, compat.WithFileMode(perm))
 	if err != nil {
 		t.Fatalf("Create failed: %v", err)
-
-		return
 	}
 
 	err = fh.Close()
 	if err != nil {
 		t.Fatalf("Close failed: %v", err)
-
-		return
 	}
 
 	fi, err := os.Stat(name)
@@ -122,15 +99,11 @@ func TestFilePosixCreateWithFileMode(t *testing.T) {
 		}
 
 		t.Fatalf("Stat failed: %v", err)
-
-		return
 	}
 
 	got := fi.Mode().Perm()
 	if got != want {
 		t.Fatalf("got 0%03o (%v), want 0%03o (%v)", got, got, want, want)
-
-		return
 	}
 }
 
@@ -142,8 +115,6 @@ func TestFilePosixCreateTemp(t *testing.T) {
 	fh, err := compat.CreateTemp(dir, "")
 	if err != nil {
 		t.Fatal(err)
-
-		return
 	}
 
 	name := fh.Name()
@@ -151,22 +122,16 @@ func TestFilePosixCreateTemp(t *testing.T) {
 	err = fh.Close()
 	if err != nil {
 		t.Fatal(err)
-
-		return
 	}
 
 	fi, err := os.Stat(name)
 	if err != nil {
 		t.Fatal(err)
-
-		return
 	}
 
 	got := fi.Mode().Perm()
 	if got != want {
 		t.Fatalf("got 0%03o (%v), want 0%03o (%v)", got, got, want, want)
-
-		return
 	}
 }
 
@@ -177,15 +142,11 @@ func TestFilePosixFchmod(t *testing.T) {
 	name, err := tempFile(t)
 	if err != nil {
 		t.Fatal(err)
-
-		return
 	}
 
 	f, err := os.Open(name)
 	if err != nil {
 		t.Fatal(err)
-
-		return
 	}
 
 	defer fclose(f)
@@ -193,22 +154,16 @@ func TestFilePosixFchmod(t *testing.T) {
 	err = compat.Fchmod(f, perm)
 	if err != nil {
 		t.Fatal(err)
-
-		return
 	}
 
 	fs, err := os.Stat(name)
 	if err != nil {
 		t.Fatal(err)
-
-		return
 	}
 
 	got := fs.Mode().Perm()
 	if got != want {
 		t.Fatalf("got 0%03o (%v), want 0%03o (%v)", got, got, want, want)
-
-		return
 	}
 }
 
@@ -219,29 +174,21 @@ func TestFilePosixMkdir(t *testing.T) {
 	name, err := tempName(t)
 	if err != nil {
 		t.Fatal(err)
-
-		return
 	}
 
 	err = compat.Mkdir(name, perm)
 	if err != nil {
 		t.Fatal(err)
-
-		return
 	}
 
 	fi, err := os.Stat(name)
 	if err != nil {
 		t.Fatal(err)
-
-		return
 	}
 
 	got := fi.Mode().Perm()
 	if got != want {
 		t.Fatalf("got 0%03o (%v), want 0%03o (%v)", got, got, want, want)
-
-		return
 	}
 }
 
@@ -252,29 +199,21 @@ func TestFilePosixMkdirAll(t *testing.T) {
 	name, err := tempName(t)
 	if err != nil {
 		t.Fatal(err)
-
-		return
 	}
 
 	err = compat.MkdirAll(name, perm)
 	if err != nil {
 		t.Fatal(err)
-
-		return
 	}
 
 	fi, err := os.Stat(name)
 	if err != nil {
 		t.Fatal(err)
-
-		return
 	}
 
 	got := fi.Mode().Perm()
 	if got != want {
 		t.Fatalf("got 0%03o (%v), want 0%03o (%v)", got, got, want, want)
-
-		return
 	}
 }
 
@@ -286,49 +225,38 @@ func TestFilePosixMkdirTemp(t *testing.T) {
 	name, err := compat.MkdirTemp(dir, pattern)
 	if err != nil {
 		t.Fatal(err)
-
-		return
 	}
 
 	fi, err := os.Stat(name)
 	if err != nil {
 		t.Fatal(err)
-
-		return
 	}
 
 	got := fi.Mode().Perm()
 	if got != want {
 		t.Fatalf("got 0%03o (%v), want 0%03o (%v)", got, got, want, want)
-
-		return
 	}
 }
 
 func TestFilePosixMkdirTempWithFileMode(t *testing.T) {
-	want := fixPosixPerms(compat.MkdirTempPerm, true) // 0o700
+	perm := compat.MkdirTempPerm // 0o700
+	want := fixPosixPerms(perm, true)
 	dir := tempDir(t)
 	pattern := ""
 
-	name, err := compat.MkdirTemp(dir, pattern, compat.WithFileMode(perm000))
+	name, err := compat.MkdirTemp(dir, pattern, compat.WithFileMode(perm))
 	if err != nil {
 		t.Fatal(err)
-
-		return
 	}
 
 	fi, err := os.Stat(name)
 	if err != nil {
 		t.Fatal(err)
-
-		return
 	}
 
 	got := fi.Mode().Perm()
 	if got != want {
 		t.Fatalf("got 0%03o (%v), want 0%03o (%v)", got, got, want, want)
-
-		return
 	}
 }
 
@@ -339,22 +267,16 @@ func TestFilePosixOpenFile(t *testing.T) {
 	name, err := tempName(t)
 	if err != nil {
 		t.Fatalf("tempName failed: %v", err)
-
-		return
 	}
 
 	fh, err := compat.OpenFile(name, os.O_RDWR|os.O_CREATE, perm)
 	if err != nil {
 		t.Fatalf("OpenFile failed: %v", err)
-
-		return
 	}
 
 	err = fh.Close()
 	if err != nil {
 		t.Fatalf("Close failed: %v", err)
-
-		return
 	}
 
 	fi, err := os.Stat(name)
@@ -366,15 +288,11 @@ func TestFilePosixOpenFile(t *testing.T) {
 		}
 
 		t.Fatalf("Stat failed: %v", err)
-
-		return
 	}
 
 	got := fi.Mode().Perm()
 	if got != want {
 		t.Fatalf("got 0%03o (%v), want 0%03o (%v)", got, got, want, want)
-
-		return
 	}
 }
 
@@ -382,8 +300,6 @@ func TestFilePosixOpenFileDelete(t *testing.T) {
 	name, err := tempName(t)
 	if err != nil {
 		t.Fatal(err)
-
-		return
 	}
 
 	fh, err := compat.OpenFile(name, os.O_RDWR|os.O_CREATE|compat.O_FILE_FLAG_DELETE_ON_CLOSE, os.FileMode(0o666))
@@ -402,15 +318,11 @@ func TestFilePosixOpenFileDelete(t *testing.T) {
 	err = fh.Close()
 	if err != nil {
 		t.Fatal(err)
-
-		return
 	}
 
 	_, err = os.Stat(name)
 	if !errors.Is(err, os.ErrNotExist) {
 		t.Fatal("File exists, should not")
-
-		return
 	}
 }
 
@@ -418,22 +330,16 @@ func TestFilePosixRemove(t *testing.T) {
 	name, err := tempFile(t)
 	if err != nil {
 		t.Fatal(err)
-
-		return
 	}
 
 	err = compat.Remove(name)
 	if err != nil {
 		t.Fatal(err)
-
-		return
 	}
 
 	_, err = os.Stat(name)
 	if !errors.Is(err, os.ErrNotExist) {
 		t.Fatal("File exists, should not")
-
-		return
 	}
 }
 
@@ -441,22 +347,16 @@ func TestFilePosixRemoveAll(t *testing.T) {
 	name, err := tempFile(t)
 	if err != nil {
 		t.Fatal(err)
-
-		return
 	}
 
 	err = compat.RemoveAll(name)
 	if err != nil {
 		t.Fatal(err)
-
-		return
 	}
 
 	_, err = os.Stat(name)
 	if !errors.Is(err, os.ErrNotExist) {
 		t.Fatal("File exists, should not")
-
-		return
 	}
 }
 
@@ -484,31 +384,27 @@ func TestFilePosixWriteFile(t *testing.T) {
 	name, err := tempName(t)
 	if err != nil {
 		t.Fatal(err)
-
-		return
 	}
 
 	err = compat.WriteFile(name, helloBytes, want)
 	if err != nil {
 		t.Fatal(err)
-
-		return
 	}
 
 	fi, err := os.Stat(name)
 	if err != nil {
 		t.Fatal(err)
-
-		return
 	}
 
 	got := fi.Mode().Perm()
 	if got != want {
 		t.Fatalf("got 0%03o (%v), want 0%03o (%v)", got, got, want, want)
-
-		return
 	}
 }
+
+//////////////////////////////////////
+// Tests that succeed when err != nil.
+//////////////////////////////////////
 
 func TestFilePosixChmodInvalid(t *testing.T) {
 	err := compat.Chmod(invalidName, compat.CreatePerm)

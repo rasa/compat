@@ -87,9 +87,7 @@ func TestRenameCantRead(t *testing.T) {
 	perm := fixPerms(perm100, false)
 	if perm != perm100 {
 		partType := partitionType(old)
-		skipf(t, "Skipping test: permissions are not supported on a %v filesystem", partType)
-
-		return
+		t.Skipf("Skipping test: permissions are not supported on a %v filesystem", partType)
 	}
 
 	err = compat.Chmod(old, perm)
@@ -101,8 +99,6 @@ func TestRenameCantRead(t *testing.T) {
 	cleanup(t, new)
 	err = compat.Rename(old, new)
 	if err != nil {
-		fatalf(t, "renaming '%v' to '%v': %v", old, new, err)
-
-		return // Tinygo doesn't support T.Fatal
+		t.Fatalf("renaming '%v' to '%v': %v", old, new, err)
 	}
 }
