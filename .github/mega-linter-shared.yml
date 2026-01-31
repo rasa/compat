@@ -8,9 +8,9 @@
 
 FILTER_REGEX_EXCLUDE: >-
   (?ix)(
-    megalinter-reports/ |
-    mega-linter.log |
-    \.git/
+    (^|/)\.git(/|$) |
+    (^|/)megalinter-reports(/|$) |
+    mega-linter\.log$
   )
 
 ##### CONVERT ERRORS TO WARNINGS #####
@@ -106,6 +106,8 @@ REPOSITORY_DEVSKIM_ARGUMENTS:
 
 # this appears to have fixed the issue:
 REPOSITORY_GIT_DIFF_ARGUMENTS: "--ignore-space-change" # didn't fix it: --ignore-space-at-eol
+
+REPOSITORY_KINGFISHER_ARGUMENTS: "--redact --git-history=none --exclude .git"
 
 # see https://github.com/oxsecurity/megalinter/issues/3046
 REPOSITORY_TRUFFLEHOG_ARGUMENTS: "--exclude-paths=.git/"
