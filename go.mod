@@ -13,7 +13,7 @@ require (
 	github.com/mattn/go-colorable v0.1.14
 	github.com/sergi/go-diff v1.4.0
 	github.com/shirou/gopsutil/v4 v4.25.12
-	golang.org/x/sys v0.38.0
+	golang.org/x/sys v0.40.0
 )
 
 require (
