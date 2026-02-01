@@ -63,8 +63,8 @@ on:
           - macos-15-large # amd64
           - macos-14 # arm64 # macos-latest
           - macos-14-large # amd64
-          - macos-13 # amd64
-          - macos-13-xlarge # arm64
+          # - macos-13 # amd64
+          # - macos-13-xlarge # arm64
           # groups:
           - top3
           - top6
@@ -111,8 +111,8 @@ jobs:
           - macos-15-large # amd64
           - macos-14 # arm64 # macos-latest
           - macos-14-large # amd64
-          - macos-13 # amd64
-          - macos-13-xlarge # arm64
+          # - macos-13 # amd64
+          # - macos-13-xlarge # arm64
 
     runs-on: ${{ matrix.os }}
     defaults:
@@ -130,7 +130,7 @@ jobs:
             (inputs.runner == 'top6'     && contains(fromJSON('["ubuntu-24.04","windows-2025","windows-2022","windows-11-arm","macos-15","macos-13"]'), matrix.os)) ||
             (inputs.runner == 'ubuntu3'  && contains(fromJSON('["ubuntu-24.04","ubuntu-24.04-arm","ubuntu-22.04"]'), matrix.os)) ||
             (inputs.runner == 'windows3' && contains(fromJSON('["windows-2025","windows-2022","windows-11-arm"]'), matrix.os)) ||
-            (inputs.runner == 'macos3'   && contains(fromJSON('["macos-15","macos-14","macos-13"]'), matrix.os))
+            (inputs.runner == 'macos3'   && contains(fromJSON('["macos-15","macos-14"]'), matrix.os))
           ) && !(contains(matrix.os, 'arm') && github.repository_visibility != 'public')
 
       - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
