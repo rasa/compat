@@ -181,7 +181,7 @@ jobs:
 
       - name: USE actions/cache to save Go's build and mod caches
         if: false # env.SHOULD_RUN # switch to setup-go's cache (for testing)
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: |
             ${{ env.GOCACHE }}
