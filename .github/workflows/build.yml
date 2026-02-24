@@ -181,7 +181,7 @@ jobs:
 
       - name: USE actions/cache to save Go's build and mod caches
         if: false # env.SHOULD_RUN # switch to setup-go's cache (for testing)
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: |
             ${{ env.GOCACHE }}
@@ -204,7 +204,7 @@ jobs:
 
       - name: Upload coverage
         if: env.SHOULD_RUN
-        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5.0.0
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
         with:
           name: coverage-${{ matrix.os }}
           path: coverage.*
@@ -221,14 +221,14 @@ jobs:
 
       - name: Upload dist
         if: env.SHOULD_RUN
-        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5.0.0
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
         with:
           name: dist-${{ matrix.os }}
           path: dist
 
       - name: Upload coverage to Codecov
         if: env.SHOULD_RUN
-        uses: codecov/codecov-action@5a1091511ad55cbe89839c7260b706298ca349f7 # v5.5.1
+        uses: codecov/codecov-action@671740ac38dd9b0130fbe1cec585b89eea48d3de # v5.5.2
         with:
           fail_ci_if_error: false
           files: ./coverage.out
