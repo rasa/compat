@@ -12,7 +12,7 @@ require (
 	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc
 	github.com/mattn/go-colorable v0.1.14
 	github.com/sergi/go-diff v1.4.0
-	github.com/shirou/gopsutil/v4 v4.25.12
+	github.com/shirou/gopsutil/v4 v4.26.1
 	golang.org/x/sys v0.40.0
 )
 
