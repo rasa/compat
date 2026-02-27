@@ -54,17 +54,21 @@ on:
         options:
           - ubuntu-24.04 # ubuntu-latest
           - windows-2025
+          - macos-26
           - macos-15 # arm64
           - ubuntu-24.04-arm
           - ubuntu-22.04
           - ubuntu-22.04-arm
           - windows-11-arm
           - windows-2022 # windows-latest
+          - macos-26-intel
+          - macos-26-large
+          - macos-26-xlarge
           - macos-15-large # amd64
           - macos-14 # arm64 # macos-latest
           - macos-14-large # amd64
-          - macos-13 # amd64
-          - macos-13-xlarge # arm64
+          # - macos-13 # amd64
+          # - macos-13-xlarge # arm64
           # groups:
           - top3
           - top6
@@ -102,17 +106,21 @@ jobs:
         os:
           - ubuntu-24.04 # ubuntu-latest
           - windows-2025
+          - macos-26
           - macos-15 # arm64
           - ubuntu-24.04-arm
           - ubuntu-22.04
           - ubuntu-22.04-arm
           - windows-11-arm
           - windows-2022 # windows-latest
+          - macos-26-intel
+          - macos-26-large
+          - macos-26-xlarge
           - macos-15-large # amd64
           - macos-14 # arm64 # macos-latest
           - macos-14-large # amd64
-          - macos-13 # amd64
-          - macos-13-xlarge # arm64
+          # - macos-13 # amd64
+          # - macos-13-xlarge # arm64
 
     runs-on: ${{ matrix.os }}
     defaults:
@@ -126,14 +134,14 @@ jobs:
           (
             matrix.os == inputs.runner ||
             inputs.runner == 'all' ||
-            (inputs.runner == 'top3'     && contains(fromJSON('["ubuntu-24.04","windows-2025","macos-15"]'), matrix.os)) ||
+            (inputs.runner == 'top3'     && contains(fromJSON('["ubuntu-24.04","windows-2025","macos-26"]'), matrix.os)) ||
             (inputs.runner == 'top6'     && contains(fromJSON('["ubuntu-24.04","windows-2025","windows-2022","windows-11-arm","macos-15","macos-13"]'), matrix.os)) ||
             (inputs.runner == 'ubuntu3'  && contains(fromJSON('["ubuntu-24.04","ubuntu-24.04-arm","ubuntu-22.04"]'), matrix.os)) ||
             (inputs.runner == 'windows3' && contains(fromJSON('["windows-2025","windows-2022","windows-11-arm"]'), matrix.os)) ||
-            (inputs.runner == 'macos3'   && contains(fromJSON('["macos-15","macos-14","macos-13"]'), matrix.os))
+            (inputs.runner == 'macos3'   && contains(fromJSON('["macos-26","macos-15","macos-14"]'), matrix.os))
           ) && !(contains(matrix.os, 'arm') && github.repository_visibility != 'public')
 
-      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+      - uses: actions/checkout@0c366fd6a839edf440554fa01a7085ccba70ac98 # v5.0.1
         if: env.SHOULD_RUN
 
       - uses: actions/setup-go@44694675825211faa026b3c33043df3e48a5fa00 # v6.0.0
@@ -181,7 +189,7 @@ jobs:
 
       - name: USE actions/cache to save Go's build and mod caches
         if: false # env.SHOULD_RUN # switch to setup-go's cache (for testing)
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: |
             ${{ env.GOCACHE }}
@@ -204,7 +212,7 @@ jobs:
 
       - name: Upload coverage
         if: env.SHOULD_RUN
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
         with:
           name: coverage-${{ matrix.os }}
           path: coverage.*
@@ -221,14 +229,14 @@ jobs:
 
       - name: Upload dist
         if: env.SHOULD_RUN
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
         with:
           name: dist-${{ matrix.os }}
           path: dist
 
       - name: Upload coverage to Codecov
         if: env.SHOULD_RUN
-        uses: codecov/codecov-action@5a1091511ad55cbe89839c7260b706298ca349f7 # v5.5.1
+        uses: codecov/codecov-action@671740ac38dd9b0130fbe1cec585b89eea48d3de # v5.5.2
         with:
           fail_ci_if_error: false
           files: ./coverage.out
