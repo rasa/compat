@@ -272,7 +272,7 @@ func TestStatUID(t *testing.T) {
 	want := os.Geteuid()
 	if got != want {
 		partType := partitionType(name)
-		if compat.IsApple && (partType == "exfat" || partType == "msdos") {
+		if compat.IsApple && (partType == "exfat" || partType == "msdos") {  //nolint:goconst
 			t.Logf("UID(): got %v, want %v (ignoring: %v on %v)", got, want, partType, runtime.GOOS)
 
 			return
@@ -344,7 +344,7 @@ func TestStatUser(t *testing.T) {
 
 	if !compareNames(got, want) {
 		partType := partitionType(name)
-		if compat.IsApple && (partType == "exfat" || partType == "msdos") {
+		if compat.IsApple && (partType == "exfat" || partType == "msdos") {  //nolint:goconst
 			t.Logf("User(): got %v, want %v (ignoring: %v on %v)", got, want, partType, runtime.GOOS)
 
 			return
