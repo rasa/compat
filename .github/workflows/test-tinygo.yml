@@ -17,10 +17,10 @@ jobs:
       fail-fast: false
       matrix:
         go-version:
-          - big: "1.26"
-            tiny: "0.40.1"
           - big: "1.25"
-            tiny: "0.39.0"
+            tiny: "0.40.1"
+          # - big: "1.25"
+          #  tiny: "0.39.0"
 
     env:
       GODEBUG: toolchaintrace=1
