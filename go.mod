@@ -1,9 +1,7 @@
 module github.com/rasa/compat
 
 // tinygo requires 1.24
-go 1.24.2
-
-toolchain go1.24.5
+go 1.25.0
 
 require (
 	github.com/OneOfOne/xxhash v1.2.8
@@ -13,11 +11,10 @@ require (
 	github.com/mattn/go-colorable v0.1.14
 	github.com/sergi/go-diff v1.4.0
 	github.com/shirou/gopsutil/v4 v4.26.2
-	golang.org/x/sys v0.41.0
+	golang.org/x/sys v0.42.0
 )
 
 require (
-	github.com/dustin/go-humanize v1.0.1 // indirect
 	github.com/ebitengine/purego v0.10.0 // indirect
 	github.com/go-ole/go-ole v1.3.0 // indirect
 	github.com/hectane/go-acl v0.0.0-20230122075934-ca0b05cb1adb // indirect
@@ -25,7 +22,6 @@ require (
 	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 // indirect
 	github.com/power-devops/perfstat v0.0.0-20240221224432-82ca36839d55 // indirect
 	github.com/yusufpapurcu/wmi v1.2.4 // indirect
-	golang.org/x/text v0.34.0 // indirect
 )
 
 // replace github.com/capnspacehook/go-acl v0.0.0-20191017210724-28a28d1b4c77 => ../go-acl
