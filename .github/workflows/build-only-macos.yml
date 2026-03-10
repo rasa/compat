@@ -16,5 +16,5 @@ jobs:
     uses: ./.github/workflows/build.yml
     # name: build-only-macos
     with:
-      runner: macos-15
+      runner: macos-26
     secrets: inherit

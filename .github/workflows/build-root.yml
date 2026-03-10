@@ -72,7 +72,7 @@ jobs:
         if: env.SHOULD_RUN
         # if: runner.os != 'Windows'
         with:
-          go-version: '1.25'
+          go-version: '1.26'
           check-latest: true
           cache: false
 

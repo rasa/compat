@@ -12,6 +12,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Add `WriteReader()` function.
 - Add `WithAtomicity()` option.
 - Deprecate `WriteFileAtomic()` and `WriteReaderAtomic()` functions.
+- Bump go to 1.26.
+- Bump tinygo to 0.40.1.
+- Bump wasi to 42.0.1.
+- Bump binaryen to 126.
+- Bump android NDK to 29.0.14206865.
+- Update go dependencies.
 
 ### Fixed
 

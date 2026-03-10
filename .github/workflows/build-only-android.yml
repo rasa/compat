@@ -12,19 +12,19 @@ on: # yamllint disable-line rule:truthy
       # Last checked 2025-08-21
       # checkov:skip=CKV_GHA_7: The build output cannot be affected by user parameters...
       ANDROID_SDK_URL:
-        default: "https://dl.google.com/android/repository/commandlinetools-linux-13114758_latest.zip"
+        default: "https://dl.google.com/android/repository/commandlinetools-linux-14742923_latest.zip"
         description: "Android SDK URL"
         required: false
         type: string
       # See https://developer.android.com/ndk/downloads
       ANDROID_NDK_URL:
-        default: "https://dl.google.com/android/repository/android-ndk-r28c-linux.zip"
+        default: "https://dl.google.com/android/repository/android-ndk-r29-linux.zip"
         description: "Android NDK URL"
         required: false
         type: string
       # See https://developer.android.com/ndk/downloads
       NDK_VERSION:
-        default: "28.2.13676358"
+        default: "29.0.14206865"
         description: "Android NDK Version"
         required: false
         type: string
@@ -42,13 +42,13 @@ concurrency:
 env:
   ANDROID_SDK_URL: ${{
     inputs.ANDROID_SDK_URL ||
-    'https://dl.google.com/android/repository/commandlinetools-linux-13114758_latest.zip'
+    'https://dl.google.com/android/repository/commandlinetools-linux-14742923_latest.zip'
     }}
   ANDROID_NDK_URL: ${{
     inputs.ANDROID_NDK_URL ||
-    'https://dl.google.com/android/repository/android-ndk-r28c-linux.zip'
+    'https://dl.google.com/android/repository/android-ndk-r29-linux.zip'
     }}
-  NDK_VERSION: ${{ inputs.NDK_VERSION || '28.2.13676358' }}
+  NDK_VERSION: ${{ inputs.NDK_VERSION || '29.0.14206865' }}
   ABI_VERSION: ${{ inputs.ABI_VERSION || '21' }}
   ANDROID_SDK_ROOT: '/usr/local/android-sdk'
   CGO_ENABLED: '1'
@@ -88,7 +88,7 @@ jobs:
 
       - uses: actions/setup-go@v6
         with:
-          go-version: '1.25'
+          go-version: '1.26'
           check-latest: true
 
       - run: printf '::notice ::%s\n' "$(go version)"

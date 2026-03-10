@@ -17,10 +17,10 @@ jobs:
       fail-fast: false
       matrix:
         go-version:
+          - big: "1.26"
+            tiny: "0.40.1"
           - big: "1.25"
             tiny: "0.39.0"
-          - big: "1.24"
-            tiny: "0.38.0"
 
     env:
       GODEBUG: toolchaintrace=1
@@ -38,6 +38,7 @@ jobs:
       - uses: acifani/setup-tinygo@v2.0.1
         with:
           tinygo-version: "${{ matrix.go-version.tiny }}"
-          binaryen-version: "123"
+          # https://github.com/WebAssembly/binaryen/releases
+          binaryen-version: "126"
 
       - run: tinygo test -tags tinygo .
