@@ -135,7 +135,7 @@ jobs:
             matrix.os == inputs.runner ||
             inputs.runner == 'all' ||
             (inputs.runner == 'top3'     && contains(fromJSON('["ubuntu-24.04","windows-2025","macos-26"]'), matrix.os)) ||
-            (inputs.runner == 'top6'     && contains(fromJSON('["ubuntu-24.04","windows-2025","windows-2022","windows-11-arm","macos-15","macos-13"]'), matrix.os)) ||
+            (inputs.runner == 'top6'     && contains(fromJSON('["ubuntu-24.04","windows-2025","windows-2022","windows-11-arm","macos-26","macos-14"]'), matrix.os)) ||
             (inputs.runner == 'ubuntu3'  && contains(fromJSON('["ubuntu-24.04","ubuntu-24.04-arm","ubuntu-22.04"]'), matrix.os)) ||
             (inputs.runner == 'windows3' && contains(fromJSON('["windows-2025","windows-2022","windows-11-arm"]'), matrix.os)) ||
             (inputs.runner == 'macos3'   && contains(fromJSON('["macos-26","macos-15","macos-14"]'), matrix.os))
