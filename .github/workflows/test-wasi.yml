@@ -81,7 +81,7 @@ jobs:
 
       - run: wasm-opt --version
 
-      - uses: bytecodealliance/actions/wasmtime/setup@v1.1.2
+      - uses: bytecodealliance/actions/wasmtime/setup@v1.1.3
         with:
           version: "${{ env.wasmtime_version }}"
 
