@@ -6,15 +6,22 @@
 ## See https://cspell.org/docs/dictionaries-custom/
 ##
 
+buildbits
+cpubits
 ecrc
 golangci
 goreleaser
 jsonlintrc
 nocgo
+notunix
 partitiontype
 pylintrc
+pyrightconfig
 robustio
 textlintrc
 tinygo
 vhdx
+walkdir
 wasi
+wasms
+writereader
