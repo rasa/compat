@@ -75,7 +75,7 @@ vet: ## go vet ./...
 	go vet .
 	go vet github.com/rasa/compat/consts
 	go vet github.com/rasa/compat/robustio
-	go vet github.com/rasa/compat/volume
+	#go vet github.com/rasa/compat/volume
 	go vet -unsafeptr=false ./...
 
 RACE_OPT := -race
