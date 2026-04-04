@@ -18,10 +18,12 @@ require (
 	github.com/adrg/xdg v0.5.3
 	github.com/capnspacehook/go-acl v0.0.0-20191017210724-28a28d1b4c77
 	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc
+	github.com/dustin/go-humanize v1.0.1
 	github.com/mattn/go-colorable v0.1.14
 	github.com/sergi/go-diff v1.3.2-0.20230802210424-5b0b94c5c0d3
 	github.com/shirou/gopsutil/v4 v4.25.8
 	golang.org/x/sys v0.36.0
+	golang.org/x/text v0.29.0
 )
 
 require (
@@ -189,7 +191,6 @@ require (
 	github.com/docker/docker-credential-helpers v0.9.3 // indirect
 	github.com/docker/go-connections v0.5.0 // indirect
 	github.com/docker/go-units v0.5.0 // indirect
-	github.com/dustin/go-humanize v1.0.1 // indirect
 	github.com/ebitengine/purego v0.9.0 // indirect
 	github.com/emirpasic/gods v1.18.1 // indirect
 	github.com/envoyproxy/go-control-plane/envoy v1.32.4 // indirect
@@ -499,7 +500,6 @@ require (
 	golang.org/x/sync v0.17.0 // indirect
 	golang.org/x/telemetry v0.0.0-20250908211612-aef8a434d053 // indirect
 	golang.org/x/term v0.35.0 // indirect
-	golang.org/x/text v0.29.0 // indirect
 	golang.org/x/time v0.12.0 // indirect
 	golang.org/x/tools v0.37.0 // indirect
 	golang.org/x/tools/gopls v0.20.0 // indirect
