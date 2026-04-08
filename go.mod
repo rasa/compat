@@ -8,12 +8,10 @@ require (
 	github.com/adrg/xdg v0.5.3
 	github.com/capnspacehook/go-acl v0.0.0-20191017210724-28a28d1b4c77
 	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc
-	github.com/dustin/go-humanize v1.0.1
 	github.com/mattn/go-colorable v0.1.14
 	github.com/sergi/go-diff v1.4.0
 	github.com/shirou/gopsutil/v4 v4.26.3
-	golang.org/x/sys v0.42.0
-	golang.org/x/text v0.35.0
+	golang.org/x/sys v0.43.0
 )
 
 require (
