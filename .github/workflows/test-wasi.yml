@@ -74,7 +74,7 @@ jobs:
 
       - run: which go_wasip1_wasm_exec
 
-      - uses: acifani/setup-tinygo@v2.0.1
+      - uses: acifani/setup-tinygo@v3.0.0
         with:
           tinygo-version: "${{ matrix.go-version.tiny }}"
           binaryen-version: "${{ env.binaryen_version }}"
