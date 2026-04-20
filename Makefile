@@ -116,7 +116,7 @@ endif
 # Added by compat:
 
 .PHONY: check
-check: fmt fumpt lint modernize spell vet restore diffx ## make fmt fumpt lint modernize spell vet restore
+check: fmt fumpt lint modernize spell vet restore diffx ## make fmt fumpt lint modernize spell vet restore diffx
 
 .PHONY: diffx
 diffx: ## git diff -uw
