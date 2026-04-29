@@ -100,6 +100,8 @@ var tinygoThresholds = []struct {
 	{"0.36.0", "go1.19", "go1.24"},
 	// https://github.com/tinygo-org/tinygo/blob/v0.39.0/builder/config.go#L28
 	{"0.39.0", "go1.19", "go1.25"},
+	// https://github.com/tinygo-org/tinygo/blob/v0.41.0/builder/config.go#L28
+	{"0.41.0", "go1.19", "go1.26"},
 }
 
 var goVersionOnce struct {
