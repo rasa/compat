@@ -1,17 +1,19 @@
 module github.com/rasa/compat
 
 // tinygo requires 1.24
-go 1.25.2
+go 1.25.10
 
 require (
 	github.com/OneOfOne/xxhash v1.2.8
 	github.com/adrg/xdg v0.5.3
 	github.com/capnspacehook/go-acl v0.0.0-20191017210724-28a28d1b4c77
 	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc
+	github.com/dustin/go-humanize v1.0.1
 	github.com/mattn/go-colorable v0.1.14
 	github.com/sergi/go-diff v1.4.0
 	github.com/shirou/gopsutil/v4 v4.26.4
 	golang.org/x/sys v0.45.0
+	golang.org/x/text v0.37.0
 )
 
 require (

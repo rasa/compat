@@ -1,8 +1,6 @@
 module github.com/rasa/compat
 
-go 1.24.2
-
-toolchain go1.24.5
+go 1.25.10
 
 tool (
 	github.com/client9/misspell/cmd/misspell
@@ -21,8 +19,8 @@ require (
 	github.com/dustin/go-humanize v1.0.1
 	github.com/mattn/go-colorable v0.1.14
 	github.com/sergi/go-diff v1.3.2-0.20230802210424-5b0b94c5c0d3
-	github.com/shirou/gopsutil/v4 v4.25.8
-	golang.org/x/sys v0.36.0
+	github.com/shirou/gopsutil/v4 v4.26.4
+	golang.org/x/sys v0.45.0
 	golang.org/x/text v0.29.0
 )
 
@@ -191,7 +189,7 @@ require (
 	github.com/docker/docker-credential-helpers v0.9.3 // indirect
 	github.com/docker/go-connections v0.5.0 // indirect
 	github.com/docker/go-units v0.5.0 // indirect
-	github.com/ebitengine/purego v0.9.0 // indirect
+	github.com/ebitengine/purego v0.10.0 // indirect
 	github.com/emirpasic/gods v1.18.1 // indirect
 	github.com/envoyproxy/go-control-plane/envoy v1.32.4 // indirect
 	github.com/envoyproxy/protoc-gen-validate v1.2.1 // indirect
