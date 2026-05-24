@@ -137,20 +137,19 @@ fumpt: ## gofumpt -w .
 	go tool $(TOOL_OPTS) gofumpt -w .
 
 .PHONY: install
-install: ## install/update gofumpt, golangci-lint, goreleaser@2.11.2, govulncheck, misspell modernize@master
+install: ## install/update gofumpt, golangci-lint, goreleaser@2.15.4, govulncheck, misspell modernize@master
 	export GOFLAGS="$(GOFLAGS) $(TOOL_OPTS)" ;\
 	go get github.com/golangci/golangci-lint/v2/cmd/golangci-lint@latest ;\
-	go get github.com/goreleaser/goreleaser/v2@v2.11.2 ;\
+	go get github.com/goreleaser/goreleaser/v2@v2.15.4 ;\
 	go get github.com/client9/misspell/cmd/misspell@latest ;\
-	echo go get golang.org/x/tools/gopls/internal/analysis/modernize/cmd/modernize@master ;\
+	go get golang.org/x/tools/gopls/internal/analysis/modernize/cmd/modernize@master ;\
 	go get golang.org/x/vuln/cmd/govulncheck@latest ;\
 	go get mvdan.cc/gofumpt@latest
 	make mod
 
 .PHONY: modernize
 modernize: ## modernize ./...
-	@echo modernize step skipped for now: requires go 1.25.1
-	# go tool $(TOOL_OPTS) modernize -fix ./...
+	go tool $(TOOL_OPTS) modernize -fix ./...
 
 .PHONY: restore
 restore: ##	git restore format.go walk.go walk_test.go golang/golang_*.go robustio/robustio*.go
