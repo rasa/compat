@@ -18,7 +18,7 @@ jobs:
       matrix:
         go-version:
           - big: "1.25"
-            tiny: "0.40.1"
+            tiny: "0.41.1"
           # - big: "1.25"
           #  tiny: "0.39.0"
 
@@ -39,6 +39,6 @@ jobs:
         with:
           tinygo-version: "${{ matrix.go-version.tiny }}"
           # https://github.com/WebAssembly/binaryen/releases
-          binaryen-version: "126"
+          binaryen-version: "129"
 
       - run: tinygo test -tags tinygo .
