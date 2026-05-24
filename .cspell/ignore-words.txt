@@ -14,6 +14,7 @@
 ## is regenerated.
 ##
 
+acba
 acifani
 bytecodealliance
 toolchaintrace
