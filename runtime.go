@@ -71,21 +71,21 @@ var tinygoThresholds = []struct {
 	goMaxVer string
 }{
 	// https://github.com/tinygo-org/tinygo/blob/v0.12.0/builder/config.go#L28
-	{"0.12.0", "go1.11", "go1.13"},
+	{"0.12.0", "go1.11", "go1.13"}, //nolint:goconst
 	// https://github.com/tinygo-org/tinygo/blob/v0.14.0/builder/config.go#L28
 	{"0.14.0", "go1.11", "go1.14"},
 	// https://github.com/tinygo-org/tinygo/blob/v0.16.0/builder/config.go#L28
-	{"0.16.0", "go1.11", "go1.15"},
+	{"0.16.0", "go1.11", "go1.15"}, //nolint:goconst
 	// https://github.com/tinygo-org/tinygo/blob/v0.17.0/builder/config.go#L28
-	{"0.17.0", "go1.11", "go1.16"},
+	{"0.17.0", "go1.11", "go1.16"}, //nolint:goconst
 	// https://github.com/tinygo-org/tinygo/blob/v0.19.0/builder/config.go#L36
 	{"0.19.0", "go1.13", "go1.16"},
 	// https://github.com/tinygo-org/tinygo/blob/v0.22.0/builder/config.go#L36
 	{"0.22.0", "go1.15", "go1.17"},
 	// https://github.com/tinygo-org/tinygo/blob/v0.23.0/builder/config.go#L36
-	{"0.23.0", "go1.15", "go1.18"},
+	{"0.23.0", "go1.15", "go1.18"}, //nolint:goconst
 	// https://github.com/tinygo-org/tinygo/blob/v0.25.0/builder/config.go#L36
-	{"0.25.0", "go1.16", "go1.19"},
+	{"0.25.0", "go1.16", "go1.19"}, //nolint:goconst
 	// https://github.com/tinygo-org/tinygo/blob/v0.26.0/builder/config.go#L36
 	{"0.26.0", "go1.18", "go1.19"},
 	// https://github.com/tinygo-org/tinygo/blob/v0.27.0/builder/config.go#L36

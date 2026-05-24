@@ -18,7 +18,7 @@ import (
 
 func stat(fi os.FileInfo, name string, followSymlinks bool) (FileInfo, error) {
 	if fi == nil {
-		return nil, &os.PathError{Op: "stat", Path: name, Err: os.ErrInvalid}
+		return nil, &os.PathError{Op: "stat", Path: name, Err: os.ErrInvalid} //nolint:goconst
 	}
 
 	var fs fileStat

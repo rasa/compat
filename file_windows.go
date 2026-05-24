@@ -368,7 +368,8 @@ func getOwnerSID(token windows.Token) (*windows.SID, error) {
 			windows.TokenUser,
 			buf0,
 			bufSize,
-			&newBufSize)
+			&newBufSize,
+		)
 		if err == nil {
 			tu := (*windows.Tokenuser)(unsafe.Pointer(&buf[0]))
 			return tu.User.Sid, nil
@@ -403,7 +404,8 @@ func getPrimaryGroupSID(token windows.Token) (*windows.SID, error) {
 			windows.TokenPrimaryGroup,
 			buf0,
 			bufSize,
-			&newBufSize)
+			&newBufSize,
+		)
 		if err == nil {
 			pg := (*windows.Tokenprimarygroup)(unsafe.Pointer(&buf[0]))
 			return pg.PrimaryGroup, nil
@@ -453,7 +455,8 @@ func sdFromSi(si securityInfo) (*windows.SECURITY_DESCRIPTOR, error) {
 	if err != nil {
 		return nil, fmt.Errorf("failed to set ACL in security descriptor: %w", err)
 	}
-	err = sd.SetControl(windows.SE_DACL_PROTECTED,
+	err = sd.SetControl(
+		windows.SE_DACL_PROTECTED,
 		windows.SE_DACL_PROTECTED,
 	)
 	if err != nil {
@@ -539,7 +542,8 @@ func setOwnerToCurrentUser(path string) error {
 		path,
 		windows.SE_FILE_OBJECT,
 		windows.OWNER_SECURITY_INFORMATION,
-		userSID, nil, nil, nil)
+		userSID, nil, nil, nil,
+	)
 	if err != nil {
 		return fmt.Errorf("failed to set named security info: %w", err)
 	}

@@ -40,7 +40,8 @@ func isRoot() (bool, error) {
 		windows.SECURITY_BUILTIN_DOMAIN_RID,
 		windows.DOMAIN_ALIAS_RID_ADMINS,
 		0, 0, 0, 0, 0, 0,
-		&sid)
+		&sid,
+	)
 	if err != nil {
 		return false, err
 	}

@@ -113,7 +113,7 @@ func stat(fi os.FileInfo, name string, followSymlinks bool) (FileInfo, error) {
 	fs.mode |= perm.Perm()
 
 	// See https://github.com/golang/go/blob/3cf1aaf8/src/os/types_windows.go#L367
-	fs.sys = *(fi.Sys().(*syscall.Win32FileAttributeData)) //nolint:staticcheck
+	fs.sys = *fi.Sys().(*syscall.Win32FileAttributeData) //nolint:staticcheck
 
 	fs.partID = uint64(i.VolumeSerialNumber)                             // uint32
 	fs.fileID = (uint64(i.FileIndexHigh) << 32) + uint64(i.FileIndexLow) //nolint:mnd

@@ -93,7 +93,7 @@ func WriteReader(name string, r io.Reader, perm os.FileMode, opts ...Option) (er
 	f, err := createTemp(dir, "~*.tmp", fileMode, fopts.flags)
 	if err != nil {
 		err = fmt.Errorf("cannot create temp file: %w", err)
-		return &os.PathError{Op: "write", Path: name, Err: err}
+		return &os.PathError{Op: "write", Path: name, Err: err} //nolint:goconst
 	}
 
 	tempFileName := f.Name()

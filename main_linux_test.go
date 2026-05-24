@@ -22,9 +22,9 @@ const (
 var fsTests = []fsTest{
 	{nativeFS, testVars{}},
 	{"Btrfs", testVars{}},
-	{"ext2", testVars{}},
-	{"ext3", testVars{}},
-	{"ext4", testVars{}},
+	{"ext2", testVars{}}, //nolint:goconst
+	{"ext3", testVars{}}, //nolint:goconst
+	{"ext4", testVars{}}, //nolint:goconst
 	{"F2FS", testVars{
 		noACLs:                  false,
 		noSymlinks:              false,

@@ -247,8 +247,8 @@ func SnipThem(snips []Snip) error { //nolint:gocyclo
 		}
 
 		// Try exact match first.
-		idx := bytes.Index(themContent, baseContent)
-		if idx >= 0 {
+		found := bytes.Contains(themContent, baseContent)
+		if found {
 			out := snipName(snipDir, "them", s)
 			if !fileExists(out) {
 				err = writeFileAtomic(out, baseContent, perm644)
@@ -592,7 +592,8 @@ func runGitMergeFile(ours, them, base string) ([]byte, int, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second) //nolint:mnd
 	defer cancel()                                                          // always cancel to release resources
 	// Use -p to print to stdout so we can capture it. Label streams for clarity.
-	cmd := exec.CommandContext(ctx, "git", "merge-file", "-p",
+	cmd := exec.CommandContext(
+		ctx, "git", "merge-file", "-p",
 		"-L", "ours", "-L", "base", "-L", "them",
 		ours, base, them,
 	)
@@ -603,8 +604,7 @@ func runGitMergeFile(ours, them, base string) ([]byte, int, error) {
 	exit := 0
 	if err != nil {
 		// git merge-file returns exit code 1 on conflicts (which is OK for us).
-		var ee *exec.ExitError
-		if errors.As(err, &ee) {
+		if ee, ok := errors.AsType[*exec.ExitError](err); ok {
 			exit = ee.ExitCode()
 		} else {
 			exit = -1
