@@ -14,6 +14,22 @@
 ## is regenerated.
 ##
 
+antontroshin
+archiver
+armv
+coreutils
+dosfstools
+eabi
+exfatprogs
+fsprogs
+mising
+reiserfsprogs
+sdkmanager
+usesh
+vmactions
+xfsprogs
+
+acba
 acifani
 bytecodealliance
 toolchaintrace

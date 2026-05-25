@@ -78,7 +78,7 @@ jobs:
           # Gone on 30-Jun-25 per https://github.com/actions/runner-images/issues/12045
           # - windows-2019
     steps:
-      - uses: crazy-max/ghaction-dump-context@v3.0.0
+      - uses: crazy-max/ghaction-dump-context@v2.3.0
 
       - name: List installed apt/snap packages (Linux)
         if: runner.os == 'Linux'
@@ -91,7 +91,7 @@ jobs:
           apt list --installed | sort
           # echo "apt-mark:"
           # apt-mark showmanual
-          # slim is mising on ubuntu-slim
+          # snap is missing on ubuntu-slim
           if command -v snap &>/dev/null; then
             echo "snap list:"
             snap list | sort
