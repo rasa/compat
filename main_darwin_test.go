@@ -234,7 +234,7 @@ func mkfsSpecFor(fsName string) (mkSpec, bool) {
 
 // Extract /dev/diskN from hdiutil attach output (works with/without -mountpoint).
 func parseDiskFromAttach(out string) string {
-	for _, line := range strings.Split(out, "\n") {
+	for line := range strings.SplitSeq(out, "\n") {
 		fields := strings.Fields(line)
 		if len(fields) > 0 && strings.HasPrefix(fields[0], "/dev/disk") {
 			// Return base node (/dev/diskN), trim any slice suffix like /dev/diskNs1
