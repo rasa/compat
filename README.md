@@ -198,7 +198,7 @@ The table below lists the OS' support for other functions in this library:
 | Plan9        | ✅       | ✅      | ✅    | ✅   | ✅   | ❌   |
 | Solaris      | ✅       | ❌      | ✅    | ✅   | ✅   | ✅   |
 | Wasip1/<br/>WASM | ❌   | ❌      | ☑️    | ✅   | ❌   | ✅†  |
-| Windows      | ✅       | ✅      | ✅    | ✅   | ✅   | ✅   |
+| Windows      | ✅       | ✅      | ✅    | ✅   | ✅   | ✅§  |
 <!--           | Chmod    | Fstat   | Nice  | Part | Symln | Umask | -->
 
 Key:<br/>
@@ -210,6 +210,7 @@ Key:<br/>
 \* Support will depend on the underlying file system. See [Comparison of file systems](https://wikipedia.org/wiki/Comparison_of_file_systems#Metadata) for details.<br/>
 † Not supported if compiled using the Tinygo compiler.<br/>
 ‡ Not supported on openbsd/ppc64, netbsd/386, freebsd/riscv64, and aix/ppc64 (cgo only), due to compile issues.<br/>
+§ Implemented via a `UMASK=0NNN` environment variable.
 
 # Contributing
 
