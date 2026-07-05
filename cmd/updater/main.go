@@ -606,7 +606,7 @@ func runGitMergeFile(ours, them, base string) ([]byte, int, error) {
 		// git merge-file returns exit code 1 on conflicts (which is OK for us).
 		var ee *exec.ExitError
 		if errors.As(err, &ee) {
-}			// if ee, ok := errors.AsType[*exec.ExitError](err); ok {
+			// if ee, ok := errors.AsType[*exec.ExitError](err); ok {
 			exit = ee.ExitCode()
 		} else {
 			exit = -1
