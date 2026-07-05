@@ -17,7 +17,7 @@ import (
 
 func TestReadDir(t *testing.T) {
 	// t.Parallel()
-	if compat.IsTinygo {
+	if compat.IsTinygo && compat.IsWasip1 {
 		skip(t, "Skipping test: fdopendir /tmp/TestReadDir256423683/000/foo: errno 8")
 
 		return // tinygo doesn't support t.Skip
