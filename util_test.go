@@ -423,9 +423,14 @@ func tempFile(t *testing.T) (string, error) {
 		return "", err
 	}
 
-	name := f.Name()
 	err = f.Close()
 	if err != nil {
+		return "", err
+	}
+
+	name := f.Name()
+	_, err = os.Stat(name)
+	if errors.Is(err, os.ErrNotExist) {
 		return "", err
 	}
 
@@ -460,6 +465,11 @@ func tempDir(t *testing.T) string {
 		tempDir := filepath.Join(append([]string{tempPath, "tmp"}, parts[idx:]...)...)
 		err := compat.MkdirAll(tempDir, perm777)
 		if err != nil {
+			t.Fatal(err)
+		}
+
+		_, err = os.Stat(tempDir)
+		if errors.Is(err, os.ErrNotExist) {
 			t.Fatal(err)
 		}
 
