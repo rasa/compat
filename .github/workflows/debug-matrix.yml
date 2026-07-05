@@ -80,7 +80,7 @@ jobs:
           # Gone on 30-Jun-25 per https://github.com/actions/runner-images/issues/12045
           # - windows-2019
     steps:
-      - uses: crazy-max/ghaction-dump-context@v2.3.0
+      - uses: crazy-max/ghaction-dump-context@v3.1.0
 
       - name: List installed apt/snap packages (Linux)
         if: runner.os == 'Linux'
@@ -207,7 +207,7 @@ jobs:
       #     }
       #     $ConfigFile | ConvertTo-Json | Out-File $SettingsPath -Encoding utf8 -Force
 
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           show-progress: false
 

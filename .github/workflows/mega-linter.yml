@@ -94,7 +94,7 @@ jobs:
     steps:
       # Git Checkout
       - name: Checkout Code
-        uses: actions/checkout@v6 # was v4, changed by @rasa
+        uses: actions/checkout@v7 # was v4, changed by @rasa
         with:
           token: ${{ secrets.PAT || secrets.GITHUB_TOKEN }}
 
@@ -231,7 +231,7 @@ jobs:
         run: sudo chown -Rc $UID .git/
 
       - name: Commit and push applied linter fixes
-        uses: stefanzweifel/git-auto-commit-action@v7.1.0 # changed from v4 by @rasa
+        uses: stefanzweifel/git-auto-commit-action@v7.2.0 # changed from v4 by @rasa
         if: env.APPLY_FIXES_IF_COMMIT == 'true'
         with:
           branch: >-
