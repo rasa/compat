@@ -30,9 +30,9 @@ jobs:
       # Go version from go.mod. See usage in the actions/setup-go step.
       matrix:
         go-version:
-          - big: "1.26"
+          - big: "1.26.4"
             tiny: "0.41.1"
-          - big: "1.25"
+          - big: "1.25.11"
             tiny: "0.39.0"
           # - big: "1.25"
           #   tiny: "0.39.0"
