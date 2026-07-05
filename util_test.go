@@ -160,7 +160,7 @@ func init() {
 func fixPerms(perm os.FileMode, isDir bool) os.FileMode {
 	if compat.IsWasip1 {
 		if compat.IsTinygo {
-			return perm600
+			return perm000
 		}
 		if isDir {
 			return perm700
