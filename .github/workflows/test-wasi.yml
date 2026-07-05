@@ -13,10 +13,10 @@ permissions:
 
 env:
   # See https://github.com/webassembly/binaryen/releases
-  binaryen_version: "129" # 126 works, 123 works; 124/36.0.2 fails
+  binaryen_version: "130" # 129, 126, and 123 work; 124/36.0.2 fails
   # https://github.com/bytecodealliance/wasmtime/releases
   # include leading 'v'
-  wasmtime_version: v45.0.0 # 42.0.1 works 36.0.1 works; 124/36.0.2 fails
+  wasmtime_version: v46.0.0 # 45.0.0, 42.0.1, 36.0.1 work; 124/36.0.2 fails
 
 jobs:
   test-wasi: # act fails if tag ends with a '1', so we aren't using test-wasip1
