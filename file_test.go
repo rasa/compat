@@ -17,22 +17,22 @@ func TestFilePosixChmod(t *testing.T) {
 
 	name, err := tempFile(t)
 	if err != nil {
-		t.Fatal(err)
+		fatal(t, err)
 	}
 
 	err = compat.Chmod(name, perm)
 	if err != nil {
-		t.Fatal(err)
+		fatal(t, err)
 	}
 
 	fi, err := os.Stat(name)
 	if err != nil {
-		t.Fatal(err)
+		fatal(t, err)
 	}
 
 	got := fi.Mode().Perm()
 	if got != want {
-		t.Fatalf("got 0%03o (%v), want 0%03o (%v)", got, got, want, want)
+		fatalf(t, "got 0%03o (%v), want 0%03o (%v)", got, got, want, want)
 	}
 }
 
@@ -114,24 +114,24 @@ func TestFilePosixCreateTemp(t *testing.T) {
 
 	fh, err := compat.CreateTemp(dir, "")
 	if err != nil {
-		t.Fatal(err)
+		fatal(t, err)
 	}
 
 	name := fh.Name()
 
 	err = fh.Close()
 	if err != nil {
-		t.Fatal(err)
+		fatal(t, err)
 	}
 
 	fi, err := os.Stat(name)
 	if err != nil {
-		t.Fatal(err)
+		fatal(t, err)
 	}
 
 	got := fi.Mode().Perm()
 	if got != want {
-		t.Fatalf("got 0%03o (%v), want 0%03o (%v)", got, got, want, want)
+		fatalf(t, "got 0%03o (%v), want 0%03o (%v)", got, got, want, want)
 	}
 }
 
