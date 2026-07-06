@@ -20,23 +20,27 @@ func TestStatStat(t *testing.T) {
 
 	name, err := createTempFile(t)
 	if err != nil {
-		t.Fatal(err)
+		fatal(t, err)
+		return
 	}
 
 	fi, err := compat.Stat(name)
 	if err != nil {
-		t.Fatal(err)
+		fatal(t, err)
+		return
 	}
 
 	_, base := filepath.Split(name)
 
 	if got := fi.Name(); got != base {
-		t.Errorf("Name(): got %v, want %v", got, base)
+		fatalf(t, "Name(): got %v, want %v", got, base)
+		return
 	}
 
 	size := int64(len(helloBytes))
 	if got := fi.Size(); got != size {
-		t.Errorf("Size(): got %v, want %v", got, size)
+		fatalf(t, "Size(): got %v, want %v", got, size)
+		return
 	}
 
 	perm := compat.CreateTempPerm
