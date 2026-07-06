@@ -68,35 +68,34 @@ func TestFileOptionsCreateTempDelete(t *testing.T) {
 }
 
 func TestFileOptionsCreateTempFileMode(t *testing.T) {
-	if compat.IsWasip1 {
-		// See https://github.com/rasa/compat/actions/runs/28810434220/job/85436676190#step:11:239
-		skip(t, "Skipping test: panic: runtime error: nil pointer dereference")
-		return
-	}
 	want := fixPosixPerms(0o777, false)
 
 	dir := tempDir(t)
 
 	fh, err := compat.CreateTemp(dir, "", compat.WithFileMode(want))
 	if err != nil {
-		t.Fatal(err)
+		fatal(t, err)
+		return
 	}
 
 	name := fh.Name()
 
 	err = fh.Close()
 	if err != nil {
-		t.Fatal(err)
+		fatal(t, err)
+		return
 	}
 
 	fi, err := os.Stat(name)
 	if err != nil {
-		t.Fatal(err)
+		fatal(t, err)
+		return
 	}
 
 	got := fi.Mode().Perm()
 	if got != want {
-		t.Fatalf("got 0%03o, want 0%03o", got, want)
+		fatalf(t, "got 0%03o, want 0%03o", got, want)
+		return
 	}
 }
 
@@ -149,40 +148,37 @@ func TestFileOptionsOpenFileDelete(t *testing.T) {
 }
 
 func TestFileOptionsOpenFileFileMode(t *testing.T) {
-	if compat.IsWasip1 {
-		// See https://github.com/rasa/compat/actions/runs/28810858196/job/85438090741#step:11:248
-		skip(t, "Skipping test: panic: runtime error: nil pointer dereference")
-		return
-	}
 	perm := os.FileMode(0o666)
 	want := fixPosixPerms(perm, false)
 
 	name, err := tempName(t)
 	if err != nil {
-		t.Fatal(err)
+		fatal(t, err)
+		return
 	}
 
 	fh, err := compat.OpenFile(name, os.O_RDWR|os.O_CREATE, 0, compat.WithFileMode(want))
 	if err != nil {
-		t.Fatal(err)
+		fatal(t, err)
+		return
 	}
 
 	err = fh.Close()
 	if err != nil {
-		t.Fatal(err)
+		fatal(t, err)
+		return
 	}
 
 	fi, err := os.Stat(name)
 	if err != nil {
-		// The error:
-		//   panic: runtime error: nil pointer dereference
-		// occurs on this line:
-		t.Fatal(err)
+		fatal(t, err)
+		return
 	}
 
 	got := fi.Mode().Perm()
 	if got != want {
-		t.Fatalf("got 0%03o, want 0%03o", got, want)
+		fatalf(t, "got 0%03o, want 0%03o", got, want)
+		return
 	}
 }
 
