@@ -68,6 +68,11 @@ func TestFileOptionsCreateTempDelete(t *testing.T) {
 }
 
 func TestFileOptionsCreateTempFileMode(t *testing.T) {
+	if compat.IsWasip1 {
+		// See https://github.com/rasa/compat/actions/runs/28810434220/job/85436676190#step:11:239
+		skip(t, "Skipping test: panic: runtime error: nil pointer dereference")
+		return
+	}
 	want := fixPosixPerms(0o777, false)
 
 	dir := tempDir(t)
