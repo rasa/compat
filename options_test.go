@@ -149,6 +149,11 @@ func TestFileOptionsOpenFileDelete(t *testing.T) {
 }
 
 func TestFileOptionsOpenFileFileMode(t *testing.T) {
+	if compat.IsWasip1 {
+		// See https://github.com/rasa/compat/actions/runs/28810858196/job/85438090741#step:11:248
+		skip(t, "Skipping test: panic: runtime error: nil pointer dereference")
+		return
+	}
 	perm := os.FileMode(0o666)
 	want := fixPosixPerms(perm, false)
 
@@ -169,6 +174,9 @@ func TestFileOptionsOpenFileFileMode(t *testing.T) {
 
 	fi, err := os.Stat(name)
 	if err != nil {
+		// The error:
+		//   panic: runtime error: nil pointer dereference
+		// occurs on this line:
 		t.Fatal(err)
 	}
 
