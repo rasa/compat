@@ -108,11 +108,13 @@ func TestFilePosixCreateWithFileMode(t *testing.T) {
 }
 
 func TestFilePosixCreateTemp(t *testing.T) {
+	/*
 	if compat.IsWasip1 {
 		// See https://github.com/rasa/compat/actions/runs/28769204135/job/85299430892#step:11:45
 		skip(t, "Skipping test: panic: runtime error: nil pointer dereference")
 		return
 	}
+	*/
 	want := fixPosixPerms(compat.CreateTempPerm, false) // 0o600
 
 	dir := tempDir(t)
@@ -120,6 +122,7 @@ func TestFilePosixCreateTemp(t *testing.T) {
 	fh, err := compat.CreateTemp(dir, "")
 	if err != nil {
 		fatal(t, err)
+		return
 	}
 
 	name := fh.Name()
@@ -127,16 +130,19 @@ func TestFilePosixCreateTemp(t *testing.T) {
 	err = fh.Close()
 	if err != nil {
 		fatal(t, err)
+		return
 	}
 
 	fi, err := os.Stat(name)
 	if err != nil {
 		fatal(t, err)
+		return
 	}
 
 	got := fi.Mode().Perm()
 	if got != want {
 		fatalf(t, "got 0%03o (%v), want 0%03o (%v)", got, got, want, want)
+		return
 	}
 }
 
