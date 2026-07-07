@@ -261,19 +261,21 @@ func TestStatMTime(t *testing.T) { //nolint:dupl
 func TestStatUID(t *testing.T) {
 	name, err := createTempFile(t)
 	if err != nil {
-		t.Fatal(err)
+		fatal(t, err)
+		return
 	}
 
 	fi, err := compat.Stat(name)
 	if err != nil {
-		t.Fatal(err)
+		fatal(t, err)
+		return
 	}
 
 	got := fi.UID()
 
 	if compat.IsWindows {
 		if !testEnv.noACLs && got == compat.UnknownID {
-			t.Fatalf("UID(): got %v", got)
+			fatalf(t, "UID(): got %v", got)
 		}
 
 		return
@@ -295,12 +297,14 @@ func TestStatUID(t *testing.T) {
 func TestStatGID(t *testing.T) {
 	name, err := createTempFile(t)
 	if err != nil {
-		t.Fatal(err)
+		fatal(t, err)
+		return
 	}
 
 	fi, err := compat.Stat(name)
 	if err != nil {
-		t.Fatal(err)
+		fatal(t, err)
+		return
 	}
 
 	got := fi.GID()
@@ -323,7 +327,8 @@ func TestStatGID(t *testing.T) {
 			return
 		}
 
-		t.Fatalf("GID(): got %v, want %v", got, want)
+		fatalf(t, "GID(): got %v, want %v", got, want)
+		return
 	}
 }
 
