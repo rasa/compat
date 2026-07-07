@@ -46,23 +46,27 @@ func TestStatStat(t *testing.T) {
 	perm := compat.CreateTempPerm
 	want := fixPerms(perm, false)
 	if got := fi.Mode().Perm(); got != want {
-		t.Errorf("Mode(): got 0o%o, want 0o%o", got, want)
+		fatalf(t, "Mode(): got 0o%o, want 0o%o", got, want)
+		return
 	}
 
 	if got := fi.Mode().Type(); got != 0 {
-		t.Errorf("fi.Mode().Type(): got 0o%o, want 0o%o", got, 0)
+		fatalf(t, "fi.Mode().Type(): got 0o%o, want 0o%o", got, 0)
+		return
 	}
 
 	if got := fi.IsDir(); got != false {
-		t.Errorf("IsDir(): got %v, want %v", got, false)
+		fatalf(t, "IsDir(): got %v, want %v", got, false)
+		return
 	}
 
 	if got := fi.ModTime(); !compareTimes(got, now, testEnv.mtimeGranularity) {
 		fatalTimes(t, "ModTime()", got, now, testEnv.mtimeGranularity)
+		return
 	}
 
 	if got := fi.Sys(); got == nil {
-		t.Error("Sys(): got nil, want not-nil")
+		fatal(t, "Sys(): got nil, want not-nil")
 	}
 
 	// to test ACL caching
