@@ -218,12 +218,14 @@ func TestStatMTime(t *testing.T) { //nolint:dupl
 
 	name, err := createTempFile(t)
 	if err != nil {
-		t.Fatal(err)
+		fatal(t, err)
+		return
 	}
 
 	fi, err := compat.Stat(name)
 	if err != nil {
-		t.Fatal(err)
+		fatal(t, err)
+		return
 	}
 
 	if got := fi.MTime(); !compareTimes(got, now, testEnv.mtimeGranularity) {
