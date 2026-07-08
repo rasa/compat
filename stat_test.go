@@ -414,51 +414,60 @@ func TestStatGroup(t *testing.T) {
 func TestStatError(t *testing.T) { //nolint:dupl
 	name, err := createTempFile(t)
 	if err != nil {
-		t.Fatal(err)
+		fatal(t, err)
+		return
 	}
 
 	fi, err := compat.Stat(name)
 	if err != nil {
-		t.Fatal(err)
+		fatal(t, err)
+		return
 	}
 
 	err = fi.Error()
 	if err != nil {
-		t.Fatalf("got %v, want nil", err)
+		fatalf(t, "got %v, want nil", err)
+		return
 	}
 }
 
 func TestStatFileID(t *testing.T) { //nolint:dupl
 	name, err := createTempFile(t)
 	if err != nil {
-		t.Fatal(err)
+		fatal(t, err)
+		return
 	}
 
 	fi, err := compat.Stat(name)
 	if err != nil {
-		t.Fatal(err)
+		fatal(t, err)
+		return
 	}
 
 	got := fi.FileID()
 	if got == 0 {
-		t.Fatal("got 0, want !0")
+		fatal(t, "got 0, want !0")
+		return
 	}
 }
 
 func TestStatPartitionID(t *testing.T) { //nolint:dupl
 	name, err := createTempFile(t)
 	if err != nil {
-		t.Fatal(err)
+		fatal(t, err)
+		return
 	}
 
 	fi, err := compat.Stat(name)
 	if err != nil {
-		t.Fatal(err)
+		fatal(t, err)
+		return
 	}
 
 	got := fi.PartitionID()
 	if got == 0 {
-		t.Fatal("got 0, want !0")
+		fatal(t, "got 0, want !0")
+		return
 	}
 }
 
@@ -481,12 +490,14 @@ var stringPrefixes = []string{
 func TestStatString(t *testing.T) { //nolint:dupl
 	name, err := createTempFile(t)
 	if err != nil {
-		t.Fatal(err)
+		fatal(t, err)
+		return
 	}
 
 	fi, err := compat.Stat(name)
 	if err != nil {
-		t.Fatal(err)
+		fatal(t, err)
+		return
 	}
 
 	got := fi.String()
@@ -500,12 +511,14 @@ func TestStatString(t *testing.T) { //nolint:dupl
 func TestStatInfo(t *testing.T) { //nolint:dupl
 	name, err := createTempFile(t)
 	if err != nil {
-		t.Fatal(err)
+		fatal(t, err)
+		return
 	}
 
 	fi, err := compat.Stat(name)
 	if err != nil {
-		t.Fatal(err)
+		fatal(t, err)
+		return
 	}
 
 	got, err := fi.Info()
@@ -520,12 +533,14 @@ func TestStatInfo(t *testing.T) { //nolint:dupl
 func TestStatSamePartition(t *testing.T) {
 	name, err := createTempFile(t)
 	if err != nil {
-		t.Fatal(err)
+		fatal(t, err)
+		return
 	}
 
 	fi1, err := compat.Stat(name)
 	if err != nil {
-		t.Fatal(err)
+		fatal(t, err)
+		return
 	}
 
 	fi2, err := compat.Stat(name)
@@ -541,7 +556,8 @@ func TestStatSamePartition(t *testing.T) {
 func TestStatSamePartitions(t *testing.T) {
 	name, err := createTempFile(t)
 	if err != nil {
-		t.Fatal(err)
+		fatal(t, err)
+		return
 	}
 
 	if got := compat.SamePartitions(name, name); !got {
@@ -552,54 +568,64 @@ func TestStatSamePartitions(t *testing.T) {
 func TestStatSameFile(t *testing.T) {
 	name, err := createTempFile(t)
 	if err != nil {
-		t.Fatal(err)
+		fatal(t, err)
+		return
 	}
 
 	fi1, err := compat.Stat(name)
 	if err != nil {
-		t.Fatal(err)
+		fatal(t, err)
+		return
 	}
 
 	fi2, err := compat.Stat(name)
 	if err != nil {
-		t.Fatal(err)
+		fatal(t, err)
+		return
 	}
 
 	if got := compat.SameFile(fi1, fi2); !got {
 		t.Fatalf("SameFile(): got %v, want true", got)
+		return
 	}
 }
 
 func TestStatSameFiles(t *testing.T) {
 	name, err := createTempFile(t)
 	if err != nil {
-		t.Fatal(err)
+		fatal(t, err)
+		return
 	}
 
 	if got := compat.SameFiles(name, name); !got {
 		t.Fatalf("SameFiles(): got %v, want true", got)
+		return
 	}
 }
 
 func TestStatDiffFile(t *testing.T) {
 	name1, err := createTempFile(t)
 	if err != nil {
-		t.Fatal(err)
+		fatal(t, err)
+		return
 	}
 
 	name2, err := createTempFile(t)
 	if err != nil {
-		t.Fatal(err)
+		fatal(t, err)
+		return
 	}
 
 	fi1, err := compat.Stat(name1)
 	if err != nil {
-		t.Fatal(err)
+		fatal(t, err)
+		return
 	}
 
 	fi2, err := compat.Stat(name2)
 	if err != nil {
-		t.Fatal(err)
+		fatal(t, err)
+		return
 	}
 
 	if got := compat.SameFile(fi1, fi2); got {
@@ -610,12 +636,14 @@ func TestStatDiffFile(t *testing.T) {
 func TestStatDiffFiles(t *testing.T) {
 	name1, err := createTempFile(t)
 	if err != nil {
-		t.Fatal(err)
+		fatal(t, err)
+		return
 	}
 
 	name2, err := createTempFile(t)
 	if err != nil {
-		t.Fatal(err)
+		fatal(t, err)
+		return
 	}
 
 	if got := compat.SameFiles(name1, name2); got {
@@ -647,7 +675,8 @@ func TestStatSamePartitionInvalid1(t *testing.T) {
 
 	name2, err := createTempFile(t)
 	if err != nil {
-		t.Fatal(err)
+		fatal(t, err)
+		return
 	}
 
 	fi1, _ := compat.Stat(name1)
@@ -662,7 +691,8 @@ func TestStatSamePartitionInvalid1(t *testing.T) {
 func TestStatSamePartitionInvalid2(t *testing.T) {
 	name1, err := createTempFile(t)
 	if err != nil {
-		t.Fatal(err)
+		fatal(t, err)
+		return
 	}
 
 	name2 := invalidName
@@ -681,7 +711,8 @@ func TestStatSamePartitionsInvalid1(t *testing.T) {
 
 	name2, err := createTempFile(t)
 	if err != nil {
-		t.Fatal(err)
+		fatal(t, err)
+		return
 	}
 
 	got := compat.SamePartitions(name1, name2)
@@ -693,7 +724,8 @@ func TestStatSamePartitionsInvalid1(t *testing.T) {
 func TestStatSamePartitionsInvalid2(t *testing.T) {
 	name1, err := createTempFile(t)
 	if err != nil {
-		t.Fatal(err)
+		fatal(t, err)
+		return
 	}
 
 	name2 := invalidName
@@ -709,7 +741,8 @@ func TestStatSameFileInvalid1(t *testing.T) {
 
 	name2, err := createTempFile(t)
 	if err != nil {
-		t.Fatal(err)
+		fatal(t, err)
+		return
 	}
 
 	fi1, _ := compat.Stat(name1)
@@ -725,7 +758,8 @@ func TestStatSameFileInvalid1(t *testing.T) {
 func TestStatSameFileInvalid2(t *testing.T) {
 	name1, err := createTempFile(t)
 	if err != nil {
-		t.Fatal(err)
+		fatal(t, err)
+		return
 	}
 
 	name2 := invalidName
@@ -745,7 +779,8 @@ func TestStatSameFilesInvalid1(t *testing.T) {
 
 	name2, err := createTempFile(t)
 	if err != nil {
-		t.Fatal(err)
+		fatal(t, err)
+		return
 	}
 
 	got := compat.SameFiles(name1, name2)
@@ -757,7 +792,8 @@ func TestStatSameFilesInvalid1(t *testing.T) {
 func TestStatSameFilesInvalid2(t *testing.T) {
 	name1, err := createTempFile(t)
 	if err != nil {
-		t.Fatal(err)
+		fatal(t, err)
+		return
 	}
 
 	name2 := invalidName
@@ -771,7 +807,8 @@ func TestStatSameFilesInvalid2(t *testing.T) {
 func TestStatExportedStatInvalidFileInfo(t *testing.T) {
 	name, err := createTempFile(t)
 	if err != nil {
-		t.Fatal(err)
+		fatal(t, err)
+		return
 	}
 
 	_, err = compat.ExportedStat(nil, name, false)
@@ -787,12 +824,14 @@ func TestStatExportedStatInvalidName(t *testing.T) {
 	}
 	name, err := createTempFile(t)
 	if err != nil {
-		t.Fatal(err)
+		fatal(t, err)
+		return
 	}
 
 	fi, err := os.Stat(name)
 	if err != nil {
-		t.Fatal(err)
+		fatal(t, err)
+		return
 	}
 
 	_, err = compat.ExportedStat(fi, invalidName, false)
