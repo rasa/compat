@@ -118,9 +118,11 @@ func TestWalkDir(t *testing.T) {
 	err := compat.WalkDir(fsys, ".", markFn)
 	if err != nil {
 		t.Fatalf("no error expected, found: %s", err)
+		return
 	}
 	if len(errors) != 0 {
 		t.Fatalf("unexpected errors: %s", errors)
+		return
 	}
 	walkTree(tree, tree.name, func(path string, n *Node) {
 		if n.mark != 1 {
@@ -186,11 +188,13 @@ func TestIssue51617(t *testing.T) {
 	for _, sub := range []string{"a", filepath.Join("a", "bad"), filepath.Join("a", "next")} {
 		if err := os.Mkdir(filepath.Join(dir, sub), 0o755); err != nil {
 			t.Fatal(err)
+			return
 		}
 	}
 	bad := filepath.Join(dir, "a", "bad")
 	if err := os.Chmod(bad, 0); err != nil {
 		t.Fatal(err)
+		return
 	}
 	defer os.Chmod(bad, 0o700) // avoid errors on cleanup
 	var saw []string
