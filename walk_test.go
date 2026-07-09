@@ -117,11 +117,11 @@ func TestWalkDir(t *testing.T) {
 	// Expect no errors.
 	err := compat.WalkDir(fsys, ".", markFn)
 	if err != nil {
-		t.Fatalf("no error expected, found: %s", err)
+		fatalf(t, "no error expected, found: %s", err)
 		return
 	}
 	if len(errors) != 0 {
-		t.Fatalf("unexpected errors: %s", errors)
+		fatalf(t, "unexpected errors: %s", errors)
 		return
 	}
 	walkTree(tree, tree.name, func(path string, n *Node) {
@@ -174,7 +174,7 @@ func TestWalkDirSymlink(t *testing.T) {
 	// Expect no errors.
 	err := compat.WalkDir(fsys, "link", walkFn)
 	if err != nil {
-		t.Fatalf("no error expected, found: %s", err)
+		fatalf(t, "no error expected, found: %s", err)
 	}
 	for path := range wantTypes {
 		if got := marks[path]; got != 1 {
@@ -187,13 +187,13 @@ func TestIssue51617(t *testing.T) {
 	dir := t.TempDir()
 	for _, sub := range []string{"a", filepath.Join("a", "bad"), filepath.Join("a", "next")} {
 		if err := os.Mkdir(filepath.Join(dir, sub), 0o755); err != nil {
-			t.Fatal(err)
+			fatal(t, err)
 			return
 		}
 	}
 	bad := filepath.Join(dir, "a", "bad")
 	if err := os.Chmod(bad, 0); err != nil {
-		t.Fatal(err)
+		fatal(t, err)
 		return
 	}
 	defer os.Chmod(bad, 0o700) // avoid errors on cleanup
