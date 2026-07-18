@@ -500,7 +500,7 @@ require (
 	golang.org/x/telemetry v0.0.0-20260708182218-49f421fb7959 // indirect
 	golang.org/x/term v0.45.0 // indirect
 	golang.org/x/time v0.15.0 // indirect
-	golang.org/x/tools v0.48.1-0.20260710222047-6cbeeacfcd0b // indirect
+	golang.org/x/tools v0.48.1-0.20260717202749-fe9001042f6e // indirect
 	golang.org/x/tools/gopls v0.21.1 // indirect
 	golang.org/x/vuln v1.6.0 // indirect
 	golang.org/x/xerrors v0.0.0-20240903120638-7835f813f4da // indirect
