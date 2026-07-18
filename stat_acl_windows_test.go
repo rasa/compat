@@ -92,7 +92,7 @@ func TestACLWindowsResolveCanonicalRootFromHandleUNC(t *testing.T) {
 	dir := tempDir(t)
 	ctx := context.Background()
 	sharename := randomBase36String(8)
-	args := []string{"share", sharename + "=" + dir, "/grant:" + usr.Username + ",READ"}
+	args := []string{"share", sharename + "=" + dir, "/grant:" + usr.Username + ",READ"} //nolint:goconst
 	err = exec.CommandContext(ctx, "net.exe", args...).Run()
 	if err != nil {
 		t.Fatal(err)

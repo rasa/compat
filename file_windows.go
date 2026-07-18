@@ -47,7 +47,7 @@ func chmod(name string, perm os.FileMode, opts ...Option) error {
 	// acl.Chmod will panic otherwise
 	_, err := windows.UTF16PtrFromString(name)
 	if err != nil {
-		return &os.PathError{Op: "chmod", Path: name, Err: os.ErrInvalid}
+		return &os.PathError{Op: "chmod", Path: name, Err: os.ErrInvalid} //nolint:goconst
 	}
 
 	perm = fopts.fileMode.Perm()

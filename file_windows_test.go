@@ -380,7 +380,10 @@ func TestFileWindowsCreateTemp(t *testing.T) {
 	cleanup(t, name)
 	perm := compat.CreateTempPerm
 	checkPerm(t, name, perm, false)
-	_ = fh.Close()
+	err = fh.Close()
+	if err != nil {
+		t.Fatal(err)
+	}
 	err = compat.Remove(name)
 	checkDeleted(t, name, perm, err)
 	if err != nil {

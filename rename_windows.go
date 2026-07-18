@@ -39,7 +39,7 @@ func moveFile(src, dst string) error {
 
 	src16, err := windows.UTF16PtrFromString(longsrc)
 	if err != nil {
-		return &os.LinkError{Op: "rename", Old: src, New: dst, Err: err}
+		return &os.LinkError{Op: "rename", Old: src, New: dst, Err: err} //nolint:goconst
 	}
 	longdst := golang.FixLongPath(dst)
 	dst16, err := windows.UTF16PtrFromString(longdst)

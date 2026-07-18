@@ -13,7 +13,7 @@ import (
 
 func fstat(f *os.File) (FileInfo, error) {
 	if f == nil {
-		return nil, &os.PathError{Op: "stat", Path: "", Err: os.ErrInvalid}
+		return nil, &os.PathError{Op: "stat", Path: "", Err: os.ErrInvalid} //nolint:goconst
 	}
 
 	fi, err := f.Stat()
