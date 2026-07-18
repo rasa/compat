@@ -2,7 +2,16 @@
 # SPDX-FileCopyrightText: Copyright © 2025 Ross Smith II <ross@smithii.com>
 # SPDX-License-Identifier: MIT
 
-SHELL := /bin/bash
+
+export GOTOOLCHAIN := go1.26.5+auto
+
+export GOLANGCI_LINT_VER := latest # v2.9.0
+export GOFUMPT_VER := latest # v0.9.2
+export GORELEASER_VER := latest # v2.13.0
+export MODERNIZE_VER := master # v0.42.0
+export VULN_VER := latest # v1.2.0
+
+export SHELL := /bin/bash
 export NO_COLOR := 1
 export TERM := dumb
 
@@ -137,15 +146,17 @@ fumpt: ## gofumpt -w .
 	go tool $(TOOL_OPTS) gofumpt -w .
 
 .PHONY: install
-install: ## install/update gofumpt, golangci-lint, goreleaser@2.16.0, govulncheck, misspell modernize@master
+install: ## install/update gofumpt, golangci-lint, goreleaser, govulncheck, misspell, modernize
 	export GOFLAGS="$(GOFLAGS) $(TOOL_OPTS)" ;\
-	go get github.com/golangci/golangci-lint/v2/cmd/golangci-lint@latest ;\
-	go get github.com/goreleaser/goreleaser/v2@v2.16.0 ;]\
+	go get github.com/golangci/golangci-lint/v2/cmd/golangci-lint@$(GOLANGCI_LINT_VER) ;\
+	go get github.com/goreleaser/goreleaser/v2@$(GORELEASER_VER) ;\
 	go get github.com/client9/misspell/cmd/misspell@latest ;\
-	go get golang.org/x/tools/gopls/internal/analysis/modernize/cmd/modernize@master ;\
-	go get golang.org/x/vuln/cmd/govulncheck@latest ;\
-	go get mvdan.cc/gofumpt@latest
+	go get golang.org/x/tools/go/analysis/passes/modernize/cmd/modernize@$(MODERNIZE_VER) ;\
+	go get golang.org/x/vuln/cmd/govulncheck@$(VULN_VER) ;\
+	go get mvdan.cc/gofumpt@$(GOFUMPT_VER)
 	make mod
+	# golang.org/x/tools/go/analysis/passes/modernize/cmd/modernize
+	
 
 .PHONY: modernize
 modernize: ## modernize ./...
@@ -168,4 +179,3 @@ tidy: mod
 
 .PHONY: gofumpt
 gofumpt: fumpt
-

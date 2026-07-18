@@ -12,7 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Add `WriteReader()` function.
 - Add `WithAtomicity()` option.
 - Deprecate `WriteFileAtomic()` and `WriteReaderAtomic()` functions.
-- Bump go to 1.26.4.
+- Bump go to 1.26.5.
 - Bump tinygo to 0.41.1.
 - Bump wasmtime to 46.0.0.
 - Bump binaryen to 130.
