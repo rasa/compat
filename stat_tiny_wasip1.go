@@ -5,17 +5,4 @@
 
 package compat
 
-import (
-	"time"
-)
-
 func (fs *fileStat) times() {}
-
-func (fs *fileStat) BTime() time.Time { return fs.btime }
-func (fs *fileStat) CTime() time.Time { return fs.ctime }
-
-func (fs *fileStat) UID() int { return fs.uid }
-func (fs *fileStat) GID() int { return fs.gid }
-
-func (fs *fileStat) User() string  { return fs.user }
-func (fs *fileStat) Group() string { return fs.group }

@@ -15,6 +15,15 @@ import (
 // 	defaultDirMode  = os.FileMode(0o700)
 // )
 
+func (fs *fileStat) BTime() time.Time { return fs.btime }
+func (fs *fileStat) CTime() time.Time { return fs.ctime }
+
+func (fs *fileStat) UID() int { return fs.uid }
+func (fs *fileStat) GID() int { return fs.gid }
+
+func (fs *fileStat) User() string  { return fs.user }
+func (fs *fileStat) Group() string { return fs.group }
+
 func stat(fi os.FileInfo, name string, _ bool) (FileInfo, error) {
 	if fi == nil {
 		return nil, &os.PathError{Op: "stat", Path: name, Err: os.ErrInvalid}
