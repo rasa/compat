@@ -8,6 +8,7 @@ package compat
 import (
 	"os"
 	"syscall"
+	"time"
 )
 
 // const (
