@@ -139,12 +139,14 @@ jobs:
           export CC="${NDK_PATH}/toolchains/llvm/prebuilt/linux-x86_64/bin/${dir}"
           go env
           export APK=uvk-${{ matrix.android_arch }}.apk
+          pushd cmd/demo || exit
           go build -trimpath -o "${APK}" main.go
           if [[ -f "${APK}" ]]; then
             go version -m "${APK}"
             ls -l "${APK}"
             file "${APK}"
           fi
+          popd || exit
 
       # Needs to run on emulator:
       # - name: go test (GOARCH=${{ matrix.goarch }})
