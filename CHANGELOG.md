@@ -11,13 +11,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 - Add `WriteReader()` function.
 - Add `WithAtomicity()` option.
-- Deprecate `WriteFileAtomic()` and `WriteReaderAtomic()` functions.
-- Bump go to 1.26.5.
-- Bump tinygo to 0.41.1.
-- Bump wasmtime to 46.0.0.
-- Bump binaryen to 130.
-- Bump android NDK to 29.0.14206865.
-- Update go dependencies.
 
 ### Fixed
 
@@ -26,6 +19,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ### Changed
 
 - Rename `UnderlyingGoVersion()` to `GoVersion()`. **BREAKING CHANGE**
+- Deprecate `WriteFileAtomic()` and `WriteReaderAtomic()` functions.
+- Bump go to 1.26.5.
+- Bump tinygo to 0.41.1.
+- Bump wasmtime to 46.0.1.
+- Bump binaryen to 131.
+- Bump android NDK to 29.0.14206865.
+- Update go dependencies.
 
 ## [0.5.4](https://github.com/rasa/compat/compare/v0.5.3...v0.5.4)
 

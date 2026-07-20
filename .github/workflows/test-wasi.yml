@@ -13,10 +13,10 @@ permissions:
 
 env:
   # See https://github.com/webassembly/binaryen/releases
-  binaryen_version: "130" # 129, 126, and 123 work; 124/36.0.2 fails
+  binaryen_version: "131"
   # https://github.com/bytecodealliance/wasmtime/releases
   # include leading 'v'
-  wasmtime_version: v46.0.0 # 45.0.0, 42.0.1, 36.0.1 work; 124/36.0.2 fails
+  wasmtime_version: v46.0.1
 
 jobs:
   test-wasi: # act fails if tag ends with a '1', so we aren't using test-wasip1
@@ -30,7 +30,7 @@ jobs:
       # Go version from go.mod. See usage in the actions/setup-go step.
       matrix:
         go-version:
-          - big: "1.26.4"
+          - big: "1.26.5"
             tiny: "0.41.1"
           - big: "1.25.11"
             tiny: "0.39.0"
