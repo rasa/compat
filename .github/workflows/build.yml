@@ -223,14 +223,15 @@ jobs:
         # env:
         #  CGO_ENABLED: ${{ contains(matrix.os, 'windows') && '0' || '1' }}
 
-      - run: |
+      - name: go tool goreleaser release --clean --snapshot
+        if: env.SHOULD_RUN && runner.os == 'Linux'
+        run: |
           # go tool goreleaser release --clean --snapshot
           if [[ -f go.tool.mod ]]; then
             export GOFLAGS="${GOFLAGS:-} -modfile=go.tool.mod"
           fi
           go tool goreleaser release --clean --snapshot
-        if: runner.os == 'Linux' && env.SHOULD_RUN
-
+      
       - name: Upload dist
         if: env.SHOULD_RUN
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
