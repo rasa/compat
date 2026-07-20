@@ -25,7 +25,7 @@ jobs:
 
     - uses: vmactions/netbsd-vm@v1
       with:
-        envs: 'GOOS GOARCH' # GITHUB_TOKEN'
+        envs: 'GOOS GOARCH CODECOV_TOKEN' # GITHUB_TOKEN'
         usesh: true
         copyback: false
         # See https://github.com/fsnotify/fsnotify/blob/main/.github/workflows/test.yml

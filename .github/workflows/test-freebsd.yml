@@ -27,7 +27,7 @@ jobs:
       with:
         # release: "15.0"
         # arch: aarch64
-        envs: 'GOOS GOARCH' # GITHUB_TOKEN'
+        envs: 'GOOS GOARCH CODECOV_TOKEN' # GITHUB_TOKEN'
         usesh: true
         copyback: false
         prepare: |

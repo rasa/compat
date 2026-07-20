@@ -1,4 +1,5 @@
 #!/usr/bin/env sh
+set +x +v # don't show CODECOV_TOKEN var
 
 # to run script locally
 : "${GITHUB_WORKSPACE:=${PWD}}"
@@ -57,21 +58,26 @@ cd "${GITHUB_WORKSPACE}" || exit
 GOVERSION=$(go version || true)
 printf 'gover:  %s\n' "${GOVERSION}"
 
-rv=0
-
 # NOTE: dragonflybsd requires -buildvcs=false
-if go build -buildvcs=false -trimpath ./...; then
-  printf '::notice ::build succeeded: %s\n' "${GOVERSION}"
-else
+if ! go build -buildvcs=false -trimpath ./...; then
   rv=$?
   printf '::error ::build failed: %s (error %s)\n' "${GOVERSION}" "${rv}"
+  exit "${rv}"
 fi
 
-if go test .; then
-  printf '::notice ::tests succeeded: %s\n' "${GOVERSION}"
-else
+printf '::notice ::build succeeded: %s\n' "${GOVERSION}"
+
+if ! go test -covermode=atomic -coverprofile=coverage.out -coverpkg=. .; then
   rv=$?
   printf '::error ::tests failed: %s (error %s)\n' "${GOVERSION}" "${rv}"
+  exit "${rv}"
 fi
 
-exit "${rv}"
+printf '::notice ::tests succeeded: %s\n' "${GOVERSION}"
+
+sed -i.bak "/compat\/cmd\//d; /compat\/golang\//d;" coverage.out
+
+curl -fLso codecov.sh https://codecov.io/bash
+chmod +x codecov.sh
+./codecov.sh -f coverage.out || true
+exit 0
