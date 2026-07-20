@@ -27,6 +27,7 @@ on:
         description: "Ubuntu image to use"
         type: choice
         options:
+          - "26.o4"
           - "24.04"
           - "22.04"
           - "all"
@@ -47,6 +48,7 @@ jobs:
       fail-fast: false
       matrix:
         image:
+          - "26.04"
           - "24.04"
           - "22.04"
 
