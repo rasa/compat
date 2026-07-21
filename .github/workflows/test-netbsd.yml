@@ -40,8 +40,8 @@ jobs:
           left="${tries}"
           delay=1
           while true; do
-            pkg_add bash coreutils curl gzip gtar jq || true
-            if which curl gtar gsha256sum jq; then
+            pkg_add bash coreutils curl git gzip gtar jq || true
+            if which curl git gzip gtar gsha256sum jq; then
               echo All dependencies have been installed
               break
             fi

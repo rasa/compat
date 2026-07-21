@@ -29,7 +29,7 @@ jobs:
         usesh: true
         copyback: false
         prepare: |
-          pkg install shell/bash web/curl compress/gzip archiver/gnu-tar util/jq
+          pkg install shell/bash web/curl developer/versioning/git compress/gzip archiver/gnu-tar util/jq
           # add developer/gcc14 for CGO
         run: |
           ./download-build-test.sh

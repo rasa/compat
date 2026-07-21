@@ -35,6 +35,7 @@ jobs:
           pkg refresh --full
           pkg install --accept shell/bash || true
           pkg install --accept web/curl || true
+          pkg install --accept developer/versioning/git || true
           pkg install --accept archiver/gnu-tar || true
           pkg install --accept compress/gzip || true
           pkg install --accept text/jq || true

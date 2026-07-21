@@ -30,7 +30,7 @@ jobs:
         copyback: false
         prepare: |
           # the double dashes are needed to avoid "ambiguous" warning.
-          pkg_add bash coreutils curl gzip gtar-- jq
+          pkg_add bash coreutils curl git gzip gtar-- jq
           cd /usr/local/bin && ln -sf gsha256sum sha256sum
           # pkg_add go
         run: |

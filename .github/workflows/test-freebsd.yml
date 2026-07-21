@@ -32,7 +32,7 @@ jobs:
         copyback: false
         prepare: |
           pkg update -f
-          pkg install -y bash curl gzip gtar jq
+          pkg install -y bash curl git gzip gtar jq
           # pkg install -y go
         run: |
           ./download-build-test.sh
