@@ -22,6 +22,7 @@ fi
 
 printf 'GOOS:   %s\n' "${GOOS}"
 printf 'GOARCH: %s\n' "${GOARCH}"
+printf 'CODECOV_TOKEN: %d chars long\n' "${#CODECOV_TOKEN}"
 
 tmp1=$(mktemp)
 curl -L -s -o "${tmp1}" 'https://go.dev/dl/?mode=json'

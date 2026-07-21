@@ -16,6 +16,7 @@ jobs:
     env:
       GOOS: illumos
       GOARCH: amd64
+      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
       # GITHUB_TOKEN : ${{ secrets.GITHUB_TOKEN }}
 
     steps:
