@@ -2,6 +2,7 @@
 set +x +v # don't show CODECOV_TOKEN var
 
 # to run script locally
+: "${GITHUB_REPOSITORY:=rasa/$(basename '${PWD}')}"
 : "${GITHUB_WORKSPACE:=${PWD}}"
 : "${GOOS:=$(uname | tr '[:upper:]' '[:lower:]')}" || true
 : "${GOARCH:=$(uname -p)}" || true
@@ -81,5 +82,5 @@ sed -i.bak "/compat\/cmd\//d; /compat\/golang\//d;" coverage.out
 
 curl -fLso codecov.sh https://codecov.io/bash
 chmod +x codecov.sh
-./codecov.sh -f coverage.out || true
+./codecov.sh -f coverage.out -r "${GITHUB_REPOSITORY:-}" || true
 exit 0
