@@ -21,16 +21,16 @@ if ! command -v sha256sum >/dev/null 2>/dev/null; then
   sha256sum() { gsha256sum "$@"; }
 fi
 
-printf 'GOOS:          %s\n' "${GOOS:-}"
-printf 'GOARCH:        %s\n' "${GOARCH:-}"
-printf 'CODECOV_SLUG:  %s\n' "${CODECOV_SLUG:-}"
-printf 'CODECOV_TOKEN: %d chars long\n' "${#CODECOV_TOKEN}"
+printf 'CODECOV_SLUG:      %s\n' "${CODECOV_SLUG:-}"
+printf 'CODECOV_TOKEN:     %d chars long\n' "${#CODECOV_TOKEN}"
+printf 'GITHUB_REPOSITORY: %s\n' "${GITHUB_REPOSITORY}"
+printf 'GITHUB_WORKSPACE:  %s\n' "${GITHUB_WORKSPACE}"
+printf 'GOARCH:            %s\n' "${GOARCH}"
+printf 'GOOS:              %s\n' "${GOOS}"
 
 tmp1=$(mktemp)
 curl -L -s -o "${tmp1}" 'https://go.dev/dl/?mode=json'
 jqcmd="[ .[] | select(.stable == true) ][0] | .files[] | select(.os == \"${GOOS}\" and .arch == \"${GOARCH}\")"
-
-unset GOOS GOARCH
 
 name=$(jq -r "${jqcmd} | .filename" "${tmp1}")
 printf 'name:   %s\n' "${name}"
@@ -59,7 +59,7 @@ export PATH="${PWD}/go/bin:${PATH}"
 cd "${GITHUB_WORKSPACE}" || exit
 
 GOVERSION=$(go version || true)
-printf 'gover:  %s\n' "${GOVERSION}"
+printf 'GOVERSION:         %s\n' "${GOVERSION}"
 
 # NOTE: dragonflybsd requires -buildvcs=false
 if ! go build -buildvcs=false -trimpath ./...; then
@@ -82,5 +82,8 @@ sed -i.bak "/compat\/cmd\//d; /compat\/golang\//d;" coverage.out
 
 curl -fLso codecov.sh https://codecov.io/bash
 chmod +x codecov.sh
-./codecov.sh -f coverage.out -r "${GITHUB_REPOSITORY:-}" || true
+if ! ./codecov.sh -f coverage.out -r "${GITHUB_REPOSITORY}"; then
+   printf "Error %d returned by: ./codecov.sh -f coverage.out -r '%s'\n" $? "${GITHUB_REPOSITORY}"
+fi
+
 exit 0
