@@ -20,9 +20,10 @@ if ! command -v sha256sum >/dev/null 2>/dev/null; then
   sha256sum() { gsha256sum "$@"; }
 fi
 
-printf 'GOOS:   %s\n' "${GOOS}"
-printf 'GOARCH: %s\n' "${GOARCH}"
-printf 'CODECOV_TOKEN: %d chars long\n' "${#CODECOV_TOKEN}"
+printf 'GOOS:          %s\n' "${GOOS:-}"
+printf 'GOARCH:        %s\n' "${GOARCH:-}"
+printf 'CODECOV_SLUG:  %s\n' "${#CODECOV_SLUG:-}"
+printf 'CODECOV_TOKEN: %d chars long\n' "${#CODECOV_TOKEN:-}"
 
 tmp1=$(mktemp)
 curl -L -s -o "${tmp1}" 'https://go.dev/dl/?mode=json'
