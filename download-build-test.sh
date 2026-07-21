@@ -82,8 +82,9 @@ sed -i.bak "/compat\/cmd\//d; /compat\/golang\//d;" coverage.out
 
 curl -fLso codecov.sh https://codecov.io/bash
 chmod +x codecov.sh
-if ! ./codecov.sh -f coverage.out -r "${GITHUB_REPOSITORY}"; then
-   printf "Error %d returned by: ./codecov.sh -f coverage.out -r '%s'\n" $? "${GITHUB_REPOSITORY}"
+printf "Executing: ./codecov.sh -K -v -f coverage.out -r '%s'\n" "${GITHUB_REPOSITORY}"
+if ! ./codecov.sh -K -v -f coverage.out -r "${GITHUB_REPOSITORY}"; then
+   printf "Error: codecov.sh returned error %d\n" $?
 fi
 
 exit 0
