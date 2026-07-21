@@ -33,8 +33,10 @@ jobs:
           # ignore error 4, which is returned when there's nothing to do
           # See https://github.com/vmactions/solaris-builder/blob/cda522c7/hooks/postBuild.sh#L55
           pkg refresh --full
+          pkg install --accept shell/bash || true
           pkg install --accept web/curl || true
           pkg install --accept archiver/gnu-tar || true
+          pkg install --accept compress/gzip || true
           pkg install --accept text/jq || true
           # pkg install --accept developer/go || true
         run: |

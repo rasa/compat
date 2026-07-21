@@ -25,11 +25,11 @@ jobs:
 
     - uses: vmactions/omnios-vm@v1
       with:
-        envs: 'GOOS GOARCH' # GITHUB_TOKEN
+        envs: 'GOOS GOARCH CODECOV_TOKEN' # GITHUB_TOKEN
         usesh: true
         copyback: false
         prepare: |
-          pkg install web/curl archiver/gnu-tar util/jq
+          pkg install shell/bash web/curl compress/gzip archiver/gnu-tar util/jq
           # add developer/gcc14 for CGO
         run: |
           ./download-build-test.sh

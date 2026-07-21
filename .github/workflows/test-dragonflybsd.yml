@@ -28,7 +28,7 @@ jobs:
         copyback: false
         prepare: |
           pkg update -f
-          pkg install -y coreutils curl gtar jq
+          pkg install -y bash coreutils curl gzip gtar jq
           cd /usr/local/bin && ln -sf gsha256sum sha256sum
           # pkg install -y go
         run: |
