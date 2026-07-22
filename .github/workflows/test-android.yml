@@ -1,0 +1,62 @@
+---
+# yaml-language-server: $schema https://json.schemastore.org/github-workflow.json
+
+name: Go tests on Android emulator
+
+on:
+  workflow_call:
+  workflow_dispatch:
+
+jobs:
+  android-test:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-go@v6
+        with:
+          go-version-file: go.mod
+          cache: true
+
+      # Required for a reasonably fast x86_64 Android emulator on Linux.
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' \
+            | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      # Go automatically uses go_android_amd64_exec when GOOS=android
+      # and GOARCH=amd64.
+      - name: Build Go Android execution wrapper
+        # shell: bash
+        run: |
+          mkdir -p "${RUNNER_TEMP}/go-android-exec"
+
+          go build \
+            -o "${RUNNER_TEMP}/go-android-exec/go_android_amd64_exec" \
+            "$(go env GOROOT)/misc/go_android_exec/main.go"
+
+          echo "${RUNNER_TEMP}/go-android-exec" >> "${GITHUB_PATH}"
+
+      - name: Run Go tests on Android emulator
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 21
+          target: google_apis
+          arch: x86_64
+          disable-animations: true
+          emulator-options: >-
+            -no-window
+            -gpu swiftshader_indirect
+            -noaudio
+            -no-boot-anim
+            -no-snapshot
+          script: |
+            adb devices
+            GOOS=android \
+            GOARCH=amd64 \
+            CGO_ENABLED=0 \
+              go test -count=1 -v ./...
