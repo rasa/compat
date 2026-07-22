@@ -80,11 +80,12 @@ printf '::notice ::tests succeeded: %s\n' "${GOVERSION}"
 
 sed -i.bak "/compat\/cmd\//d; /compat\/golang\//d;" coverage.out
 
-curl -fLso codecov.sh https://codecov.io/bash
-chmod +x codecov.sh
-printf "Executing: ./codecov.sh -K -v -f coverage.out -r '%s'\n" "${GITHUB_REPOSITORY}"
-if ! ./codecov.sh -K -v -f coverage.out -r "${GITHUB_REPOSITORY}"; then
-   printf "Error: codecov.sh returned error %d\n" $?
-fi
+# curl -fLso codecov.sh https://codecov.io/bash
+# chmod +x codecov.sh
+# printf "Executing: ./codecov.sh -K -v -f coverage.out -r '%s'\n" "${GITHUB_REPOSITORY}"
+# if ! ./codecov.sh -K -v -f coverage.out -r "${GITHUB_REPOSITORY}"; then
+#    printf "Error: codecov.sh returned error %d\n" $?
+# fi
+# rm -f codecov.sh
 
 exit 0
