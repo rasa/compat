@@ -1,14 +1,14 @@
 ---
 # yaml-language-server: $schema https://json.schemastore.org/github-workflow.json
 
-name: Go tests on Android emulator
+name: test-android
 
 on:
   workflow_call:
   workflow_dispatch:
 
 jobs:
-  android-test:
+  test-andriod:
     runs-on: ubuntu-24.04
     timeout-minutes: 30
 
