@@ -38,7 +38,7 @@ func TestReadDir(t *testing.T) {
 		t.Fatalf("ReadDir %s: (nil, ENOTDIR) expected, got (%v, %v)", filename, list, err)
 	}
 
-	dirname = "."
+	dirname = "testdata"
 	list, err := compat.ReadDir(dirname) //nolint:govet // compat: s|ReadDir|compat.ReadDir|
 	if err != nil {
 		t.Fatalf("ReadDir %s: %v", dirname, err)
@@ -48,17 +48,17 @@ func TestReadDir(t *testing.T) {
 	foundSubDir := false
 	for _, dir := range list {
 		switch {
-		case !dir.IsDir() && dir.Name() == "dir_test.go":
+		case !dir.IsDir() && dir.Name() == "a-file":
 			foundFile = true
-		case dir.IsDir() && dir.Name() == "golang":
+		case dir.IsDir() && dir.Name() == "a-dir":
 			foundSubDir = true
 		}
 	}
 	if !foundFile {
-		t.Fatalf("ReadDir %s: dir_test.go file not found", dirname)
+		t.Fatalf("ReadDir %s: a-file file not found", dirname)
 	}
 	if !foundSubDir {
-		t.Fatalf("ReadDir %s: golang directory not found", dirname)
+		t.Fatalf("ReadDir %s: a-dir directory not found", dirname)
 	}
 }
 

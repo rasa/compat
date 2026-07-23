@@ -50,6 +50,12 @@ var arches = []string{
 }
 
 func TestRuntimeConsts(t *testing.T) { //nolint:funlen,gocyclo
+	if compat.IsAndroid {
+		skip(t, "Skipping test: go executable not available on android")
+
+		return
+	}
+
 	goExe, err := exec.LookPath("go")
 	if err != nil {
 		if compat.IsTinygo || compat.IsWasm {

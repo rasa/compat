@@ -151,7 +151,7 @@ The table below lists the OS' support for each of the `FileInfo` functions:
 | OS           | PartitionID()/ <br/>FileID()* | Links()* | ATime()*<br/>(last<br/>*A*ccessed) | BTime()*<br/>(*B*irthed/<br/>created) | CTime()*<br/>(metadata<br/>last *C*hanged) | UID()/GID() |
 |--------------|--------|--------|------|--------|------|-------|
 | AIX          | ✅     | ✅    | ✅   | ❌    | ✅   | ✅   |
-| Android      | ✅     | ✅    | ✅   | ✅    | ✅   | ✅   |
+| Android      | ✅     | ✅    | ✅   | ❌    | ✅   | ✅   |
 | Dragonfly    | ✅     | ✅    | ✅   | ✖️    | ✅   | ✅   |
 | FreeBSD      | ✅     | ✅    | ✅   | ✅    | ✅   | ✅   |
 | Illumos      | ✅     | ✅    | ✅   | ✖️    | ✅   | ✅   |
@@ -163,7 +163,7 @@ The table below lists the OS' support for each of the `FileInfo` functions:
 | OpenBSD      | ✅     | ✅    | ✅   | ✖️    | ✅   | ✅   |
 | Plan9        | ✅     | ❌    | ✅   | ❌    | ❌   | ☑️   |
 | Solaris      | ✅     | ✅    | ✅   | ✖️    | ✅   | ✅   |
-| Wasip1/<br/>WASM | ✅ | ✅    | ✅†  | ❌    | ✅  | ✅   |
+| Wasip1/<br/>WASM | ✅ | ✅    | ✅†  | ❌    | ✅   | ✅   |
 | Windows      | ✅     | ✅    | ✅   | ✅    | ✅   | ✅‡  |
 <!--           | PartID+ | Links | ATime | BTime | CTime | UID+ | -->
 

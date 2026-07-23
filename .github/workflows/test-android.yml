@@ -45,16 +45,42 @@ jobs:
           adb shell mkdir -p "${tmp1}"
           trap 'adb shell rm -rf "${tmp1}" >/dev/null' EXIT
 
-          # not presently used:
-          # testdata="${PWD}/testdata"
-          # test -d "${testdata}" && adb push "${testdata}" "${tmp1}/testdata" >/dev/null
+          testdata="${PWD}/testdata"
+          test -d "${testdata}" && adb push "${testdata}" "${tmp1}/testdata" >/dev/null
 
           adb push "${host_bin}" "${tmp1}/test" >/dev/null
           adb shell chmod 755 "${tmp1}/test"
           adb shell cd "${tmp1}" \; ./test "$@"
-          EOF
+
+          # API 21 adb shell does not propagate the remote exit status.
+          # Save it on the device and retrieve it afterward.
+          status_file="${tmp1}/exit-code"
+          set +e
+          adb shell \
+            cd "${tmp1}" \; \
+            ./test "$@" \; \
+            printf "%d" \$? \> "${status_file}"
+          adb_status=$?
+          set -e
+
+          if (( adb_status != 0 )); then
+            echo "adb shell failed with status ${adb_status}" >&2
+            exit "${adb_status}"
+          fi
+
+          test_status=$(adb shell cat "${status_file}")
+
+          case "${test_status}" in
+            ''|*[!0-9]*)
+              echo "Invalid or missing Android test exit status: ${test_status@Q}" >&2
+              exit 1
+              ;;
+          esac
+
+          exit "${test_status}"
 
           chmod +x "${RUNNER_TEMP}/run-on-android"
+          EOF
   
       - name: Run Go tests on Android
         uses: reactivecircus/android-emulator-runner@v2

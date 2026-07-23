@@ -375,6 +375,11 @@ func TestStatGroup(t *testing.T) {
 		return
 	}
 
+	if compat.IsAndroid {
+		skip(t, "Skipping test: user: LookupGroupId not implemented on android")
+		return
+	}
+
 	name, err := createTempFile(t)
 	if err != nil {
 		t.Fatal(err)

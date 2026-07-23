@@ -498,6 +498,12 @@ func TestLstatGroup(t *testing.T) {
 		return
 	}
 
+	if compat.IsAndroid {
+		skip(t, "Skipping test: user: LookupGroupId not implemented on android")
+
+		return
+	}
+
 	_, name, err := createTempSymlink(t)
 	if err != nil {
 		t.Fatal(err)
