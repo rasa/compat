@@ -55,11 +55,7 @@ jobs:
           host_bin="$1"
           shift
 
-          # adb shell 'id'
-          # adb shell 'ls -ld /data /data/local /data/local/tmp'
-          # adb shell 'touch /data/local/tmp/write-test'
-          # adb shell 'rm -f /data/local/tmp/write-test'
-
+          #
           tmp1="/data/local/tmp/go-test-$$"
           adb shell mkdir -p "${tmp1}"
           trap 'adb shell rm -rf "${tmp1}" >/dev/null' EXIT
@@ -81,7 +77,7 @@ jobs:
           set -e
 
           if (( adb_status != 0 )); then
-            echo "adb shell failed with status ${adb_status}" >&2
+            echo "'go test .' failed with status ${adb_status}" >&2
             exit "${adb_status}"
           fi
 
@@ -89,7 +85,7 @@ jobs:
 
           case "${test_status}" in
             ''|*[!0-9]*)
-              echo "Invalid or missing Android test exit status: '${test_status@Q}'" >&2
+              echo "Invalid or missing Android test exit status: ${test_status@Q}" >&2
               exit 1
               ;;
           esac
@@ -122,9 +118,6 @@ jobs:
             CC="${ANDROID_NDK_HOME}/toolchains/llvm/prebuilt/linux-x86_64/bin/x86_64-linux-android${{ matrix.api_level }}-clang"
             go test
             -exec "${RUNNER_TEMP}/run-on-android"
-            -covermode=atomic
-            -coverprofile="${RUNNER_TEMP}/coverage.out"
-            -coverpkg=.
             -count=1
             -v
             .
