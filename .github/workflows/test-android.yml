@@ -11,25 +11,25 @@ jobs:
   test-android:
     runs-on: ubuntu-24.04
     timeout-minutes: 30
-
-    fail-fast: false
-    matrix:
-      # Representative major Android releases:
-      # 21: Android 5
-      # 23: Android 6
-      # 26: Android 8
-      # 29: Android 10
-      # 31: Android 12
-      # 34: Android 14
-      # 36: Android 16
-      api_level:
-        - 21
-        - 23
-        - 26
-        - 29
-        - 31
-        - 34
-        - 36
+    strategy:
+      fail-fast: false
+      matrix:
+        # Representative major Android releases:
+        # 21: Android 5
+        # 23: Android 6
+        # 26: Android 8
+        # 29: Android 10
+        # 31: Android 12
+        # 34: Android 14
+        # 36: Android 16
+        api_level:
+          - 21
+          - 23
+          - 26
+          - 29
+          - 31
+          - 34
+          - 36
 
     steps:
       - uses: actions/checkout@v7
