@@ -40,13 +40,15 @@ jobs:
           adb shell 'ls -ld /data /data/local /data/local/tmp'
           adb shell 'touch /data/local/tmp/write-test'
           adb shell 'rm -f /data/local/tmp/write-test'
-          
+
           tmp1="/data/local/tmp/go-test-$$"
           adb shell mkdir -p "${tmp1}"
           trap 'adb shell rm -rf "${tmp1}" >/dev/null' EXIT
 
           testdata="${PWD}/testdata"
-          test -d "${testdata}" && adb push "${testdata}" "${tmp1}/testdata" >/dev/null
+          if test -d "${testdata}"; then
+            adb push "${testdata}" "${tmp1}/testdata" >/dev/null
+          fi
 
           adb push "${host_bin}" "${tmp1}/test" >/dev/null
           adb shell chmod 755 "${tmp1}/test"
@@ -59,7 +61,7 @@ jobs:
           adb shell \
             cd "${tmp1}" \; \
             ./test "$@" \; \
-            printf "%d" \$? \> "${status_file}"
+            echo \$? \> "${status_file}"
           adb_status=$?
           set -e
 
@@ -68,11 +70,11 @@ jobs:
             exit "${adb_status}"
           fi
 
-          test_status=$(adb shell cat "${status_file}")
+          test_status=$(adb shell cat "${status_file}" | tr -d '\r\n')
 
           case "${test_status}" in
             ''|*[!0-9]*)
-              echo "Invalid or missing Android test exit status: ${test_status@Q}" >&2
+              echo "Invalid or missing Android test exit status: '${test_status@Q}'" >&2
               exit 1
               ;;
           esac
