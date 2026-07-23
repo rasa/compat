@@ -123,7 +123,7 @@ jobs:
             go test
             -exec "${RUNNER_TEMP}/run-on-android"
             -covermode=atomic
-            -coverprofile=coverage.out
+            -coverprofile=/data/local/tmp/coverage.out
             -coverpkg=.
             -count=1
             -v
