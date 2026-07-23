@@ -49,13 +49,13 @@ jobs:
           EOF
 
           chmod +x "${RUNNER_TEMP}/run-on-android"
-
+  
       - name: Run Go tests on Android
         uses: reactivecircus/android-emulator-runner@v2
         env:
           GOOS: android
           GOARCH: amd64
-          CGO_ENABLED: "0"
+          CGO_ENABLED: "1"
         with:
           api-level: 21
           target: google_apis
@@ -67,8 +67,9 @@ jobs:
             -noaudio
             -no-boot-anim
             -no-snapshot
-          # -count=1 disabled test caching
+          # -count=1 disables test caching
           script: >-
+            CC="${ANDROID_NDK_HOME}/toolchains/llvm/prebuilt/linux-x86_64/bin/x86_64-linux-android21-clang"
             go test
             -exec "${RUNNER_TEMP}/run-on-android"
             -count=1
