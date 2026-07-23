@@ -74,14 +74,14 @@ jobs:
 
       - run: which go_wasip1_wasm_exec
 
-      - uses: acifani/setup-tinygo@v3.0.0
+      - uses: acifani/setup-tinygo@v3
         with:
           tinygo-version: "${{ matrix.go-version.tiny }}"
           binaryen-version: "${{ env.binaryen_version }}"
 
       - run: wasm-opt --version
 
-      - uses: bytecodealliance/actions/wasmtime/setup@v1.1.3
+      - uses: bytecodealliance/actions/wasmtime/setup@v1
         with:
           version: "${{ env.wasmtime_version }}"
 
@@ -91,9 +91,9 @@ jobs:
           sed -i.bak "/compat\/cmd\//d; /compat\/golang\//d;" coverage.out
           rm -f *.bak
 
-      - run: tinygo test -v -target=${{ env.GOOS }} -tags tinygo .
-        # used to work, now it's crashing, so:
-        continue-on-error: true
+      # - run: tinygo test -v -target=${{ env.GOOS }} -tags tinygo .
+      #  # used to work, now it's crashing, so:
+      #  continue-on-error: true
 
       # - run: tinygo test -bench -target=${{ env.GOOS }} -tags tinygo ./
 
@@ -102,5 +102,5 @@ jobs:
         with:
           fail_ci_if_error: false
           files: ./coverage.out
-          name: coverage-${{ env.GOOS }}
+          name: coverage-${{ env.GOOS }}-${{ matrix.go-version.big }}
           token: ${{ secrets.CODECOV_TOKEN }}

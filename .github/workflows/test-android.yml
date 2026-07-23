@@ -12,6 +12,25 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 30
 
+    fail-fast: false
+    matrix:
+      # Representative major Android releases:
+      # 21: Android 5
+      # 23: Android 6
+      # 26: Android 8
+      # 29: Android 10
+      # 31: Android 12
+      # 34: Android 14
+      # 36: Android 16
+      api_level:
+        - 21
+        - 23
+        - 26
+        - 29
+        - 31
+        - 34
+        - 36
+
     steps:
       - uses: actions/checkout@v7
 
@@ -36,10 +55,10 @@ jobs:
           host_bin="$1"
           shift
 
-          adb shell 'id'
-          adb shell 'ls -ld /data /data/local /data/local/tmp'
-          adb shell 'touch /data/local/tmp/write-test'
-          adb shell 'rm -f /data/local/tmp/write-test'
+          # adb shell 'id'
+          # adb shell 'ls -ld /data /data/local /data/local/tmp'
+          # adb shell 'touch /data/local/tmp/write-test'
+          # adb shell 'rm -f /data/local/tmp/write-test'
 
           tmp1="/data/local/tmp/go-test-$$"
           adb shell mkdir -p "${tmp1}"
@@ -52,16 +71,12 @@ jobs:
 
           adb push "${host_bin}" "${tmp1}/test" >/dev/null
           adb shell chmod 755 "${tmp1}/test"
-          adb shell cd "${tmp1}" \; ./test "$@"
 
           # API 21 adb shell does not propagate the remote exit status.
           # Save it on the device and retrieve it afterward.
           status_file="${tmp1}/exit-code"
           set +e
-          adb shell \
-            cd "${tmp1}" \; \
-            ./test "$@" \; \
-            echo \$? \> "${status_file}"
+          adb shell cd "${tmp1}" \; ./test "$@" \; echo \$? \> "${status_file}"
           adb_status=$?
           set -e
 
@@ -79,6 +94,8 @@ jobs:
               ;;
           esac
 
+          adb shell ls -l "${tmp1}"
+
           exit "${test_status}"
           EOF
           chmod +x "${RUNNER_TEMP}/run-on-android"
@@ -90,7 +107,7 @@ jobs:
           GOARCH: amd64
           CGO_ENABLED: "1"
         with:
-          api-level: 21
+          api-level: ${{ matrix.api_level }}
           target: google_apis
           arch: x86_64
           disable-animations: true
@@ -102,9 +119,12 @@ jobs:
             -no-snapshot
           # -count=1 disables test caching
           script: >-
-            CC="${ANDROID_NDK_HOME}/toolchains/llvm/prebuilt/linux-x86_64/bin/x86_64-linux-android21-clang"
+            CC="${ANDROID_NDK_HOME}/toolchains/llvm/prebuilt/linux-x86_64/bin/x86_64-linux-android${{ matrix.api_level }}-clang"
             go test
             -exec "${RUNNER_TEMP}/run-on-android"
+            -covermode=atomic
+            -coverprofile=coverage.out
+            -coverpkg=.
             -count=1
             -v
             .

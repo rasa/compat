@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Fixed
 
+- Fix `SupportsBTime()` to return false on Android.
 - Remove old deprecated code.
 
 ### Changed

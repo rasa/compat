@@ -40,9 +40,12 @@ jobs:
 
       - run: go mod download
 
-      - uses: acifani/setup-tinygo@v3.0.0
+      - uses: acifani/setup-tinygo@v3
         with:
           tinygo-version: "${{ matrix.go-version.tiny }}"
           binaryen-version: "${{ env.binaryen_version }}"
 
       - run: tinygo test -tags tinygo .
+
+      - run: tinygo test -tags tinygo -covermode=atomic -coverprofile=coverage.out -coverpkg=. .
+        continue-on-error: true
