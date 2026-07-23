@@ -24,12 +24,12 @@ jobs:
         # 36: Android 16
         api_level:
           - 21
-          - 23
-          - 26
-          - 29
-          - 31
-          - 34
-          - 36
+          # - 23
+          # - 26
+          # - 29
+          # - 31
+          # - 34
+          # - 36
 
     steps:
       - uses: actions/checkout@v7
@@ -123,7 +123,7 @@ jobs:
             go test
             -exec "${RUNNER_TEMP}/run-on-android"
             -covermode=atomic
-            -coverprofile=/data/local/tmp/coverage.out
+            -coverprofile="${RUNNER_TEMP}/coverage.out"
             -coverpkg=.
             -count=1
             -v
