@@ -8,21 +8,40 @@ permissions:
   contents: read
 
 jobs:
+  test-linux:
+    uses: ./.github/workflows/build.yml
+    with:
+      runner: ubuntu-24.04
+    secrets: inherit
+  test-android:
+    uses: ./.github/workflows/test-android.yml
+    needs: test-linux
+    secrets: inherit
   test-tinygo:
     uses: ./.github/workflows/test-tinygo.yml
+    needs: test-android
     secrets: inherit
   test-all-wasms:
     uses: ./.github/workflows/test-all-wasms.yml
     needs: test-tinygo
-    # if: success()
     secrets: inherit
   test-all-bsds:
     uses: ./.github/workflows/test-all-bsds.yml
     needs: test-all-wasms
-    # if: success()
     secrets: inherit
   test-all-solaria:
     uses: ./.github/workflows/test-all-solaria.yml
     needs: test-all-bsds
-    # if: success()
+    secrets: inherit
+  test-macos:
+    uses: ./.github/workflows/build.yml
+    with:
+      runner: macos-26
+    needs: test-all-solaria
+    secrets: inherit
+  test-windows:
+    uses: ./.github/workflows/build.yml
+    with:
+      runner: windows-2025
+    needs: test-macos
     secrets: inherit

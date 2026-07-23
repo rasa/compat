@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 - Add `WriteReader()` function.
 - Add `WithAtomicity()` option.
+- Add running tests on Android emulator.
 
 ### Fixed
 
