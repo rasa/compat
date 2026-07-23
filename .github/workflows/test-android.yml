@@ -36,7 +36,13 @@ jobs:
           host_bin="$1"
           shift
 
-          tmp1=$(adb shell mktemp -d | tr -d '\r')
+          adb shell 'id'
+          adb shell 'ls -ld /data /data/local /data/local/tmp'
+          adb shell 'touch /data/local/tmp/write-test'
+          adb shell 'rm -f /data/local/tmp/write-test'
+          
+          tmp1="/data/local/tmp/go-test-$$"
+          adb shell mkdir -p "${tmp1}"
           trap 'adb shell rm -rf "${tmp1}" >/dev/null' EXIT
 
           # not presently used:
