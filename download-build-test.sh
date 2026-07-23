@@ -79,6 +79,7 @@ fi
 printf '::notice ::tests succeeded: %s\n' "${GOVERSION}"
 
 sed -i.bak "/compat\/cmd\//d; /compat\/golang\//d;" coverage.out
+rm -f coverage.out.bak
 
 # curl -fLso codecov.sh https://codecov.io/bash
 # chmod +x codecov.sh
