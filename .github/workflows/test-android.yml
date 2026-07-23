@@ -78,9 +78,8 @@ jobs:
           esac
 
           exit "${test_status}"
-
-          chmod +x "${RUNNER_TEMP}/run-on-android"
           EOF
+          chmod +x "${RUNNER_TEMP}/run-on-android"
   
       - name: Run Go tests on Android
         uses: reactivecircus/android-emulator-runner@v2
