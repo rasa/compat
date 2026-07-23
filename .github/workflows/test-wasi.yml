@@ -16,7 +16,7 @@ env:
   binaryen_version: "131"
   # https://github.com/bytecodealliance/wasmtime/releases
   # include leading 'v'
-  wasmtime_version: v46.0.1
+  wasmtime_version: v47.0.2
 
 jobs:
   test-wasi: # act fails if tag ends with a '1', so we aren't using test-wasip1
