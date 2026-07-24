@@ -17,6 +17,7 @@ import (
 	"path/filepath"
 	"runtime"
 	"strings"
+	"syscall"
 	"testing"
 	"time"
 
@@ -388,7 +389,33 @@ func supportsHardLinks(t *testing.T) bool {
 		return false // tinygo doesn't support t.Skip
 	}
 
-	return true
+	// probe Android SELinux restriction introduced in Android 7/API 24
+	dir := t.TempDir()
+	src := filepath.Join(dir, "source")
+	dst := filepath.Join(dir, "link")
+
+	if err := os.WriteFile(src, nil, 0o600); err != nil {
+		t.Fatalf("probe hard-link support on %v: %v", runtime.GOOS, err)
+
+		return false // tinygo doesn't support t.Fatalf
+	}
+
+	err := os.Link(src, dst)
+	if err == nil {
+		return true
+	}
+
+	if errors.Is(err, syscall.EPERM) ||
+		errors.Is(err, syscall.EACCES) ||
+		errors.Is(err, syscall.ENOTSUP) ||
+		errors.Is(err, syscall.EOPNOTSUPP) {
+		t.Logf("hard links unavailable on %v: %v", runtime.GOOS, err)
+
+		return false
+	}
+
+	t.Fatalf("unexpected hard-link probe failure: %v", err)
+	return false
 }
 
 func supportsSymlinks(t *testing.T) bool {

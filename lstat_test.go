@@ -154,10 +154,9 @@ func TestLstatLinks(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	want = 2
-	if compat.IsBSDLike {
+	if !compat.IsBSDLike {
 		// not sure why a hard link to a symlink doesn't count on BSD
-		want = 1
+		want++
 	}
 
 	if got := fi.Links(); got != want {
