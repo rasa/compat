@@ -12,9 +12,8 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     strategy:
-      strategy:
-        fail-fast: true
-        max-parallel: 1
+      fail-fast: true
+      max-parallel: 1
       matrix:
         # Representative major Android releases:
         # 21: Android 5
