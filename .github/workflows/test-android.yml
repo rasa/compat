@@ -21,6 +21,7 @@ jobs:
         # 29: Android 10
         # 31: Android 12
         # 34: Android 14
+        # 35: Android 15
         # 36: Android 16
         api_level:
           - 21
@@ -29,7 +30,8 @@ jobs:
           - 29
           - 31
           - 34
-          - 36
+          - 35
+          # - 36
 
     steps:
       - uses: actions/checkout@v7
@@ -114,10 +116,7 @@ jobs:
             -no-boot-anim
             -no-snapshot
           # -count=1 disables test caching
-          script: >-
-            CC="${ANDROID_NDK_HOME}/toolchains/llvm/prebuilt/linux-x86_64/bin/x86_64-linux-android${{ matrix.api_level }}-clang"
-            go test
-            -exec "${RUNNER_TEMP}/run-on-android"
-            -count=1
-            -v
-            .
+          script: |
+            ls -l "${ANDROID_NDK_HOME}/toolchains/llvm/prebuilt/linux-x86_64/bin"
+            export CC="${ANDROID_NDK_HOME}/toolchains/llvm/prebuilt/linux-x86_64/bin/x86_64-linux-android${{ matrix.api_level }}-clang"
+            go test -exec "${RUNNER_TEMP}/run-on-android" -count=1 -v .

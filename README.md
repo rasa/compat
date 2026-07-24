@@ -151,7 +151,7 @@ The table below lists the OS' support for each of the `FileInfo` functions:
 | OS           | PartitionID()/ <br/>FileID()* | Links()* | ATime()*<br/>(last<br/>*A*ccessed) | BTime()*<br/>(*B*irthed/<br/>created) | CTime()*<br/>(metadata<br/>last *C*hanged) | UID()/GID() |
 |--------------|--------|--------|------|--------|------|-------|
 | AIX          | ✅     | ✅    | ✅   | ❌    | ✅   | ✅   |
-| Android      | ✅     | ✅    | ✅   | ❌    | ✅   | ✅   |
+| Android      | ✅     | ✅§   | ✅   | ❌    | ✅   | ✅   |
 | Dragonfly    | ✅     | ✅    | ✅   | ✖️    | ✅   | ✅   |
 | FreeBSD      | ✅     | ✅    | ✅   | ✅    | ✅   | ✅   |
 | Illumos      | ✅     | ✅    | ✅   | ✖️    | ✅   | ✅   |
@@ -175,8 +175,9 @@ Key:<br/>
 <!-- 🚧 planned to be implemented.<br/> -->
 
 \* Support will depend on the underlying file system. See [Comparison of file systems](https://wikipedia.org/wiki/Comparison_of_file_systems#Metadata) for details.<br/>
-† Not supported if compiled using the Tinygo compiler.<br/>
+† Not supported under the Tinygo compiler.<br/>
 ‡ Provides the same integer values as Cygwin/MSYS2/Git for Windows in mapping Windows SIDs (Security Identifiers).<br/>
+§ It appears Android 7 (API 24) and higher disallows hard link creation by default.<br/>
 
 # Other Functions
 
