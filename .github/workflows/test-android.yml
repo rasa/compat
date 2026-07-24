@@ -117,7 +117,10 @@ jobs:
             -no-boot-anim
             -no-snapshot
           # -count=1 disables test caching
-          script: |
-            ls -l "${ANDROID_NDK_HOME}/toolchains/llvm/prebuilt/linux-x86_64/bin"
-            CC="${ANDROID_NDK_HOME}/toolchains/llvm/prebuilt/linux-x86_64/bin/x86_64-linux-android${{ matrix.api_level }}-clang" \
-              go test -exec "${RUNNER_TEMP}/run-on-android" -count=1 -v .
+          script: >-
+            CC="${ANDROID_NDK_HOME}/toolchains/llvm/prebuilt/linux-x86_64/bin/x86_64-linux-android${{ matrix.api_level }}-clang"
+            go test
+            -exec "${RUNNER_TEMP}/run-on-android"
+            -count=1
+            -v
+            .
