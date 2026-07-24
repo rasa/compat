@@ -106,6 +106,7 @@ jobs:
           CGO_ENABLED: "1"
         with:
           api-level: ${{ matrix.api_level }}
+          ndk: "29.0.14206865"
           target: google_apis
           arch: x86_64
           disable-animations: true
@@ -118,5 +119,5 @@ jobs:
           # -count=1 disables test caching
           script: |
             ls -l "${ANDROID_NDK_HOME}/toolchains/llvm/prebuilt/linux-x86_64/bin"
-            export CC="${ANDROID_NDK_HOME}/toolchains/llvm/prebuilt/linux-x86_64/bin/x86_64-linux-android${{ matrix.api_level }}-clang"
-            go test -exec "${RUNNER_TEMP}/run-on-android" -count=1 -v .
+            CC="${ANDROID_NDK_HOME}/toolchains/llvm/prebuilt/linux-x86_64/bin/x86_64-linux-android${{ matrix.api_level }}-clang" \
+              go test -exec "${RUNNER_TEMP}/run-on-android" -count=1 -v .
