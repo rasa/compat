@@ -96,7 +96,7 @@ jobs:
           # Save it on the device and retrieve it afterward.
           exit_code_file="${tmp1}/exit-code"
           set +e
-          adb shell "${test_cmd}" "$@" \; echo \$? \> "${exit_code_file}"
+          adb shell cd "${tmp1}" \; "${test_cmd}" "$@" \; echo \$? \> "${exit_code_file}"
           exit_code=$?
           set -e
 
