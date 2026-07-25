@@ -140,5 +140,5 @@ jobs:
             CC="${ANDROID_NDK_HOME}/toolchains/llvm/prebuilt/linux-${{ env.NDK_ARCH }}/bin/${{ env.NDK_ARCH }}-linux-android${{ matrix.api_level }}-clang"
             go test -exec "${RUNNER_TEMP}/run-on-android" -count=1 -v .
 
-ls -l     # ${ANDROID_NDK_HOME}/toolchains/llvm/prebuilt
+          # ls -l ${ANDROID_NDK_HOME}/toolchains/llvm/prebuilt
           # ls -l ${ANDROID_NDK_HOME}/toolchains/llvm/prebuilt/linux-${{ env.NDK_ARCH }}/bin
