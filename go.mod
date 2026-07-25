@@ -16,7 +16,7 @@ require (
 )
 
 require (
-	github.com/ebitengine/purego v0.10.1 // indirect
+	github.com/ebitengine/purego v0.10.2 // indirect
 	github.com/go-ole/go-ole v1.3.0 // indirect
 	github.com/hectane/go-acl v1.0.0 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
