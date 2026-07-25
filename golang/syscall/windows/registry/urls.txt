@@ -1,0 +1,5 @@
+
+https://github.com/golang/go/blob/8ad27fb656ab162546137b512c61f6a26a90a6c5/src/internal/syscall/windows/registry/key.go
+https://github.com/golang/go/blob/8ad27fb656ab162546137b512c61f6a26a90a6c5/src/internal/syscall/windows/registry/syscall.go
+https://github.com/golang/go/blob/8ad27fb656ab162546137b512c61f6a26a90a6c5/src/internal/syscall/windows/registry/value.go
+https://github.com/golang/go/blob/8ad27fb656ab162546137b512c61f6a26a90a6c5/src/internal/syscall/windows/registry/zsyscall_windows.go

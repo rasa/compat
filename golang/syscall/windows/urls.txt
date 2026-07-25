@@ -1,0 +1,7 @@
+https://github.com/golang/go/blob/8ad27fb656ab162546137b512c61f6a26a90a6c5/src/internal/syscall/windows/psapi_windows.go
+https://github.com/golang/go/blob/8ad27fb656ab162546137b512c61f6a26a90a6c5/src/internal/syscall/windows/security_windows.go
+https://github.com/golang/go/blob/8ad27fb656ab162546137b512c61f6a26a90a6c5/src/internal/syscall/windows/string_windows.go
+https://github.com/golang/go/blob/8ad27fb656ab162546137b512c61f6a26a90a6c5/src/internal/syscall/windows/syscall_windows.go
+https://github.com/golang/go/blob/8ad27fb656ab162546137b512c61f6a26a90a6c5/src/internal/syscall/windows/types_windows.go
+https://github.com/golang/go/blob/8ad27fb656ab162546137b512c61f6a26a90a6c5/src/internal/syscall/windows/version_windows.go
+https://github.com/golang/go/blob/8ad27fb656ab162546137b512c61f6a26a90a6c5/src/internal/syscall/windows/zsyscall_windows.go
