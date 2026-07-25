@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     strategy:
-      fail-fast: true
+      fail-fast: false
       max-parallel: 1
       matrix:
         # Representative major Android releases:
@@ -44,11 +44,11 @@ jobs:
             ;;
           arm64)
             ARCH="arm64-v8a"
-            NDK_ARCH="arm64"
+            NDK_ARCH="aarch64"
             ;;
           385)
             ARCH="x86"
-            NDK_ARCH="x86"
+            NDK_ARCH="i686"
             ;;
           *)
             echo "::error::Unsupported GOARCH: ${{ matrix.goarch }}"
