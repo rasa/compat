@@ -76,7 +76,6 @@ jobs:
           host_bin="$1"
           shift
 
-          #
           tmp1="/data/local/tmp/go-test-$$"
           adb shell mkdir -p "${tmp1}"
           trap 'adb shell rm -rf "${tmp1}" >/dev/null' EXIT
@@ -102,7 +101,7 @@ jobs:
             exit "${adb_status}"
           fi
 
-          test_status=$(adb shell cat "${status_file}" | tr -d '\r\n')
+          test_status=$(adb shell tr -d '\r\n' \< "${status_file}")
 
           case "${test_status}" in
             ''|*[!0-9]*)
@@ -125,16 +124,13 @@ jobs:
           CGO_ENABLED: "1"
         with:
           api-level: ${{ matrix.api_level }}
-          ndk: "29.0.14206865"
+          ndk: 29.0.14206865
           target: google_apis
           arch: ${{ env.ARCH }}
-          disable-animations: true
-          emulator-options: >-
-            -no-window
-            -gpu swiftshader_indirect
-            -noaudio
-            -no-boot-anim
-            -no-snapshot
+          # default: true
+          # disable-animations: true
+          # the default:
+          # emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim
           # -count=1 disables test caching
           script: >-
             CC="${ANDROID_NDK_HOME}/toolchains/llvm/prebuilt/linux-${{ env.NDK_ARCH }}/bin/${{ env.NDK_ARCH }}-linux-android${{ matrix.api_level }}-clang"
