@@ -29,7 +29,7 @@ jobs:
         # llvm/prebuilt/linux-x86_64/bin/x86_64-linux-android36-clang: no such file or directory
         api_level: [21, 23, 26, 29, 31, 35]
         # QEMU2 emulator does not support arm64 CPU architecture
-        goarch: [amd64, 386] # arm64
+        goarch: [386] # amd64, arm64
     steps:
       - uses: actions/checkout@v7
 
@@ -139,9 +139,9 @@ jobs:
           # the default:
           # emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim
           # -count=1 disables test caching
-          script: >-
+          script: |
+            ls -l ${ANDROID_NDK_HOME}/toolchains/llvm/prebuilt
+            ls -l ${ANDROID_NDK_HOME}/toolchains/llvm/prebuilt/linux-${{ env.NDK_ARCH }}/bin
+
             CC="${ANDROID_NDK_HOME}/toolchains/llvm/prebuilt/linux-${{ env.NDK_ARCH }}/bin/${{ env.NDK_ARCH }}-linux-android${{ matrix.api_level }}-clang"
             go test -exec "${RUNNER_TEMP}/run-on-android" -count=1 -v .
-
-          # ls -l ${ANDROID_NDK_HOME}/toolchains/llvm/prebuilt
-          # ls -l ${ANDROID_NDK_HOME}/toolchains/llvm/prebuilt/linux-${{ env.NDK_ARCH }}/bin
