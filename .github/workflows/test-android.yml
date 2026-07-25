@@ -87,14 +87,15 @@ jobs:
           test -d "${testdata}" && \
             adb push "${testdata}" "${tmp1}/testdata" >/dev/null
 
-          adb push "${test_bin}" "${tmp1}/test" >/dev/null
-          adb shell chmod 755 "${tmp1}/test"
+          test_cmd="${tmp1}/test"
+          adb push "${test_bin}" "${test_cmd}" >/dev/null
+          adb shell chmod 755 "${test_cmd}"
 
           # API 21 adb shell does not propagate the remote exit status.
           # Save it on the device and retrieve it afterward.
           exit_code_file="${tmp1}/exit-code"
           set +e
-          adb shell "${tmp1}/test" "$@" \; echo \$? \> "${exit_code_file}"
+          adb shell "${test_cmd}" "$@" \; echo \$? \> "${exit_code_file}"
           exit_code=$?
           set -e
 
@@ -103,8 +104,9 @@ jobs:
             exit "${exit_code}"
           fi
 
-          exit_code=$(adb shell "cat ${exit_code_file} | tr -d '\r\n'")
-
+          exit_code=$(adb shell cat "${exit_code_file}")
+          exit_code="${exit_code//$'\n'/}"
+          exit_code="${exit_code//$'\r'/}"
           case "${exit_code}" in
             ''|*[!0-9]*)
               echo "Invalid or missing Android test exit status: ${exit_code@Q}" >&2
