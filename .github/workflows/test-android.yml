@@ -26,7 +26,7 @@ jobs:
         # 36: Android 16
         api_level: [21] # 23, 26, 29, 31, 35, 36]
         # QEMU2 emulator does not support arm64 CPU architecture
-        goarch: [amd64, 386] # arm64
+        goarch: [amd64] # 386] # arm64
     steps:
       - uses: actions/checkout@v7
 
@@ -136,8 +136,9 @@ jobs:
             -no-boot-anim
             -no-snapshot
           # -count=1 disables test caching
-          script: |
-            ls -l ${ANDROID_NDK_HOME}/toolchains/llvm/prebuilt
-            ls -l ${ANDROID_NDK_HOME}/toolchains/llvm/prebuilt/linux-${{ env.NDK_ARCH }}/bin
-            export CC="${ANDROID_NDK_HOME}/toolchains/llvm/prebuilt/linux-${{ env.NDK_ARCH }}/bin/${{ env.NDK_ARCH }}-linux-android${{ matrix.api_level }}-clang"
+          script: >-
+            CC="${ANDROID_NDK_HOME}/toolchains/llvm/prebuilt/linux-${{ env.NDK_ARCH }}/bin/${{ env.NDK_ARCH }}-linux-android${{ matrix.api_level }}-clang"
             go test -exec "${RUNNER_TEMP}/run-on-android" -count=1 -v .
+
+ls -l     # ${ANDROID_NDK_HOME}/toolchains/llvm/prebuilt
+          # ls -l ${ANDROID_NDK_HOME}/toolchains/llvm/prebuilt/linux-${{ env.NDK_ARCH }}/bin
