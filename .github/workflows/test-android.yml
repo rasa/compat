@@ -69,52 +69,53 @@ jobs:
 
       - name: Create Android execution wrapper
         run: |
-          cat > "${RUNNER_TEMP}/run-on-android" <<'EOF'
+          cmd="${RUNNER_TEMP}/run-on-android"
+          : >"${cmd}"
+          chmod +x "${cmd}"
+          cat >>"${cmd}" <<'EOF'
           #!/usr/bin/env bash
           set -euo pipefail
 
-          host_bin="$1"
+          test_bin="$1"
           shift
 
           tmp1="/data/local/tmp/go-test-$$"
           adb shell mkdir -p "${tmp1}"
-          trap 'adb shell rm -rf "${tmp1}" >/dev/null' EXIT
+          trap "adb shell rm -rf ${tmp1} >/dev/null" EXIT
 
           testdata="${PWD}/testdata"
-          if test -d "${testdata}"; then
+          test -d "${testdata}" && \
             adb push "${testdata}" "${tmp1}/testdata" >/dev/null
-          fi
 
-          adb push "${host_bin}" "${tmp1}/test" >/dev/null
+          adb push "${test_bin}" "${tmp1}/test" >/dev/null
           adb shell chmod 755 "${tmp1}/test"
 
           # API 21 adb shell does not propagate the remote exit status.
           # Save it on the device and retrieve it afterward.
-          status_file="${tmp1}/exit-code"
+          exit_code_file="${tmp1}/exit-code"
           set +e
-          adb shell cd "${tmp1}" \; ./test "$@" \; echo \$? \> "${status_file}"
-          adb_status=$?
+          adb shell "${tmp1}/test" "$@" \; echo \$? \> "${exit_code_file}"
+          exit_code=$?
           set -e
 
-          if (( adb_status != 0 )); then
-            echo "'go test .' failed with status ${adb_status}" >&2
-            exit "${adb_status}"
+          if (( exit_code != 0 )); then
+            echo "'go test .' failed with status ${exit_code}" >&2
+            exit "${exit_code}"
           fi
 
-          test_status=$(adb shell tr -d '\r\n' \< "${status_file}")
+          exit_code=$(adb shell "cat ${exit_code_file} | tr -d '\r\n'")
 
-          case "${test_status}" in
+          case "${exit_code}" in
             ''|*[!0-9]*)
-              echo "Invalid or missing Android test exit status: ${test_status@Q}" >&2
+              echo "Invalid or missing Android test exit status: ${exit_code@Q}" >&2
               exit 1
               ;;
           esac
 
           adb shell ls -l "${tmp1}"
 
-          exit "${test_status}"
+          exit "${exit_code}"
           EOF
-          chmod +x "${RUNNER_TEMP}/run-on-android"
   
       - name: Run Go tests on Android
         uses: reactivecircus/android-emulator-runner@v2
