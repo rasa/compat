@@ -84,9 +84,9 @@ jobs:
           trap "adb shell rm -rf ${tmp1} >/dev/null" EXIT
 
           testdata="${PWD}/testdata"
-          test -d "${testdata}" && \
+          if test -d "${testdata}"; then
             adb push "${testdata}" "${tmp1}/testdata" >/dev/null
-
+          fi
           test_cmd="${tmp1}/test"
           adb push "${test_bin}" "${test_cmd}" >/dev/null
           adb shell chmod 755 "${test_cmd}"
