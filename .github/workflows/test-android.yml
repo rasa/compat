@@ -30,6 +30,7 @@ jobs:
         api_level: [21, 23, 26, 29, 31, 35]
         # QEMU2 emulator does not support arm64 CPU architecture
         goarch: [386] # amd64, arm64
+        target: [default, google_apis]
     steps:
       - uses: actions/checkout@v7
 
@@ -59,7 +60,6 @@ jobs:
             exit 1
             ;;
           esac
-          # echo "GOARCH=${{ matrix.goarch }}" >> "$GITHUB_ENV"
           echo "ARCH=${ARCH}" >> "$GITHUB_ENV"
           echo "NDK_ARCH=${NDK_ARCH}" >> "$GITHUB_ENV"
 
@@ -117,9 +117,6 @@ jobs:
               exit 1
               ;;
           esac
-
-          adb shell ls -l "${tmp1}"
-
           exit "${exit_code}"
           EOF
   
@@ -132,15 +129,16 @@ jobs:
         with:
           api-level: ${{ matrix.api_level }}
           ndk: 29.0.14206865
-          target: google_apis
+          target: ${{ matrix.target }}
           arch: ${{ env.ARCH }}
           # default: true
           # disable-animations: true
           # the default:
           # emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim
           # -count=1 disables test caching
-          script: |
-            ls -l ${ANDROID_NDK_HOME}/toolchains/llvm/prebuilt
-            ls -l ${ANDROID_NDK_HOME}/toolchains/llvm/prebuilt/linux-x86_64/bin
-            export CC="${ANDROID_NDK_HOME}/toolchains/llvm/prebuilt/linux-x86_64/bin/${{ env.NDK_ARCH }}-linux-android${{ matrix.api_level }}-clang"
+          script: >-
+            CC="${ANDROID_NDK_HOME}/toolchains/llvm/prebuilt/linux-x86_64/bin/${{ env.NDK_ARCH }}-linux-android${{ matrix.api_level }}-clang"
             go test -exec "${RUNNER_TEMP}/run-on-android" -count=1 -v .
+
+          # ls -l ${ANDROID_NDK_HOME}/toolchains/llvm/prebuilt
+          #  ls -l ${ANDROID_NDK_HOME}/toolchains/llvm/prebuilt/linux-x86_64/bin
