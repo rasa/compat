@@ -25,7 +25,8 @@ jobs:
         # 35: Android 15
         # 36: Android 16
         api_level: [21] # 23, 26, 29, 31, 35, 36]
-        goarch: [amd64, arm64, 386]
+        # QEMU2 emulator does not support arm64 CPU architecture
+        goarch: [amd64, 386] # arm64
     steps:
       - uses: actions/checkout@v7
 
