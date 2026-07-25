@@ -46,7 +46,7 @@ jobs:
             ARCH="arm64-v8a"
             NDK_ARCH="aarch64"
             ;;
-          385)
+          386)
             ARCH="x86"
             NDK_ARCH="i686"
             ;;
