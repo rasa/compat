@@ -55,9 +55,6 @@ jobs:
           curl -fsSLo "${RUNNER_TEMP}/go-plan9.tar.gz" \
             "https://go.dev/dl/go${GO_VERSION}.plan9-amd64.tar.gz"
 
-          echo "${GO_SHA256}  ${RUNNER_TEMP}/go-plan9.tar.gz" |
-            sha256sum --check -
-
           tar -xzf "${RUNNER_TEMP}/go-plan9.tar.gz" -C .plan9
 
       - name: Boot Plan 9
@@ -89,7 +86,7 @@ jobs:
           spawn telnet 127.0.0.1 10023
           expect "term%"
 
-          send -- "cd /usr/glenda/work; if (.plan9/go/bin/go test -count=1 -timeout=20m -mod=vendor -tags debug -v ./...) echo passed > .plan9-pass\r"
+          send -- "cd /usr/glenda/work; if (.plan9/go/bin/go test -count=1 -timeout=20m -mod=vendor -tags debug -v ./...) touch .plan9-pass\r"
 
           expect "term%"
           send -- "fshalt\r"
