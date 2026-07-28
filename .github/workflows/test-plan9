@@ -1,0 +1,99 @@
+---
+name: test-plan9
+
+on:
+  workflow_call:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  GO_VERSION: "1.26.5"
+  ANYVM_COMMIT: "main"
+
+jobs:
+  test:
+    runs-on: ubuntu-26.04
+    timeout-minutes: 40
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Check out AnyVM
+        uses: actions/checkout@v7
+        with:
+          repository: anyvm-org/anyvm
+          ref: ${{ env.ANYVM_COMMIT }}
+          path: .anyvm
+
+      - uses: actions/setup-go@v7
+        with:
+          go-version: ${{ env.GO_VERSION }}
+          cache: true
+
+      - name: Prepare Plan 9
+        shell: bash
+        run: |
+          set -euxo pipefail
+
+          sudo apt-get update
+          sudo apt-get --no-install-recommends -y install \
+            ca-certificates \
+            expect \
+            inetutils-telnet \
+            qemu-system-x86 \
+            qemu-utils \
+            zstd
+
+          # Avoid downloading modules from inside Plan 9.
+          go mod vendor
+
+          # Extract the native Plan 9 Go toolchain into the shared directory.
+          mkdir -p .plan9
+
+          curl -fsSLo "${RUNNER_TEMP}/go-plan9.tar.gz" \
+            "https://go.dev/dl/go${GO_VERSION}.plan9-amd64.tar.gz"
+
+          echo "${GO_SHA256}  ${RUNNER_TEMP}/go-plan9.tar.gz" |
+            sha256sum --check -
+
+          tar -xzf "${RUNNER_TEMP}/go-plan9.tar.gz" -C .plan9
+
+      - name: Boot Plan 9
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euxo pipefail
+
+          python3 .anyvm/anyvm.py \
+            --os plan9 \
+            --release 11554 \
+            --data-dir "${RUNNER_TEMP}/anyvm-data" \
+            --ssh-port 10023 \
+            --sync 9p \
+            -v "${GITHUB_WORKSPACE}:/usr/glenda/work" \
+            -d
+
+      - name: Run tests in Plan 9
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          rm -f .plan9-pass
+
+          expect <<'EOF'
+          set timeout 1800
+
+          spawn telnet 127.0.0.1 10023
+          expect "term%"
+
+          send -- "cd /usr/glenda/work; if (.plan9/go/bin/go test -count=1 -timeout=20m -mod=vendor -tags debug -v ./...) echo passed > .plan9-pass\r"
+
+          expect "term%"
+          send -- "fshalt\r"
+          expect eof
+          EOF
+
+          test -f .plan9-pass
