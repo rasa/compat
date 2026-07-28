@@ -23,7 +23,8 @@ jobs:
     steps:
       - uses: actions/checkout@v7
         with:
-          depth: 1
+          fetch-depth: 1
+          show-progress: false
 
       - name: Check out AnyVM
         uses: actions/checkout@v7
@@ -38,7 +39,6 @@ jobs:
           cache: true
 
       - name: Prepare Plan 9
-        shell: bash
         run: |
           set -euxo pipefail
 
@@ -54,7 +54,6 @@ jobs:
           # Avoid downloading modules from inside Plan 9.
           go mod vendor
 
-          # Extract the native Plan 9 Go toolchain into the shared directory.
           mkdir -p .plan9
 
           curl -fsSLo "${RUNNER_TEMP}/go-plan9.tar.gz" \
@@ -63,7 +62,6 @@ jobs:
           tar -xzf "${RUNNER_TEMP}/go-plan9.tar.gz" -C .plan9
 
       - name: Boot Plan 9
-        shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
@@ -92,7 +90,7 @@ jobs:
           spawn telnet 127.0.0.1 ${{ env.SSH_PORT }}
           expect "term%"
 
-          send -- "cd /usr/glenda/work; if (.plan9/go/bin/go test -count=1 -timeout=20m -mod=vendor -tags debug -v ./...) touch .plan9-pass\r"
+          send -- "cd /usr/glenda/work; if (.plan9/go/bin/go test -count=1 -timeout=20m -mod=vendor -tags debug -v -covermode=atomic -coverprofile=coverage.out -coverpkg=. .) touch .plan9-pass\r"
 
           expect "term%"
           send -- "fshalt\r"
