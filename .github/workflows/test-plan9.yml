@@ -9,16 +9,21 @@ permissions:
   contents: read
 
 env:
-  GO_VERSION: "1.26.5"
   ANYVM_COMMIT: "main"
+  GO_VERSION: "1.26.5"
+  # See https://github.com/anyvm-org/anyvm/blob/main/.github/workflows/plan9.yml#L30
+  PLAN9_RELEASE: "11554"
+  SSH_PORT: 10023
 
 jobs:
-  test:
+  test-plan9:
     runs-on: ubuntu-26.04
     timeout-minutes: 40
 
     steps:
       - uses: actions/checkout@v7
+        with:
+          depth: 1
 
       - name: Check out AnyVM
         uses: actions/checkout@v7
@@ -66,12 +71,13 @@ jobs:
 
           python3 .anyvm/anyvm.py \
             --os plan9 \
-            --release 11554 \
+            --release "${PLAN9_RELEASE}" \
             --data-dir "${RUNNER_TEMP}/anyvm-data" \
-            --ssh-port 10023 \
+            --ssh-port "${SSH_PORT}" \
             --sync 9p \
             -v "${GITHUB_WORKSPACE}:/usr/glenda/work" \
-            -d
+            -d \
+            --remote-vnc off
 
       - name: Run tests in Plan 9
         shell: bash
@@ -83,7 +89,7 @@ jobs:
           expect <<'EOF'
           set timeout 1800
 
-          spawn telnet 127.0.0.1 10023
+          spawn telnet 127.0.0.1 ${{ env.SSH_PORT }}
           expect "term%"
 
           send -- "cd /usr/glenda/work; if (.plan9/go/bin/go test -count=1 -timeout=20m -mod=vendor -tags debug -v ./...) touch .plan9-pass\r"
