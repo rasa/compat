@@ -30,7 +30,7 @@ jobs:
         # llvm/prebuilt/linux-x86_64/bin/x86_64-linux-android36-clang: no such file or directory
         api_level: [21, 35]
         # QEMU2 emulator does not support arm64 CPU architecture
-        goarch: [amd64, 386]
+        goarch: [amd64] # 386 fails
         # See https://github.com/ReactiveCircus/android-emulator-runner#configurations
         target: [default]
     steps:
