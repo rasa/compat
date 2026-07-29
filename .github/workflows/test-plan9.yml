@@ -41,6 +41,8 @@ jobs:
 
       - name: Prepare Plan 9 test
         shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           set -euxo pipefail
 
@@ -78,15 +80,6 @@ jobs:
 
           echo "Files to transfer:"
           du -ah "${stage}"
-
-      - name: Boot Plan 9 and run tests
-        shell: bash
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          set -euo pipefail
-
-          stage="${RUNNER_TEMP}/plan9-stage"
 
           # Avoid nested-KVM LBR/PMU problems under act.
           if [[ "${ACT:-}" == "true" ]]; then
