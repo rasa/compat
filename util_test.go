@@ -473,6 +473,8 @@ func tempName(t *testing.T) (string, error) { //nolint:unparam
 func tempDir(t *testing.T) string {
 	t.Helper()
 
+	tempDir := t.TempDir()
+
 	if tempPath != "" {
 		parts := strings.Split(t.TempDir(), string(os.PathSeparator))
 
@@ -498,9 +500,13 @@ func tempDir(t *testing.T) string {
 		if errors.Is(err, os.ErrNotExist) {
 			t.Fatal(err)
 		}
-
-		return tempDir
 	}
 
-	return t.TempDir()
+	if compat.IsPlan9 {
+		if err := os.Chmod(tempDir, 0o777); err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	return tempDir
 }

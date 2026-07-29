@@ -50,15 +50,9 @@ var arches = []string{
 }
 
 func TestRuntimeConsts(t *testing.T) { //nolint:funlen,gocyclo
-	if compat.IsAndroid {
-		skip(t, "Skipping test: go executable not available on android")
-
-		return
-	}
-
 	goExe, err := exec.LookPath("go")
 	if err != nil {
-		if compat.IsTinygo || compat.IsWasm {
+		if compat.IsAndroid || compat.IsPlan9 || compat.IsTinygo || compat.IsWasm {
 			skipf(t, "Skipping test: %v (1)", err)
 			return
 		}
@@ -68,7 +62,7 @@ func TestRuntimeConsts(t *testing.T) { //nolint:funlen,gocyclo
 
 	out, err := exec.Command(goExe, "tool", "dist", "list").Output() //nolint:noctx
 	if err != nil {
-		if compat.IsTinygo || compat.IsWasm {
+		if compat.IsAndroid || compat.IsPlan9 || compat.IsTinygo || compat.IsWasm {
 			skipf(t, "Skipping test: %v (2)", err)
 			return
 		}
