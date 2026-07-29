@@ -11,9 +11,8 @@ permissions:
 env:
   ANYVM_COMMIT: "main"
   GO_VERSION: "1.26.5"
-  # See https://github.com/anyvm-org/anyvm/blob/main/.github/workflows/plan9.yml#L30
   PLAN9_RELEASE: "11554"
-  SSH_PORT: 10023
+  SSH_PORT: "10023"
 
 jobs:
   test-plan9:
@@ -32,13 +31,16 @@ jobs:
           repository: anyvm-org/anyvm
           ref: ${{ env.ANYVM_COMMIT }}
           path: .anyvm
+          fetch-depth: 1
+          show-progress: false
 
       - uses: actions/setup-go@v7
         with:
           go-version: ${{ env.GO_VERSION }}
           cache: true
 
-      - name: Prepare Plan 9
+      - name: Prepare Plan 9 test
+        shell: bash
         run: |
           set -euxo pipefail
 
@@ -51,50 +53,124 @@ jobs:
             qemu-utils \
             zstd
 
-          # Avoid downloading modules from inside Plan 9.
-          go mod vendor
+          stage="${RUNNER_TEMP}/plan9-stage"
 
-          mkdir -p .plan9
+          rm -rf "${stage}"
+          mkdir -p "${stage}"
 
-          curl -fsSLo "${RUNNER_TEMP}/go-plan9.tar.gz" \
-            "https://go.dev/dl/go${GO_VERSION}.plan9-amd64.tar.gz"
+          # Build one native Plan 9 test executable.
+          CGO_ENABLED=0 \
+          GOOS=plan9 \
+          GOARCH=amd64 \
+            go test \
+              -c \
+              -mod=readonly \
+              -tags debug \
+              -covermode=atomic \
+              -coverpkg=. \
+              -o "${stage}/compat.test" \
+              .
 
-          tar -xzf "${RUNNER_TEMP}/go-plan9.tar.gz" -C .plan9
+          # Preserve the test's expected relative working directory.
+          if [[ -d testdata ]]; then
+            cp -a testdata "${stage}/"
+          fi
 
-      - name: Boot Plan 9
+          echo "Files to transfer:"
+          du -ah "${stage}"
+
+      - name: Boot Plan 9 and run tests
+        shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          set -euxo pipefail
-
-          python3 .anyvm/anyvm.py \
-            --os plan9 \
-            --release "${PLAN9_RELEASE}" \
-            --data-dir "${RUNNER_TEMP}/anyvm-data" \
-            --ssh-port "${SSH_PORT}" \
-            --sync 9p \
-            -v "${GITHUB_WORKSPACE}:/usr/glenda/work" \
-            -d \
-            --remote-vnc off
-
-      - name: Run tests in Plan 9
-        shell: bash
-        run: |
           set -euo pipefail
 
-          rm -f .plan9-pass
+          stage="${RUNNER_TEMP}/plan9-stage"
+
+          # Avoid nested-KVM LBR/PMU problems under act.
+          if [[ "${ACT:-}" == "true" ]]; then
+            sudo rm -f /dev/kvm
+          fi
+
+          # Transfer only compat.test and testdata.
+          timeout --signal=TERM 15m \
+            python3 .anyvm/anyvm.py \
+              --os plan9 \
+              --release "${PLAN9_RELEASE}" \
+              --data-dir "${RUNNER_TEMP}/anyvm-data" \
+              --ssh-port "${SSH_PORT}" \
+              --sync 9p \
+              -v "${stage}:/usr/glenda/work" \
+              -d \
+              --remote-vnc off
 
           expect <<'EOF'
           set timeout 1800
+          set result 1
 
-          spawn telnet 127.0.0.1 ${{ env.SSH_PORT }}
+          spawn telnet 127.0.0.1 $env(SSH_PORT)
+
+          expect {
+            "term%" {}
+            timeout {
+              puts stderr "Timed out waiting for Plan 9"
+              exit 124
+            }
+            eof {
+              puts stderr "Could not connect to Plan 9"
+              exit 125
+            }
+          }
+
+          send -- "cd /usr/glenda/work\r"
           expect "term%"
 
-          send -- "cd /usr/glenda/work; if (.plan9/go/bin/go test -count=1 -timeout=20m -mod=vendor -tags debug -v -covermode=atomic -coverprofile=coverage.out -coverpkg=. .) touch .plan9-pass\r"
-
+          send -- "chmod +x compat.test\r"
           expect "term%"
+
+          send -- "./compat.test -test.count=1 -test.timeout=20m -test.v -test.coverprofile=coverage.out; teststatus=\$status\r"
+
+          expect {
+            "term%" {}
+            timeout {
+              puts stderr "Timed out running Plan 9 tests"
+              exit 124
+            }
+            eof {
+              puts stderr "Plan 9 disconnected during tests"
+              exit 125
+            }
+          }
+
+          # The caret prevents Expect from matching the echoed command.
+          # Plan 9 rc joins the two pieces in the actual output.
+          send -- "if(~ \$teststatus '') echo __PLAN9_^PASS__\r"
+
+          expect {
+            "__PLAN9_PASS__" {
+              set result 0
+              exp_continue
+            }
+            "term%" {}
+            timeout {
+              puts stderr "Timed out reading test result"
+              set result 124
+            }
+            eof {
+              puts stderr "Plan 9 disconnected before reporting result"
+              set result 125
+            }
+          }
+
           send -- "fshalt\r"
-          expect eof
-          EOF
 
-          test -f .plan9-pass
+          set timeout 30
+          expect {
+            "done halting" {}
+            eof {}
+            timeout {}
+          }
+
+          exit $result
+          EOF
