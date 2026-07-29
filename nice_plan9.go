@@ -6,7 +6,6 @@
 package compat
 
 import (
-	"bufio"
 	"fmt"
 	"os"
 	"strconv"
@@ -15,62 +14,58 @@ import (
 
 // Nice gets the CPU process priority. The return value is in a range from
 // -20 (least nice), to 19 (most nice), even on non-Unix systems such as
-// Windows, plan9, etc. If not supported by the operating system, 0 is
+// Windows, Plan 9, etc. If not supported by the operating system, 0 is
 // returned.
+//
+// Plan 9 exposes the base and current scheduling priorities as the final two
+// fields of /proc/pid/status. This function reports the base priority because
+// that is the value changed by Renice.
 func Nice() (int, error) {
-	pid := os.Getpid()
-	path := fmt.Sprintf("/proc/%d/status", pid)
+	path := fmt.Sprintf("/proc/%d/status", os.Getpid())
 
-	f, err := os.Open(path)
+	data, err := os.ReadFile(path)
 	if err != nil {
 		return 0, err
 	}
-	defer f.Close() //nolint:errcheck
 
-	scanner := bufio.NewScanner(f)
-	for scanner.Scan() {
-		line := scanner.Text()
-		if strings.HasPrefix(line, "pri ") {
-			// format: "pri <value>"
-			fields := strings.Fields(line)
-			if len(fields) == 2 {
-				val, err := strconv.Atoi(fields[1])
-				if err == nil {
-					return val, nil
-				}
-			}
-		}
+	fields := strings.Fields(string(data))
+	if len(fields) < 2 {
+		return 0, fmt.Errorf("nice: malformed process status in %v", path)
 	}
 
-	return 0, fmt.Errorf("nice: priority not found in %v", path)
+	// The last two fields are the base and current scheduling priorities.
+	basePriority, err := strconv.Atoi(fields[len(fields)-2])
+	if err != nil {
+		return 0, fmt.Errorf(
+			"nice: invalid base priority %q in %v: %w",
+			fields[len(fields)-2],
+			path,
+			err,
+		)
+	}
+
+	nice, ok := niceMap[basePriority]
+	if !ok {
+		return 0, fmt.Errorf(
+			"nice: invalid Plan 9 priority %d in %v",
+			basePriority,
+			path,
+		)
+	}
+
+	return nice, nil
 }
 
 // See https://9p.io/magic/man2html/3/proc
-
-// priorityMap maps unix's nice levels (-20 to 19), to plan9's levels (0-19):
-// input value   plan9 priority
-// -----------   ---------------------
 //
-//		    -20 : 19 (highest priority)
-//	   -19, -18 : 18
-//	   -17, -16 : 17
-//	   -15, -14 : 16
-//	   -13, -12 : 15
-//	   -11, -10 : 14
-//	 -9, -8, -7 : 13 (plan9's default for kernel processes)
-//	 -6, -5, -4 : 12
-//	 -3, -2, -1 : 11
-//	          0 : 10 (normal priority) (plan9's default for non-kernel processes)
-//	      1,  2 :  9
-//	      3,  4 :  8
-//	      5,  6 :  7
-//	      7,  8 :  6
-//	      9, 10 :  5
-//	     11, 12 :  4
-//	     13, 14 :  3
-//	     15, 16 :  2
-//	     17, 18 :  1
-//	         19 :  0 (lowest priority)
+// Plan 9 priorities range from 0 to 19, with larger values representing
+// higher priorities. Unix nice values range from -20 to 19, with smaller
+// values representing higher priorities.
+//
+// Because Unix has 40 nice values and Plan 9 has only 20 priority values,
+// conversion is necessarily lossy.
+
+// priorityMap maps Unix nice levels (-20 to 19) to Plan 9 priorities (0 to 19).
 var priorityMap = map[int]uint32{
 	-20: 19,
 	-19: 18,
@@ -114,26 +109,57 @@ var priorityMap = map[int]uint32{
 	19:  0,
 }
 
+// niceMap maps each Plan 9 priority to a representative Unix nice value.
+// Where multiple Unix nice values map to the same Plan 9 priority, one
+// canonical value is returned.
+var niceMap = map[int]int{
+	19: -20,
+	18: -18,
+	17: -16,
+	16: -14,
+	15: -12,
+	14: -10,
+	13: -8,
+	12: -5,
+	11: -2,
+	10: 0,
+	9:  1,
+	8:  3,
+	7:  5,
+	6:  7,
+	5:  9,
+	4:  11,
+	3:  13,
+	2:  15,
+	1:  17,
+	0:  19,
+}
+
 // Renice sets the CPU process priority. The nice parameter can range from
-// -20 (least nice), to 19 (most nice), even on non-Unix systems such as
-// Windows, plan9, etc. If not supported by the operating system, nil is returned.
+// -20 (least nice) to 19 (most nice), even on non-Unix systems such as
+// Windows, Plan 9, etc. If not supported by the operating system, nil is
+// returned.
 func Renice(nice int) error {
 	priority, ok := priorityMap[nice]
 	if !ok {
 		return &InvalidNiceError{nice}
 	}
-	filename := fmt.Sprintf("/proc/%d/ctl", os.Getpid())
-	f, err := os.Open(filename)
+
+	path := fmt.Sprintf("/proc/%d/ctl", os.Getpid())
+
+	f, err := os.OpenFile(path, os.O_WRONLY, 0)
 	if err != nil {
 		return &ReniceError{nice, err}
 	}
-	_, err = f.Write([]byte(fmt.Sprintf("pri %d", priority)))
-	if err != nil {
-		return &ReniceError{nice, err}
+
+	_, writeErr := fmt.Fprintf(f, "pri %d", priority)
+	closeErr := f.Close()
+
+	if writeErr != nil {
+		return &ReniceError{nice, writeErr}
 	}
-	err = f.Close()
-	if err != nil {
-		return &ReniceError{nice, err}
+	if closeErr != nil {
+		return &ReniceError{nice, closeErr}
 	}
 
 	return nil

@@ -259,6 +259,11 @@ func TestStatMTime(t *testing.T) { //nolint:dupl
 }
 
 func TestStatUID(t *testing.T) {
+	if compat.IsPlan9 {
+		skipf(t, "Skipping test: Geteuid not supported on %s", runtime.GOOS)
+		return
+	}
+
 	name, err := createTempFile(t)
 	if err != nil {
 		fatal(t, err)
@@ -295,6 +300,11 @@ func TestStatUID(t *testing.T) {
 }
 
 func TestStatGID(t *testing.T) {
+	if compat.IsPlan9 {
+		skipf(t, "Skipping test: Getegid not supported on %s", runtime.GOOS)
+		return
+	}
+
 	name, err := createTempFile(t)
 	if err != nil {
 		fatal(t, err)
@@ -375,8 +385,8 @@ func TestStatGroup(t *testing.T) {
 		return
 	}
 
-	if compat.IsAndroid {
-		skip(t, "Skipping test: user: LookupGroupId not implemented on android")
+	if compat.IsAndroid || compat.IsPlan9 {
+		skipf(t, "Skipping test: user: LookupGroupId not implemented on %s", runtime.GOOS)
 		return
 	}
 
