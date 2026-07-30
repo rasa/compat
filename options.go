@@ -12,18 +12,30 @@ import (
 
 // Options define the behavior of `WriteReaderAtomic()`, etc.
 type Options struct {
-	atomically      bool         // default false
-	defaultFileMode os.FileMode  // default 0
-	fileMode        os.FileMode  // default 0
-	flags           int          // default 0
-	keepFileMode    bool         // default false
-	readOnlyMode    ReadOnlyMode // default 0
-	retrySeconds    float64      // default 0.0
-	setSymlinkOwner bool         // default false
+	allowNonAtomicReplace bool         // default false
+	atomically            bool         // default false
+	defaultFileMode       os.FileMode  // default 0
+	fileMode              os.FileMode  // default 0
+	flags                 int          // default 0
+	keepFileMode          bool         // default false
+	readOnlyMode          ReadOnlyMode // default 0
+	retrySeconds          float64      // default 0.0
+	setSymlinkOwner       bool         // default false
 }
 
 // Option functions modify Options.
 type Option func(*Options)
+
+// WithNonAtomicReplace permits a non-atomic replacement when the
+// operating system cannot atomically replace an existing destination.
+//
+// On Plan 9, this may temporarily leave the destination absent.
+// The default is false.
+func WithAllowNonAtomicReplace(allowNonAtomicReplace bool) Option {
+	return func(opts *Options) {
+		opts.allowNonAtomicReplace = allowNonAtomicReplace
+	}
+}
 
 // WithAtomicity creates or renames a file atomicly.
 // Used by the WriteFile and WriteReader functions.

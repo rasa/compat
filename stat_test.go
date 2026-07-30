@@ -149,13 +149,8 @@ func TestStatATime(t *testing.T) { //nolint:dupl
 		fatalTimes(t, "ATime()", got, now, testEnv.atimeGranularity)
 	}
 
-	if compat.IsTinygo {
-		skip(t, "Skipping test: os.Chtimes fails with 'operation not implemented' on tinygo")
-		return
-	}
-
-	if compat.IsPlan9 {
-		skipf(t, "Skipping test: setting atime not supported on %v", runtime.GOOS)
+	if !compat.SupportsATimeSetting() {
+		skipf(t, "Skipping test: setting atime not supported on %v with %v", runtime.GOOS, runtime.Compiler)
 		return
 	}
 

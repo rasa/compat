@@ -15,24 +15,30 @@ import (
 type supportsType uint
 
 const (
-	// supportsLinks defines if FileInfo's Links() function is supported by
-	// the OS.
-	supportsLinks supportsType = 1 << iota
 	// supportsATime defines if FileInfo's ATime() function is supported by
 	// the OS.
-	supportsATime
+	supportsATime supportsType = 1 << iota
+	// supportsATimeSetting defines if setting a files's atime is supported
+	//  by the OS.
+	supportsATimeSetting
+	// supportsAtomicReplace defines if atomic replacement is supported by
+	// the OS.
+	supportsAtomicReplace
 	// supportsBTime defines if FileInfo's BTime() function is supported by
 	// the OS.
 	supportsBTime
 	// supportsCTime defines if FileInfo's CTime() function is supported by
 	// the OS.
 	supportsCTime
-	// supportsSymlinks defines if symlinks are supported by the OS.
-	supportsSymlinks
-	// supportsNice defines if Nice() is supported by the OS.
-	supportsNice
 	// supportsFstat defines if Fstat() is supported by the OS.
 	supportsFstat
+	// supportsLinks defines if FileInfo's Links() function is supported by
+	// the OS.
+	supportsLinks
+	// supportsNice defines if Nice() is supported by the OS.
+	supportsNice
+	// supportsSymlinks defines if symlinks are supported by the OS.
+	supportsSymlinks
 )
 
 // UnknownID is returned when the UID or GID could not be determined.
@@ -127,6 +133,21 @@ func UserIDSource() UserIDSourceType {
 // SupportsATime returns true if FileInfo's ATime() function is supported by the OS.
 func SupportsATime() bool {
 	return supports&supportsATime == supportsATime
+}
+
+// SupportsATimeSetting returns true setting a files's atime is supported by the OS.
+func SupportsATimeSetting() bool {
+	if IsTinygo {
+		// os.Chtimes fails with 'operation not implemented' on tinygo
+		return false
+	}
+
+	return supports&supportsATimeSetting == supportsATimeSetting
+}
+
+// SupportsATime returns true if FileInfo's ATime() function is supported by the OS.
+func SupportsAtomicReplace() bool {
+	return supports&supportsAtomicReplace == supportsAtomicReplace
 }
 
 // SupportsBTime returns true if FileInfo's BTime() function is supported by the OS.

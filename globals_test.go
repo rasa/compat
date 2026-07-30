@@ -13,6 +13,7 @@ import (
 
 func TestGetOptions(t *testing.T) {
 	opts := make([]compat.Option, 0)
+	opts = append(opts, compat.WithAllowNonAtomicReplace(true))
 	opts = append(opts, compat.WithAtomicity(true))
 	opts = append(opts, compat.WithDefaultFileMode(perm777))
 	opts = append(opts, compat.WithFileMode(perm777))

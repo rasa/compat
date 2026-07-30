@@ -9,7 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Added
 
+- Add `WithAllowNonAtomicReplace()` option.
+- Add `SupportsATimeSetting()` function.
+
 ### Fixed
+
+- Fix all test failures on Plan9.
 
 ### Changed
 

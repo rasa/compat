@@ -33,6 +33,11 @@ import (
 //
 // Additional option arguments can be used to change the default configuration
 // for the target file.
+//
+// On Plan 9, atomic creation of a new file is supported, but atomic replacement
+// of an existing file is not. If the destination exists, WriteReader returns an
+// error matching errors.ErrUnsupported and leaves the destination unchanged.
+// To work around this issue, use the WithAllowNonAtomicReplace option.
 func WriteReader(name string, r io.Reader, perm os.FileMode, opts ...Option) (err error) { //nolint:funlen,gocyclo
 	fopts := Options{
 		flags:        os.O_CREATE | os.O_WRONLY | os.O_TRUNC,

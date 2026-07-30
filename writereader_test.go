@@ -16,6 +16,32 @@ import (
 	"github.com/rasa/compat"
 )
 
+func TestWriteReader(t *testing.T) { //nolint:dupl
+	file, err := tempName(t)
+	if err != nil {
+		t.Fatalf("Failed to create temp file: %v", err)
+	}
+
+	cleanup(t, file)
+
+	perm := compat.CreatePerm // 0o666
+	err = compat.WriteReader(file, helloBuf, perm)
+	if err != nil {
+		t.Fatalf("Failed to write file: %q: %v", file, err)
+	}
+
+	fi, err := compat.Stat(file)
+	if err != nil {
+		t.Fatalf("Failed to stat file: %q: %v", file, err)
+	}
+
+	want := fixPerms(perm, false)
+	got := fi.Mode().Perm()
+	if got != want {
+		t.Fatalf("got %04o, want %04o", got, want)
+	}
+}
+
 func TestWriteReaderWithAtomicity(t *testing.T) { //nolint:dupl
 	file, err := tempName(t)
 	if err != nil {
@@ -26,6 +52,9 @@ func TestWriteReaderWithAtomicity(t *testing.T) { //nolint:dupl
 
 	perm := compat.CreatePerm // 0o666
 	opts := []compat.Option{compat.WithAtomicity(true)}
+	if compat.IsPlan9 {
+		opts = append(opts, compat.WithAllowNonAtomicReplace(true))
+	}
 	err = compat.WriteReader(file, helloBuf, perm, opts...)
 	if err != nil {
 		t.Fatalf("Failed to write file: %q: %v", file, err)
@@ -55,6 +84,9 @@ func TestWriteReaderWithAtomicityCurrentDir(t *testing.T) { //nolint:dupl
 
 	perm := compat.CreatePerm // 0o666
 	opts := []compat.Option{compat.WithAtomicity(true)}
+	if compat.IsPlan9 {
+		opts = append(opts, compat.WithAllowNonAtomicReplace(true))
+	}
 	err = compat.WriteReader(base, helloBuf, perm, opts...)
 	if err != nil {
 		t.Fatalf("Failed to write file: %q: %v", file, err)
@@ -82,6 +114,9 @@ func TestWriteReaderWithAtomicityNoPerms(t *testing.T) { //nolint:dupl
 
 	perm := compat.CreatePerm // 0o600
 	opts := []compat.Option{compat.WithAtomicity(true)}
+	if compat.IsPlan9 {
+		opts = append(opts, compat.WithAllowNonAtomicReplace(true))
+	}
 	err = compat.WriteReader(file, helloBuf, 0, opts...)
 	if err != nil {
 		t.Fatalf("Failed to write file: %q: %v", file, err)
@@ -110,6 +145,9 @@ func TestWriteReaderWithAtomicityWithDefaultFileMode(t *testing.T) { //nolint:du
 	opts := []compat.Option{
 		compat.WithAtomicity(true),
 		compat.WithDefaultFileMode(perm644),
+	}
+	if compat.IsPlan9 {
+		opts = append(opts, compat.WithAllowNonAtomicReplace(true))
 	}
 	err = compat.WriteReader(file, helloBuf, 0, opts...)
 	if err != nil {
@@ -173,6 +211,9 @@ func TestWriteReaderWithAtomicityWithKeepFileMode(t *testing.T) { //nolint:dupl
 		compat.WithAtomicity(true),
 		compat.WithKeepFileMode(true),
 	}
+	if compat.IsPlan9 {
+		opts = append(opts, compat.WithAllowNonAtomicReplace(true))
+	}
 	err = compat.WriteReader(file, helloBuf, 0, opts...)
 	if err != nil {
 		t.Fatalf("Failed to write file: %q: %v", file, err)
@@ -209,6 +250,9 @@ func TestWriteReaderWithAtomicityWithKeepFileModeFalse(t *testing.T) { //nolint:
 		compat.WithAtomicity(true),
 		compat.WithKeepFileMode(false),
 	}
+	if compat.IsPlan9 {
+		opts = append(opts, compat.WithAllowNonAtomicReplace(true))
+	}
 	err = compat.WriteReader(file, helloBuf, 0, opts...)
 	if err != nil {
 		t.Fatalf("Failed to write file: %q: %v", file, err)
@@ -242,6 +286,9 @@ func TestWriteReaderWithAtomicityWithFileMode(t *testing.T) { //nolint:dupl
 	opts := []compat.Option{
 		compat.WithAtomicity(true),
 		compat.WithFileMode(perm644),
+	}
+	if compat.IsPlan9 {
+		opts = append(opts, compat.WithAllowNonAtomicReplace(true))
 	}
 	err = compat.WriteReader(file, helloBuf, 0, opts...)
 	if err != nil {
@@ -299,6 +346,9 @@ func TestWriteReaderWithAtomicityWithReadOnlyModeReset(t *testing.T) { //nolint:
 		compat.WithFileMode(perm400),
 		compat.WithReadOnlyMode(compat.ReadOnlyModeReset),
 	}
+	if compat.IsPlan9 {
+		opts = append(opts, compat.WithAllowNonAtomicReplace(true))
+	}
 	err = compat.WriteReader(file, helloBuf, 0, opts...)
 	if err != nil {
 		t.Fatalf("Failed to write file: %q: %v", file, err)
@@ -324,6 +374,9 @@ func TestWriteReaderWithAtomicityInvalid(t *testing.T) { //nolint:dupl
 	opts := []compat.Option{
 		compat.WithAtomicity(true),
 		compat.WithFileMode(perm600),
+	}
+	if compat.IsPlan9 {
+		opts = append(opts, compat.WithAllowNonAtomicReplace(true))
 	}
 	err := compat.WriteReader(invalidName, helloBuf, 0, opts...)
 	if err == nil {
@@ -352,6 +405,9 @@ func TestWriteReaderWithAtomicityInvalidCantRead(t *testing.T) { //nolint:dupl
 	opts := []compat.Option{
 		compat.WithAtomicity(true),
 		compat.WithKeepFileMode(true),
+	}
+	if compat.IsPlan9 {
+		opts = append(opts, compat.WithAllowNonAtomicReplace(true))
 	}
 	err = compat.WriteReader(file, helloBuf, 0, opts...)
 	if err != nil {
@@ -390,7 +446,6 @@ func TestWriteReaderWithAtomicityInvalidReadOnlyDirectory(t *testing.T) { //noli
 	fi, err := compat.Stat(dir)
 	if err != nil {
 		t.Fatalf("Failed to stat: %v", err)
-
 		return
 	}
 	if fi.Mode().Perm() != perm {
@@ -399,6 +454,9 @@ func TestWriteReaderWithAtomicityInvalidReadOnlyDirectory(t *testing.T) { //noli
 	}
 
 	opts = []compat.Option{compat.WithAtomicity(true)}
+	if compat.IsPlan9 {
+		opts = append(opts, compat.WithAllowNonAtomicReplace(true))
+	}
 	err = compat.WriteReader(file, helloBuf, 0, opts...)
 	if err == nil {
 		// @TODO determine why test passes when run individually, but fails when running alongside other tests
@@ -426,6 +484,9 @@ func TestWriteReaderWithAtomicityError(t *testing.T) {
 	cleanup(t, file)
 
 	opts := []compat.Option{compat.WithAtomicity(true)}
+	if compat.IsPlan9 {
+		opts = append(opts, compat.WithAllowNonAtomicReplace(true))
+	}
 	err = compat.WriteReader(file, errReader{}, 0, opts...)
 	if err == nil {
 		t.Fatal("got nil, want an error")

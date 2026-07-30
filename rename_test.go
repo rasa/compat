@@ -4,6 +4,7 @@
 package compat_test
 
 import (
+	"runtime"
 	"testing"
 
 	"github.com/rasa/compat"
@@ -98,6 +99,45 @@ func TestRenameCantRead(t *testing.T) {
 	new := old + ".new"
 	cleanup(t, new)
 	err = compat.Rename(old, new)
+	if err != nil {
+		t.Fatalf("renaming '%v' to '%v': %v", old, new, err)
+	}
+}
+
+func TestRenameWithAtomicity(t *testing.T) {
+	if !compat.SupportsAtomicReplace() {
+		skipf(t, "Skipping test: WithAtomicity() not supported on %v", runtime.GOOS)
+		return
+	}
+
+	old, err := tempFile(t)
+	if err != nil {
+		t.Fatal(err)
+	}
+	new := old + ".new"
+	cleanup(t, old, new)
+	err = compat.Rename(old, new, compat.WithAtomicity(true))
+	// if compat.IsPlan9 {
+	// 	if err == nil {
+	// 		t.Fatalf("Expected Rename WithAtomicity to fail on Plan9, got nil")
+	// 	}
+	// 	if err == errors.ErrUnsupported {
+	// 		return
+	// 	}
+	// }
+	if err != nil {
+		t.Fatalf("renaming '%v' to '%v': %v", old, new, err)
+	}
+}
+
+func TestRenameWithAllowNonAtomicReplace(t *testing.T) {
+	old, err := tempFile(t)
+	if err != nil {
+		t.Fatal(err)
+	}
+	new := old + ".new"
+	cleanup(t, old, new)
+	err = compat.Rename(old, new, compat.WithAllowNonAtomicReplace(true))
 	if err != nil {
 		t.Fatalf("renaming '%v' to '%v': %v", old, new, err)
 	}

@@ -12,7 +12,22 @@ import (
 	"syscall"
 )
 
-func rename(source, destination string, _ ...Option) error {
+func rename(source, destination string, opts ...Option) error {
+	var fopts Options
+
+	for _, opt := range opts {
+		opt(&fopts)
+	}
+
+	if !fopts.allowNonAtomicReplace {
+		return &os.LinkError{
+			Op:  "rename",
+			Old: source,
+			New: destination,
+			Err: errors.ErrUnsupported,
+		}
+	}
+
 	sourceAbs, err := filepath.Abs(source)
 	if err != nil {
 		return &os.LinkError{

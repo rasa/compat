@@ -5,7 +5,7 @@
 
 package compat
 
-// Not supported: ATime | BTime | CTime | Fstat | Links | Nice | Symlinks.
-const supports supportsType = 0
+// Not supported: ATimeSetting | ATime | BTime | CTime | Fstat | Links | Nice | Symlinks.
+const supports supportsType = supportsAtomicReplace
 
 const userIDSource UserIDSourceType = UserIDSourceIsNone

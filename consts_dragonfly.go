@@ -6,6 +6,12 @@
 package compat
 
 // Not supported: BTime | Fstat.
-const supports supportsType = supportsLinks | supportsATime | supportsCTime | supportsNice | supportsSymlinks
+const supports supportsType = supportsATime |
+	supportsATimeSetting |
+	supportsAtomicReplace |
+	supportsCTime |
+	supportsLinks |
+	supportsNice |
+	supportsSymlinks
 
 const userIDSource UserIDSourceType = UserIDSourceIsInt
