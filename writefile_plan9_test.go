@@ -26,7 +26,7 @@ func TestWriteFileWithAtomicityPlan9(t *testing.T) { //nolint:dupl
 	perm := compat.CreatePerm // 0o666
 	opts := []compat.Option{compat.WithAtomicity(true)}
 	err = compat.WriteFile(file, helloBytes, perm, opts...)
-	if err != errors.ErrUnsupported {
+	if !isUnsupportedError(err) {
 		t.Fatalf("got %v, want ErrUnsupported", err)
 	}
 }

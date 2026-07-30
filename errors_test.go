@@ -10,7 +10,7 @@ import (
 	"syscall"
 )
 
-func isUnsupportedLinkError(err error) bool {
+func isUnsupportedError(err error) bool {
 	return errors.Is(err, syscall.ENOTSUP) ||
 		errors.Is(err, syscall.EOPNOTSUPP)
 }

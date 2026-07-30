@@ -7,12 +7,18 @@
 package compat_test
 
 import (
+	"runtime"
 	"testing"
 
 	"github.com/rasa/compat"
 )
 
 func TestWriteFileAtomic(t *testing.T) { //nolint:dupl
+	if !compat.SupportsAtomicReplace() {
+		skipf(t, "Skipping test: atomicity not supported on %v", runtime.GOOS)
+		return
+	}
+
 	file, err := tempName(t)
 	if err != nil {
 		t.Fatalf("Failed to create temp file: %v", err)
@@ -41,6 +47,11 @@ func TestWriteFileAtomic(t *testing.T) { //nolint:dupl
 
 func TestWriteReaderAtomic(t *testing.T) { //nolint:dupl
 	file, err := tempName(t)
+	if !compat.SupportsAtomicReplace() {
+		skipf(t, "Skipping test: atomicity not supported on %v", runtime.GOOS)
+		return
+	}
+
 	if err != nil {
 		t.Fatalf("Failed to create temp file: %v", err)
 	}

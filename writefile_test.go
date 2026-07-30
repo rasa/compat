@@ -345,9 +345,6 @@ func TestWriteFileWithAtomicityWithReadOnlyModeReset(t *testing.T) { //nolint:du
 		compat.WithFileMode(perm400),
 		compat.WithReadOnlyMode(compat.ReadOnlyModeReset),
 	}
-	if compat.IsPlan9 {
-		opts = append(opts, compat.WithAllowNonAtomicReplace(true))
-	}
 	err = compat.WriteFile(file, helloBytes, 0, opts...)
 	if err != nil {
 		t.Fatalf("Failed to write file: %q: %v", file, err)

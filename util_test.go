@@ -407,7 +407,7 @@ func supportsHardLinks(t *testing.T) bool {
 
 	if errors.Is(err, syscall.EPERM) ||
 		errors.Is(err, syscall.EACCES) ||
-		isUnsupportedLinkError(err) {
+		isUnsupportedError(err) {
 		t.Logf("hard links unavailable on %v: %v", runtime.GOOS, err)
 
 		return false
@@ -490,7 +490,7 @@ func tempDir(t *testing.T) string {
 			t.Fatalf("no component starting with 'Test' found in %v", t.TempDir())
 		}
 
-		tempDir := filepath.Join(append([]string{tempPath, "tmp"}, parts[idx:]...)...)
+		tempDir = filepath.Join(append([]string{tempPath, "tmp"}, parts[idx:]...)...)
 		err := compat.MkdirAll(tempDir, perm777)
 		if err != nil {
 			t.Fatal(err)
