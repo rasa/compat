@@ -11,6 +11,7 @@ import (
 )
 
 func isUnsupportedError(err error) bool {
-	return errors.Is(err, syscall.ENOTSUP) ||
+	return errors.Is(err, errors.ErrUnsupported) ||
+		errors.Is(err, syscall.ENOTSUP) ||
 		errors.Is(err, syscall.EOPNOTSUPP)
 }
