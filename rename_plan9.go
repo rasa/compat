@@ -83,4 +83,3 @@ func renameError(source, destination string, err error) error {
 		Err: err,
 	}
 }
-

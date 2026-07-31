@@ -9,23 +9,62 @@
 package compat_test
 
 import (
+	"bytes"
+	"os"
 	"testing"
 
 	"github.com/rasa/compat"
 )
 
-func TestWriteFileWithAtomicityPlan9(t *testing.T) { //nolint:dupl
+func TestWriteFileAtomicReplacePlan9(t *testing.T) {
 	file, err := tempName(t)
 	if err != nil {
-		t.Fatalf("Failed to create temp file: %v", err)
+		t.Fatal(err)
 	}
 
 	cleanup(t, file)
 
-	perm := compat.CreatePerm // 0o666
-	opts := []compat.Option{compat.WithAtomicity(true)}
-	err = compat.WriteFile(file, helloBytes, perm, opts...)
+	oldData := []byte("old")
+	if err := os.WriteFile(file, oldData, 0o666); err != nil {
+		t.Fatal(err)
+	}
+
+	err = compat.WriteFile(
+		file,
+		helloBytes,
+		0o666,
+		compat.WithAtomicity(true),
+	)
+
 	if !isUnsupportedError(err) {
-		t.Fatalf("got %v, want ErrUnsupported", err)
+		t.Fatalf("got %v, want unsupported error", err)
+	}
+
+	got, err := os.ReadFile(file)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if !bytes.Equal(got, oldData) {
+		t.Fatalf("destination changed: got %q, want %q", got, oldData)
+	}
+}
+
+func TestWriteFileAtomicCreatePlan9(t *testing.T) {
+	file, err := tempName(t)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	cleanup(t, file)
+
+	err = compat.WriteFile(
+		file,
+		helloBytes,
+		0o666,
+		compat.WithAtomicity(true),
+	)
+	if err != nil {
+		t.Fatal(err)
 	}
 }

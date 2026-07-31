@@ -132,7 +132,7 @@ func WriteReader(name string, r io.Reader, perm os.FileMode, opts ...Option) (er
 		return &os.PathError{Op: "write", Path: name, Err: err}
 	}
 
-	err = Rename(tempFileName, name)
+	err = Rename(tempFileName, name, WithAllowNonAtomicReplace(fopts.allowNonAtomicReplace))
 	if err != nil {
 		err = fmt.Errorf("cannot replace '%v' with tempfile '%v': %w", name, tempFileName, err)
 		return &os.PathError{Op: "write", Path: name, Err: err}
