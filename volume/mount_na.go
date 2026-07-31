@@ -12,5 +12,5 @@ import (
 func Mounts() ([]Mount, error) {
 	mounts := []Mount{}
 
-	return mounts, &compat.NotYetImplementedError{"mounts"}
+	return mounts, &compat.NotYetImplementedError{Op: "mounts"}
 }
