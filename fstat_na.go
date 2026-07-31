@@ -6,7 +6,6 @@
 package compat
 
 import (
-	"errors"
 	"os"
 )
 
