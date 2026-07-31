@@ -75,7 +75,7 @@ func TestWriteReaderNonAtomicCreate(t *testing.T) {
 	err = compat.WriteReader(
 		file,
 		bytes.NewReader(helloBytes),
-		0o600,
+		0o6,
 		compat.WithAtomicity(true),
 	)
 	if err != nil {

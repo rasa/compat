@@ -1,0 +1,34 @@
+// SPDX-FileCopyrightText: Copyright (c) 2026 Ross Smith II <ross@smithii.com>
+// SPDX-License-Identifier: MIT
+
+package compat
+
+import (
+	"errors"
+	"fmt"
+	"runtime"
+)
+
+type UnsupportedError struct {
+	Operation string
+}
+
+func (e *UnsupportedError) Error() string {
+	return e.Operation + ": unsupported"
+}
+
+func (e *UnsupportedError) Unwrap() error {
+	return errors.ErrUnsupported
+}
+
+type NotYetImplementedError struct {
+	Operation string
+}
+
+func (e *NotYetImplementedError) Error() string {
+	return fmt.Sprintf("%s: not yet implemented on %s/%s", e.Operation, runtime.GOOS, runtime.GOARCH)
+}
+
+func (e *NotYetImplementedError) Unwrap() error {
+	return errors.ErrUnsupported
+}
