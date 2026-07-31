@@ -10,5 +10,5 @@ import (
 )
 
 func typeOf(_ Mount) (Type, error) {
-	return TypeUnknown, &compat.NotYetImplementedError{"typeOf"}
+	return TypeUnknown, &compat.NotYetImplementedError{Op: "typeOf"}
 }
