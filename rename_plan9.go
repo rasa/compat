@@ -40,7 +40,7 @@ func rename(source, destination string, opts ...Option) error {
 			return renameError(
 				source,
 				destination,
-				&UnsupportedError{"rename"},
+				&UnsupportedError{Op: "rename"},
 			)
 		}
 
