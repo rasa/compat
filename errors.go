@@ -14,7 +14,7 @@ type UnsupportedError struct {
 }
 
 func (e *UnsupportedError) Error() string {
-	return e.Operation + ": unsupported"
+	return e.Op + ": unsupported"
 }
 
 func (e *UnsupportedError) Unwrap() error {
@@ -26,7 +26,7 @@ type NotYetImplementedError struct {
 }
 
 func (e *NotYetImplementedError) Error() string {
-	return fmt.Sprintf("%s: not yet implemented on %s/%s", e.Operation, runtime.GOOS, runtime.GOARCH)
+	return fmt.Sprintf("%s: not yet implemented on %s/%s", e.Op, runtime.GOOS, runtime.GOARCH)
 }
 
 func (e *NotYetImplementedError) Unwrap() error {
