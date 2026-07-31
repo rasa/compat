@@ -14,7 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Fixed
 
-- Fix all test failures on Plan9.
+- Add running test on Plan9 VM.
 
 ### Changed
 
