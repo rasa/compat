@@ -6,13 +6,11 @@
 package volume
 
 import (
-	"errors"
-
 	"github.com/rasa/compat"
 )
 
 func Mounts() ([]Mount, error) {
 	mounts := []Mount{}
 
-	return mounts, &compat.NotYetImplementedError("mounts")
+	return mounts, &compat.NotYetImplementedError{"mounts"}
 }
