@@ -156,15 +156,24 @@ install: ## install/update gofumpt, golangci-lint, goreleaser, govulncheck, miss
 	go get mvdan.cc/gofumpt@$(GOFUMPT_VER)
 	make mod
 	# golang.org/x/tools/go/analysis/passes/modernize/cmd/modernize
-	
+
 
 .PHONY: modernize
 modernize: ## modernize ./...
 	go tool $(TOOL_OPTS) modernize -fix ./...
 
 .PHONY: restore
-restore: ##	git restore format.go walk.go walk_test.go golang/golang_*.go robustio/robustio*.go
-	git restore format.go walk.go walk_test.go golang/golang_*.go robustio/robustio*.go
+restore: ##	git restore format.go walk.go walk_test.go golang/*.go robustio/robustio*.go
+	git restore \
+		format.go \
+		walk.go \
+		walk_test.go \
+		golang/golang_*.go \
+		golang/syscall/windows/*.go \
+		golang/syscall/windows/registry/*.go \
+		golang/syscall/windows/sysdll/*.go \
+		golang/user/*.go \
+		robustio/robustio*.go
 
 .PHONY: update
 update: ## go get -u

@@ -11,10 +11,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 - Add `WithAllowNonAtomicReplace()` option.
 - Add `SupportsATimeSetting()` function.
+- Add `UnsupportedError` error.
+- Add `NotYetImplementedError` error.
 
 ### Fixed
 
-- Add running test on Plan9 VM.
+- Add running tests on Plan9 VM.
 
 ### Changed
 

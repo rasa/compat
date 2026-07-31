@@ -1,10 +1,5 @@
-// SPDX-FileCopyrightText: Copyright © 2025 Ross Smith II <ross@smithii.com>
+// SPDX-FileCopyrightText: Copyright © 2026 Ross Smith II <ross@smithii.com>
 // SPDX-License-Identifier: MIT
-
-// SPDX-FileCopyrightText: Portions copyright (c) 2015 Nate Finch (@natefinch)
-// SPDX-FileCopyrightText: Portions copyright (c) 2022 Simon Dassow (@sdassow)
-
-//go:build plan9
 
 package compat_test
 
@@ -16,7 +11,12 @@ import (
 	"github.com/rasa/compat"
 )
 
-func TestWriteFileAtomicReplacePlan9(t *testing.T) {
+func TestWriteFileNonAtomicReplace(t *testing.T) {
+	if compat.SupportsAtomicReplace() {
+		skip(t, "Skipping test: requires non-atomic rename")
+		return
+	}
+
 	file, err := tempName(t)
 	if err != nil {
 		t.Fatal(err)
@@ -25,14 +25,15 @@ func TestWriteFileAtomicReplacePlan9(t *testing.T) {
 	cleanup(t, file)
 
 	oldData := []byte("old")
-	if err := os.WriteFile(file, oldData, 0o666); err != nil {
+	err = os.WriteFile(file, oldData, 0o600)
+	if err != nil {
 		t.Fatal(err)
 	}
 
 	err = compat.WriteFile(
 		file,
 		helloBytes,
-		0o666,
+		0o600,
 		compat.WithAtomicity(true),
 	)
 
@@ -50,7 +51,12 @@ func TestWriteFileAtomicReplacePlan9(t *testing.T) {
 	}
 }
 
-func TestWriteFileAtomicCreatePlan9(t *testing.T) {
+func TestWriteFileNonAtomicCreate(t *testing.T) {
+	if compat.SupportsAtomicReplace() {
+		skip(t, "Skipping test: requires non-atomic rename")
+		return
+	}
+
 	file, err := tempName(t)
 	if err != nil {
 		t.Fatal(err)
@@ -61,7 +67,7 @@ func TestWriteFileAtomicCreatePlan9(t *testing.T) {
 	err = compat.WriteFile(
 		file,
 		helloBytes,
-		0o666,
+		0o600,
 		compat.WithAtomicity(true),
 	)
 	if err != nil {

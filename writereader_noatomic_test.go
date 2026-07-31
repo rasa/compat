@@ -1,10 +1,5 @@
-// SPDX-FileCopyrightText: Copyright © 2025 Ross Smith II <ross@smithii.com>
+// SPDX-FileCopyrightText: Copyright © 2026 Ross Smith II <ross@smithii.com>
 // SPDX-License-Identifier: MIT
-
-// SPDX-FileCopyrightText: Portions copyright (c) 2015 Nate Finch (@natefinch)
-// SPDX-FileCopyrightText: Portions copyright (c) 2022 Simon Dassow (@sdassow)
-
-//go:build plan9
 
 package compat_test
 
@@ -16,7 +11,12 @@ import (
 	"github.com/rasa/compat"
 )
 
-func TestWriteReaderAtomicReplacePlan9(t *testing.T) {
+func TestWriteReaderNonAtomicReplace(t *testing.T) {
+	if compat.SupportsAtomicReplace() {
+		skip(t, "Skipping test: requires non-atomic rename")
+		return
+	}
+
 	file, err := tempName(t)
 	if err != nil {
 		t.Fatal(err)
@@ -28,22 +28,20 @@ func TestWriteReaderAtomicReplacePlan9(t *testing.T) {
 
 	// The destination must already exist to test unsupported
 	// atomic replacement.
-	if err := os.WriteFile(file, oldData, 0o666); err != nil {
+	err = os.WriteFile(file, oldData, 0o600)
+	if err != nil {
 		t.Fatal(err)
 	}
 
 	err = compat.WriteReader(
 		file,
 		bytes.NewReader(helloBytes),
-		0o666,
+		0o600,
 		compat.WithAtomicity(true),
 	)
 
 	if !isUnsupportedError(err) {
-		t.Fatalf(
-			"got %v, want unsupported error",
-			err,
-		)
+		t.Fatalf("got %v, want unsupported", err)
 	}
 
 	got, err := os.ReadFile(file)
@@ -60,7 +58,12 @@ func TestWriteReaderAtomicReplacePlan9(t *testing.T) {
 	}
 }
 
-func TestWriteReaderAtomicCreatePlan9(t *testing.T) {
+func TestWriteReaderNonAtomicCreate(t *testing.T) {
+	if compat.SupportsAtomicReplace() {
+		skip(t, "Skipping test: requires non-atomic rename")
+		return
+	}
+
 	file, err := tempName(t)
 	if err != nil {
 		t.Fatal(err)
@@ -72,7 +75,7 @@ func TestWriteReaderAtomicCreatePlan9(t *testing.T) {
 	err = compat.WriteReader(
 		file,
 		bytes.NewReader(helloBytes),
-		0o666,
+		0o600,
 		compat.WithAtomicity(true),
 	)
 	if err != nil {

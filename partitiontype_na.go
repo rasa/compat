@@ -7,12 +7,12 @@ package compat
 
 import (
 	"context"
-	"errors"
-	"runtime"
+
+	"github.com/rasa/compat"
 )
 
 // PartitionType returns the filesystem type (e.g., "ext4", "NTFS", "FAT32", etc.)
 // for the disk partition that contains path.
 func PartitionType(_ context.Context, _ string) (string, error) {
-	return "", errors.New("not implemented yet on " + runtime.GOOS + "/" + runtime.GOARCH)
+	return "", &compat.NotYetImplementedError("partitionType")
 }

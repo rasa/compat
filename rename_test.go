@@ -117,14 +117,6 @@ func TestRenameWithAtomicity(t *testing.T) {
 	new := old + ".new"
 	cleanup(t, old, new)
 	err = compat.Rename(old, new, compat.WithAtomicity(true))
-	// if compat.IsPlan9 {
-	// 	if err == nil {
-	// 		t.Fatalf("Expected Rename WithAtomicity to fail on Plan9, got nil")
-	// 	}
-	// 	if err == errors.ErrUnsupported {
-	// 		return
-	// 	}
-	// }
 	if err != nil {
 		t.Fatalf("renaming '%v' to '%v': %v", old, new, err)
 	}
