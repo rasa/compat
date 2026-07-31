@@ -49,6 +49,3 @@ jobs:
           binaryen-version: "${{ env.binaryen_version }}"
 
       - run: tinygo test -tags tinygo .
-
-      - run: tinygo test -tags tinygo -covermode=atomic -coverprofile=coverage.out -coverpkg=. .
-        continue-on-error: true
