@@ -184,7 +184,7 @@ Key:<br/>
 The table below lists the OS' support for other functions in this library:
 
 | OS           | Chmod()* | Fstat() | Nice()/<br/>Renice() | PartitionType() | Symlink() | Umask() |
-|--------------|----------|---------|-------|------|-------|------|
+|--------------|----------|----------|--------|------|-------|------|
 | AIX          | ✅       | ❌      | ✅    | ✅*  | ✅   | ✅   |
 | Android      | ✅       | ✅      | ✅    | ✅   | ✅   | ✅   |
 | Dragonfly    | ✅       | ✖️      | ✅    | ✅   | ✅   | ✅   |
@@ -196,7 +196,7 @@ The table below lists the OS' support for other functions in this library:
 | macOS        | ✅       | ✅      | ✅    | ✅   | ✅   | ✅   |
 | NetBSD       | ✅       | ✖️      | ✅    | ✅‡  | ✅   | ✅   |
 | OpenBSD      | ✅       | ❌      | ✅    | ✅‡  | ✅   | ✅   |
-| Plan9        | ✅       | ✅      | ✅    | ✅   | ✅   | ❌   |
+| Plan9        | ✅       | ❌      | ✅    | ✅   | ❌   | ❌   |
 | Solaris      | ✅       | ❌      | ✅    | ✅   | ✅   | ✅   |
 | Wasip1/<br/>WASM | ❌   | ❌      | ☑️    | ✅   | ❌   | ✅†  |
 | Windows      | ✅       | ✅      | ✅    | ✅   | ✅   | ✅§  |
