@@ -16,5 +16,5 @@ var osFeatureMap = map[OSFeature]string{}
 func Volumes(mounts []Mount) ([]Volume, error) {
 	volumes := []Volume{}
 
-	return volumes, &compat.NotYetImplementedError("volumes")
+	return volumes, &compat.NotYetImplementedError{Op: "volumes"}
 }
