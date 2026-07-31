@@ -10,7 +10,7 @@ import (
 )
 
 type UnsupportedError struct {
-	Operation string
+	Op string
 }
 
 func (e *UnsupportedError) Error() string {
@@ -22,7 +22,7 @@ func (e *UnsupportedError) Unwrap() error {
 }
 
 type NotYetImplementedError struct {
-	Operation string
+	Op string
 }
 
 func (e *NotYetImplementedError) Error() string {
