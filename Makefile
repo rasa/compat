@@ -2,7 +2,6 @@
 # SPDX-FileCopyrightText: Copyright © 2025 Ross Smith II <ross@smithii.com>
 # SPDX-License-Identifier: MIT
 
-
 export GOTOOLCHAIN := go1.26.5+auto
 
 export GOLANGCI_LINT_VER := latest # v2.9.0
@@ -156,7 +155,6 @@ install: ## install/update gofumpt, golangci-lint, goreleaser, govulncheck, miss
 	go get mvdan.cc/gofumpt@$(GOFUMPT_VER)
 	make mod
 	# golang.org/x/tools/go/analysis/passes/modernize/cmd/modernize
-
 
 .PHONY: modernize
 modernize: ## modernize ./...
