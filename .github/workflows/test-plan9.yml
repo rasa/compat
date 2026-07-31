@@ -1,4 +1,6 @@
 ---
+# yaml-language-server: $schema https://json.schemastore.org/github-workflow.json
+
 name: test-plan9
 
 on:
@@ -25,7 +27,7 @@ jobs:
           fetch-depth: 1
           show-progress: false
 
-      - name: Check out AnyVM
+      - name: actions/checkout@v7 anyvm-org/anyvm
         uses: actions/checkout@v7
         with:
           repository: anyvm-org/anyvm
@@ -39,11 +41,15 @@ jobs:
           go-version: ${{ env.GO_VERSION }}
           cache: true
 
-      - name: Prepare Plan 9 test
+      - name: Run tests on Plan9
         shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
+          CGO_ENABLED: 0
+          GOOS: plan9
+          GOARCH: amd64
         run: |
+          # Run tests on Plan9
           set -euxo pipefail
 
           sudo apt-get update
@@ -61,17 +67,14 @@ jobs:
           mkdir -p "${stage}"
 
           # Build one native Plan 9 test executable.
-          CGO_ENABLED=0 \
-          GOOS=plan9 \
-          GOARCH=amd64 \
-            go test \
-              -c \
-              -mod=readonly \
-              -tags debug \
-              -covermode=atomic \
-              -coverpkg=. \
-              -o "${stage}/compat.test" \
-              .
+          go test \
+            -c \
+            -mod=readonly \
+            -tags debug \
+            -covermode=atomic \
+            -coverpkg=. \
+            -o "${stage}/compat.test" \
+            .
 
           # Preserve the test's expected relative working directory.
           if [[ -d testdata ]]; then
