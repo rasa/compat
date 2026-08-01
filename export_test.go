@@ -13,7 +13,7 @@ var OSDirEntryToDirEntry = osDirEntryToDirEntry
 
 // globals.go
 
-var BuildOptions = buildOptions
+var BuildOptions = buildOptions //nolint:unused
 
 // runtime.go
 
@@ -22,3 +22,7 @@ var ExportedGoVersion = goVersion //nolint:unused
 // stat_*.go
 
 var ExportedStat = stat //nolint:unused
+
+// writereader.go
+
+var ExportedWriteReader = writeReader //nolint:unused
