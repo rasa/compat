@@ -6,6 +6,7 @@ package compat_test
 import (
 	"os"
 	"reflect"
+	"strings"
 	"testing"
 
 	"github.com/rasa/compat"
@@ -47,6 +48,9 @@ readOnlyMode:    1
 retrySeconds:    1
 setSymlinkOwner: true
 `
+	if compat.IsPlan9 {
+		want = strings.ReplaceAll(want, "0x40", "0x2000")
+	}
 	if got != want {
 		t.Fatalf("got:\n---\n%v\n---\nwant:\n---\n%v\n---\n", got, want)
 	}
