@@ -1,0 +1,45 @@
+---
+# yaml-language-server: $schema https://json.schemastore.org/github-workflow.json
+
+name: test-cover
+
+on:
+  workflow_call:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test-top3:
+    uses: ./.github/workflows/build.yml
+    with:
+      runner: top3
+      make_cmd: test
+    secrets: inherit
+  test-all-wasms:
+    uses: ./.github/workflows/test-all-wasms.yml
+    needs: test-top3
+    secrets: inherit
+  test-all-bsds:
+    uses: ./.github/workflows/test-all-bsds.yml
+    needs: test-all-wasms
+    secrets: inherit
+  test-all-solaria:
+    uses: ./.github/workflows/test-all-solaria.yml
+    needs: test-all-bsds
+    secrets: inherit
+
+  # @todo add code coverage to android, plan9, tinygo
+  # test-android:
+  #   uses: ./.github/workflows/test-android.yml
+  #   needs: test-all-solaria
+  #   secrets: inherit
+  # test-plan9:
+  #   uses: ./.github/workflows/test-plan9.yml
+  #   needs: test-android
+  #   secrets: inherit
+  # test-tinygo:
+  #   uses: ./.github/workflows/test-tinygo.yml
+  #   needs: test-plan9
+  #   secrets: inherit

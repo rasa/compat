@@ -11,44 +11,10 @@ permissions:
   contents: read
 
 jobs:
-  test-linux:
-    uses: ./.github/workflows/build.yml
-    with:
-      runner: ubuntu-24.04
+  test-cover:
+    uses: ./.github/workflows/test-cover.yml
     secrets: inherit
-  test-android:
-    uses: ./.github/workflows/test-android.yml
-    needs: test-linux
-    secrets: inherit
-  test-tinygo:
-    uses: ./.github/workflows/test-tinygo.yml
-    needs: test-android
-    secrets: inherit
-  test-plan9:
-    uses: ./.github/workflows/test-plan9.yml
-    needs: test-tinygo
-    secrets: inherit
-  test-all-wasms:
-    uses: ./.github/workflows/test-all-wasms.yml
-    needs: test-plan9
-    secrets: inherit
-  test-all-bsds:
-    uses: ./.github/workflows/test-all-bsds.yml
-    needs: test-all-wasms
-    secrets: inherit
-  test-all-solaria:
-    uses: ./.github/workflows/test-all-solaria.yml
-    needs: test-all-bsds
-    secrets: inherit
-  test-macos:
-    uses: ./.github/workflows/build.yml
-    with:
-      runner: macos-26
-    needs: test-all-solaria
-    secrets: inherit
-  test-windows:
-    uses: ./.github/workflows/build.yml
-    with:
-      runner: windows-2025
-    needs: test-macos
+  test-no-cover:
+    uses: ./.github/workflows/test-no-cover.yml
+    needs: test-cover
     secrets: inherit

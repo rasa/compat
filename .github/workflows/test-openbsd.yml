@@ -40,9 +40,9 @@ jobs:
         run: |
           ./download-build-test.sh
 
-    - uses: codecov/codecov-action@fb8b3582c8e4def4969c97caa2f19720cb33a72f # v7.0.0
+    - uses: codecov/codecov-action@v7
       with:
-        fail_ci_if_error: false
+        # fail_ci_if_error: false
         files: ./coverage.out
         name: coverage-${{ env.GOOS }}
         token: ${{ secrets.CODECOV_TOKEN }}

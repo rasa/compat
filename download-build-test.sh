@@ -82,6 +82,8 @@ printf '::notice ::tests succeeded: %s\n' "${GOVERSION}"
 sed -i.bak "/compat\/cmd\//d; /compat\/golang\//d;" coverage.out
 rm -f coverage.out.bak
 
+ls -l
+
 # curl -fLso codecov.sh https://codecov.io/bash
 # chmod +x codecov.sh
 # printf "Executing: ./codecov.sh -K -v -f coverage.out -r '%s'\n" "${GITHUB_REPOSITORY}"

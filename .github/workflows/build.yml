@@ -27,6 +27,9 @@ on:
       compat_debug_fs:
         default: "All"
         type: string # required
+      make_cmd:
+        default: "ci"
+        type: string # required
       runner:
         default: "ubuntu-24.04"
         type: string # required
@@ -46,6 +49,10 @@ on:
       compat_debug_fs:
         description: "COMPAT_DEBUG_FS environmental variable."
         default: "All"
+        type: string # required
+      make_cmd:
+        description: "Make comamnd."
+        default: "ci"
         type: string # required
       # checkov:skip=CKV_GHA_7: The build output cannot be affected by user parameters...
       runner:
@@ -96,6 +103,7 @@ permissions:
 env:
   COMPAT_DEBUG: ${{ inputs.compat_debug }}
   COMPAT_DEBUG_FS:  ${{ inputs.compat_debug_fs }}
+  MAKE_CMD: ${{ inputs.make_cmd }}
   RUNNER: ${{ inputs.runner }}
   TEST_OPTS: ${{ inputs.test_opts }}
 
@@ -202,14 +210,14 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-go-
 
-      - name: make ci
+      - name: make ${{ inputs.make_cmd }}
         if: env.SHOULD_RUN
         run: |
-          # make ci TEST_OPTS="${TEST_OPTS}"
+          # make ${MAKE_CMD} TEST_OPTS="${TEST_OPTS}"
           set -x
           : "${TEST_OPTS:=}"
           printf 'TEST_OPTS="%s"\n' "${TEST_OPTS}"
-          ${sudo:-} make ci TEST_OPTS="${TEST_OPTS}"
+          ${sudo:-} make "${MAKE_CMD}" TEST_OPTS="${TEST_OPTS}"
           test -z "${sudo:-}" && exit 0
           # this works on linux and macos
           ${sudo:-} chown -R "$(id -un)":"$(id -gn)" ./dist "${GOCACHE}" "${GOMODCACHE}"
@@ -222,6 +230,13 @@ jobs:
           path: coverage.*
         # env:
         #  CGO_ENABLED: ${{ contains(matrix.os, 'windows') && '0' || '1' }}
+
+      - name: Set SHOULD_RUN var on ${{ inputs.make_cmd }}
+        if: env.SHOULD_RUN
+        run: |
+          if [[ "${MAKE_CMD}" == "test" ]];
+            echo "SHOULD_RUN=" >> "${GITHUB_ENV}"
+          fi
 
       - name: go tool goreleaser release --clean --snapshot
         if: env.SHOULD_RUN && runner.os == 'Linux'
