@@ -4,6 +4,7 @@
 package compat_test
 
 import (
+	"errors"
 	"strings"
 	"testing"
 
@@ -17,6 +18,9 @@ func TestUnsupportedError(t *testing.T) {
 	if !strings.HasPrefix(got, want) {
 		t.Fatalf("UnsupportedError: got %v; want %v", got, want)
 	}
+	if !errors.Is(err, errors.ErrUnsupported) {
+		t.Fatalf("UnsupportedError: got %v, want UnsupportedError"  err)
+	}
 }
 
 func TestNotYetImplementedError(t *testing.T) {
@@ -25,5 +29,8 @@ func TestNotYetImplementedError(t *testing.T) {
 	want := "test: not yet implemented"
 	if !strings.HasPrefix(got, want) {
 		t.Fatalf("NotYetImplementedError: got %v; want %v", got, want)
+	}
+	if !errors.Is(err, errors.ErrUnsupported) {
+		t.Fatalf("NotYetImplementedError: got %v; want UnsupportedError"  err)
 	}
 }
