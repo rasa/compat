@@ -84,8 +84,3 @@ func (o Options) String() string { //nolint:unused
 
 	return b.String()
 }
-
-func Example(opts ...Option) { //nolint:unused
-	fopts := buildOptions(opts...)
-	fmt.Printf("fopts:\n%v\n", fopts)
-}
