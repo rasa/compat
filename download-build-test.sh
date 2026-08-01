@@ -2,7 +2,7 @@
 set +x +v # don't show CODECOV_TOKEN var
 
 # to run script locally
-: "${GITHUB_REPOSITORY:=rasa/$(basename '${PWD}')}"
+: "${GITHUB_REPOSITORY:=rasa/$(basename "${PWD}")}"
 : "${GITHUB_WORKSPACE:=${PWD}}"
 : "${GOOS:=$(uname | tr '[:upper:]' '[:lower:]')}" || true
 : "${GOARCH:=$(uname -p)}" || true
@@ -22,6 +22,7 @@ if ! command -v sha256sum >/dev/null 2>/dev/null; then
 fi
 
 printf 'CODECOV_SLUG:      %s\n' "${CODECOV_SLUG:-}"
+# shellcheck disable=SC2154 # (warning): CODECOV_TOKEN is referenced but not assigned.
 printf 'CODECOV_TOKEN:     %d chars long\n' "${#CODECOV_TOKEN}"
 printf 'GITHUB_REPOSITORY: %s\n' "${GITHUB_REPOSITORY}"
 printf 'GITHUB_WORKSPACE:  %s\n' "${GITHUB_WORKSPACE}"
