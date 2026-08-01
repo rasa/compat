@@ -1,17 +1,29 @@
 // SPDX-FileCopyrightText: Copyright (c) 2026 Ross Smith II <ross@smithii.com>
 // SPDX-License-Identifier: MIT
 
-//go:build !plan9
-
 package compat_test
 
 import (
-	"errors"
-	"syscall"
+	"strings"
+	"testing"
+
+	"github.com/rasa/compat"
 )
 
-func isUnsupportedError(err error) bool {
-	return errors.Is(err, errors.ErrUnsupported) ||
-		errors.Is(err, syscall.ENOTSUP) ||
-		errors.Is(err, syscall.EOPNOTSUPP)
+func TestUnsupportedError(t *testing.T) {
+	err := &compat.UnsupportedError{"test"}
+	got := err.Error()
+	want := "test: unsupported"
+	if !strings.HasPrefix(got, want) {
+		t.Fatalf("UnsupportedError: got %v; want %v", got, want)
+	}
+}
+
+func TestNotYetImplementedError(t *testing.T) {
+	err := &compat.NotYetImplementedError{"test"}
+	got := err.Error()
+	want := "test: not yet implemented"
+	if !strings.HasPrefix(got, want) {
+		t.Fatalf("NotYetImplementedError: got %v; want %v", got, want)
+	}
 }
