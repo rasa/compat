@@ -1,16 +1,17 @@
 # compat
 
 [![Build](https://github.com/rasa/compat/actions/workflows/build-ubuntu.yml/badge.svg)](https://github.com/rasa/compat/actions/workflows/build-ubuntu.yml)
-[![Codecov](https://codecov.io/gh/rasa/compat/branch/main/graph/badge.svg)](https://codecov.io/gh/rasa/compat)
-[![CodeQL](https://github.com/rasa/compat/workflows/CodeQL/badge.svg)](https://github.com/rasa/compat/actions?query=workflow%3ACodeQL)
+[![CodeQL](https://github.com/rasa/compat/actions/workflows/codeql.yml/badge.svg)](https://github.com/rasa/compat/actions/workflows/codeql.yml)
 [![MegaLinter](https://github.com/rasa/compat/actions/workflows/mega-linter.yml/badge.svg)](https://github.com/rasa/compat/actions/workflows/mega-linter.yml)
-[![Go Report Card](https://goreportcard.com/badge/github.com/rasa/compat)](https://goreportcard.com/report/github.com/rasa/compat)
+[![Codecov](https://codecov.io/gh/rasa/compat/branch/main/graph/badge.svg)](https://codecov.io/gh/rasa/compat)
+[![Go Reference](https://pkg.go.dev/badge/github.com/rasa/compat.svg)](https://pkg.go.dev/github.com/rasa/compat)<br/>
+[![Release](https://img.shields.io/github/v/release/rasa/compat.svg)](https://github.com/rasa/compat/releases)
+[![Go Version](https://img.shields.io/github/go-mod/go-version/rasa/compat)](go.mod)
 [![Last Commit](https://img.shields.io/github/last-commit/rasa/compat.svg)](https://github.com/rasa/compat/commits)
-[![Release](https://img.shields.io/github/v/release/rasa/compat.svg?style=flat)](https://github.com/rasa/compat/releases)
-[![go.mod](https://img.shields.io/github/go-mod/go-version/rasa/compat)](go.mod)
-[![Go Reference](https://pkg.go.dev/badge/github.com/rasa/compat.svg)](https://pkg.go.dev/github.com/rasa/compat)
+[![Lines of Code](https://img.shields.io/badge/LoC-16.4k-blue)](https://github.com/rasa/compat)
 [![Keep a Changelog](https://img.shields.io/badge/changelog-Keep%20a%20Changelog-%23E05735)](CHANGELOG.md)
-[![LICENSE](https://img.shields.io/github/license/rasa/compat)](LICENSE)
+[![License](https://img.shields.io/github/license/rasa/compat)](LICENSE)
+
 <!-- @synk: The badge feature is no longer actively being maintained or developed.
 [![Known Vulnerabilities](https://snyk.io/test/github/rasa/compat/badge.svg)](https://snyk.io/test/github/rasa/compat)
 -->
