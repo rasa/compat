@@ -14,270 +14,558 @@
 ## is regenerated.
 ##
 
-antontroshin
-archiver
-armv
-coreutils
-dosfstools
-eabi
-exfatprogs
-fsprogs
-mising
-noaudio
-reactivecircus
-reiserfsprogs
-sdkmanager
-swiftshader
-udevadm
-usesh
-vmactions
-xfsprogs
-
-abca
-acba
-acifani
-bytecodealliance
-toolchaintrace
-wasmtime
-
-adrg              #  2 hits in  1 file: cmd/updater/main.go
-advapi            #  2 hits in  1 file: stat_posix_windows.go
-asasalint         #  2 hits in  1 file: .golangci.yml
-atomicly          #  2 hits in  1 file: options.go
-binaryen          #  2 hits in  1 file: CHANGELOG.md
-bodyclose         #  2 hits in  1 file: .golangci.yml
-btimed            # 10 hits in  4 files
-Btrfs             #  2 hits in  1 file: main_linux_test.go
-btrfs             #  8 hits in  2 files
-capnspacehook     #  8 hits in  4 files
-ccessed           #  2 hits in  1 file: README.md
-cespare           #  2 hits in  1 file: getuid_plan9.go
-compatfs          #  4 hits in  1 file: main_darwin_test.go
-COMPATFS          #  4 hits in  1 file: main_darwin_test.go
-copyloopvar       #  2 hits in  1 file: .golangci.yml
-covermode         #  2 hits in  1 file: Makefile
-coverpkg          #  2 hits in  1 file: Makefile
-coverprofile      #  2 hits in  1 file: Makefile
-createtemp        # 12 hits in  3 files
-Ctim              #  8 hits in  2 files
-ctimed            # 10 hits in  3 files
-cyclop            #  2 hits in  1 file: .golangci.yml
-DACL              #  6 hits in  1 file: file_windows.go
-Dassow            # 12 hits in  6 files
-davecgh           #  4 hits in  2 files
-debugf            # 12 hits in  2 files
-debugln           #  4 hits in  1 file: util_test.go
-depguard          #  2 hits in  1 file: .golangci.yml
-DEVSKIM           #  2 hits in  1 file: .mega-linter.yml
-diffmatchpatch    #  2 hits in  1 file: cmd/updater/main.go
-diffx             #  6 hits in  1 file: Makefile
-drwxr             #  2 hits in  1 file: format_test.go
-dupl              # 52 hits in  7 files
-dupword           #  2 hits in  1 file: .golangci.yml
-envrc             #  2 hits in  1 file: .gitignore
-errb              #  6 hits in  1 file: util_test.go
-errorlint         #  4 hits in  2 files
-exhaustruct       #  2 hits in  1 file: .golangci.yml
-fdpath            #  4 hits in  1 file: golang/shim_windows.go
-fieldalignment    #  2 hits in  1 file: .golangci.yml
-Filel             #  4 hits in  1 file: cmd/demo/main.go
-fopts             # 48 hits in  5 files
-forbidigo         #  2 hits in  1 file: .golangci.yml
-forcetypeassert   #  2 hits in  1 file: .golangci.yml
-fumpt             # 10 hits in  1 file: Makefile
-funlen            # 10 hits in  4 files
-fuzzcache         #  2 hits in  1 file: Makefile
-goarches          #  8 hits in  1 file: runtime_test.go
-gochecknoglobals  #  2 hits in  1 file: .golangci.yml
-gochecknoinits    #  2 hits in  1 file: .golangci.yml
-goconst           #  8 hits in  3 files
-gocritic          #  6 hits in  2 files
-gocyclo           # 28 hits in 11 files
-gofumpt           # 12 hits in  2 files
-gopls             #  2 hits in  1 file: Makefile
-goprintffuncname  #  2 hits in  1 file: .golangci.yml
-gopsutil          #  4 hits in  2 files
-gosec             # 42 hits in  9 files
-goupdater         #  2 hits in  1 file: cmd/updater/main.go
-govet             # 14 hits in  4 files
-govulncheck       #  8 hits in  1 file: Makefile
-gsha              #  2 hits in  1 file: download-build-test.sh
-gtar              #  6 hits in  1 file: download-build-test.sh
-ineffassign       #  2 hits in  1 file: .golangci.yml
-infoed            #  6 hits in  1 file: dir.go
-interfacebloat    #  2 hits in  1 file: .golangci.yml
-ireturn           #  2 hits in  1 file: .golangci.yml
-irthed            #  2 hits in  1 file: README.md
-Ispare            #  2 hits in  1 file: fstat_freebsd.go
-JHFS              # 12 hits in  2 files
-jqcmd             #  8 hits in  1 file: download-build-test.sh
-KICS              #  2 hits in  1 file: .mega-linter.yml
-LMMM              #  2 hits in  1 file: cmd/updater/main.go
-LNNN              #  4 hits in  1 file: cmd/updater/main.go
-longdst           #  4 hits in  1 file: rename_windows.go
-longsrc           #  4 hits in  1 file: rename_windows.go
-losetup           # 10 hits in  1 file: main_linux_test.go
-luid              #  6 hits in  1 file: file_windows.go
-LUID              #  4 hits in  1 file: file_windows.go
-Luid              #  2 hits in  1 file: file_windows.go
-mattn             #  2 hits in  1 file: cmd/updater/main.go
-mkdirall          #  4 hits in  1 file: file_windows.go
-mkdirtemp         # 12 hits in  3 files
-modadvapi         # 10 hits in  1 file: stat_posix_windows.go
-modcache          #  2 hits in  1 file: Makefile
-modfile           #  2 hits in  1 file: Makefile
-modkernel         # 10 hits in  2 files
-mvdan             #  2 hits in  1 file: Makefile
-nakedret          #  2 hits in  1 file: .golangci.yml
-namep             #  6 hits in  1 file: golang/golang_windows.go
-natefinch         # 14 hits in  7 files
-nlreturn          #  2 hits in  1 file: .golangci.yml
-nobrowse          #  2 hits in  1 file: main_darwin_test.go
-noctx             #  6 hits in  3 files
-NODEL             #  4 hits in  2 files
-noinlineerr       #  2 hits in  1 file: .golangci.yml
-nolint            # 254 hits in 50 files
-nolintlint        # 14 hits in  4 files
-nonamedreturns    #  2 hits in  1 file: .golangci.yml
-NOROATTR          #  4 hits in  1 file: CHANGELOG.md
-ntfsprogs         #  4 hits in  1 file: main_linux_test.go
-oldpath           # 12 hits in  3 files
-paralleltest      #  2 hits in  1 file: .golangci.yml
-Partitionl        #  4 hits in  1 file: cmd/demo/main.go
-perfsprint        #  2 hits in  1 file: .golangci.yml
-POSIXID           # 24 hits in  4 files
-Recvq             #  2 hits in  1 file: fstat_freebsd.go
-reiserfs          #  6 hits in  1 file: main_linux_test.go
-removeall         #  2 hits in  1 file: golang/golang_windows.go
-Renice            # 54 hits in  9 files
-renice            #  6 hits in  1 file: nice_windows.go
-rowserrcheck      #  2 hits in  1 file: .golangci.yml
-rumpelstilzchen   #  2 hits in  1 file: dir_test.go
-rwxr              #  2 hits in  1 file: README.md
-scanmerge         #  2 hits in  1 file: cmd/updater/main.go
-sdassow           # 12 hits in  6 files
-Sddl              #  2 hits in  1 file: README.md
-Sendq             #  2 hits in  1 file: fstat_freebsd.go
-sergi             #  2 hits in  1 file: cmd/updater/main.go
-sharemode         # 14 hits in  2 files
-shirou            #  4 hits in  2 files
-snippetted        #  2 hits in  1 file: cmd/updater/main.go
-sparseimage       #  2 hits in  1 file: main_darwin_test.go
-sqlclosecheck     #  2 hits in  1 file: .golangci.yml
-Structsize        #  2 hits in  1 file: fstat_freebsd.go
-subauthorities    #  8 hits in  2 files
-Surw              #  2 hits in  1 file: format_test.go
-Symln             #  2 hits in  1 file: README.md
-synk              #  2 hits in  1 file: README.md
-templatefile      #  4 hits in  1 file: golang/golang_windows.go
-testcache         #  2 hits in  1 file: Makefile
-testpackage       #  2 hits in  1 file: .golangci.yml
-thelper           #  2 hits in  1 file: .golangci.yml
-Tokenprimarygroup #  2 hits in  1 file: file_windows.go
-Tokenprivileges   #  2 hits in  1 file: file_windows.go
-Tokenuser         #  2 hits in  1 file: file_windows.go
-unconvert         # 26 hits in  6 files
-unparam           # 10 hits in  3 files
-Unpconn           #  2 hits in  1 file: fstat_freebsd.go
-unsafeptr         #  2 hits in  1 file: Makefile
-Untarring         #  2 hits in  1 file: download-build-test.sh
-usered            # 22 hits in  4 files
-usestdlibvars     #  2 hits in  1 file: .golangci.yml
-usetesting        #  2 hits in  1 file: .golangci.yml
-usize             # 10 hits in  1 file: format.go
-varnamelen        #  2 hits in  1 file: .golangci.yml
-vfat              #  8 hits in  1 file: main_linux_test.go
-vhdfile           # 10 hits in  1 file: create-vhdx.ps1
-vhds              # 10 hits in  1 file: remove-vhdx.ps1
-volname           # 10 hits in  1 file: main_darwin_test.go
-Wasitime          #  2 hits in  1 file: CHANGELOG.md
-WDAC              #  2 hits in  1 file: file_debug_windows.go
-wrapcheck         #  2 hits in  1 file: .golangci.yml
-WSLIs             #  2 hits in  1 file: wsl_test.go
-# adrg             :  2 hits in  1 file
+acifani             #  4 hits in  2 files
+adrg                #  2 hits in  1 file: cmd/updater/main.go
+advapi              # 32 hits in  6 files
+antontroshin        #  2 hits in  1 file: .github/workflows/build.yml
+ANYVM               #  4 hits in  1 file: .github/workflows/test-plan9.yml
+anyvm               # 10 hits in  1 file: .github/workflows/test-plan9.yml
+archiver            #  4 hits in  2 files
+armv                #  2 hits in  1 file: .github/workflows/build-only-android.yml
+artipacked          #  2 hits in  1 file: .github/linters/zizmor.yml
+asasalint           #  2 hits in  1 file: .golangci.yml
+asciichr            #  4 hits in  1 file: .editorconfig
+atomicly            #  2 hits in  1 file: options.go
+Autobuild           #  6 hits in  1 file: .github/workflows/codeql.yml
+autobuild           #  2 hits in  1 file: .github/workflows/codeql.yml
+bbwe                #  2 hits in  1 file: .github/workflows/debug-matrix.yml
+bcryptprimitives    #  4 hits in  2 files
+BETTERLEAKS         #  2 hits in  1 file: .github/mega-linter-shared.yml
+binaryen            # 14 hits in  3 files
+BINFMTFS            #  2 hits in  1 file: volume/type_linux.go
+bodyclose           #  2 hits in  1 file: .golangci.yml
+btimed              # 10 hits in  4 files
+btrfs               # 14 hits in  4 files
+Btrfs               # 12 hits in  2 files
+bytecodealliance    #  2 hits in  1 file: .github/workflows/test-wasi.yml
+capnspacehook       #  8 hits in  4 files
+ccessed             #  2 hits in  1 file: README.md
+CDROM               #  4 hits in  2 files
+cespare             #  2 hits in  1 file: getuid_plan9.go
+CHECKMAKE           #  2 hits in  1 file: .github/mega-linter-shared.yml
+checkptr            #  4 hits in  1 file: golang/syscall/windows/security_windows.go
+choco               # 10 hits in  1 file: .github/workflows/debug-matrix.yml
+cjson               #  2 hits in  1 file: .github/mega-linter-shared.yml
+compatfs            #  4 hits in  1 file: main_darwin_test.go
+COMPATFS            #  4 hits in  1 file: main_darwin_test.go
+CONFIGFS            #  2 hits in  1 file: volume/type_linux.go
+configfs            #  2 hits in  1 file: volume/type_linux.go
+CONIN               #  2 hits in  1 file: volume/filesystem.go
+CONOUT              #  2 hits in  1 file: volume/filesystem.go
+copyloopvar         #  2 hits in  1 file: .golangci.yml
+coreutils           #  6 hits in  3 files
+covermode           # 12 hits in  6 files
+coverpkg            # 12 hits in  6 files
+coverprofile        # 12 hits in  6 files
+cphandle            #  6 hits in  2 files
+createtemp          # 12 hits in  3 files
+croutine            #  8 hits in  1 file: golang/syscall/windows/syscall_windows.go
+Ctim                #  8 hits in  2 files
+ctimed              # 10 hits in  3 files
+ctxptrs             #  6 hits in  2 files
+cyclop              #  2 hits in  1 file: .golangci.yml
+DACL                #  6 hits in  1 file: file_windows.go
+dacl                #  2 hits in  1 file: golang/syscall/windows/types_windows.go
+Dassow              # 12 hits in  6 files
+davecgh             #  4 hits in  2 files
+debugf              # 12 hits in  2 files
+DEBUGFS             #  2 hits in  1 file: volume/type_linux.go
+debugfs             #  2 hits in  1 file: volume/type_linux.go
+debugln             #  4 hits in  1 file: util_test.go
+depguard            #  2 hits in  1 file: .golangci.yml
+DEVICEMAP           #  2 hits in  1 file: golang/syscall/windows/types_windows.go
+DEVPTS              #  2 hits in  1 file: volume/type_linux.go
+DEVSKIM             #  8 hits in  2 files
+diffmatchpatch      #  2 hits in  1 file: cmd/updater/main.go
+diffx               #  8 hits in  1 file: Makefile
+DISKTREE            #  2 hits in  1 file: golang/syscall/windows/syscall_windows.go
+dism                #  2 hits in  1 file: .github/workflows/debug-matrix.yml
+DISM                #  2 hits in  1 file: .github/workflows/debug-matrix.yml
+dllname             #  2 hits in  1 file: golang/syscall/windows/registry/value.go
+dosfstools          #  2 hits in  1 file: .github/workflows/build-root.yml
+drwxr               #  2 hits in  1 file: format_test.go
+dupl                # 52 hits in  7 files
+dupword             #  2 hits in  1 file: .golangci.yml
+eabi                #  2 hits in  1 file: .github/workflows/build-only-android.yml
+eabuffer            #  6 hits in  2 files
+ealength            #  6 hits in  2 files
+EFIVARFS            #  2 hits in  1 file: volume/type_linux.go
+envrc               #  2 hits in  1 file: .gitignore
+EPLAN               #  2 hits in  1 file: errors_plan9_test.go
+errb                #  6 hits in  1 file: util_test.go
+errorlint           #  4 hits in  2 files
+exfatprogs          #  2 hits in  1 file: .github/workflows/build-root.yml
+exhaustruct         #  2 hits in  1 file: .golangci.yml
+failretval          #  8 hits in  1 file: golang/syscall/windows/syscall_windows.go
+fatx                #  2 hits in  1 file: volume/filesystem.go
+fdpath              #  4 hits in  1 file: golang/shim_windows.go
+FHGFS               #  2 hits in  1 file: volume/type_linux.go
+fieldalignment      #  2 hits in  1 file: .golangci.yml
+Filel               #  4 hits in  1 file: cmd/demo/main.go
+fopts               # 68 hits in  8 files
+forbidigo           #  2 hits in  1 file: .golangci.yml
+forcetypeassert     #  2 hits in  1 file: .golangci.yml
+fshalt              #  2 hits in  1 file: telnet_to_plan9.py
+fsprogs             #  2 hits in  1 file: .github/workflows/build-root.yml
+fsutil              #  2 hits in  1 file: .github/workflows/debug-matrix.yml
+fumpt               # 10 hits in  1 file: Makefile
+funlen              # 10 hits in  4 files
+fuseblk             #  2 hits in  1 file: volume/filesystem.go
+FUSEBLK             #  2 hits in  1 file: volume/type_linux.go
+fusectl             #  2 hits in  1 file: volume/filesystem.go
+fuzzcache           #  2 hits in  1 file: Makefile
+gcsfuse             #  2 hits in  1 file: volume/type_linux.go
+ghaction            #  6 hits in  2 files
+gitsubmodule        #  2 hits in  1 file: .github/dependabot.yml
+Glblcnt             #  2 hits in  1 file: golang/syscall/windows/syscall_windows.go
+goarches            # 22 hits in  4 files
+gochecknoglobals    #  2 hits in  1 file: .golangci.yml
+gochecknoinits      #  2 hits in  1 file: .golangci.yml
+goconst             # 44 hits in 14 files
+gocritic            #  8 hits in  3 files
+gocyclo             # 28 hits in 11 files
+gofmt               #  2 hits in  1 file: .github/linters/.golangci.yml
+gofumpt             # 12 hits in  2 files
+GOFUMPT             #  4 hits in  1 file: Makefile
+goprintffuncname    #  2 hits in  1 file: .golangci.yml
+gopsutil            # 12 hits in  6 files
+gopsutil's          #  2 hits in  1 file: volume/mount.go
+gosec               # 42 hits in  9 files
+gosimple            #  2 hits in  1 file: .github/linters/.golangci.yml
+goupdater           #  2 hits in  1 file: cmd/updater/main.go
+govet               # 16 hits in  5 files
+govulncheck         #  8 hits in  1 file: Makefile
+gpfs                #  2 hits in  1 file: volume/filesystem.go
+GPFS                #  6 hits in  2 files
+gsha                # 10 hits in  4 files
+gtar                # 16 hits in  5 files
+HOSTFS              #  4 hits in  1 file: volume/type_linux.go
+hostfs              #  4 hits in  1 file: volume/type_linux.go
+HUGETLBFS           #  4 hits in  1 file: volume/type_linux.go
+hugetlbfs           #  2 hits in  1 file: volume/type_linux.go
+icalcs              #  2 hits in  1 file: debug/debug_windows.go
+idauth              #  6 hits in  2 files
+impersonationlevel  #  6 hits in  2 files
+ineffassign         #  4 hits in  2 files
+inetutils           #  2 hits in  1 file: .github/workflows/test-plan9.yml
+infoed              #  6 hits in  1 file: dir.go
+innounp             #  2 hits in  1 file: .github/workflows/debug-matrix.yml
+INOTIFYFS           #  2 hits in  1 file: volume/type_linux.go
+interfacebloat      #  2 hits in  1 file: .golangci.yml
+iosb                # 18 hits in  2 files
+iregex              #  2 hits in  1 file: .github/workflows/debug-matrix.yml
+ireturn             #  2 hits in  1 file: .golangci.yml
+irthed              #  2 hits in  1 file: README.md
+Ispare              #  2 hits in  1 file: fstat_freebsd.go
+JHFS                # 16 hits in  3 files
+Joblint             #  4 hits in  1 file: .github/linters/.vale.ini
+jqcmd               #  8 hits in  1 file: download-build-test.sh
+JSONLINT            #  2 hits in  1 file: .github/mega-linter-shared.yml
+KAFS                #  2 hits in  1 file: volume/type_linux.go
+kafs                #  2 hits in  1 file: volume/type_linux.go
+KICS                #  4 hits in  2 files
+lessmsi             #  2 hits in  1 file: .github/workflows/debug-matrix.yml
+LMMM                #  2 hits in  1 file: cmd/updater/main.go
+lmshare             #  2 hits in  1 file: golang/syscall/windows/syscall_windows.go
+LNNN                #  4 hits in  1 file: cmd/updater/main.go
+logicaldisk         #  2 hits in  1 file: .github/workflows/debug-matrix.yml
+longdst             #  4 hits in  1 file: rename_windows.go
+longsrc             #  4 hits in  1 file: rename_windows.go
+losetup             # 10 hits in  1 file: main_linux_test.go
+luid                # 12 hits in  3 files
+LUID                # 16 hits in  3 files
+Luid                #  4 hits in  2 files
+mattn               #  2 hits in  1 file: cmd/updater/main.go
+Mattraks            #  4 hits in  1 file: .github/workflows/clean-logs.yml
+maxiumum            #  4 hits in  1 file: volume/filesystem.go
+Minoru              #  6 hits in  2 files
+mkdirall            #  4 hits in  1 file: file_windows.go
+mkdirtemp           # 12 hits in  3 files
+mkerrors            #  2 hits in  1 file: golang/syscall/windows/syscall_windows.go
+modadvapi           # 30 hits in  3 files
+modbcryptprimitives #  4 hits in  1 file: golang/syscall/windows/zsyscall_windows.go
+modcache            #  2 hits in  1 file: Makefile
+modfile             #  6 hits in  3 files
+modiphlpapi         #  4 hits in  1 file: golang/syscall/windows/zsyscall_windows.go
+modkernel           # 24 hits in  4 files
+modnetapi           # 10 hits in  1 file: golang/syscall/windows/zsyscall_windows.go
+modntdll            # 10 hits in  1 file: golang/syscall/windows/zsyscall_windows.go
+modpsapi            #  4 hits in  1 file: golang/syscall/windows/zsyscall_windows.go
+moduserenv          #  8 hits in  1 file: golang/syscall/windows/zsyscall_windows.go
+modws               #  8 hits in  1 file: golang/syscall/windows/zsyscall_windows.go
+mountvol            #  2 hits in  1 file: .github/workflows/debug-matrix.yml
+MQUEUE              #  4 hits in  1 file: volume/type_linux.go
+msixbundle          #  6 hits in  1 file: .github/workflows/debug-matrix.yml
+mvdan               #  2 hits in  1 file: Makefile
+nakedret            #  2 hits in  1 file: .golangci.yml
+nameformat          #  6 hits in  2 files
+namep               #  6 hits in  1 file: golang/golang_windows.go
+natefinch           # 14 hits in  7 files
+NERR                #  4 hits in  1 file: golang/syscall/windows/security_windows.go
+netapi              # 12 hits in  3 files
+neterr              # 20 hits in  3 files
+NETRESET            #  2 hits in  1 file: golang/syscall/windows/types_windows.go
+newk                #  2 hits in  1 file: golang/syscall/windows/registry/key.go
+newstate            # 10 hits in  2 files
+nlreturn            #  2 hits in  1 file: .golangci.yml
+NNTFS               #  2 hits in  1 file: .github/workflows/debug-matrix.yml
+noaudio             #  2 hits in  1 file: .github/workflows/test-android.yml
+nobrowse            #  2 hits in  1 file: main_darwin_test.go
+nocheckptr          #  8 hits in  1 file: golang/syscall/windows/security_windows.go
+noctx               #  6 hits in  3 files
+NODEL               #  4 hits in  2 files
+noinlineerr         #  2 hits in  1 file: .golangci.yml
+nolint              # 328 hits in 63 files
+nolintlint          # 14 hits in  4 files
+NONALERT            #  2 hits in  1 file: golang/syscall/windows/types_windows.go
+nonamedreturns      #  2 hits in  1 file: .golangci.yml
+NOROATTR            #  4 hits in  1 file: CHANGELOG.md
+NSFS                #  2 hits in  1 file: volume/type_linux.go
+nstr                #  6 hits in  2 files
+ntdll               # 14 hits in  3 files
+ntfsprogs           #  4 hits in  1 file: main_linux_test.go
+NTSTATUS            #  2 hits in  1 file: golang/syscall/windows/syscall_windows.go
+ntstatus            # 20 hits in  2 files
+nwchar              #  6 hits in  2 files
+OEXFAT              #  2 hits in  1 file: .github/workflows/debug-matrix.yml
+oldpath             # 16 hits in  4 files
+openasself          #  6 hits in  2 files
+OPENIF              #  2 hits in  1 file: golang/syscall/windows/types_windows.go
+OPENLINK            #  2 hits in  1 file: golang/syscall/windows/types_windows.go
+OPFILTER            #  2 hits in  1 file: golang/syscall/windows/types_windows.go
+OPLOCK              #  4 hits in  2 files
+OPLOCKED            #  2 hits in  1 file: golang/syscall/windows/types_windows.go
+osuser              #  8 hits in  1 file: golang/user/shim_windows.go
+OSVERSIONINFOEXW    # 12 hits in  3 files
+Panasas             #  4 hits in  2 files
+panfs               #  2 hits in  1 file: volume/filesystem.go
+PANFS               #  2 hits in  1 file: volume/type_linux.go
+paralleltest        #  2 hits in  1 file: .golangci.yml
+Partitionl          #  4 hits in  1 file: cmd/demo/main.go
+pdir                # 10 hits in  1 file: golang/syscall/windows/registry/value.go
+perfsprint          #  2 hits in  1 file: .golangci.yml
+permtest            #  2 hits in  1 file: cmd/hasperms/main.go
+PFAT                #  2 hits in  1 file: .github/workflows/debug-matrix.yml
+PIPEFS              #  4 hits in  1 file: volume/type_linux.go
+Pipefs              #  2 hits in  1 file: volume/type_linux.go
+pipefs              #  2 hits in  1 file: volume/type_linux.go
+pkgs                #  2 hits in  1 file: .github/workflows/debug-matrix.yml
+POSIXID             # 24 hits in  4 files
+prevstate           # 10 hits in  2 files
+Proccnt             #  2 hits in  1 file: golang/syscall/windows/syscall_windows.go
+protinfo            #  6 hits in  2 files
+pstore              #  2 hits in  1 file: volume/type_linux.go
+PSTOREFS            #  2 hits in  1 file: volume/type_linux.go
+pullrequest         # 10 hits in  1 file: .github/workflows/clean-logs.yml
+pylints             #  2 hits in  1 file: .github/linters/.pylintrc
+pyversion           #  4 hits in  1 file: .github/workflows/debug-matrix.yml
+QFAT                #  2 hits in  1 file: .github/workflows/debug-matrix.yml
+RAMDISK             #  4 hits in  2 files
+Ramdisk             # 18 hits in  3 files
+RAMFS               #  2 hits in  1 file: volume/type_linux.go
+ramfs               #  2 hits in  1 file: volume/type_linux.go
+rcfile              #  2 hits in  1 file: .github/linters/.pylintrc
+reactivecircus      #  2 hits in  1 file: .github/workflows/test-android.yml
+READMODE            #  4 hits in  1 file: golang/syscall/windows/syscall_windows.go
+Recvq               #  2 hits in  1 file: fstat_freebsd.go
+regerrno            # 20 hits in  2 files
+regextype           #  2 hits in  1 file: .github/workflows/debug-matrix.yml
+reiserfs            # 10 hits in  3 files
+reiserfsprogs       #  2 hits in  1 file: .github/workflows/build-root.yml
+removeall           #  2 hits in  1 file: golang/golang_windows.go
+Renice              # 54 hits in  9 files
+renice              #  6 hits in  1 file: nice_windows.go
+returnlen           # 10 hits in  2 files
+rowserrcheck        #  2 hits in  1 file: .golangci.yml
+RREFS               #  2 hits in  1 file: .github/workflows/debug-matrix.yml
+rumpelstilzchen     #  2 hits in  1 file: dir_test.go
+rwxr                #  2 hits in  1 file: README.md
+rwxrwxrwx           #  4 hits in  1 file: globals_test.go
+scanmerge           #  2 hits in  1 file: cmd/updater/main.go
+sdassow             # 12 hits in  6 files
+Sddl                #  2 hits in  1 file: README.md
+sdkmanager          #  6 hits in  1 file: .github/workflows/build-only-android.yml
+SECURITYFS          #  2 hits in  1 file: volume/type_linux.go
+securityfs          #  2 hits in  1 file: volume/type_linux.go
+Sekine              #  6 hits in  2 files
+Sendq               #  2 hits in  1 file: fstat_freebsd.go
+sergi               #  2 hits in  1 file: cmd/updater/main.go
+sharemode           # 14 hits in  2 files
+shirou              # 12 hits in  6 files
+showmanual          #  2 hits in  1 file: .github/workflows/debug-matrix.yml
+SNAPMODULE          #  4 hits in  1 file: golang/syscall/windows/syscall_windows.go
+snippetted          #  2 hits in  1 file: cmd/updater/main.go
+SOCKFS              #  2 hits in  1 file: volume/type_linux.go
+Sockfs              #  2 hits in  1 file: volume/type_linux.go
+sparseimage         #  2 hits in  1 file: main_darwin_test.go
+sqlclosecheck       #  2 hits in  1 file: .golangci.yml
+sshfs               #  2 hits in  1 file: volume/type_linux.go
+STATFIXLEN          #  2 hits in  1 file: rename_plan9.go
+stefanzweifel       #  4 hits in  2 files
+Structsize          #  2 hits in  1 file: fstat_freebsd.go
+Suballocation       #  6 hits in  1 file: volume/filesystem.go
+subauthorities      #  8 hits in  2 files
+Surw                #  2 hits in  1 file: format_test.go
+swiftshader         #  2 hits in  1 file: .github/workflows/test-android.yml
+Symln               #  2 hits in  1 file: README.md
+synk                #  2 hits in  1 file: README.md
+SYSFS               #  2 hits in  1 file: volume/type_linux.go
+sysfs               #  4 hits in  1 file: volume/type_linux.go
+systemname          #  6 hits in  2 files
+templatefile        #  4 hits in  1 file: golang/golang_windows.go
+testcache           #  2 hits in  1 file: Makefile
+testpackage         #  2 hits in  1 file: .golangci.yml
+teststatus          #  6 hits in  1 file: telnet_to_plan9.py
+thelper             #  2 hits in  1 file: .golangci.yml
+threadcnt           #  6 hits in  2 files
+tmpfs               #  6 hits in  1 file: volume/type_linux.go
+TMPFS               #  2 hits in  1 file: volume/type_linux.go
+Tokenprimarygroup   #  2 hits in  1 file: file_windows.go
+Tokenprivileges     #  2 hits in  1 file: file_windows.go
+TOKENRING           #  2 hits in  1 file: golang/syscall/windows/syscall_windows.go
+Tokenuser           #  2 hits in  1 file: file_windows.go
+toolchaintrace      #  4 hits in  2 files
+Toolhelp            #  2 hits in  1 file: golang/syscall/windows/syscall_windows.go
+TRACEFS             #  2 hits in  1 file: volume/type_linux.go
+tracefs             #  2 hits in  1 file: volume/type_linux.go
+TSQLLINT            #  2 hits in  1 file: .github/mega-linter-shared.yml
+tzres               #  4 hits in  1 file: golang/syscall/windows/registry/value.go
+udevadm             #  4 hits in  1 file: .github/workflows/test-android.yml
+unconvert           # 26 hits in  6 files
+unparam             # 10 hits in  3 files
+Unpconn             #  2 hits in  1 file: fstat_freebsd.go
+unsafeptr           #  2 hits in  1 file: Makefile
+Untarring           #  2 hits in  1 file: download-build-test.sh
+Updateable          #  6 hits in  1 file: volume/filesystem.go
+USBDEVICE           #  2 hits in  1 file: volume/type_linux.go
+usered              # 22 hits in  4 files
+userenv             #  8 hits in  3 files
+usesh               # 12 hits in  6 files
+usestdlibvars       #  2 hits in  1 file: .golangci.yml
+usetesting          #  2 hits in  1 file: .golangci.yml
+usize               # 10 hits in  1 file: format.go
+valtype             # 16 hits in  3 files
+varnamelen          #  2 hits in  1 file: .golangci.yml
+vfat                # 10 hits in  2 files
+VFAT                #  2 hits in  1 file: volume/filesystem.go
+vhdfile             # 20 hits in  2 files
+vhds                # 10 hits in  1 file: remove-vhdx.ps1
+Virtuozzo           #  2 hits in  1 file: volume/type_linux.go
+vmactions           # 12 hits in  6 files
+VMHGFS              #  2 hits in  1 file: volume/type_linux.go
+volname             # 10 hits in  1 file: main_darwin_test.go
+VZFS                #  2 hits in  1 file: volume/type_linux.go
+Wasitime            #  2 hits in  1 file: CHANGELOG.md
+wasmtime            #  8 hits in  2 files
+WDAC                #  6 hits in  2 files
+wekyb               #  2 hits in  1 file: .github/workflows/debug-matrix.yml
+winget              # 10 hits in  1 file: .github/workflows/debug-matrix.yml
+wrapcheck           #  2 hits in  1 file: .golangci.yml
+WSAEINVAL           #  2 hits in  1 file: golang/syscall/windows/syscall_windows.go
+WSAEMSGSIZE         #  2 hits in  1 file: golang/syscall/windows/syscall_windows.go
+WSAENOPROTOOPT      #  2 hits in  1 file: golang/syscall/windows/version_windows.go
+WSAID               # 10 hits in  1 file: golang/syscall/windows/syscall_windows.go
+WSARECVMSG          #  6 hits in  1 file: golang/syscall/windows/syscall_windows.go
+WSASENDMSG          #  6 hits in  1 file: golang/syscall/windows/syscall_windows.go
+WSLIs               #  2 hits in  1 file: wsl_test.go
+XENFS               #  2 hits in  1 file: volume/type_linux.go
+xfsprogs            #  2 hits in  1 file: .github/workflows/build-root.yml
+xlarge              # 16 hits in  2 files
+zram                #  2 hits in  1 file: volume/type_linux.go
+# acifani            :  4 hits in  2 files
+#   .github/workflows/test-tinygo.yml: 2 hits
+#   .github/workflows/test-wasi.yml: 2 hits
+# adrg               :  2 hits in  1 file
 #   cmd/updater/main.go: 2 hits
-# advapi           :  2 hits in  1 file
+# advapi             : 32 hits in  6 files
+#   golang/syscall/windows/registry/syscall.go: 10 hits
+#   golang/syscall/windows/registry/zsyscall_windows.go: 2 hits
+#   golang/syscall/windows/security_windows.go: 10 hits
+#   golang/syscall/windows/syscall_windows.go: 6 hits
+#   golang/syscall/windows/zsyscall_windows.go: 2 hits
 #   stat_posix_windows.go: 2 hits
-# asasalint        :  2 hits in  1 file
+# antontroshin       :  2 hits in  1 file
+#   .github/workflows/build.yml: 2 hits
+# ANYVM              :  4 hits in  1 file
+#   .github/workflows/test-plan9.yml: 4 hits
+# anyvm              : 10 hits in  1 file
+#   .github/workflows/test-plan9.yml: 10 hits
+# archiver           :  4 hits in  2 files
+#   .github/workflows/test-illumos.yml: 2 hits
+#   .github/workflows/test-solaris.yml: 2 hits
+# armv               :  2 hits in  1 file
+#   .github/workflows/build-only-android.yml: 2 hits
+# artipacked         :  2 hits in  1 file
+#   .github/linters/zizmor.yml: 2 hits
+# asasalint          :  2 hits in  1 file
 #   .golangci.yml: 2 hits
-# atomicly         :  2 hits in  1 file
+# asciichr           :  4 hits in  1 file
+#   .editorconfig: 4 hits
+# atomicly           :  2 hits in  1 file
 #   options.go: 2 hits
-# binaryen         :  2 hits in  1 file
+# Autobuild          :  6 hits in  1 file
+#   .github/workflows/codeql.yml: 6 hits
+# autobuild          :  2 hits in  1 file
+#   .github/workflows/codeql.yml: 2 hits
+# bbwe               :  2 hits in  1 file
+#   .github/workflows/debug-matrix.yml: 2 hits
+# bcryptprimitives   :  4 hits in  2 files
+#   golang/syscall/windows/syscall_windows.go: 2 hits
+#   golang/syscall/windows/zsyscall_windows.go: 2 hits
+# BETTERLEAKS        :  2 hits in  1 file
+#   .github/mega-linter-shared.yml: 2 hits
+# binaryen           : 14 hits in  3 files
+#   .github/workflows/test-tinygo.yml: 6 hits
+#   .github/workflows/test-wasi.yml: 6 hits
 #   CHANGELOG.md: 2 hits
-# bodyclose        :  2 hits in  1 file
+# BINFMTFS           :  2 hits in  1 file
+#   volume/type_linux.go: 2 hits
+# bodyclose          :  2 hits in  1 file
 #   .golangci.yml: 2 hits
-# btimed           : 10 hits in  4 files
+# btimed             : 10 hits in  4 files
 #   stat_linux.go: 4 hits
 #   stat_plan9.go: 2 hits
 #   stat_unix.go: 2 hits
 #   stat_windows.go: 2 hits
-# Btrfs            :  2 hits in  1 file
-#   main_linux_test.go: 2 hits
-# btrfs            :  8 hits in  2 files
+# btrfs              : 14 hits in  4 files
+#   .github/workflows/build-root.yml: 4 hits
 #   main_linux_test.go: 6 hits
 #   partitiontype.go: 2 hits
-# capnspacehook    :  8 hits in  4 files
+#   volume/filesystem.go: 2 hits
+# Btrfs              : 12 hits in  2 files
+#   main_linux_test.go: 2 hits
+#   volume/filesystem.go: 10 hits
+# bytecodealliance   :  2 hits in  1 file
+#   .github/workflows/test-wasi.yml: 2 hits
+# capnspacehook      :  8 hits in  4 files
 #   file_windows.go: 2 hits
 #   golang/golang_windows.go: 2 hits
 #   golang/shim_windows.go: 2 hits
 #   stat_windows.go: 2 hits
-# ccessed          :  2 hits in  1 file
+# ccessed            :  2 hits in  1 file
 #   README.md: 2 hits
-# cespare          :  2 hits in  1 file
+# CDROM              :  4 hits in  2 files
+#   debug/consts/consts.go: 2 hits
+#   volume/type_windows.go: 2 hits
+# cespare            :  2 hits in  1 file
 #   getuid_plan9.go: 2 hits
-# compatfs         :  4 hits in  1 file
+# CHECKMAKE          :  2 hits in  1 file
+#   .github/mega-linter-shared.yml: 2 hits
+# checkptr           :  4 hits in  1 file
+#   golang/syscall/windows/security_windows.go: 4 hits
+# choco              : 10 hits in  1 file
+#   .github/workflows/debug-matrix.yml: 10 hits
+# cjson              :  2 hits in  1 file
+#   .github/mega-linter-shared.yml: 2 hits
+# compatfs           :  4 hits in  1 file
 #   main_darwin_test.go: 4 hits
-# COMPATFS         :  4 hits in  1 file
+# COMPATFS           :  4 hits in  1 file
 #   main_darwin_test.go: 4 hits
-# copyloopvar      :  2 hits in  1 file
+# CONFIGFS           :  2 hits in  1 file
+#   volume/type_linux.go: 2 hits
+# configfs           :  2 hits in  1 file
+#   volume/type_linux.go: 2 hits
+# CONIN              :  2 hits in  1 file
+#   volume/filesystem.go: 2 hits
+# CONOUT             :  2 hits in  1 file
+#   volume/filesystem.go: 2 hits
+# copyloopvar        :  2 hits in  1 file
 #   .golangci.yml: 2 hits
-# covermode        :  2 hits in  1 file
+# coreutils          :  6 hits in  3 files
+#   .github/workflows/test-dragonflybsd.yml: 2 hits
+#   .github/workflows/test-netbsd.yml: 2 hits
+#   .github/workflows/test-openbsd.yml: 2 hits
+# covermode          : 12 hits in  6 files
+#   .github/workflows/build-only-ios.yml: 2 hits
+#   .github/workflows/test-js.yml: 2 hits
+#   .github/workflows/test-plan9.yml: 2 hits
+#   .github/workflows/test-wasi.yml: 2 hits
+#   download-build-test.sh: 2 hits
 #   Makefile: 2 hits
-# coverpkg         :  2 hits in  1 file
+# coverpkg           : 12 hits in  6 files
+#   .github/workflows/build-only-ios.yml: 2 hits
+#   .github/workflows/test-js.yml: 2 hits
+#   .github/workflows/test-plan9.yml: 2 hits
+#   .github/workflows/test-wasi.yml: 2 hits
+#   download-build-test.sh: 2 hits
 #   Makefile: 2 hits
-# coverprofile     :  2 hits in  1 file
+# coverprofile       : 12 hits in  6 files
+#   .github/workflows/build-only-ios.yml: 2 hits
+#   .github/workflows/test-js.yml: 2 hits
+#   .github/workflows/test-wasi.yml: 2 hits
+#   download-build-test.sh: 2 hits
 #   Makefile: 2 hits
-# createtemp       : 12 hits in  3 files
+#   telnet_to_plan9.py: 2 hits
+# cphandle           :  6 hits in  2 files
+#   golang/syscall/windows/syscall_windows.go: 2 hits
+#   golang/syscall/windows/zsyscall_windows.go: 4 hits
+# createtemp         : 12 hits in  3 files
 #   file_windows.go: 4 hits
 #   golang/golang_unix.go: 4 hits
 #   golang/golang_windows.go: 4 hits
-# Ctim             :  8 hits in  2 files
+# croutine           :  8 hits in  1 file
+#   golang/syscall/windows/syscall_windows.go: 8 hits
+# Ctim               :  8 hits in  2 files
 #   stat_linux.go: 4 hits
 #   stat_unix_times.go: 4 hits
-# ctimed           : 10 hits in  3 files
+# ctimed             : 10 hits in  3 files
 #   stat_plan9.go: 2 hits
 #   stat_unix.go: 2 hits
 #   stat_windows.go: 6 hits
-# cyclop           :  2 hits in  1 file
+# ctxptrs            :  6 hits in  2 files
+#   golang/syscall/windows/syscall_windows.go: 2 hits
+#   golang/syscall/windows/zsyscall_windows.go: 4 hits
+# cyclop             :  2 hits in  1 file
 #   .golangci.yml: 2 hits
-# DACL             :  6 hits in  1 file
+# DACL               :  6 hits in  1 file
 #   file_windows.go: 6 hits
-# Dassow           : 12 hits in  6 files
+# dacl               :  2 hits in  1 file
+#   golang/syscall/windows/types_windows.go: 2 hits
+# Dassow             : 12 hits in  6 files
 #   deprecated_test.go: 2 hits
 #   options.go: 2 hits
 #   rename_windows.go: 2 hits
 #   writefile_test.go: 2 hits
 #   writereader.go: 2 hits
 #   writereader_test.go: 2 hits
-# davecgh          :  4 hits in  2 files
+# davecgh            :  4 hits in  2 files
 #   main_test.go: 2 hits
 #   main_windows_test.go: 2 hits
-# debugf           : 12 hits in  2 files
+# debugf             : 12 hits in  2 files
 #   file_windows_test.go: 10 hits
 #   util_test.go: 2 hits
-# debugln          :  4 hits in  1 file
+# DEBUGFS            :  2 hits in  1 file
+#   volume/type_linux.go: 2 hits
+# debugfs            :  2 hits in  1 file
+#   volume/type_linux.go: 2 hits
+# debugln            :  4 hits in  1 file
 #   util_test.go: 4 hits
-# depguard         :  2 hits in  1 file
+# depguard           :  2 hits in  1 file
 #   .golangci.yml: 2 hits
-# DEVSKIM          :  2 hits in  1 file
+# DEVICEMAP          :  2 hits in  1 file
+#   golang/syscall/windows/types_windows.go: 2 hits
+# DEVPTS             :  2 hits in  1 file
+#   volume/type_linux.go: 2 hits
+# DEVSKIM            :  8 hits in  2 files
+#   .github/mega-linter-shared.yml: 6 hits
 #   .mega-linter.yml: 2 hits
-# diffmatchpatch   :  2 hits in  1 file
+# diffmatchpatch     :  2 hits in  1 file
 #   cmd/updater/main.go: 2 hits
-# diffx            :  6 hits in  1 file
-#   Makefile: 6 hits
-# drwxr            :  2 hits in  1 file
+# diffx              :  8 hits in  1 file
+#   Makefile: 8 hits
+# DISKTREE           :  2 hits in  1 file
+#   golang/syscall/windows/syscall_windows.go: 2 hits
+# dism               :  2 hits in  1 file
+#   .github/workflows/debug-matrix.yml: 2 hits
+# DISM               :  2 hits in  1 file
+#   .github/workflows/debug-matrix.yml: 2 hits
+# dllname            :  2 hits in  1 file
+#   golang/syscall/windows/registry/value.go: 2 hits
+# dosfstools         :  2 hits in  1 file
+#   .github/workflows/build-root.yml: 2 hits
+# drwxr              :  2 hits in  1 file
 #   format_test.go: 2 hits
-# dupl             : 52 hits in  7 files
+# dupl               : 52 hits in  7 files
 #   .golangci.yml: 2 hits
 #   deprecated_test.go: 4 hits
 #   file_windows_test.go: 8 hits
@@ -285,56 +573,115 @@ WSLIs             #  2 hits in  1 file: wsl_test.go
 #   stat_test.go: 10 hits
 #   writefile_test.go: 10 hits
 #   writereader_test.go: 10 hits
-# dupword          :  2 hits in  1 file
+# dupword            :  2 hits in  1 file
 #   .golangci.yml: 2 hits
-# envrc            :  2 hits in  1 file
+# eabi               :  2 hits in  1 file
+#   .github/workflows/build-only-android.yml: 2 hits
+# eabuffer           :  6 hits in  2 files
+#   golang/syscall/windows/syscall_windows.go: 2 hits
+#   golang/syscall/windows/zsyscall_windows.go: 4 hits
+# ealength           :  6 hits in  2 files
+#   golang/syscall/windows/syscall_windows.go: 2 hits
+#   golang/syscall/windows/zsyscall_windows.go: 4 hits
+# EFIVARFS           :  2 hits in  1 file
+#   volume/type_linux.go: 2 hits
+# envrc              :  2 hits in  1 file
 #   .gitignore: 2 hits
-# errb             :  6 hits in  1 file
+# EPLAN              :  2 hits in  1 file
+#   errors_plan9_test.go: 2 hits
+# errb               :  6 hits in  1 file
 #   util_test.go: 6 hits
-# errorlint        :  4 hits in  2 files
+# errorlint          :  4 hits in  2 files
 #   .golangci.yml: 2 hits
 #   stat_acls_windows.go: 2 hits
-# exhaustruct      :  2 hits in  1 file
+# exfatprogs         :  2 hits in  1 file
+#   .github/workflows/build-root.yml: 2 hits
+# exhaustruct        :  2 hits in  1 file
 #   .golangci.yml: 2 hits
-# fdpath           :  4 hits in  1 file
+# failretval         :  8 hits in  1 file
+#   golang/syscall/windows/syscall_windows.go: 8 hits
+# fatx               :  2 hits in  1 file
+#   volume/filesystem.go: 2 hits
+# fdpath             :  4 hits in  1 file
 #   golang/shim_windows.go: 4 hits
-# fieldalignment   :  2 hits in  1 file
+# FHGFS              :  2 hits in  1 file
+#   volume/type_linux.go: 2 hits
+# fieldalignment     :  2 hits in  1 file
 #   .golangci.yml: 2 hits
-# Filel            :  4 hits in  1 file
+# Filel              :  4 hits in  1 file
 #   cmd/demo/main.go: 4 hits
-# fopts            : 48 hits in  5 files
+# fopts              : 68 hits in  8 files
 #   file.go: 10 hits
 #   file_unix.go: 10 hits
 #   file_windows.go: 10 hits
+#   globals.go: 10 hits
+#   globals_test.go: 4 hits
+#   rename_plan9.go: 6 hits
 #   rename_windows.go: 8 hits
 #   writereader.go: 10 hits
-# forbidigo        :  2 hits in  1 file
+# forbidigo          :  2 hits in  1 file
 #   .golangci.yml: 2 hits
-# forcetypeassert  :  2 hits in  1 file
+# forcetypeassert    :  2 hits in  1 file
 #   .golangci.yml: 2 hits
-# fumpt            : 10 hits in  1 file
+# fshalt             :  2 hits in  1 file
+#   telnet_to_plan9.py: 2 hits
+# fsprogs            :  2 hits in  1 file
+#   .github/workflows/build-root.yml: 2 hits
+# fsutil             :  2 hits in  1 file
+#   .github/workflows/debug-matrix.yml: 2 hits
+# fumpt              : 10 hits in  1 file
 #   Makefile: 10 hits
-# funlen           : 10 hits in  4 files
+# funlen             : 10 hits in  4 files
 #   .golangci.yml: 4 hits
 #   deprecated.go: 2 hits
 #   runtime_test.go: 2 hits
 #   writereader.go: 2 hits
-# fuzzcache        :  2 hits in  1 file
+# fuseblk            :  2 hits in  1 file
+#   volume/filesystem.go: 2 hits
+# FUSEBLK            :  2 hits in  1 file
+#   volume/type_linux.go: 2 hits
+# fusectl            :  2 hits in  1 file
+#   volume/filesystem.go: 2 hits
+# fuzzcache          :  2 hits in  1 file
 #   Makefile: 2 hits
-# goarches         :  8 hits in  1 file
+# gcsfuse            :  2 hits in  1 file
+#   volume/type_linux.go: 2 hits
+# ghaction           :  6 hits in  2 files
+#   .github/linters/zizmor.yml: 2 hits
+#   .github/workflows/clean-logs.yml: 4 hits
+# gitsubmodule       :  2 hits in  1 file
+#   .github/dependabot.yml: 2 hits
+# Glblcnt            :  2 hits in  1 file
+#   golang/syscall/windows/syscall_windows.go: 2 hits
+# goarches           : 22 hits in  4 files
+#   .github/workflows/build-all.yml: 2 hits
+#   .github/workflows/build-most.yml: 2 hits
+#   .github/workflows/build-only-nocgo.yml: 10 hits
 #   runtime_test.go: 8 hits
-# gochecknoglobals :  2 hits in  1 file
+# gochecknoglobals   :  2 hits in  1 file
 #   .golangci.yml: 2 hits
-# gochecknoinits   :  2 hits in  1 file
+# gochecknoinits     :  2 hits in  1 file
 #   .golangci.yml: 2 hits
-# goconst          :  8 hits in  3 files
+# goconst            : 44 hits in 14 files
 #   .golangci.yml: 2 hits
-#   main_linux_test.go: 2 hits
+#   file_windows.go: 2 hits
+#   fstat_darwin.go: 2 hits
+#   fstat_linux.go: 2 hits
+#   fstat_windows.go: 2 hits
+#   main_linux_test.go: 8 hits
+#   partitiontype_test.go: 2 hits
+#   rename_windows.go: 2 hits
+#   runtime.go: 10 hits
+#   stat_acl_windows_test.go: 2 hits
 #   stat_test.go: 4 hits
-# gocritic         :  6 hits in  2 files
+#   stat_unix_stat.go: 2 hits
+#   stat_windows.go: 2 hits
+#   writereader.go: 2 hits
+# gocritic           :  8 hits in  3 files
+#   .github/linters/.golangci.yml: 2 hits
 #   .golangci.yml: 2 hits
 #   cmd/demo/main.go: 4 hits
-# gocyclo          : 28 hits in 11 files
+# gocyclo            : 28 hits in 11 files
 #   .golangci.yml: 4 hits
 #   cmd/updater/main.go: 2 hits
 #   deprecated.go: 2 hits
@@ -346,17 +693,25 @@ WSLIs             #  2 hits in  1 file: wsl_test.go
 #   util_other_test.go: 4 hits
 #   util_unix_test.go: 4 hits
 #   writereader.go: 2 hits
-# gofumpt          : 12 hits in  2 files
+# gofmt              :  2 hits in  1 file
+#   .github/linters/.golangci.yml: 2 hits
+# gofumpt            : 12 hits in  2 files
 #   .golangci.yml: 2 hits
 #   Makefile: 10 hits
-# gopls            :  2 hits in  1 file
-#   Makefile: 2 hits
-# goprintffuncname :  2 hits in  1 file
+# GOFUMPT            :  4 hits in  1 file
+#   Makefile: 4 hits
+# goprintffuncname   :  2 hits in  1 file
 #   .golangci.yml: 2 hits
-# gopsutil         :  4 hits in  2 files
+# gopsutil           : 12 hits in  6 files
+#   cmd/parttest/main.go: 2 hits
 #   partitiontype.go: 2 hits
 #   util_other_test.go: 2 hits
-# gosec            : 42 hits in  9 files
+#   volume/mount_unix.go: 2 hits
+#   volume/type_linux.go: 2 hits
+#   volume/volume_unix.go: 2 hits
+# gopsutil's         :  2 hits in  1 file
+#   volume/mount.go: 2 hits
+# gosec              : 42 hits in  9 files
 #   .golangci.yml: 2 hits
 #   file_windows.go: 4 hits
 #   file_windows_test.go: 4 hits
@@ -366,78 +721,180 @@ WSLIs             #  2 hits in  1 file: wsl_test.go
 #   stat_wasip1.go: 4 hits
 #   umask_windows.go: 4 hits
 #   util_test.go: 8 hits
-# goupdater        :  2 hits in  1 file
+# gosimple           :  2 hits in  1 file
+#   .github/linters/.golangci.yml: 2 hits
+# goupdater          :  2 hits in  1 file
 #   cmd/updater/main.go: 2 hits
-# govet            : 14 hits in  4 files
+# govet              : 16 hits in  5 files
+#   .github/linters/.golangci.yml: 2 hits
 #   .golangci.yml: 4 hits
 #   dir.go: 2 hits
 #   dir_test.go: 6 hits
 #   stat_acls_windows.go: 2 hits
-# govulncheck      :  8 hits in  1 file
+# govulncheck        :  8 hits in  1 file
 #   Makefile: 8 hits
-# gsha             :  2 hits in  1 file
+# gpfs               :  2 hits in  1 file
+#   volume/filesystem.go: 2 hits
+# GPFS               :  6 hits in  2 files
+#   volume/filesystem.go: 2 hits
+#   volume/type_linux.go: 4 hits
+# gsha               : 10 hits in  4 files
+#   .github/workflows/test-dragonflybsd.yml: 2 hits
+#   .github/workflows/test-netbsd.yml: 4 hits
+#   .github/workflows/test-openbsd.yml: 2 hits
 #   download-build-test.sh: 2 hits
-# gtar             :  6 hits in  1 file
+# gtar               : 16 hits in  5 files
+#   .github/workflows/test-dragonflybsd.yml: 2 hits
+#   .github/workflows/test-freebsd.yml: 2 hits
+#   .github/workflows/test-netbsd.yml: 4 hits
+#   .github/workflows/test-openbsd.yml: 2 hits
 #   download-build-test.sh: 6 hits
-# ineffassign      :  2 hits in  1 file
+# HOSTFS             :  4 hits in  1 file
+#   volume/type_linux.go: 4 hits
+# hostfs             :  4 hits in  1 file
+#   volume/type_linux.go: 4 hits
+# HUGETLBFS          :  4 hits in  1 file
+#   volume/type_linux.go: 4 hits
+# hugetlbfs          :  2 hits in  1 file
+#   volume/type_linux.go: 2 hits
+# icalcs             :  2 hits in  1 file
+#   debug/debug_windows.go: 2 hits
+# idauth             :  6 hits in  2 files
+#   golang/syscall/windows/security_windows.go: 2 hits
+#   golang/syscall/windows/zsyscall_windows.go: 4 hits
+# impersonationlevel :  6 hits in  2 files
+#   golang/syscall/windows/security_windows.go: 2 hits
+#   golang/syscall/windows/zsyscall_windows.go: 4 hits
+# ineffassign        :  4 hits in  2 files
+#   .github/linters/.golangci.yml: 2 hits
 #   .golangci.yml: 2 hits
-# infoed           :  6 hits in  1 file
+# inetutils          :  2 hits in  1 file
+#   .github/workflows/test-plan9.yml: 2 hits
+# infoed             :  6 hits in  1 file
 #   dir.go: 6 hits
-# interfacebloat   :  2 hits in  1 file
+# innounp            :  2 hits in  1 file
+#   .github/workflows/debug-matrix.yml: 2 hits
+# INOTIFYFS          :  2 hits in  1 file
+#   volume/type_linux.go: 2 hits
+# interfacebloat     :  2 hits in  1 file
 #   .golangci.yml: 2 hits
-# ireturn          :  2 hits in  1 file
+# iosb               : 18 hits in  2 files
+#   golang/syscall/windows/syscall_windows.go: 8 hits
+#   golang/syscall/windows/zsyscall_windows.go: 10 hits
+# iregex             :  2 hits in  1 file
+#   .github/workflows/debug-matrix.yml: 2 hits
+# ireturn            :  2 hits in  1 file
 #   .golangci.yml: 2 hits
-# irthed           :  2 hits in  1 file
+# irthed             :  2 hits in  1 file
 #   README.md: 2 hits
-# Ispare           :  2 hits in  1 file
+# Ispare             :  2 hits in  1 file
 #   fstat_freebsd.go: 2 hits
-# JHFS             : 12 hits in  2 files
+# JHFS               : 16 hits in  3 files
 #   CHANGELOG.md: 4 hits
 #   main_darwin_test.go: 8 hits
-# jqcmd            :  8 hits in  1 file
+#   volume/filesystem.go: 4 hits
+# Joblint            :  4 hits in  1 file
+#   .github/linters/.vale.ini: 4 hits
+# jqcmd              :  8 hits in  1 file
 #   download-build-test.sh: 8 hits
-# KICS             :  2 hits in  1 file
+# JSONLINT           :  2 hits in  1 file
+#   .github/mega-linter-shared.yml: 2 hits
+# KAFS               :  2 hits in  1 file
+#   volume/type_linux.go: 2 hits
+# kafs               :  2 hits in  1 file
+#   volume/type_linux.go: 2 hits
+# KICS               :  4 hits in  2 files
+#   .github/mega-linter-shared.yml: 2 hits
 #   .mega-linter.yml: 2 hits
-# LMMM             :  2 hits in  1 file
+# lessmsi            :  2 hits in  1 file
+#   .github/workflows/debug-matrix.yml: 2 hits
+# LMMM               :  2 hits in  1 file
 #   cmd/updater/main.go: 2 hits
-# LNNN             :  4 hits in  1 file
+# lmshare            :  2 hits in  1 file
+#   golang/syscall/windows/syscall_windows.go: 2 hits
+# LNNN               :  4 hits in  1 file
 #   cmd/updater/main.go: 4 hits
-# longdst          :  4 hits in  1 file
+# logicaldisk        :  2 hits in  1 file
+#   .github/workflows/debug-matrix.yml: 2 hits
+# longdst            :  4 hits in  1 file
 #   rename_windows.go: 4 hits
-# longsrc          :  4 hits in  1 file
+# longsrc            :  4 hits in  1 file
 #   rename_windows.go: 4 hits
-# losetup          : 10 hits in  1 file
+# losetup            : 10 hits in  1 file
 #   main_linux_test.go: 10 hits
-# luid             :  6 hits in  1 file
+# luid               : 12 hits in  3 files
 #   file_windows.go: 6 hits
-# LUID             :  4 hits in  1 file
+#   golang/syscall/windows/security_windows.go: 2 hits
+#   golang/syscall/windows/zsyscall_windows.go: 4 hits
+# LUID               : 16 hits in  3 files
 #   file_windows.go: 4 hits
-# Luid             :  2 hits in  1 file
+#   golang/syscall/windows/security_windows.go: 10 hits
+#   golang/syscall/windows/zsyscall_windows.go: 2 hits
+# Luid               :  4 hits in  2 files
 #   file_windows.go: 2 hits
-# mattn            :  2 hits in  1 file
+#   golang/syscall/windows/security_windows.go: 2 hits
+# mattn              :  2 hits in  1 file
 #   cmd/updater/main.go: 2 hits
-# mkdirall         :  4 hits in  1 file
+# Mattraks           :  4 hits in  1 file
+#   .github/workflows/clean-logs.yml: 4 hits
+# maxiumum           :  4 hits in  1 file
+#   volume/filesystem.go: 4 hits
+# Minoru             :  6 hits in  2 files
+#   .github/linters/zizmor.yml: 2 hits
+#   .github/workflows/debug-matrix.yml: 4 hits
+# mkdirall           :  4 hits in  1 file
 #   file_windows.go: 4 hits
-# mkdirtemp        : 12 hits in  3 files
+# mkdirtemp          : 12 hits in  3 files
 #   file_windows.go: 4 hits
 #   golang/golang_unix.go: 4 hits
 #   golang/golang_windows.go: 4 hits
-# modadvapi        : 10 hits in  1 file
+# mkerrors           :  2 hits in  1 file
+#   golang/syscall/windows/syscall_windows.go: 2 hits
+# modadvapi          : 30 hits in  3 files
+#   golang/syscall/windows/registry/zsyscall_windows.go: 10 hits
+#   golang/syscall/windows/zsyscall_windows.go: 10 hits
 #   stat_posix_windows.go: 10 hits
-# modcache         :  2 hits in  1 file
+# modbcryptprimitives:  4 hits in  1 file
+#   golang/syscall/windows/zsyscall_windows.go: 4 hits
+# modcache           :  2 hits in  1 file
 #   Makefile: 2 hits
-# modfile          :  2 hits in  1 file
+# modfile            :  6 hits in  3 files
+#   .github/workflows/build.yml: 2 hits
+#   .github/workflows/release.yml: 2 hits
 #   Makefile: 2 hits
-# modkernel        : 10 hits in  2 files
+# modiphlpapi        :  4 hits in  1 file
+#   golang/syscall/windows/zsyscall_windows.go: 4 hits
+# modkernel          : 24 hits in  4 files
 #   cpubits_windows.go: 4 hits
 #   golang/shim_windows.go: 6 hits
-# mvdan            :  2 hits in  1 file
+#   golang/syscall/windows/registry/zsyscall_windows.go: 4 hits
+#   golang/syscall/windows/zsyscall_windows.go: 10 hits
+# modnetapi          : 10 hits in  1 file
+#   golang/syscall/windows/zsyscall_windows.go: 10 hits
+# modntdll           : 10 hits in  1 file
+#   golang/syscall/windows/zsyscall_windows.go: 10 hits
+# modpsapi           :  4 hits in  1 file
+#   golang/syscall/windows/zsyscall_windows.go: 4 hits
+# moduserenv         :  8 hits in  1 file
+#   golang/syscall/windows/zsyscall_windows.go: 8 hits
+# modws              :  8 hits in  1 file
+#   golang/syscall/windows/zsyscall_windows.go: 8 hits
+# mountvol           :  2 hits in  1 file
+#   .github/workflows/debug-matrix.yml: 2 hits
+# MQUEUE             :  4 hits in  1 file
+#   volume/type_linux.go: 4 hits
+# msixbundle         :  6 hits in  1 file
+#   .github/workflows/debug-matrix.yml: 6 hits
+# mvdan              :  2 hits in  1 file
 #   Makefile: 2 hits
-# nakedret         :  2 hits in  1 file
+# nakedret           :  2 hits in  1 file
 #   .golangci.yml: 2 hits
-# namep            :  6 hits in  1 file
+# nameformat         :  6 hits in  2 files
+#   golang/syscall/windows/syscall_windows.go: 2 hits
+#   golang/syscall/windows/zsyscall_windows.go: 4 hits
+# namep              :  6 hits in  1 file
 #   golang/golang_windows.go: 6 hits
-# natefinch        : 14 hits in  7 files
+# natefinch          : 14 hits in  7 files
 #   CHANGELOG.md: 2 hits
 #   deprecated_test.go: 2 hits
 #   options.go: 2 hits
@@ -445,52 +902,85 @@ WSLIs             #  2 hits in  1 file: wsl_test.go
 #   writefile_test.go: 2 hits
 #   writereader.go: 2 hits
 #   writereader_test.go: 2 hits
-# nlreturn         :  2 hits in  1 file
+# NERR               :  4 hits in  1 file
+#   golang/syscall/windows/security_windows.go: 4 hits
+# netapi             : 12 hits in  3 files
+#   golang/syscall/windows/security_windows.go: 6 hits
+#   golang/syscall/windows/syscall_windows.go: 4 hits
+#   golang/syscall/windows/zsyscall_windows.go: 2 hits
+# neterr             : 20 hits in  3 files
+#   golang/syscall/windows/security_windows.go: 6 hits
+#   golang/syscall/windows/syscall_windows.go: 4 hits
+#   golang/syscall/windows/zsyscall_windows.go: 10 hits
+# NETRESET           :  2 hits in  1 file
+#   golang/syscall/windows/types_windows.go: 2 hits
+# newk               :  2 hits in  1 file
+#   golang/syscall/windows/registry/key.go: 2 hits
+# newstate           : 10 hits in  2 files
+#   golang/syscall/windows/security_windows.go: 6 hits
+#   golang/syscall/windows/zsyscall_windows.go: 4 hits
+# nlreturn           :  2 hits in  1 file
 #   .golangci.yml: 2 hits
-# nobrowse         :  2 hits in  1 file
+# NNTFS              :  2 hits in  1 file
+#   .github/workflows/debug-matrix.yml: 2 hits
+# noaudio            :  2 hits in  1 file
+#   .github/workflows/test-android.yml: 2 hits
+# nobrowse           :  2 hits in  1 file
 #   main_darwin_test.go: 2 hits
-# noctx            :  6 hits in  3 files
+# nocheckptr         :  8 hits in  1 file
+#   golang/syscall/windows/security_windows.go: 8 hits
+# noctx              :  6 hits in  3 files
 #   .golangci.yml: 2 hits
 #   file_windows_test.go: 2 hits
 #   runtime_test.go: 2 hits
-# NODEL            :  4 hits in  2 files
+# NODEL              :  4 hits in  2 files
 #   main_windows_test.go: 2 hits
 #   util_test.go: 2 hits
-# noinlineerr      :  2 hits in  1 file
+# noinlineerr        :  2 hits in  1 file
 #   .golangci.yml: 2 hits
-# nolint           : 254 hits in 50 files
+# nolint             : 328 hits in 63 files
 #   buildbits32.go: 2 hits
 #   buildbits64.go: 2 hits
 #   cmd/demo/main.go: 4 hits
+#   cmd/hasperms/main.go: 2 hits
 #   cmd/updater/main.go: 10 hits
+#   cmd/updater/testdata/golang_common.go: 2 hits
 #   consts.go: 6 hits
 #   cpubits_unix.go: 4 hits
 #   cpubits_windows.go: 4 hits
+#   debug/debug_windows.go: 10 hits
 #   deprecated.go: 2 hits
 #   deprecated_test.go: 4 hits
 #   dir.go: 4 hits
 #   dir_test.go: 6 hits
-#   export_test.go: 4 hits
+#   export_test.go: 8 hits
 #   export_windows_test.go: 6 hits
 #   file_debug.go: 2 hits
 #   file_debug_windows.go: 8 hits
 #   file_windows.go: 10 hits
 #   file_windows_test.go: 10 hits
+#   fstat_darwin.go: 2 hits
+#   fstat_linux.go: 2 hits
 #   fstat_test.go: 2 hits
+#   fstat_windows.go: 2 hits
+#   globals.go: 10 hits
 #   golang/golang_common.go: 2 hits
 #   golang/golang_unix.go: 2 hits
 #   golang/golang_windows.go: 2 hits
 #   golang/shim_windows.go: 10 hits
 #   lstat_test.go: 8 hits
 #   main_darwin_test.go: 2 hits
-#   main_linux_test.go: 4 hits
+#   main_linux_test.go: 10 hits
 #   main_test.go: 2 hits
 #   main_windows_test.go: 2 hits
-#   nice_plan9.go: 2 hits
 #   nice_windows.go: 4 hits
+#   partitiontype_test.go: 2 hits
+#   rename_windows.go: 2 hits
 #   robustio/robustio_flaky.go: 2 hits
 #   root_windows.go: 4 hits
+#   runtime.go: 10 hits
 #   runtime_test.go: 4 hits
+#   stat_acl_windows_test.go: 2 hits
 #   stat_acls_windows.go: 10 hits
 #   stat_darwin.go: 6 hits
 #   stat_linux.go: 6 hits
@@ -498,7 +988,7 @@ WSLIs             #  2 hits in  1 file: wsl_test.go
 #   stat_posix_windows_test.go: 4 hits
 #   stat_test.go: 10 hits
 #   stat_unix.go: 2 hits
-#   stat_unix_stat.go: 4 hits
+#   stat_unix_stat.go: 6 hits
 #   stat_unix_times.go: 4 hits
 #   stat_wasip1.go: 4 hits
 #   stat_windows.go: 10 hits
@@ -506,42 +996,154 @@ WSLIs             #  2 hits in  1 file: wsl_test.go
 #   util_other_test.go: 4 hits
 #   util_test.go: 10 hits
 #   util_unix_test.go: 4 hits
+#   volume/filesystem.go: 10 hits
+#   volume/type_linux.go: 2 hits
+#   volume/volume_windows.go: 4 hits
 #   writefile_test.go: 10 hits
-#   writereader.go: 2 hits
+#   writereader.go: 4 hits
 #   writereader_test.go: 10 hits
-# nolintlint       : 14 hits in  4 files
+# nolintlint         : 14 hits in  4 files
 #   .golangci.yml: 4 hits
 #   file_debug.go: 2 hits
 #   stat_unix_stat.go: 4 hits
 #   stat_wasip1.go: 4 hits
-# nonamedreturns   :  2 hits in  1 file
+# NONALERT           :  2 hits in  1 file
+#   golang/syscall/windows/types_windows.go: 2 hits
+# nonamedreturns     :  2 hits in  1 file
 #   .golangci.yml: 2 hits
-# NOROATTR         :  4 hits in  1 file
+# NOROATTR           :  4 hits in  1 file
 #   CHANGELOG.md: 4 hits
-# ntfsprogs        :  4 hits in  1 file
+# NSFS               :  2 hits in  1 file
+#   volume/type_linux.go: 2 hits
+# nstr               :  6 hits in  2 files
+#   golang/syscall/windows/syscall_windows.go: 2 hits
+#   golang/syscall/windows/zsyscall_windows.go: 4 hits
+# ntdll              : 14 hits in  3 files
+#   golang/syscall/windows/syscall_windows.go: 10 hits
+#   golang/syscall/windows/version_windows.go: 2 hits
+#   golang/syscall/windows/zsyscall_windows.go: 2 hits
+# ntfsprogs          :  4 hits in  1 file
 #   main_linux_test.go: 4 hits
-# oldpath          : 12 hits in  3 files
+# NTSTATUS           :  2 hits in  1 file
+#   golang/syscall/windows/syscall_windows.go: 2 hits
+# ntstatus           : 20 hits in  2 files
+#   golang/syscall/windows/syscall_windows.go: 10 hits
+#   golang/syscall/windows/zsyscall_windows.go: 10 hits
+# nwchar             :  6 hits in  2 files
+#   golang/syscall/windows/syscall_windows.go: 2 hits
+#   golang/syscall/windows/zsyscall_windows.go: 4 hits
+# OEXFAT             :  2 hits in  1 file
+#   .github/workflows/debug-matrix.yml: 2 hits
+# oldpath            : 16 hits in  4 files
+#   golang/syscall/windows/syscall_windows.go: 4 hits
 #   robustio/robustio.go: 4 hits
 #   robustio/robustio_flaky.go: 4 hits
 #   robustio/robustio_other.go: 4 hits
-# paralleltest     :  2 hits in  1 file
+# openasself         :  6 hits in  2 files
+#   golang/syscall/windows/security_windows.go: 2 hits
+#   golang/syscall/windows/zsyscall_windows.go: 4 hits
+# OPENIF             :  2 hits in  1 file
+#   golang/syscall/windows/types_windows.go: 2 hits
+# OPENLINK           :  2 hits in  1 file
+#   golang/syscall/windows/types_windows.go: 2 hits
+# OPFILTER           :  2 hits in  1 file
+#   golang/syscall/windows/types_windows.go: 2 hits
+# OPLOCK             :  4 hits in  2 files
+#   debug/consts/consts.go: 2 hits
+#   golang/syscall/windows/types_windows.go: 2 hits
+# OPLOCKED           :  2 hits in  1 file
+#   golang/syscall/windows/types_windows.go: 2 hits
+# osuser             :  8 hits in  1 file
+#   golang/user/shim_windows.go: 8 hits
+# OSVERSIONINFOEXW   : 12 hits in  3 files
+#   golang/syscall/windows/shim_windows.go: 2 hits
+#   golang/syscall/windows/version_windows.go: 8 hits
+#   golang/syscall/windows/zsyscall_windows.go: 2 hits
+# Panasas            :  4 hits in  2 files
+#   volume/filesystem.go: 2 hits
+#   volume/type_linux.go: 2 hits
+# panfs              :  2 hits in  1 file
+#   volume/filesystem.go: 2 hits
+# PANFS              :  2 hits in  1 file
+#   volume/type_linux.go: 2 hits
+# paralleltest       :  2 hits in  1 file
 #   .golangci.yml: 2 hits
-# Partitionl       :  4 hits in  1 file
+# Partitionl         :  4 hits in  1 file
 #   cmd/demo/main.go: 4 hits
-# perfsprint       :  2 hits in  1 file
+# pdir               : 10 hits in  1 file
+#   golang/syscall/windows/registry/value.go: 10 hits
+# perfsprint         :  2 hits in  1 file
 #   .golangci.yml: 2 hits
-# POSIXID          : 24 hits in  4 files
+# permtest           :  2 hits in  1 file
+#   cmd/hasperms/main.go: 2 hits
+# PFAT               :  2 hits in  1 file
+#   .github/workflows/debug-matrix.yml: 2 hits
+# PIPEFS             :  4 hits in  1 file
+#   volume/type_linux.go: 4 hits
+# Pipefs             :  2 hits in  1 file
+#   volume/type_linux.go: 2 hits
+# pipefs             :  2 hits in  1 file
+#   volume/type_linux.go: 2 hits
+# pkgs               :  2 hits in  1 file
+#   .github/workflows/debug-matrix.yml: 2 hits
+# POSIXID            : 24 hits in  4 files
 #   export_windows_test.go: 4 hits
 #   getuid_windows.go: 4 hits
 #   stat_posix_windows.go: 6 hits
 #   stat_posix_windows_test.go: 10 hits
-# Recvq            :  2 hits in  1 file
+# prevstate          : 10 hits in  2 files
+#   golang/syscall/windows/security_windows.go: 6 hits
+#   golang/syscall/windows/zsyscall_windows.go: 4 hits
+# Proccnt            :  2 hits in  1 file
+#   golang/syscall/windows/syscall_windows.go: 2 hits
+# protinfo           :  6 hits in  2 files
+#   golang/syscall/windows/syscall_windows.go: 2 hits
+#   golang/syscall/windows/zsyscall_windows.go: 4 hits
+# pstore             :  2 hits in  1 file
+#   volume/type_linux.go: 2 hits
+# PSTOREFS           :  2 hits in  1 file
+#   volume/type_linux.go: 2 hits
+# pullrequest        : 10 hits in  1 file
+#   .github/workflows/clean-logs.yml: 10 hits
+# pylints            :  2 hits in  1 file
+#   .github/linters/.pylintrc: 2 hits
+# pyversion          :  4 hits in  1 file
+#   .github/workflows/debug-matrix.yml: 4 hits
+# QFAT               :  2 hits in  1 file
+#   .github/workflows/debug-matrix.yml: 2 hits
+# RAMDISK            :  4 hits in  2 files
+#   debug/consts/consts.go: 2 hits
+#   volume/type_windows.go: 2 hits
+# Ramdisk            : 18 hits in  3 files
+#   volume/type_linux.go: 10 hits
+#   volume/type_windows.go: 2 hits
+#   volume/volume.go: 6 hits
+# RAMFS              :  2 hits in  1 file
+#   volume/type_linux.go: 2 hits
+# ramfs              :  2 hits in  1 file
+#   volume/type_linux.go: 2 hits
+# rcfile             :  2 hits in  1 file
+#   .github/linters/.pylintrc: 2 hits
+# reactivecircus     :  2 hits in  1 file
+#   .github/workflows/test-android.yml: 2 hits
+# READMODE           :  4 hits in  1 file
+#   golang/syscall/windows/syscall_windows.go: 4 hits
+# Recvq              :  2 hits in  1 file
 #   fstat_freebsd.go: 2 hits
-# reiserfs         :  6 hits in  1 file
+# regerrno           : 20 hits in  2 files
+#   golang/syscall/windows/registry/syscall.go: 10 hits
+#   golang/syscall/windows/registry/zsyscall_windows.go: 10 hits
+# regextype          :  2 hits in  1 file
+#   .github/workflows/debug-matrix.yml: 2 hits
+# reiserfs           : 10 hits in  3 files
+#   .github/workflows/build-root.yml: 2 hits
 #   main_linux_test.go: 6 hits
-# removeall        :  2 hits in  1 file
+#   volume/filesystem.go: 2 hits
+# reiserfsprogs      :  2 hits in  1 file
+#   .github/workflows/build-root.yml: 2 hits
+# removeall          :  2 hits in  1 file
 #   golang/golang_windows.go: 2 hits
-# Renice           : 54 hits in  9 files
+# Renice             : 54 hits in  9 files
 #   CHANGELOG.md: 2 hits
 #   nice.go: 6 hits
 #   nice_linux.go: 6 hits
@@ -551,109 +1153,246 @@ WSLIs             #  2 hits in  1 file: wsl_test.go
 #   nice_unix.go: 6 hits
 #   nice_windows.go: 6 hits
 #   README.md: 4 hits
-# renice           :  6 hits in  1 file
+# renice             :  6 hits in  1 file
 #   nice_windows.go: 6 hits
-# rowserrcheck     :  2 hits in  1 file
+# returnlen          : 10 hits in  2 files
+#   golang/syscall/windows/security_windows.go: 6 hits
+#   golang/syscall/windows/zsyscall_windows.go: 4 hits
+# rowserrcheck       :  2 hits in  1 file
 #   .golangci.yml: 2 hits
-# rumpelstilzchen  :  2 hits in  1 file
+# RREFS              :  2 hits in  1 file
+#   .github/workflows/debug-matrix.yml: 2 hits
+# rumpelstilzchen    :  2 hits in  1 file
 #   dir_test.go: 2 hits
-# rwxr             :  2 hits in  1 file
+# rwxr               :  2 hits in  1 file
 #   README.md: 2 hits
-# scanmerge        :  2 hits in  1 file
+# rwxrwxrwx          :  4 hits in  1 file
+#   globals_test.go: 4 hits
+# scanmerge          :  2 hits in  1 file
 #   cmd/updater/main.go: 2 hits
-# sdassow          : 12 hits in  6 files
+# sdassow            : 12 hits in  6 files
 #   deprecated_test.go: 2 hits
 #   options.go: 2 hits
 #   rename_windows.go: 2 hits
 #   writefile_test.go: 2 hits
 #   writereader.go: 2 hits
 #   writereader_test.go: 2 hits
-# Sddl             :  2 hits in  1 file
+# Sddl               :  2 hits in  1 file
 #   README.md: 2 hits
-# Sendq            :  2 hits in  1 file
+# sdkmanager         :  6 hits in  1 file
+#   .github/workflows/build-only-android.yml: 6 hits
+# SECURITYFS         :  2 hits in  1 file
+#   volume/type_linux.go: 2 hits
+# securityfs         :  2 hits in  1 file
+#   volume/type_linux.go: 2 hits
+# Sekine             :  6 hits in  2 files
+#   .github/linters/zizmor.yml: 2 hits
+#   .github/workflows/debug-matrix.yml: 4 hits
+# Sendq              :  2 hits in  1 file
 #   fstat_freebsd.go: 2 hits
-# sergi            :  2 hits in  1 file
+# sergi              :  2 hits in  1 file
 #   cmd/updater/main.go: 2 hits
-# sharemode        : 14 hits in  2 files
+# sharemode          : 14 hits in  2 files
 #   golang/golang_windows.go: 8 hits
 #   golang/shim_windows.go: 6 hits
-# shirou           :  4 hits in  2 files
+# shirou             : 12 hits in  6 files
+#   cmd/parttest/main.go: 2 hits
 #   partitiontype.go: 2 hits
 #   util_other_test.go: 2 hits
-# snippetted       :  2 hits in  1 file
+#   volume/mount_unix.go: 2 hits
+#   volume/type_linux.go: 2 hits
+#   volume/volume_unix.go: 2 hits
+# showmanual         :  2 hits in  1 file
+#   .github/workflows/debug-matrix.yml: 2 hits
+# SNAPMODULE         :  4 hits in  1 file
+#   golang/syscall/windows/syscall_windows.go: 4 hits
+# snippetted         :  2 hits in  1 file
 #   cmd/updater/main.go: 2 hits
-# sparseimage      :  2 hits in  1 file
+# SOCKFS             :  2 hits in  1 file
+#   volume/type_linux.go: 2 hits
+# Sockfs             :  2 hits in  1 file
+#   volume/type_linux.go: 2 hits
+# sparseimage        :  2 hits in  1 file
 #   main_darwin_test.go: 2 hits
-# sqlclosecheck    :  2 hits in  1 file
+# sqlclosecheck      :  2 hits in  1 file
 #   .golangci.yml: 2 hits
-# Structsize       :  2 hits in  1 file
+# sshfs              :  2 hits in  1 file
+#   volume/type_linux.go: 2 hits
+# STATFIXLEN         :  2 hits in  1 file
+#   rename_plan9.go: 2 hits
+# stefanzweifel      :  4 hits in  2 files
+#   .github/workflows/mega-linter.yml: 2 hits
+#   .github/workflows/toc.yml: 2 hits
+# Structsize         :  2 hits in  1 file
 #   fstat_freebsd.go: 2 hits
-# subauthorities   :  8 hits in  2 files
+# Suballocation      :  6 hits in  1 file
+#   volume/filesystem.go: 6 hits
+# subauthorities     :  8 hits in  2 files
 #   stat_posix_windows.go: 2 hits
 #   stat_posix_windows_test.go: 6 hits
-# Surw             :  2 hits in  1 file
+# Surw               :  2 hits in  1 file
 #   format_test.go: 2 hits
-# Symln            :  2 hits in  1 file
+# swiftshader        :  2 hits in  1 file
+#   .github/workflows/test-android.yml: 2 hits
+# Symln              :  2 hits in  1 file
 #   README.md: 2 hits
-# synk             :  2 hits in  1 file
+# synk               :  2 hits in  1 file
 #   README.md: 2 hits
-# templatefile     :  4 hits in  1 file
+# SYSFS              :  2 hits in  1 file
+#   volume/type_linux.go: 2 hits
+# sysfs              :  4 hits in  1 file
+#   volume/type_linux.go: 4 hits
+# systemname         :  6 hits in  2 files
+#   golang/syscall/windows/security_windows.go: 2 hits
+#   golang/syscall/windows/zsyscall_windows.go: 4 hits
+# templatefile       :  4 hits in  1 file
 #   golang/golang_windows.go: 4 hits
-# testcache        :  2 hits in  1 file
+# testcache          :  2 hits in  1 file
 #   Makefile: 2 hits
-# testpackage      :  2 hits in  1 file
+# testpackage        :  2 hits in  1 file
 #   .golangci.yml: 2 hits
-# thelper          :  2 hits in  1 file
+# teststatus         :  6 hits in  1 file
+#   telnet_to_plan9.py: 6 hits
+# thelper            :  2 hits in  1 file
 #   .golangci.yml: 2 hits
-# Tokenprimarygroup:  2 hits in  1 file
+# threadcnt          :  6 hits in  2 files
+#   golang/syscall/windows/syscall_windows.go: 2 hits
+#   golang/syscall/windows/zsyscall_windows.go: 4 hits
+# tmpfs              :  6 hits in  1 file
+#   volume/type_linux.go: 6 hits
+# TMPFS              :  2 hits in  1 file
+#   volume/type_linux.go: 2 hits
+# Tokenprimarygroup  :  2 hits in  1 file
 #   file_windows.go: 2 hits
-# Tokenprivileges  :  2 hits in  1 file
+# Tokenprivileges    :  2 hits in  1 file
 #   file_windows.go: 2 hits
-# Tokenuser        :  2 hits in  1 file
+# TOKENRING          :  2 hits in  1 file
+#   golang/syscall/windows/syscall_windows.go: 2 hits
+# Tokenuser          :  2 hits in  1 file
 #   file_windows.go: 2 hits
-# unconvert        : 26 hits in  6 files
+# toolchaintrace     :  4 hits in  2 files
+#   .github/workflows/test-tinygo.yml: 2 hits
+#   .github/workflows/test-wasi.yml: 2 hits
+# Toolhelp           :  2 hits in  1 file
+#   golang/syscall/windows/syscall_windows.go: 2 hits
+# TRACEFS            :  2 hits in  1 file
+#   volume/type_linux.go: 2 hits
+# tracefs            :  2 hits in  1 file
+#   volume/type_linux.go: 2 hits
+# TSQLLINT           :  2 hits in  1 file
+#   .github/mega-linter-shared.yml: 2 hits
+# tzres              :  4 hits in  1 file
+#   golang/syscall/windows/registry/value.go: 4 hits
+# udevadm            :  4 hits in  1 file
+#   .github/workflows/test-android.yml: 4 hits
+# unconvert          : 26 hits in  6 files
 #   .golangci.yml: 2 hits
 #   stat_darwin.go: 6 hits
 #   stat_linux.go: 6 hits
 #   stat_unix_stat.go: 4 hits
 #   stat_unix_times.go: 4 hits
 #   stat_wasip1.go: 4 hits
-# unparam          : 10 hits in  3 files
+# unparam            : 10 hits in  3 files
 #   .golangci.yml: 2 hits
 #   cmd/updater/main.go: 2 hits
 #   util_test.go: 6 hits
-# Unpconn          :  2 hits in  1 file
+# Unpconn            :  2 hits in  1 file
 #   fstat_freebsd.go: 2 hits
-# unsafeptr        :  2 hits in  1 file
+# unsafeptr          :  2 hits in  1 file
 #   Makefile: 2 hits
-# Untarring        :  2 hits in  1 file
+# Untarring          :  2 hits in  1 file
 #   download-build-test.sh: 2 hits
-# usered           : 22 hits in  4 files
+# Updateable         :  6 hits in  1 file
+#   volume/filesystem.go: 6 hits
+# USBDEVICE          :  2 hits in  1 file
+#   volume/type_linux.go: 2 hits
+# usered             : 22 hits in  4 files
 #   stat_plan9.go: 6 hits
 #   stat_unix.go: 2 hits
 #   stat_unix_stat.go: 4 hits
 #   stat_windows.go: 10 hits
-# usestdlibvars    :  2 hits in  1 file
+# userenv            :  8 hits in  3 files
+#   golang/syscall/windows/security_windows.go: 2 hits
+#   golang/syscall/windows/syscall_windows.go: 4 hits
+#   golang/syscall/windows/zsyscall_windows.go: 2 hits
+# usesh              : 12 hits in  6 files
+#   .github/workflows/test-dragonflybsd.yml: 2 hits
+#   .github/workflows/test-freebsd.yml: 2 hits
+#   .github/workflows/test-illumos.yml: 2 hits
+#   .github/workflows/test-netbsd.yml: 2 hits
+#   .github/workflows/test-openbsd.yml: 2 hits
+#   .github/workflows/test-solaris.yml: 2 hits
+# usestdlibvars      :  2 hits in  1 file
 #   .golangci.yml: 2 hits
-# usetesting       :  2 hits in  1 file
+# usetesting         :  2 hits in  1 file
 #   .golangci.yml: 2 hits
-# usize            : 10 hits in  1 file
+# usize              : 10 hits in  1 file
 #   format.go: 10 hits
-# varnamelen       :  2 hits in  1 file
+# valtype            : 16 hits in  3 files
+#   golang/syscall/windows/registry/syscall.go: 2 hits
+#   golang/syscall/windows/registry/value.go: 10 hits
+#   golang/syscall/windows/registry/zsyscall_windows.go: 4 hits
+# varnamelen         :  2 hits in  1 file
 #   .golangci.yml: 2 hits
-# vfat             :  8 hits in  1 file
+# vfat               : 10 hits in  2 files
 #   main_linux_test.go: 8 hits
-# vhdfile          : 10 hits in  1 file
+#   volume/filesystem.go: 2 hits
+# VFAT               :  2 hits in  1 file
+#   volume/filesystem.go: 2 hits
+# vhdfile            : 20 hits in  2 files
+#   .github/scripts/create-vhdx.ps1: 10 hits
 #   create-vhdx.ps1: 10 hits
-# vhds             : 10 hits in  1 file
+# vhds               : 10 hits in  1 file
 #   remove-vhdx.ps1: 10 hits
-# volname          : 10 hits in  1 file
+# Virtuozzo          :  2 hits in  1 file
+#   volume/type_linux.go: 2 hits
+# vmactions          : 12 hits in  6 files
+#   .github/workflows/test-dragonflybsd.yml: 2 hits
+#   .github/workflows/test-freebsd.yml: 2 hits
+#   .github/workflows/test-illumos.yml: 2 hits
+#   .github/workflows/test-netbsd.yml: 2 hits
+#   .github/workflows/test-openbsd.yml: 2 hits
+#   .github/workflows/test-solaris.yml: 2 hits
+# VMHGFS             :  2 hits in  1 file
+#   volume/type_linux.go: 2 hits
+# volname            : 10 hits in  1 file
 #   main_darwin_test.go: 10 hits
-# Wasitime         :  2 hits in  1 file
+# VZFS               :  2 hits in  1 file
+#   volume/type_linux.go: 2 hits
+# Wasitime           :  2 hits in  1 file
 #   CHANGELOG.md: 2 hits
-# WDAC             :  2 hits in  1 file
+# wasmtime           :  8 hits in  2 files
+#   .github/workflows/test-wasi.yml: 6 hits
+#   CHANGELOG.md: 2 hits
+# WDAC               :  6 hits in  2 files
+#   debug/debug_windows.go: 4 hits
 #   file_debug_windows.go: 2 hits
-# wrapcheck        :  2 hits in  1 file
+# wekyb              :  2 hits in  1 file
+#   .github/workflows/debug-matrix.yml: 2 hits
+# winget             : 10 hits in  1 file
+#   .github/workflows/debug-matrix.yml: 10 hits
+# wrapcheck          :  2 hits in  1 file
 #   .golangci.yml: 2 hits
-# WSLIs            :  2 hits in  1 file
+# WSAEINVAL          :  2 hits in  1 file
+#   golang/syscall/windows/syscall_windows.go: 2 hits
+# WSAEMSGSIZE        :  2 hits in  1 file
+#   golang/syscall/windows/syscall_windows.go: 2 hits
+# WSAENOPROTOOPT     :  2 hits in  1 file
+#   golang/syscall/windows/version_windows.go: 2 hits
+# WSAID              : 10 hits in  1 file
+#   golang/syscall/windows/syscall_windows.go: 10 hits
+# WSARECVMSG         :  6 hits in  1 file
+#   golang/syscall/windows/syscall_windows.go: 6 hits
+# WSASENDMSG         :  6 hits in  1 file
+#   golang/syscall/windows/syscall_windows.go: 6 hits
+# WSLIs              :  2 hits in  1 file
 #   wsl_test.go: 2 hits
+# XENFS              :  2 hits in  1 file
+#   volume/type_linux.go: 2 hits
+# xfsprogs           :  2 hits in  1 file
+#   .github/workflows/build-root.yml: 2 hits
+# xlarge             : 16 hits in  2 files
+#   .github/workflows/build.yml: 8 hits
+#   .github/workflows/debug-matrix.yml: 8 hits
+# zram               :  2 hits in  1 file
+#   volume/type_linux.go: 2 hits
