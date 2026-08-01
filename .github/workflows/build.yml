@@ -218,13 +218,14 @@ jobs:
           : "${TEST_OPTS:=}"
           printf 'TEST_OPTS="%s"\n' "${TEST_OPTS}"
           ${sudo:-} make "${MAKE_CMD}" TEST_OPTS="${TEST_OPTS}"
-          test -z "${sudo:-}" && exit 0
+          test -d ./dist || exit 0
+          test -n "${sudo:-}" || exit 0
           # this works on linux and macos
-          test -d ./dist && ${sudo:-} chown -R "$(id -un)":"$(id -gn)" ./dist "${GOCACHE}" "${GOMODCACHE}"
+          ${sudo:-} chown -R "$(id -un)":"$(id -gn)" ./dist "${GOCACHE}" "${GOMODCACHE}" || true
 
       - name: Upload coverage
         if: env.SHOULD_RUN
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@v7
         with:
           name: coverage-${{ matrix.os }}
           path: coverage.*
