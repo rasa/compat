@@ -4,6 +4,7 @@
 package compat_test
 
 import (
+	"fmt"
 	"os"
 	"reflect"
 	"strings"
@@ -42,15 +43,14 @@ func TestBuildOptions(t *testing.T) {
 atomically:      true
 defaultFileMode: 0o777 (-rwxrwxrwx)
 fileMode:        0o777 (-rwxrwxrwx)
-flags:           0x40
+flags:           $flags
 keepFileMode:    true
 readOnlyMode:    1
 retrySeconds:    1
 setSymlinkOwner: true
 `
-	if compat.IsPlan9 {
-		want = strings.ReplaceAll(want, "0x40", "0x2000")
-	}
+	flags := fmt.Sprintf("0x%x", os.O_CREATE)
+	want = strings.ReplaceAll(want, "$flags", flags)
 	if got != want {
 		t.Fatalf("got:\n---\n%v\n---\nwant:\n---\n%v\n---\n", got, want)
 	}
