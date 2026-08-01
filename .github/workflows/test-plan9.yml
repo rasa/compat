@@ -102,3 +102,6 @@ jobs:
               --remote-vnc off
 
           python3 ./telnet_to_plan9.py
+
+          du -ah "${stage}"
+
