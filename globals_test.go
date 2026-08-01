@@ -34,6 +34,7 @@ func TestGetOptions(t *testing.T) {
 
 func TestBuildOptions(t *testing.T) {
 	opts := make([]compat.Option, 0)
+	compat.SetOptions(opts...)
 	fopts := compat.BuildOptions(opts...)
 	got := fopts.String()
 	want := `allowNonAtomicReplace:      true
