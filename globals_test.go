@@ -55,3 +55,34 @@ setSymlinkOwner: true
 		t.Fatalf("got:\n---\n%v\n---\nwant:\n---\n%v\n---\n", got, want)
 	}
 }
+
+func TestBuildOptions2(t *testing.T) {
+	opts := make([]compat.Option, 0)
+	opts = append(opts, compat.WithAllowNonAtomicReplace(true))
+	opts = append(opts, compat.WithAtomicity(true))
+	opts = append(opts, compat.WithDefaultFileMode(perm777))
+	opts = append(opts, compat.WithFileMode(perm777))
+	opts = append(opts, compat.WithFlags(os.O_CREATE))
+	opts = append(opts, compat.WithKeepFileMode(true))
+	opts = append(opts, compat.WithReadOnlyMode(compat.ReadOnlyModeSet))
+	opts = append(opts, compat.WithRetrySeconds(1))
+	opts = append(opts, compat.WithSetSymlinkOwner(true))
+	compat.SetOptions(opts...)
+	fopts := compat.BuildOptions(opts...)
+	got := fopts.String()
+	want := `allowNonAtomicReplace:      true
+atomically:      true
+defaultFileMode: 0o777 (-rwxrwxrwx)
+fileMode:        0o777 (-rwxrwxrwx)
+flags:           $flags
+keepFileMode:    true
+readOnlyMode:    1
+retrySeconds:    1
+setSymlinkOwner: true
+`
+	flags := fmt.Sprintf("0x%x", os.O_CREATE)
+	want = strings.ReplaceAll(want, "$flags", flags)
+	if got != want {
+		t.Fatalf("got:\n---\n%v\n---\nwant:\n---\n%v\n---\n", got, want)
+	}
+}
