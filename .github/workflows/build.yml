@@ -235,7 +235,7 @@ jobs:
       - name: Set SHOULD_RUN var on ${{ inputs.make_cmd }}
         if: env.SHOULD_RUN
         run: |
-          if [[ "${MAKE_CMD}" == "test" ]];
+          if [[ "${MAKE_CMD}" == "test" ]]; then
             echo "SHOULD_RUN=" >> "${GITHUB_ENV}"
           fi
 
