@@ -36,8 +36,7 @@ func TestBuildOptions(t *testing.T) {
 	opts := make([]compat.Option, 0)
 	fopts := compat.BuildOptions(opts...)
 	got := fopts.String()
-	want :=
-		`allowNonAtomicReplace:      true
+	want := `allowNonAtomicReplace:      true
 atomically:      true
 defaultFileMode: 0o777 (-rwxrwxrwx)
 fileMode:        0o777 (-rwxrwxrwx)
