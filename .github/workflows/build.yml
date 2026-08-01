@@ -220,8 +220,7 @@ jobs:
           ${sudo:-} make "${MAKE_CMD}" TEST_OPTS="${TEST_OPTS}"
           test -z "${sudo:-}" && exit 0
           # this works on linux and macos
-          ${sudo:-} test -d ./dist && \
-            chown -R "$(id -un)":"$(id -gn)" ./dist "${GOCACHE}" "${GOMODCACHE}"
+          test -d ./dist && ${sudo:-} chown -R "$(id -un)":"$(id -gn)" ./dist "${GOCACHE}" "${GOMODCACHE}"
 
       - name: Upload coverage
         if: env.SHOULD_RUN
