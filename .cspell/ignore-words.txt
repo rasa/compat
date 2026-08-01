@@ -23,8 +23,12 @@ eabi
 exfatprogs
 fsprogs
 mising
+noaudio
+reactivecircus
 reiserfsprogs
 sdkmanager
+swiftshader
+udevadm
 usesh
 vmactions
 xfsprogs
