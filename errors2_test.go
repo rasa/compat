@@ -4,10 +4,10 @@
 package compat_test
 
 import (
-        "strings"
+	"strings"
 	"testing"
 
-        "github.com/rasa/compat"
+	"github.com/rasa/compat"
 )
 
 func TestUnsupportedError(t *testing.T) {
