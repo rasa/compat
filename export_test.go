@@ -11,6 +11,10 @@ var FSFileInfoToDirEntry = fsFileInfoToDirEntry
 
 var OSDirEntryToDirEntry = osDirEntryToDirEntry
 
+// globals.go
+
+var BuildOptions = buildOptions
+
 // runtime.go
 
 var ExportedGoVersion = goVersion //nolint:unused

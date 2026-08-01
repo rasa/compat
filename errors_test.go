@@ -19,7 +19,7 @@ func TestUnsupportedError(t *testing.T) {
 		t.Fatalf("UnsupportedError: got %v; want %v", got, want)
 	}
 	if !errors.Is(err, errors.ErrUnsupported) {
-		t.Fatalf("UnsupportedError: got %v, want UnsupportedError"  err)
+		t.Fatalf("UnsupportedError: got %v, want ErrUnsupported", err)
 	}
 }
 
@@ -31,6 +31,6 @@ func TestNotYetImplementedError(t *testing.T) {
 		t.Fatalf("NotYetImplementedError: got %v; want %v", got, want)
 	}
 	if !errors.Is(err, errors.ErrUnsupported) {
-		t.Fatalf("NotYetImplementedError: got %v; want UnsupportedError"  err)
+		t.Fatalf("NotYetImplementedError: got %v; want ErrUnsupported", err)
 	}
 }

@@ -31,3 +31,23 @@ func TestGetOptions(t *testing.T) {
 		t.Fatalf("got %d, want %d", got, want)
 	}
 }
+
+func TestBuildOptions(t *testing.T) {
+	opts := make([]compat.Option, 0)
+	fopts := compat.BuildOptions(opts...)
+	got := fopts.String()
+	want :=
+		`allowNonAtomicReplace:      true
+atomically:      true
+defaultFileMode: 0o777 (-rwxrwxrwx)
+fileMode:        0o777 (-rwxrwxrwx)
+flags:           0x40
+keepFileMode:    true
+readOnlyMode:    1
+retrySeconds:    1
+setSymlinkOwner: true
+`
+	if got != want {
+		t.Fatalf("got:\n---\n%v\n---\nwant:\n---\n%v\n---\n", got, want)
+	}
+}
