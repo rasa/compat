@@ -12,7 +12,7 @@ import (
 )
 
 func TestIsUsupportedError(t *testing.T) {
-	err := &compat.UnsupportedError{Op: "test1"}
+	err := &compat.UnsupportedError{Op: "test"} //nolint:goconst
 	got := compat.IsUnsupportedError(err)
 	want := true
 	if got != want {
@@ -21,7 +21,8 @@ func TestIsUsupportedError(t *testing.T) {
 }
 
 func TestUnsupportedError(t *testing.T) {
-	err := &compat.UnsupportedError{Op: "test2"}
+	err := &compat.UnsupportedError{Op: "test"} //nolint:goconst
+	l
 	got := err.Error()
 	want := "test: unsupported"
 	if !strings.HasPrefix(got, want) {
@@ -33,7 +34,7 @@ func TestUnsupportedError(t *testing.T) {
 }
 
 func TestUnimplementedError(t *testing.T) {
-	err := &compat.UnimplementedError{Op: "test3"}
+	err := &compat.UnimplementedError{Op: "test"} //nolint:goconst
 	got := err.Error()
 	want := "test: unimplemented"
 	if !strings.HasPrefix(got, want) {
