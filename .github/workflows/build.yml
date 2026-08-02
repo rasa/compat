@@ -57,7 +57,7 @@ on:
         default: "All"
         type: string
       enabled:
-        description: "Run action"
+        description: "Run action (required, do not uncheck)"
         default: true
         type: boolean
       make_cmd:

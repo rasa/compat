@@ -97,8 +97,8 @@ func WriteReader(name string, r io.Reader, perm os.FileMode, opts ...Option) (er
 
 	f, err := createTemp(dir, "~*.tmp", fileMode, fopts.flags)
 	if err != nil {
-		err = fmt.Errorf("cannot create temp file: %w", err)
-		return &os.PathError{Op: "write", Path: name, Err: err} //nolint:goconst
+		err = fmt.Errorf("cannot create tempfile: %w", err)
+		return writereaderError(name, err)
 	}
 
 	tempFileName := f.Name()
@@ -116,26 +116,26 @@ func WriteReader(name string, r io.Reader, perm os.FileMode, opts ...Option) (er
 
 	_, err = io.Copy(f, r)
 	if err != nil {
-		err = fmt.Errorf("cannot write data to tempfile '%v': %w", tempFileName, err)
-		return &os.PathError{Op: "write", Path: name, Err: err}
+		err = fmt.Errorf("cannot write to '%v': %w", tempFileName, err)
+		return writereaderError(name, err)
 	}
 	// fsync is important, otherwise os.Rename could rename a zero-length file
 	err = f.Sync()
 	if err != nil {
-		err = fmt.Errorf("cannot flush tempfile '%v': %w", tempFileName, err)
-		return &os.PathError{Op: "write", Path: name, Err: err}
+		err = fmt.Errorf("cannot flush '%v': %w", tempFileName, err)
+		return writereaderError(name, err)
 	}
 
 	err = f.Close()
 	if err != nil {
-		err = fmt.Errorf("cannot close tempfile '%v': %w", tempFileName, err)
-		return &os.PathError{Op: "write", Path: name, Err: err}
+		err = fmt.Errorf("cannot close '%v': %w", tempFileName, err)
+		return writereaderError(name, err)
 	}
 
 	err = Rename(tempFileName, name, WithAllowNonAtomicReplace(fopts.allowNonAtomicReplace))
 	if err != nil {
-		err = fmt.Errorf("cannot replace '%v' with tempfile '%v': %w", name, tempFileName, err)
-		return &os.PathError{Op: "write", Path: name, Err: err}
+		err = fmt.Errorf("cannot replace  with '%v': %w", tempFileName, err)
+		return writereaderError(name, err)
 	}
 
 	return nil
@@ -144,19 +144,23 @@ func WriteReader(name string, r io.Reader, perm os.FileMode, opts ...Option) (er
 func writeReader(name string, r io.Reader, flag int, perm os.FileMode) error {
 	f, err := openFile(name, flag, perm)
 	if err != nil {
-		return err
+		return writereaderError(name, err)
 	}
 	defer f.Close()
 
 	_, err = io.Copy(f, r)
 	if err != nil {
-		return &os.PathError{Op: "write", Path: name, Err: err}
+		return writereaderError(name, err)
 	}
 
 	err = f.Sync()
 	if err != nil {
-		return &os.PathError{Op: "write", Path: name, Err: err}
+		return writereaderError(name, err)
 	}
 
 	return nil
+}
+
+func writereaderError(name string, err error) error {
+	return &os.PathError{Op: "write", Path: name, Err: err} //nolint:goconst
 }

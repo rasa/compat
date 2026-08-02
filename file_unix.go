@@ -53,19 +53,12 @@ func createTemp(dir, pattern string, perm os.FileMode, flag int) (*os.File, erro
 	return wrap(f.Name(), flag, f)
 }
 
-func fchmod(f *os.File, mode os.FileMode, opts ...Option) error {
+func fchmod(f *os.File, mode os.FileMode, _ ...Option) error {
 	if f == nil {
 		return errors.New("nil file pointer")
 	}
 
-	fopts := Options{
-		fileMode: mode,
-	}
-	for _, opt := range opts {
-		opt(&fopts)
-	}
-
-	return f.Chmod(fopts.fileMode)
+	return f.Chmod(mode)
 }
 
 var mkdir = os.Mkdir
