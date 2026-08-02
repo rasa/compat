@@ -111,7 +111,6 @@ env:
 jobs:
   build:
     name: build
-    run-name: build-${{ inputs.runner }}
     if: inputs.enabled
     runs-on: ${{ inputs.runner }}
     defaults:
