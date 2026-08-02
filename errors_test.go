@@ -11,8 +11,17 @@ import (
 	"github.com/rasa/compat"
 )
 
+func TestIsUsupportedError(t *testing.T) {
+	err := &compat.UnsupportedError{Op: "test1"}
+	got := compat.IsUnsupportedError(err)
+	want := true
+	if got != want {
+		t.Fatalf("IsUsupportedError: got %v, want %v", got, want)
+	}
+}
+
 func TestUnsupportedError(t *testing.T) {
-	err := &compat.UnsupportedError{"test"}
+	err := &compat.UnsupportedError{Op: "test2"}
 	got := err.Error()
 	want := "test: unsupported"
 	if !strings.HasPrefix(got, want) {
@@ -23,14 +32,14 @@ func TestUnsupportedError(t *testing.T) {
 	}
 }
 
-func TestNotYetImplementedError(t *testing.T) {
-	err := &compat.NotYetImplementedError{"test"}
+func TestUnimplementedError(t *testing.T) {
+	err := &compat.UnimplementedError{Op: "test3"}
 	got := err.Error()
-	want := "test: not yet implemented"
+	want := "test: unimplemented"
 	if !strings.HasPrefix(got, want) {
-		t.Fatalf("NotYetImplementedError: got %v; want %v", got, want)
+		t.Fatalf("UnimplementedError: got %v; want %v", got, want)
 	}
 	if !errors.Is(err, errors.ErrUnsupported) {
-		t.Fatalf("NotYetImplementedError: got %v; want ErrUnsupported", err)
+		t.Fatalf("UnimplementedError: got %v; want ErrUnsupported", err)
 	}
 }

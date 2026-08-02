@@ -13,17 +13,17 @@ import (
 
 func fstat(f *os.File) (FileInfo, error) {
 	if f == nil {
-		return nil, &os.PathError{Op: "stat", Path: "", Err: os.ErrInvalid} //nolint:goconst
+		return nil, statError("", os.ErrInvalid)
 	}
 
 	fi, err := f.Stat()
 	if err != nil {
-		return nil, &os.PathError{Op: "stat", Path: f.Name(), Err: err}
+		return nil, statError(f.Name(), err)
 	}
 
 	path, err := golang.Filepath(f)
 	if err != nil {
-		return nil, &os.PathError{Op: "stat", Path: f.Name(), Err: err}
+		return nil, statError(f.Name(), err)
 	}
 
 	return stat(fi, path, false)

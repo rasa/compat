@@ -69,12 +69,12 @@ type _KinfoFile struct {
 
 func fstat(f *os.File) (FileInfo, error) {
 	if f == nil {
-		return nil, &os.PathError{Op: "stat", Path: "", Err: os.ErrInvalid}
+		return nil, statError("", os.ErrInvalid)
 	}
 
 	fi, err := f.Stat()
 	if err != nil {
-		return nil, &os.PathError{Op: "stat", Path: f.Name(), Err: err}
+		return nil, statError(f.Name(), err)
 	}
 
 	fd := int(f.Fd())
@@ -88,7 +88,7 @@ func fstat(f *os.File) (FileInfo, error) {
 		uintptr(unsafe.Pointer(&kif)),
 	)
 	if errno != 0 {
-		return nil, &os.PathError{Op: "stat", Path: f.Name(), Err: errno}
+		return nil, statError(f.Name(), errno)
 	}
 
 	n := 0
@@ -98,7 +98,7 @@ func fstat(f *os.File) (FileInfo, error) {
 		}
 	}
 	if n == 0 {
-		return nil, &os.PathError{Op: "stat", Path: f.Name(), Err: os.ErrInvalid}
+		return nil, statError(f.Name(), os.ErrInvalid)
 	}
 	path := string(kif.KfPath[:n])
 

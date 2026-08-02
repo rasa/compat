@@ -47,7 +47,7 @@ func chmod(name string, perm os.FileMode, opts ...Option) error {
 	// acl.Chmod will panic otherwise
 	_, err := windows.UTF16PtrFromString(name)
 	if err != nil {
-		return &os.PathError{Op: "chmod", Path: name, Err: os.ErrInvalid} //nolint:goconst
+		return chmodError(name, os.ErrInvalid)
 	}
 
 	perm = fopts.fileMode.Perm()
@@ -55,7 +55,7 @@ func chmod(name string, perm os.FileMode, opts ...Option) error {
 	// set Windows' ACLs
 	err = acl.Chmod(name, perm)
 	if err != nil {
-		return &os.PathError{Op: "chmod", Path: name, Err: fmt.Errorf("%w (acl)", err)}
+		return chmodError(name, fmt.Errorf("%w (acl)", err))
 	}
 
 	if fopts.readOnlyMode == ReadOnlyModeIgnore {
@@ -64,7 +64,7 @@ func chmod(name string, perm os.FileMode, opts ...Option) error {
 
 	fi, err := os.Stat(name)
 	if err != nil {
-		return &os.PathError{Op: "chmod", Path: name, Err: fmt.Errorf("%w (stat)", err)}
+		return chmodError(name, fmt.Errorf("%w (stat)", err))
 	}
 
 	// Set or clear Windows' read-only attribute
@@ -88,7 +88,7 @@ func chmod(name string, perm os.FileMode, opts ...Option) error {
 	}
 	err = os.Chmod(name, perm)
 	if err != nil {
-		return &os.PathError{Op: "chmod", Path: name, Err: fmt.Errorf("%w (chmod)", err)}
+		return chmodError(name, fmt.Errorf("%w (chmod)", err))
 	}
 
 	return nil
@@ -114,7 +114,7 @@ func create(name string, opts ...Option) (*os.File, error) {
 
 	sa, err := saFromPerm(fopts.fileMode, true)
 	if err != nil {
-		return nil, &os.PathError{Op: "create", Path: name, Err: err}
+		return nil, createError(name, err)
 	}
 
 	return golang.OpenFileNolog(name, fopts.flags, fopts.fileMode, sa)
@@ -125,61 +125,53 @@ func createTemp(dir, pattern string, perm os.FileMode, flag int) (*os.File, erro
 		perm = CreateTempPerm // 0o600
 	}
 	sa, err := saFromPerm(perm, true)
-	if err != nil {
-		return nil, &os.PathError{Op: "createtemp", Path: dir, Err: err}
+	if err == nil {
+		f, err := golang.CreateTemp(dir, pattern, flag, perm, sa)
+		if err == nil {
+			return f, nil
+		}
 	}
 
-	f, err := golang.CreateTemp(dir, pattern, flag, perm, sa)
-	if err != nil {
-		return nil, &os.PathError{Op: "createtemp", Path: dir, Err: err}
-	}
-
-	return f, nil
+	return nil, createTempError(dir, err)
 }
 
 func fchmod(f *os.File, mode os.FileMode, opts ...Option) error {
 	if f == nil {
-		return &os.PathError{Op: "chmod", Path: "", Err: os.ErrInvalid}
+		return chmodError("", os.ErrInvalid)
 	}
 	path, err := golang.Filepath(f)
-	if err != nil {
-		return &os.PathError{Op: "chmod", Path: f.Name(), Err: err}
+	if err == nil {
+		err = chmod(path, mode, opts...)
+		if err == nil {
+			return nil
+		}
 	}
 
-	err = chmod(path, mode, opts...)
-	if err != nil {
-		return &os.PathError{Op: "chmod", Path: path, Err: err}
-	}
-
-	return nil
+	return chmodError(path, err)
 }
 
 func mkdir(name string, perm os.FileMode) error {
 	sa, err := saFromPerm(perm, true)
-	if err != nil {
-		return &os.PathError{Op: "mkdir", Path: name, Err: err}
+	if err == nil {
+		err = golang.Mkdir(name, MkdirTempPerm, sa)
+		if err == nil {
+			return nil
+		}
 	}
 
-	err = golang.Mkdir(name, MkdirTempPerm, sa)
-	if err != nil {
-		return &os.PathError{Op: "mkdir", Path: name, Err: err}
-	}
-
-	return nil
+	return mkdirError(name, err)
 }
 
 func mkdirAll(name string, perm os.FileMode) error {
 	sa, err := saFromPerm(perm, true)
-	if err != nil {
-		return &os.PathError{Op: "mkdirall", Path: name, Err: err}
+	if err == nil {
+		err = golang.MkdirAll(name, MkdirTempPerm, sa)
+		if err == nil {
+			return nil
+		}
 	}
 
-	err = golang.MkdirAll(name, MkdirTempPerm, sa)
-	if err != nil {
-		return &os.PathError{Op: "mkdirall", Path: name, Err: err}
-	}
-
-	return nil
+	return mkdirTempError(name, err)
 }
 
 func mkdirTemp(dir, pattern string, opts ...Option) (string, error) {
@@ -192,26 +184,23 @@ func mkdirTemp(dir, pattern string, opts ...Option) (string, error) {
 	}
 
 	sa, err := saFromPerm(fopts.fileMode, true)
-	if err != nil {
-		prefix, suffix, _ := golang.PrefixAndSuffix(pattern)
-
-		return "", &os.PathError{Op: "mkdirtemp", Path: dir + string(os.PathSeparator) + prefix + "*" + suffix, Err: err}
+	var path string
+	if err == nil {
+		path, err = golang.MkdirTemp(dir, pattern, sa)
+		if err == nil {
+			return path, nil
+		}
 	}
 
-	path, err := golang.MkdirTemp(dir, pattern, sa)
-	if err != nil {
-		prefix, suffix, _ := golang.PrefixAndSuffix(pattern)
+	prefix, suffix, _ := golang.PrefixAndSuffix(pattern)
 
-		return "", &os.PathError{Op: "mkdirtemp", Path: dir + string(os.PathSeparator) + prefix + "*" + suffix, Err: err}
-	}
-
-	return path, nil
+	return "", mkdirTempError(dir+string(os.PathSeparator)+prefix+"*"+suffix, err)
 }
 
 func openFile(name string, flag int, perm os.FileMode) (*os.File, error) {
 	sa, err := saFromPerm(perm, (flag&os.O_CREATE) == os.O_CREATE)
 	if err != nil {
-		return nil, &os.PathError{Op: "open", Path: name, Err: err}
+		return nil, openError(name, err)
 	}
 
 	return golang.OpenFileNolog(name, flag, perm, sa)
@@ -251,7 +240,7 @@ func symlink(oldname, newname string, opts ...Option) error {
 	if fopts.setSymlinkOwner {
 		err = setOwnerToCurrentUser(newname)
 		if err != nil {
-			return &os.LinkError{Op: "symlink", Old: oldname, New: newname, Err: err}
+			return symlinkError(oldname, newname, err)
 		}
 	}
 

@@ -6,7 +6,6 @@
 package compat
 
 import (
-	"errors"
 	"os"
 
 	"github.com/rasa/compat/golang"
@@ -53,12 +52,19 @@ func createTemp(dir, pattern string, perm os.FileMode, flag int) (*os.File, erro
 	return wrap(f.Name(), flag, f)
 }
 
-func fchmod(f *os.File, mode os.FileMode, _ ...Option) error {
+func fchmod(f *os.File, mode os.FileMode, opts ...Option) error {
 	if f == nil {
-		return errors.New("nil file pointer")
+		return chmodError("", os.ErrInvalid)
 	}
 
-	return f.Chmod(mode)
+	fopts := Options{
+		fileMode: mode,
+	}
+	for _, opt := range opts {
+		opt(&fopts)
+	}
+
+	return f.Chmod(fopts.fileMode)
 }
 
 var mkdir = os.Mkdir

@@ -21,12 +21,12 @@ const (
 
 func fstat(f *os.File) (FileInfo, error) {
 	if f == nil {
-		return nil, &os.PathError{Op: "stat", Path: "", Err: os.ErrInvalid} //nolint:goconst
+		return nil, statError("", os.ErrInvalid)
 	}
 
 	fi, err := f.Stat()
 	if err != nil {
-		return nil, &os.PathError{Op: "stat", Path: f.Name(), Err: err}
+		return nil, statError(f.Name(), err)
 	}
 
 	fd := int(f.Fd())
@@ -34,7 +34,7 @@ func fstat(f *os.File) (FileInfo, error) {
 	var buf [_MAXPATHLEN]byte
 	_, _, errno := syscall.Syscall(syscall.SYS_FCNTL, uintptr(fd), _F_GETPATH, uintptr(unsafe.Pointer(&buf[0])))
 	if errno != 0 {
-		return nil, &os.PathError{Op: "stat", Path: f.Name(), Err: errno}
+		return nil, statError(f.Name(), errno)
 	}
 	i := bytes.IndexByte(buf[:], 0)
 	if i < 0 {

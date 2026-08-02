@@ -10,7 +10,7 @@ import (
 	"os"
 )
 
-// Options define the behavior of `WriteReaderAtomic()`, etc.
+// Options define the behavior of `WriteFile()`, etc.
 type Options struct {
 	allowNonAtomicReplace bool         // default false
 	atomically            bool         // default false
@@ -47,17 +47,17 @@ func WithAtomicity(atomically bool) Option {
 
 // WithDefaultFileMode sets the default file mode instead of using the
 // `os.CreateTemp()` default of `0600`.
-// Used by the WriteFileAtomic and WriteReaderAtomic functions.
+// Used by the WriteFile and WriteReader functions.
 func WithDefaultFileMode(mode os.FileMode) Option {
 	return func(opts *Options) {
 		opts.defaultFileMode = mode
 	}
 }
 
-// WithFileMode sets the file mode to the desired value and has precedence over all
-// other options.
-// Used by the Create, CreateTemp, MkdirTemp, Open, OpenFile, WriteFile,
-// WriteFileAtomic and WriteReaderAtomic functions.
+// WithFileMode sets the file mode to the desired value and has precedence over
+// all other options.
+// Used by the Create, CreateTemp, MkdirTemp, Open, OpenFile, WriteFile, and
+// WriteReader functions.
 func WithFileMode(mode os.FileMode) Option {
 	return func(opts *Options) {
 		opts.fileMode = mode
@@ -65,8 +65,8 @@ func WithFileMode(mode os.FileMode) Option {
 }
 
 // WithFlags sets the flag option.
-// Used by the Create, CreateTemp, Open, OpenFile, WriteFile, WriteFileAtomic and
-// WriteReaderAtomic functions.
+// Used by the Create, CreateTemp, Open, OpenFile, WriteFile, and WriteReader
+// functions.
 func WithFlags(flags int) Option {
 	return func(opts *Options) {
 		opts.flags |= flags
@@ -75,7 +75,7 @@ func WithFlags(flags int) Option {
 
 // WithKeepFileMode preserves the file mode of an existing file instead of using the
 // default value.
-// Used by the WriteFileAtomic and WriteReaderAtomic functions.
+// Used by the WriteFile and WriteReader functions.
 func WithKeepFileMode(keep bool) Option {
 	return func(opts *Options) {
 		opts.keepFileMode = keep
@@ -90,7 +90,7 @@ func WithKeepFileMode(keep bool) Option {
 // ReadOnlyModeReset  do not set a file's RO attribute, and if it's set, reset it.
 // The option is functional on Windows only. On other OSes, it is ignored.
 // Used by the Chmod, Create, CreateTemp, Fchmod, Open, OpenFile, WriteFile,
-// WriteFileAtomic and WriteReaderAtomic functions.
+// and WriteReader functions.
 func WithReadOnlyMode(mode ReadOnlyMode) Option {
 	return func(opts *Options) {
 		opts.readOnlyMode = mode

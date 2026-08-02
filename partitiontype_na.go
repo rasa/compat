@@ -12,5 +12,5 @@ import (
 // PartitionType returns the filesystem type (e.g., "ext4", "NTFS", "FAT32", etc.)
 // for the disk partition that contains path.
 func PartitionType(_ context.Context, _ string) (string, error) {
-	return "", &NotYetImplementedError{Op: "partitionType"}
+	return "", &UnimplementedError{Op: "partitionType"}
 }

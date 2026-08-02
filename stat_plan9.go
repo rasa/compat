@@ -42,7 +42,7 @@ type fileStat struct {
 
 func stat(fi os.FileInfo, _ string, _ bool) (FileInfo, error) {
 	if fi == nil {
-		return nil, &os.PathError{Op: "stat", Path: "", Err: os.ErrInvalid}
+		return nil, statError("", os.ErrInvalid)
 	}
 
 	var fs fileStat

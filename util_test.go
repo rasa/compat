@@ -407,7 +407,7 @@ func supportsHardLinks(t *testing.T) bool {
 
 	if errors.Is(err, syscall.EPERM) ||
 		errors.Is(err, syscall.EACCES) ||
-		isUnsupportedError(err) {
+		compat.IsUnsupportedError(err) {
 		t.Logf("hard links unavailable on %v: %v", runtime.GOOS, err)
 
 		return false

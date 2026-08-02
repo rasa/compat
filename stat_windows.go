@@ -6,7 +6,6 @@
 package compat
 
 import (
-	"errors"
 	"os"
 	"sync"
 	"syscall"
@@ -65,15 +64,14 @@ type fileStat struct {
 func stat(fi os.FileInfo, name string, followSymlinks bool) (FileInfo, error) {
 	var err error
 	if fi == nil {
-		err = errors.New("fileInfo is nil")
-		return nil, &os.PathError{Op: "stat", Path: name, Err: err} //nolint:goconst
+		return nil, statError(name, os.ErrInvalid)
 	}
 
 	var fs fileStat
 	fs.path = golang.FixLongPath(name)
 	fs.path16, err = windows.UTF16FromString(fs.path)
 	if err != nil {
-		return nil, &os.PathError{Op: "stat", Path: name, Err: err}
+		return nil, statError(name, err)
 	}
 
 	attrs := uint32(windows.FILE_FLAG_BACKUP_SEMANTICS)
@@ -88,13 +86,13 @@ func stat(fi os.FileInfo, name string, followSymlinks bool) (FileInfo, error) {
 
 	h, err := windows.CreateFile(&fs.path16[0], 0, 0, nil, windows.OPEN_EXISTING, attrs, 0)
 	if err != nil {
-		return nil, &os.PathError{Op: "stat", Path: name, Err: err}
+		return nil, statError(name, err)
 	}
 	defer windows.CloseHandle(h) //nolint:errcheck
 	var i windows.ByHandleFileInformation
 	err = windows.GetFileInformationByHandle(h, &i)
 	if err != nil {
-		return nil, &os.PathError{Op: "stat", Path: name, Err: err}
+		return nil, statError(name, err)
 	}
 
 	fs.origName = name
@@ -103,7 +101,7 @@ func stat(fi os.FileInfo, name string, followSymlinks bool) (FileInfo, error) {
 	// fs.stat() needs fs.origName, fs.mode, and fs.path16 set
 	perm, err := fs.stat()
 	if err != nil {
-		return nil, &os.PathError{Op: "stat", Path: name, Err: err}
+		return nil, statError(name, err)
 	}
 
 	fs.name = fi.Name()

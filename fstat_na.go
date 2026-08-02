@@ -11,8 +11,8 @@ import (
 
 func fstat(f *os.File) (FileInfo, error) {
 	if f == nil {
-		return nil, &os.PathError{Op: "stat", Path: "", Err: os.ErrInvalid}
+		return nil, statError("", os.ErrInvalid)
 	}
 
-	return nil, &os.PathError{Op: "stat", Path: f.Name(), Err: &NotYetImplementedError{Op: "fstat"}}
+	return nil, statError(f.Name(), &UnimplementedError{Op: "fstat"})
 }

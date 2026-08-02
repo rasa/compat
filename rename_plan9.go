@@ -74,12 +74,3 @@ func rename(source, destination string, opts ...Option) error {
 
 	return nil
 }
-
-func renameError(source, destination string, err error) error {
-	return &os.LinkError{
-		Op:  "rename",
-		Old: source,
-		New: destination,
-		Err: err,
-	}
-}

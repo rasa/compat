@@ -27,7 +27,7 @@ func (fs *fileStat) Group() string { return fs.group }
 
 func stat(fi os.FileInfo, name string, _ bool) (FileInfo, error) {
 	if fi == nil {
-		return nil, &os.PathError{Op: "stat", Path: name, Err: os.ErrInvalid}
+		return nil, statError(name, os.ErrInvalid)
 	}
 
 	var fs fileStat

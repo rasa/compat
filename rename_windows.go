@@ -9,8 +9,6 @@
 package compat
 
 import (
-	"os"
-
 	"golang.org/x/sys/windows"
 
 	"github.com/rasa/compat/golang"
@@ -39,19 +37,20 @@ func moveFile(src, dst string) error {
 
 	src16, err := windows.UTF16PtrFromString(longsrc)
 	if err != nil {
-		return &os.LinkError{Op: "rename", Old: src, New: dst, Err: err} //nolint:goconst
+		return renameError(src, dst, err)
 	}
 	longdst := golang.FixLongPath(dst)
 	dst16, err := windows.UTF16PtrFromString(longdst)
 	if err != nil {
-		return &os.LinkError{Op: "rename", Old: src, New: dst, Err: err}
+		return renameError(src, dst, err)
 	}
 
 	var attrs uint32 = windows.MOVEFILE_REPLACE_EXISTING | windows.MOVEFILE_WRITE_THROUGH
 	// see http://msdn.microsoft.com/en-us/library/windows/desktop/aa365240(v=vs.85).aspx
 	err = windows.MoveFileEx(src16, dst16, attrs)
 	if err != nil {
-		return &os.LinkError{Op: "rename", Old: src, New: dst, Err: err}
+		return renameError(src, dst, err)
 	}
+
 	return nil
 }

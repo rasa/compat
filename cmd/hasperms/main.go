@@ -38,7 +38,7 @@ func supportsChmod(path string) (bool, error) {
 		errno := &os.PathError{}
 		ok := errors.As(err, &errno)
 		if ok {
-			if errors.Is(errno.Err, syscall.ENOTSUP) || errors.Is(errno.Err, syscall.EOPNOTSUPP) {
+			if IsUnsupportedError(err) {
 				return false, nil
 			}
 		}

@@ -37,7 +37,7 @@ func TestWriteFileNonAtomicReplace(t *testing.T) {
 		compat.WithAtomicity(true),
 	)
 
-	if !isUnsupportedError(err) {
+	if !compat.IsUnsupportedError(err) {
 		t.Fatalf("got %v, want unsupported error", err)
 	}
 
