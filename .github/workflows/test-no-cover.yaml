@@ -13,7 +13,6 @@ permissions:
 jobs:
   test-android:
     uses: ./.github/workflows/test-android.yml
-    needs: test-all-solaria
     secrets: inherit
   test-plan9:
     uses: ./.github/workflows/test-plan9.yml

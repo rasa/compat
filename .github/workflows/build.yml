@@ -177,6 +177,7 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
 
       - name: Upload coverage
+        if: env.ACT != 'true'
         uses: actions/upload-artifact@v7
         with:
           name: coverage-${{ runner.os }}
@@ -191,7 +192,7 @@ jobs:
           go tool goreleaser release --clean --snapshot
 
       - name: Upload dist
-        if: inputs.make_cmd != 'test'
+        if: inputs.make_cmd != 'test' && env.ACT != 'true'
         uses: actions/upload-artifact@v7
         with:
           name: dist-${{ inputs.runner }}
