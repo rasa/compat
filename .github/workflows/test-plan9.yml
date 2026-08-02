@@ -13,6 +13,7 @@ permissions:
 env:
   ANYVM_COMMIT: "main"
   GO_VERSION: "1.26.5"
+  # See https://github.com/anyvm-org/anyvm/blob/main/.github/workflows/plan9.yml#L37
   PLAN9_RELEASE: "11554"
   SSH_PORT: "10023"
 
@@ -44,8 +45,8 @@ jobs:
       - name: Run tests on Plan9
         shell: bash
         env:
-          GH_TOKEN: ${{ github.token }}
           CGO_ENABLED: 0
+          GH_TOKEN: ${{ github.token }}
           GOOS: plan9
           GOARCH: amd64
         run: |
@@ -99,7 +100,7 @@ jobs:
               --sync 9p \
               -v "${stage}:/usr/glenda/work" \
               -d \
-              --remote-vnc off
+              --remote-vnc no
 
           python3 ./telnet_to_plan9.py
 
