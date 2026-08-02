@@ -60,7 +60,7 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
-      - uses: actions/setup-go@v6
+      - uses: actions/setup-go@v7
         with:
           go-version: ${{ matrix.go-version.big }} # overrides go-version-file when a value is present
           go-version-file: ${{ matrix.go-version.file }}
