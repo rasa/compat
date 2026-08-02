@@ -91,29 +91,28 @@ permissions:
 
 jobs:
   build-matrix:
-    name: build-(${{ matrix.os }})
+    name: build-${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
         os:
           - ubuntu-26.04
-          # commented out for now just for testing purposes:
-          # - windows-2025
-          # - macos-26 # arm64
+          - windows-2025
+          - macos-26 # arm64
           - ubuntu-24.04 # ubuntu-latest
-          # - ubuntu-22.04
-          # - macos-15 # arm64
-          # - windows-2022 # windows-latest
-          # - ubuntu-26.04-arm
-          # - ubuntu-24.04-arm
-          # - ubuntu-22.04-arm
-          # - windows-11-arm
-          # - macos-26-xlarge # arm64
-          # - macos-26-large # amd64
-          # - macos-26-intel # amd64
-          # - macos-15-large # amd64
-          # - macos-14 # arm64 # macos-latest
-          # - macos-14-large # amd64
+          - ubuntu-22.04
+          - macos-15 # arm64
+          - windows-2022 # windows-latest
+          - ubuntu-26.04-arm
+          - ubuntu-24.04-arm
+          - ubuntu-22.04-arm
+          - windows-11-arm
+          - macos-26-xlarge # arm64
+          - macos-26-large # amd64
+          - macos-26-intel # amd64
+          - macos-15-large # amd64
+          - macos-14 # arm64 # macos-latest
+          - macos-14-large # amd64
     uses: ./.github/workflows/build.yml
     with:
       compat_debug: ${{ inputs.compat_debug }}
