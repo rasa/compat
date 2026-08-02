@@ -1,6 +1,6 @@
 # compat
 
-[![Build](https://github.com/rasa/compat/actions/workflows/build-ubuntu.yml/badge.svg)](https://github.com/rasa/compat/actions/workflows/build-ubuntu.yml)
+[![Build](https://github.com/rasa/compat/actions/workflows/build.yml/badge.svg)](https://github.com/rasa/compat/actions/workflows/build-ubuntu.yml)
 [![CodeQL](https://github.com/rasa/compat/actions/workflows/codeql.yml/badge.svg)](https://github.com/rasa/compat/actions/workflows/codeql.yml)
 [![MegaLinter](https://github.com/rasa/compat/actions/workflows/mega-linter.yml/badge.svg)](https://github.com/rasa/compat/actions/workflows/mega-linter.yml)
 [![Codecov](https://codecov.io/gh/rasa/compat/branch/main/graph/badge.svg)](https://codecov.io/gh/rasa/compat)
