@@ -22,7 +22,6 @@ func TestIsUsupportedError(t *testing.T) {
 
 func TestUnsupportedError(t *testing.T) {
 	err := &compat.UnsupportedError{Op: "test"} //nolint:goconst
-	l
 	got := err.Error()
 	want := "test: unsupported"
 	if !strings.HasPrefix(got, want) {
