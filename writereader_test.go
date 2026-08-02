@@ -424,6 +424,21 @@ func TestWriteReaderWithAtomicityInvalid(t *testing.T) { //nolint:dupl
 	}
 }
 
+func TestWriteReaderWithAtomicityInvalidKeepFileMode(t *testing.T) { //nolint:dupl
+	opts := []compat.Option{
+		compat.WithAtomicity(true),
+		// compat.WithFileMode(perm600),
+		compat.WithKeepFileMode(false),
+	}
+	if compat.IsPlan9 {
+		opts = append(opts, compat.WithAllowNonAtomicReplace(true))
+	}
+	err := compat.WriteReader(invalidName, helloBuf, 0, opts...)
+	if err == nil {
+		t.Fatalf("got nil, want an error")
+	}
+}
+
 func TestWriteReaderWithAtomicityInvalidCantRead(t *testing.T) { //nolint:dupl
 	file, err := tempFile(t)
 	if err != nil {
