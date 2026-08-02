@@ -67,7 +67,7 @@ jobs:
           (matrix.image == inputs.image || inputs.image == 'all') &&
           !(contains(matrix.image, 'arm') && github.repository_visibility == 'public')
 
-      - uses: actions/checkoutv7
+      - uses: actions/checkout@v7
         if: env.SHOULD_RUN
 
       - uses: actions/setup-go@v7
