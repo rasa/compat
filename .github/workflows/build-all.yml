@@ -11,25 +11,25 @@ permissions:
   contents: read
 
 jobs:
-  build:
-    uses: ./.github/workflows/build.yml
+  build-matrix:
+    uses: ./.github/workflows/build-matrix.yml
     with:
       runner: all
     secrets: inherit
-  build-only-nocgo:
-    uses: ./.github/workflows/build-only-nocgo.yml
+  build-nocgo:
+    uses: ./.github/workflows/build-nocgo.yml
     with:
       goarches: all
-    needs: build
+    needs: build-matrix
     if: success()
     secrets: inherit
-  build-only-android:
-    uses: ./.github/workflows/build-only-android.yml
-    needs: build-only-nocgo
+  build-android:
+    uses: ./.github/workflows/build-android.yml
+    needs: build-nocgo
     if: success()
     secrets: inherit
-  build-only-ios:
-    uses: ./.github/workflows/build-only-ios.yml
-    needs: build-only-android
+  build-ios:
+    uses: ./.github/workflows/build-ios.yml
+    needs: build-android
     if: success()
     secrets: inherit

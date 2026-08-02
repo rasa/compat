@@ -1,0 +1,136 @@
+---
+# yaml-language-server: $schema https://json.schemastore.org/github-workflow.json
+
+name: build-matrix
+# desc:
+on:
+  workflow_call:
+    inputs:
+      compat_debug:
+        default: "ACLS"
+        type: string
+      compat_debug_fs:
+        default: "All"
+        type: string
+      make_cmd:
+        default: "ci"
+        type: string
+      runner:
+        default: "ubuntu-24.04"
+        type: string
+      sudo:
+        default: true
+        type: boolean
+      test_opts:
+        default: ""
+        type: string
+    secrets:
+      CODECOV_TOKEN:
+        required: false
+
+  workflow_dispatch:
+    inputs:
+      compat_debug:
+        description: "COMPAT_DEBUG environment variable"
+        default: "ACLS"
+        type: string
+      compat_debug_fs:
+        description: "COMPAT_DEBUG_FS environment variable"
+        default: "All"
+        type: string
+      make_cmd:
+        description: "Make command"
+        default: "ci"
+        type: string
+      runner:
+        description: "Runner or runner group to use"
+        default: "ubuntu-24.04"
+        type: choice
+        options:
+          - ubuntu-26.04
+          - windows-2025
+          - macos-26 # arm64
+          - ---previous-releases---
+          - ubuntu-24.04 # ubuntu-latest
+          - ubuntu-22.04
+          - macos-15 # arm64
+          - windows-2022 # windows-latest
+          - ---arm-variations---
+          - ubuntu-26.04-arm
+          - ubuntu-24.04-arm
+          - ubuntu-22.04-arm
+          - windows-11-arm
+          - macos-26-xlarge # arm64
+          - ---amd-variations---
+          - macos-26-large # amd64
+          - macos-26-intel # amd64
+          - macos-15-large # amd64
+          - ---older-releases---
+          - macos-14 # arm64 # macos-latest
+          - macos-14-large # amd64
+          # - macos-13 # amd64
+          # - macos-13-xlarge # arm64
+          - ---groups---
+          - top3
+          - top6
+          - ubuntu3
+          - windows3
+          - macos3
+          - all # all of the above runners
+      sudo:
+        description: "Run tests via sudo"
+        default: true
+        type: boolean
+      test_opts:
+        description: "Options passed to go test"
+        default: ""
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  build-matrix:
+    name: build-(${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-26.04
+          # commented out for now just for testing purposes:
+          # - windows-2025
+          # - macos-26 # arm64
+          - ubuntu-24.04 # ubuntu-latest
+          # - ubuntu-22.04
+          # - macos-15 # arm64
+          # - windows-2022 # windows-latest
+          # - ubuntu-26.04-arm
+          # - ubuntu-24.04-arm
+          # - ubuntu-22.04-arm
+          # - windows-11-arm
+          # - macos-26-xlarge # arm64
+          # - macos-26-large # amd64
+          # - macos-26-intel # amd64
+          # - macos-15-large # amd64
+          # - macos-14 # arm64 # macos-latest
+          # - macos-14-large # amd64
+    uses: ./.github/workflows/build.yml
+    with:
+      compat_debug: ${{ inputs.compat_debug }}
+      compat_debug_fs: ${{ inputs.compat_debug_fs }}
+      enabled: ${{ (
+            matrix.os == inputs.runner ||
+            inputs.runner == 'all' ||
+            (inputs.runner == 'top3' && contains(fromJSON('["ubuntu-24.04","windows-2025","macos-26"]'), matrix.os)) ||
+            (inputs.runner == 'top6' && contains(fromJSON('["ubuntu-24.04","windows-2025","windows-2022","windows-11-arm","macos-26","macos-14"]'), matrix.os)) ||
+            (inputs.runner == 'ubuntu3' && contains(fromJSON('["ubuntu-24.04","ubuntu-24.04-arm","ubuntu-22.04"]'), matrix.os)) ||
+            (inputs.runner == 'windows3' && contains(fromJSON('["windows-2025","windows-2022","windows-11-arm"]'), matrix.os)) ||
+            (inputs.runner == 'macos3' && contains(fromJSON('["macos-26","macos-15","macos-14"]'), matrix.os))
+          ) && !(contains(matrix.os, 'arm') && github.repository_visibility != 'public')
+        }}
+      make_cmd: ${{ inputs.make_cmd }}
+      runner: ${{ matrix.os }}
+      sudo: ${{ inputs.sudo }}
+      test_opts: ${{ inputs.test_opts }}
+    secrets:
+      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}

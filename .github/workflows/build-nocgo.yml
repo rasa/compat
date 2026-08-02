@@ -1,7 +1,7 @@
 ---
 # yaml-language-server: $schema https://json.schemastore.org/github-workflow.json
 
-name: build-only-nocgo
+name: build-nocgo
 
 on: # yamllint disable-line rule:truthy
   workflow_call: # Required so this workflow can be called from another workflow
@@ -45,7 +45,7 @@ env:
   TEST_OPTS: ${{ inputs.test_opts }}
 
 jobs:
-  build-only-nocgo:
+  build-nocgo:
     runs-on: ubuntu-24.04
 
     steps:

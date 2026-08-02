@@ -2,7 +2,7 @@
 # checkov:skip=CKV_GHA_7: The build output cannot be affected by user parameters...
 # yaml-language-server: $schema https://json.schemastore.org/github-workflow.json
 
-name: build-only-android
+name: build-android
 
 on: # yamllint disable-line rule:truthy
   workflow_call:
@@ -55,7 +55,7 @@ env:
   GOOS: 'android'
 
 jobs:
-  build-only-android:
+  build-android:
     runs-on: ubuntu-24.04
     defaults:
       run:

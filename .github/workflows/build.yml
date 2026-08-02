@@ -4,262 +4,195 @@
 name: build
 
 on:
-  # push:
-  #   branches: [ main ]
-  #   paths:
-  #     - '**.go'
-  #     - 'go.mod'
-  #     # - '.github/workflows/*'
-  #     # - '.goreleaser.yml'
-  #     # - 'Makefile'
-  # pull_request:
-  #   branches: [ main ]
-  #   paths:
-  #     - '**.go'
-  #     - 'go.mod'
-  #     # - '.github/workflows/*'
-  #     # - '.goreleaser.yml'
-  workflow_call: # Required so this workflow can be called from another workflow
+  push:
+    branches: [ main ]
+    paths:
+      - '**.go'
+      - 'go.mod'
+      # - '.github/workflows/*'
+      # - '.goreleaser.yml'
+      # - 'Makefile'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - '**.go'
+      - 'go.mod'
+      # - '.github/workflows/*'
+      # - '.goreleaser.yml'
+  workflow_call:
     inputs:
       compat_debug:
-        default: "ACLS"
-        type: string # required
-      compat_debug_fs:
-        default: "All"
-        type: string # required
-      make_cmd:
-        default: "ci"
-        type: string # required
-      runner:
-        default: "ubuntu-24.04"
-        type: string # required
-      sudo:
-        default: "true"
-        type: string # required
-      test_opts:
-        default: ""
-        type: string # required
-  workflow_dispatch: # Allows you to run this workflow manually from the Actions tab
-    inputs:
-      # checkov:skip=CKV_GHA_7: The build output cannot be affected by user parameters...
-      compat_debug:
-        description: "COMPAT_DEBUG environmental variable."
         default: "ACLS"
         type: string
       compat_debug_fs:
-        description: "COMPAT_DEBUG_FS environmental variable."
         default: "All"
-        type: string # required
+        type: string
+      enabled:
+        default: true
+        type: boolean
       make_cmd:
-        description: "Make comamnd."
         default: "ci"
-        type: string # required
-      # checkov:skip=CKV_GHA_7: The build output cannot be affected by user parameters...
+        type: string
+      runner:
+        default: "ubuntu-24.04"
+        type: string
+      sudo:
+        default: true
+        type: boolean
+      test_opts:
+        default: ""
+        type: string
+    secrets:
+      CODECOV_TOKEN:
+        required: false
+
+  workflow_dispatch:
+    inputs:
+      compat_debug:
+        description: "COMPAT_DEBUG environment variable"
+        default: "ACLS"
+        type: string
+      compat_debug_fs:
+        description: "COMPAT_DEBUG_FS environment variable"
+        default: "All"
+        type: string
+      enabled:
+        description: "Run action"
+        default: true
+        type: boolean
+      make_cmd:
+        description: "Make command"
+        default: "ci"
+        type: string
       runner:
         description: "GitHub runner to use"
+        default: "ubuntu-24.04"
         type: choice
         options:
           - ubuntu-26.04
-          - ubuntu-26.04-arm
-          - ubuntu-24.04 # ubuntu-latest
           - windows-2025
-          - macos-26
-          - macos-15 # arm64
-          - ubuntu-24.04-arm
+          - macos-26 # arm64
+          - ---previous-releases---
+          - ubuntu-24.04 # ubuntu-latest
           - ubuntu-22.04
+          - macos-15 # arm64
+          - windows-2022 # windows-latest
+          - ---arm-variations---
+          - ubuntu-26.04-arm
+          - ubuntu-24.04-arm
           - ubuntu-22.04-arm
           - windows-11-arm
-          - windows-2022 # windows-latest
-          - macos-26-intel
-          - macos-26-large
-          - macos-26-xlarge
+          - macos-26-xlarge # arm64
+          - ---amd-variations---
+          - macos-26-large # amd64
+          - macos-26-intel # amd64
           - macos-15-large # amd64
+          - ---older-releases---
           - macos-14 # arm64 # macos-latest
           - macos-14-large # amd64
-          # - macos-13 # amd64
-          # - macos-13-xlarge # arm64
-          # groups:
-          - top3
-          - top6
-          - ubuntu3
-          - windows3
-          - macos3
-          - all # all of the above runners
-        default: "ubuntu-24.04"
-      # checkov:skip=CKV_GHA_7: The build output cannot be affected by user parameters...
       sudo:
         description: "Run tests via sudo"
-        type: boolean
         default: true
-      # checkov:skip=CKV_GHA_7: The build output cannot be affected by user parameters...
+        type: boolean
       test_opts:
-        description: "Options to pass to go test command (-v, -short, -run TestX, etc.)"
-        type: string
+        description: "Options passed to go test"
         default: ""
+        type: string
 
 permissions:
   contents: read
 
 env:
   COMPAT_DEBUG: ${{ inputs.compat_debug }}
-  COMPAT_DEBUG_FS:  ${{ inputs.compat_debug_fs }}
+  COMPAT_DEBUG_FS: ${{ inputs.compat_debug_fs }}
   MAKE_CMD: ${{ inputs.make_cmd }}
-  RUNNER: ${{ inputs.runner }}
   TEST_OPTS: ${{ inputs.test_opts }}
 
 jobs:
   build:
-    name: build
-    strategy:
-      fail-fast: false
-      matrix:
-        os:
-          - ubuntu-26.04
-          - ubuntu-26.04-arm
-          - ubuntu-24.04 # ubuntu-latest
-          - windows-2025
-          - macos-26
-          - macos-15 # arm64
-          - ubuntu-24.04-arm
-          - ubuntu-22.04
-          - ubuntu-22.04-arm
-          - windows-11-arm
-          - windows-2022 # windows-latest
-          - macos-26-intel
-          - macos-26-large
-          - macos-26-xlarge
-          - macos-15-large # amd64
-          - macos-14 # arm64 # macos-latest
-          - macos-14-large # amd64
-          # - macos-13 # amd64
-          # - macos-13-xlarge # arm64
-
-    runs-on: ${{ matrix.os }}
+    name: build-${{ inputs.runner }}
+    if: inputs.enabled
+    runs-on: ${{ inputs.runner }}
     defaults:
       run:
         shell: bash
-    steps:
-      - name: Set SHOULD_RUN var for ${{ inputs.runner }}
-        run: |
-          echo "SHOULD_RUN=yes" >> "${GITHUB_ENV}"
-        if: >
-          (
-            matrix.os == inputs.runner ||
-            inputs.runner == 'all' ||
-            (inputs.runner == 'top3'     && contains(fromJSON('["ubuntu-24.04","windows-2025","macos-26"]'), matrix.os)) ||
-            (inputs.runner == 'top6'     && contains(fromJSON('["ubuntu-24.04","windows-2025","windows-2022","windows-11-arm","macos-26","macos-14"]'), matrix.os)) ||
-            (inputs.runner == 'ubuntu3'  && contains(fromJSON('["ubuntu-24.04","ubuntu-24.04-arm","ubuntu-22.04"]'), matrix.os)) ||
-            (inputs.runner == 'windows3' && contains(fromJSON('["windows-2025","windows-2022","windows-11-arm"]'), matrix.os)) ||
-            (inputs.runner == 'macos3'   && contains(fromJSON('["macos-26","macos-15","macos-14"]'), matrix.os))
-          ) && !(contains(matrix.os, 'arm') && github.repository_visibility != 'public')
 
+    steps:
       - uses: actions/checkout@v7
-        if: env.SHOULD_RUN
 
       - uses: actions/setup-go@v7
-        if: env.SHOULD_RUN
-        # if: runner.os != 'Windows'
         with:
-          go-version: '1.26'
+          go-version: "1.26"
           check-latest: true
           cache: true
 
-      # - run: go env
-      #   if: env.SHOULD_RUN
-
-      # Let's see if we see the same 80% speed improvement as mentioned in
-      # https://github.com/elastic/apm-server/pull/15623#issuecomment-2648709041
-      # failing on windows-11-arm:
-      # - uses: antontroshin/setup-go@bda02de8887c9946189f81e7e59512914aeb9ea4
-      #   if: runner.os == 'Windows'
-      #   with:
-      #     go-version: '1.25'
-      #     check-latest: true
-      #     cache: false
-
-      - name: Set env vars (GOCACHE, GOMODCACHE, sudo, etc.)
-        if: env.SHOULD_RUN
+      - name: Set environment variables
         run: |
-          # Set env vars (GOCACHE, GOMODCACHE, sudo, etc.)
           if [[ "${{ inputs.sudo }}" == "true" ]]; then
             if builtin command -v sudo &>/dev/null; then
               if [[ ! "${OS:-}" =~ [Ww]indows ]]; then
-                sudo='sudo -E -n --preserve-env=PATH,COMPAT_DEBUG,COMPAT_DEBUG_FS,TEST_OPTS'
+                # isn't this redudent:
+                # --preserve-env=PATH,COMPAT_DEBUG,COMPAT_DEBUG_FS,TEST_OPTS
+                sudo='sudo -E -n'
               fi
             fi
           fi
-          printf "GOCACHE=%s\n"      "$(go env GOCACHE | tr '\\' '/')" >>"${GITHUB_ENV}"
-          printf "GOMODCACHE=%s\n"   "$(go env GOMODCACHE | tr '\\' '/')" >>"${GITHUB_ENV}"
-          printf "GOVERSION=%s\n"    "$(go version | sed 's|^.*go||; s| .*||;')" >>"${GITHUB_ENV}"
-          printf "sudo=%s\n"         "${sudo:-}" >>"${GITHUB_ENV}"
-          # to improve code coverage
+          printf "GOCACHE=%s\n" "$(go env GOCACHE | tr '\\' '/')" >>"${GITHUB_ENV}"
+          printf "GOMODCACHE=%s\n" "$(go env GOMODCACHE | tr '\\' '/')" >>"${GITHUB_ENV}"
+          printf "GOVERSION=%s\n" "$(go version | sed 's|^.*go||; s| .*||;')" >>"${GITHUB_ENV}"
+          printf "sudo=%s\n" "${sudo:-}" >>"${GITHUB_ENV}"
           if [[ "${{ runner.os }}" == "Windows" ]]; then
             printf "UMASK=022\n" >>"${GITHUB_ENV}"
           fi
-          # echo "${GITHUB_ENV}":
-          cat "${GITHUB_ENV}"
-
-      - name: USE actions/cache to save Go's build and mod caches
-        if: false # env.SHOULD_RUN # switch to setup-go's cache (for testing)
-        uses: actions/cache@v6
-        with:
-          path: |
-            ${{ env.GOCACHE }}
-            ${{ env.GOMODCACHE }}
-          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
-          restore-keys: |
-            ${{ runner.os }}-go-
+          # cat "${GITHUB_ENV}"
 
       - name: make ${{ inputs.make_cmd }}
-        if: env.SHOULD_RUN
         run: |
-          # make ${MAKE_CMD} TEST_OPTS="${TEST_OPTS}"
           set -x
+          : "${COMPAT_DEBUG:=}"
+          : "${COMPAT_DEBUG_FS:=}"
+          : "${GOCACHE:=}"
+          : "${GOMODCACHE:=}"
+          : "${GOVERSION:=}"
+          : "${PATH:=}"
           : "${TEST_OPTS:=}"
-          printf 'TEST_OPTS="%s"\n' "${TEST_OPTS}"
-          ${sudo:-} make "${MAKE_CMD}" TEST_OPTS="${TEST_OPTS}"
+          printf 'COMPAT_DEBUG   ="%s"\n' "${COMPAT_DEBUG}"
+          printf 'COMPAT_DEBUG_FS="%s"\n' "${COMPAT_DEBUG_FS}"
+          printf 'GOCACHE        ="%s"\n' "${GOCACHE}"
+          printf 'GOMODCACHE     ="%s"\n' "${GOMODCACHE}"
+          printf 'GOVERSION      ="%s"\n' "${GOVERSION}"
+          printf 'PATH           ="%s"\n' "${PATH}"
+          printf 'TEST_OPTS      ="%s"\n' "${TEST_OPTS}"
+          ${sudo:-} env "PATH=${PATH}" make "${MAKE_CMD}" TEST_OPTS="${TEST_OPTS:-}"
           test -d ./dist || exit 0
           test -n "${sudo:-}" || exit 0
-          # this works on linux and macos
-          ${sudo:-} chown -R "$(id -un)":"$(id -gn)" ./dist "${GOCACHE}" "${GOMODCACHE}" || true
-
-      - name: Upload coverage
-        if: env.SHOULD_RUN
-        uses: actions/upload-artifact@v7
-        with:
-          name: coverage-${{ matrix.os }}
-          path: coverage.*
-        # env:
-        #  CGO_ENABLED: ${{ contains(matrix.os, 'windows') && '0' || '1' }}
-
-      - name: Set SHOULD_RUN var on ${{ inputs.make_cmd }}
-        if: env.SHOULD_RUN
-        run: |
-          if [[ "${MAKE_CMD}" == "test" ]]; then
-            echo "SHOULD_RUN=" >> "${GITHUB_ENV}"
-          fi
-
-      - name: go tool goreleaser release --clean --snapshot
-        if: env.SHOULD_RUN && runner.os == 'Linux'
-        run: |
-          # go tool goreleaser release --clean --snapshot
-          if [[ -f go.tool.mod ]]; then
-            export GOFLAGS="${GOFLAGS:-} -modfile=go.tool.mod"
-          fi
-          go tool goreleaser release --clean --snapshot
-      
-      - name: Upload dist
-        if: env.SHOULD_RUN
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
-        with:
-          name: dist-${{ matrix.os }}
-          path: dist
+          ${sudo:-} chown -R "$(id -un)":"$(id -gn)" ./dist "${GOCACHE:-}" "${GOMODCACHE:-}" || true
 
       - name: Upload coverage to Codecov
-        if: env.SHOULD_RUN
-        uses: codecov/codecov-action@fb8b3582c8e4def4969c97caa2f19720cb33a72f # v7.0.0
+        uses: codecov/codecov-action@v7
         with:
           fail_ci_if_error: false
           files: ./coverage.out
           name: coverage-${{ runner.os }}
           token: ${{ secrets.CODECOV_TOKEN }}
+
+      - name: Upload coverage
+        uses: actions/upload-artifact@v7
+        with:
+          name: coverage-${{ runner.os }}
+          path: coverage.*
+
+      - name: go tool goreleaser release --clean --snapshot
+        if: inputs.make_cmd != 'test' && runner.os == 'Linux'
+        run: |
+          if [[ -f go.tool.mod ]]; then
+            export GOFLAGS="${GOFLAGS:-} -modfile=go.tool.mod"
+          fi
+          go tool goreleaser release --clean --snapshot
+
+      - name: Upload dist
+        if: inputs.make_cmd != 'test'
+        uses: actions/upload-artifact@v7
+        with:
+          name: dist-${{ inputs.runner }}
+          path: dist
