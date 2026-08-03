@@ -28,8 +28,8 @@ on:
         default: "All"
         type: string
       enabled:
-        default: true
-        type: boolean
+        default: "yes"
+        type: string
       make_cmd:
         default: "ci"
         type: string
@@ -37,8 +37,8 @@ on:
         default: "ubuntu-24.04"
         type: string
       sudo:
-        default: true
-        type: boolean
+        default: "yes"
+        type: string
       test_opts:
         default: ""
         type: string
@@ -57,9 +57,11 @@ on:
         default: "All"
         type: string
       enabled:
-        description: "Run action (required, do not uncheck)"
-        default: true
-        type: boolean
+        description: "Run action"
+        default: "yes"
+        type: choice
+        options:
+          - "yes"
       make_cmd:
         description: "Make command"
         default: "ci"
@@ -75,7 +77,7 @@ on:
           - ---previous-releases---
           - ubuntu-24.04 # ubuntu-latest
           - ubuntu-22.04
-          - macos-15 # arm64
+          - macos-15 # arm64 # macos-latest
           - windows-2022 # windows-latest
           - ---arm-variations---
           - ubuntu-26.04-arm
@@ -88,31 +90,52 @@ on:
           - macos-26-intel # amd64
           - macos-15-large # amd64
           - ---older-releases---
-          - macos-14 # arm64 # macos-latest
+          - macos-14 # arm64
           - macos-14-large # amd64
       sudo:
         description: "Run tests via sudo"
-        default: true
-        type: boolean
+        type: choice
+        options:
+          - "yes"
+          - "no"
       test_opts:
         description: "Options passed to go test"
         default: ""
         type: string
 
+env:
+  COMPAT_DEBUG: ${{ inputs.compat_debug || 'ACLS' }}
+  COMPAT_DEBUG_FS: ${{ inputs.compat_debug_fs || 'All' }}
+  ENABLED: >-
+    ${{
+      inputs.enabled == true ||
+      inputs.enabled == 'yes' ||
+      github.event_name == 'push' ||
+      github.event_name == 'pull_request'
+    }}
+  MAKE_CMD: ${{ inputs.make_cmd || 'ci' }}
+  RUNNER: ${{ inputs.runner || 'ubuntu-24.04' }}
+  SUDO: >-
+    ${{
+      inputs.sudo == 'yes' ||
+      inputs.sudo == true ||
+      github.event_name == 'push' ||
+      github.event_name == 'pull_request'
+    }}
+  TEST_OPTS: ${{ inputs.test_opts || '' }}
+
 permissions:
   contents: read
-
-env:
-  COMPAT_DEBUG: ${{ inputs.compat_debug }}
-  COMPAT_DEBUG_FS: ${{ inputs.compat_debug_fs }}
-  MAKE_CMD: ${{ inputs.make_cmd }}
-  TEST_OPTS: ${{ inputs.test_opts }}
 
 jobs:
   build:
     name: build
-    if: inputs.enabled
-    runs-on: ${{ inputs.runner }}
+    if: >-
+      inputs.enabled == 'yes' ||
+      inputs.enabled == true ||
+      github.event_name == 'push' ||
+      github.event_name == 'pull_request'
+    runs-on: ${{ inputs.runner || 'ubuntu-24.04' }}
     defaults:
       run:
         shell: bash
@@ -128,7 +151,7 @@ jobs:
 
       - name: Set environment variables
         run: |
-          if [[ "${{ inputs.sudo }}" == "true" ]]; then
+          if [[ "${SUDO:-}" == "true" ]]; then
             if builtin command -v sudo &>/dev/null; then
               if [[ ! "${OS:-}" =~ [Ww]indows ]]; then
                 # isn't this redudent:
@@ -146,27 +169,23 @@ jobs:
           fi
           # cat "${GITHUB_ENV}"
 
-      - name: make ${{ inputs.make_cmd }}
+      - name: Show environment variables
         run: |
-          set -x
-          : "${COMPAT_DEBUG:=}"
-          : "${COMPAT_DEBUG_FS:=}"
-          : "${GOCACHE:=}"
-          : "${GOMODCACHE:=}"
-          : "${GOVERSION:=}"
-          : "${PATH:=}"
-          : "${TEST_OPTS:=}"
-          printf 'COMPAT_DEBUG   ="%s"\n' "${COMPAT_DEBUG}"
-          printf 'COMPAT_DEBUG_FS="%s"\n' "${COMPAT_DEBUG_FS}"
-          printf 'GOCACHE        ="%s"\n' "${GOCACHE}"
-          printf 'GOMODCACHE     ="%s"\n' "${GOMODCACHE}"
-          printf 'GOVERSION      ="%s"\n' "${GOVERSION}"
-          printf 'PATH           ="%s"\n' "${PATH}"
-          printf 'TEST_OPTS      ="%s"\n' "${TEST_OPTS}"
-          ${sudo:-} env "PATH=${PATH}" make "${MAKE_CMD}" TEST_OPTS="${TEST_OPTS:-}"
-          test -d ./dist || exit 0
-          test -n "${sudo:-}" || exit 0
-          ${sudo:-} chown -R "$(id -un)":"$(id -gn)" ./dist "${GOCACHE:-}" "${GOMODCACHE:-}" || true
+          printf 'COMPAT_DEBUG   ="%s"\n' "${COMPAT_DEBUG:-}"
+          printf 'COMPAT_DEBUG_FS="%s"\n' "${COMPAT_DEBUG_FS:-}"
+          printf 'GOCACHE        ="%s"\n' "${GOCACHE:-}"
+          printf 'GOMODCACHE     ="%s"\n' "${GOMODCACHE:-}"
+          printf 'GOVERSION      ="%s"\n' "${GOVERSION:-}"
+          printf 'PATH           ="%s"\n' "${PATH:-}"
+          printf 'sudo           ="%s"\n' "${sudo:-}"
+          printf 'SUDO           ="%s"\n' "${SUDO:-}"
+          printf 'TEST_OPTS      ="%s"\n' "${TEST_OPTS:-}"
+
+      - name: make ${{ env.MAKE_CMD }}
+        run: >-
+          ${sudo} 
+          env "PATH=${PATH}"
+          make "${MAKE_CMD}" TEST_OPTS="${TEST_OPTS}"
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v7
@@ -190,6 +209,12 @@ jobs:
             export GOFLAGS="${GOFLAGS:-} -modfile=go.tool.mod"
           fi
           go tool goreleaser release --clean --snapshot
+
+      - name: chown ./dist
+        if: inputs.make_cmd != 'test' && env.ACT != 'true'
+        run: |
+          test -d ./dist -o -n "${sudo}" || exit 0
+          ${sudo:-} chown -R "$(id -un)":"$(id -gn)" ./dist "${GOCACHE}" "${GOMODCACHE}"
 
       - name: Upload dist
         if: inputs.make_cmd != 'test' && env.ACT != 'true'
