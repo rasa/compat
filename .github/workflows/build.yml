@@ -31,7 +31,7 @@ on:
         default: "yes"
         type: string
       make_cmd:
-        default: "all"
+        default: "bldtest"
         type: string
       runner:
         default: "ubuntu-24.04"
@@ -64,7 +64,7 @@ on:
           - "yes"
       make_cmd:
         description: "Make command"
-        default: "all"
+        default: "bldtest"
         type: string
       runner:
         description: "GitHub runner to use"
@@ -113,7 +113,7 @@ env:
       github.event_name == 'push' ||
       github.event_name == 'pull_request'
     }}
-  MAKE_CMD: ${{ inputs.make_cmd || 'all' }}
+  MAKE_CMD: ${{ inputs.make_cmd || 'bldtest' }}
   RUNNER: ${{ inputs.runner || 'ubuntu-24.04' }}
   SUDO: >-
     ${{
@@ -149,24 +149,24 @@ jobs:
           check-latest: true
           cache: true
 
+      # is this really needed?
+      # if [[ "${{ runner.os }}" == "Windows" ]]; then
+        # use 'env PATH=$PATH' prefix instead:
+        # --preserve-env=PATH,COMPAT_DEBUG,COMPAT_DEBUG_FS,TEST_OPTS
+
       - name: Set environment variables
         run: |
           if [[ "${SUDO}" == "true" ]]; then
             if builtin command -v sudo &>/dev/null; then
-              # is this really needed?
-              # if [[ "${{ runner.os }}" == "Windows" ]]; then
-                # use 'env PATH=$PATH' prefix instead:
-                # --preserve-env=PATH,COMPAT_DEBUG,COMPAT_DEBUG_FS,TEST_OPTS
-                sudo='sudo -E -n'
-              # fi
+              sudo='sudo -E -n'
             fi
           fi
           printf "GOCACHE=%s\n" "$(go env GOCACHE)" | tr '\\' '/' >>"${GITHUB_ENV}"
           printf "GOMODCACHE=%s\n" "$(go env GOMODCACHE)" | tr '\\' '/' >>"${GITHUB_ENV}"
-          printf "GOVERSION=%s\n" "$(go version)" | sed 's|^.*go||; s| .*||;' >>"${GITHUB_ENV}"
+          printf "GOVERSION=%s\n" "$(go version | sed 's|^.*go||; s| .*||;')" >>"${GITHUB_ENV}"
           printf "sudo=%s\n" "${sudo}" >>"${GITHUB_ENV}"
           if [[ "${{ runner.os }}" == "Windows" ]]; then
-            printf "UMASK=022\n" >>"${GITHUB_ENV}"
+            printf 'UMASK=022\n' >>"${GITHUB_ENV}"
           fi
           cat "${GITHUB_ENV}"
 
