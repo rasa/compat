@@ -43,7 +43,7 @@ type Filesystem struct {
 }
 
 const (
-	// Binary (IEC) powers of two exponents
+	// Binary (IEC) powers of two exponents.
 	KiBPow2 = (iota + 1) * 10 // 10, 20, 30, ...
 	MiBPow2
 	GiBPow2
@@ -59,7 +59,7 @@ const (
 	// PiBPow2 = 50 // 2^50
 	// EiBPow2 = 60 // 2^60
 	// ZiBPow2 = 70 // 2^70
-	// YiBPow2 = 80 // 2^80
+	// YiBPow2 = 80 // 2^80.
 
 	// Binary (IEC) byte sizes
 	// _  = 1 << (10 * iota) // ignore iota=0
@@ -70,7 +70,7 @@ const (
 	// PiB                    // 1 << 50 (2^50 bytes)
 	// EiB                    // 1 << 60 (2^60 bytes)
 	// ZiB                    // 1 << 70 (2^70 bytes) (overflow if typed as uint64)
-	// YiB                    // 1 << 80 (2^80 bytes)
+	// YiB                    // 1 << 80 (2^80 bytes).
 
 	KiB = 1 << 10 // 2^10 bytes
 	MiB = 1 << 20 // 2^20 bytes
@@ -98,7 +98,7 @@ const (
 	// PB = 1e15 // 10^15 bytes
 	// EB = 1e18 // 10^18 bytes
 	// ZB = 1e21 // 10^21 bytes
-	// YB = 1e24 // 10^24 bytes
+	// YB = 1e24 // 10^24 bytes.
 
 	MaxChars255    = 255
 	MaxChars32767  = 32767
@@ -146,11 +146,11 @@ const (
 	UnicodeNormalizationNFD
 )
 
-func normalizeNFC(s string) string {
+func normalizeNFC(s string) string { //nolint:unused
 	return norm.NFC.String(s)
 }
 
-func normalizeNFD(s string) string {
+func normalizeNFD(s string) string { //nolint:unused
 	return norm.NFD.String(s)
 }
 
@@ -321,7 +321,7 @@ func (v DisallowedRunes) String() string {
 
 func addRune(r rune) string {
 	if unicode.IsPrint(r) {
-		return fmt.Sprintf("%v", string(r))
+		return string(r)
 	} else {
 		return fmt.Sprintf("0x%02x", r)
 	}
@@ -364,7 +364,7 @@ func (v OSFeature) String() string {
 }
 
 func si(f float64) string {
-	return strings.ReplaceAll(humanize.SIWithDigits(f, 2, ""), " ", "")
+	return strings.ReplaceAll(humanize.SIWithDigits(f, 2, ""), " ", "") //nolint:mnd
 }
 
 func NewFilesystem(name string) Filesystem {

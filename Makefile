@@ -48,9 +48,9 @@ clean: ## remove files created during build pipeline
 	rm -rf '"$(shell go env GOCACHE)/../golangci-lint"'
 	go clean -i -cache -testcache -modcache -fuzzcache -x
 
-.PHONY: run
-run: ## go run
-	go run .
+# .PHONY: run
+# run: ## go run
+# 	go run .
 
 .PHONY: mod
 mod: ## go mod tidy
@@ -72,7 +72,7 @@ spell: ## misspell -error -locale=US -w **.md
 
 .PHONY: lint
 lint: ## golangci-lint run --fix .
-	go tool $(TOOL_OPTS) golangci-lint run --fix .
+	go tool $(TOOL_OPTS) golangci-lint run --fix ./...
 
 .PHONY: vuln
 vuln: ## govulncheck ./...
@@ -83,7 +83,7 @@ vet: ## go vet ./...
 	go vet .
 	go vet github.com/rasa/compat/consts
 	go vet github.com/rasa/compat/robustio
-	#go vet github.com/rasa/compat/volume
+	go vet github.com/rasa/compat/volume
 	go vet -unsafeptr=false ./...
 
 RACE_OPT := -race

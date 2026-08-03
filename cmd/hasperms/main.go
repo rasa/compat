@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"syscall"
 	"time"
 
 	"github.com/rasa/compat"
@@ -14,7 +13,7 @@ import (
 func supportsChmod(path string) (bool, error) {
 	// Create a temp file in the target path
 	tmp := path + "/.permtest.tmp"
-	f, err := os.Create(tmp)
+	f, err := os.Create(tmp) //nolint:gosec
 	if err != nil {
 		return false, err
 	}
@@ -22,23 +21,23 @@ func supportsChmod(path string) (bool, error) {
 	defer os.Remove(tmp) //nolint:errcheck
 
 	// Try to chmod
-	perm := os.FileMode(0o765)
+	perm := os.FileMode(0o765) //nolint:mnd
 	fi, err := compat.Stat(tmp)
 	if err == nil {
 		log.Printf("stat:\n%v", fi)
 	}
 
 	if time.Since(fi.CTime()) <= 10*time.Millisecond {
-		time.Sleep(10 * time.Millisecond)
+		time.Sleep(10 * time.Millisecond) //nolint:mnd
 	}
 
-	err = os.Chmod(tmp, perm)
+	err = os.Chmod(tmp, perm) //nolint:gosec
 	if err != nil {
 		// Check for ENOTSUP / EOPNOTSUPP
 		errno := &os.PathError{}
 		ok := errors.As(err, &errno)
 		if ok {
-			if IsUnsupportedError(err) {
+			if compat.IsUnsupportedError(err) {
 				return false, nil
 			}
 		}

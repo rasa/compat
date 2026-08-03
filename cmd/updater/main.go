@@ -94,17 +94,17 @@ func main() {
 }
 
 func doFile(src string) {
-	log.Printf("Reading %v", src)
-	b, err := os.ReadFile(src)
+	log.Printf("Reading %v", src) //nolint:gosec
+	b, err := os.ReadFile(src)    //nolint:gosec
 	must(err)
 
 	snips, err := findSnips(b)
 	must(err)
 	if len(snips) == 0 {
-		log.Printf("No snips found in %v", src)
+		log.Printf("No snips found in %v", src) //nolint:gosec
 		return
 	}
-	log.Printf("Found %d snips in %v", len(snips), src)
+	log.Printf("Found %d snips in %v", len(snips), src) //nolint:gosec
 
 	must(DownloadBase(snips))
 
@@ -570,7 +570,7 @@ func writeFileAtomic(path string, data []byte, mode os.FileMode) error { //nolin
 	if err != nil {
 		return err
 	}
-	err = os.WriteFile(tmp, data, mode)
+	err = os.WriteFile(tmp, data, mode) //nolint:gosec
 	if err != nil {
 		return err
 	}

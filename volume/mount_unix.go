@@ -23,14 +23,14 @@ func Mounts() ([]Mount, error) {
 	}
 
 	for _, p := range parts {
-		Mount := Mount{
+		mount := Mount{
 			Device:     p.Device,
 			Mountpoint: p.Mountpoint,
 			Fstype:     strings.ToLower(p.Fstype),
 			Opts:       p.Opts,
 		}
 
-		mounts = append(mounts, Mount)
+		mounts = append(mounts, mount)
 	}
 
 	return mounts, nil
