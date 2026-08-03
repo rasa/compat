@@ -151,9 +151,9 @@ jobs:
 
       - name: Set environment variables
         run: |
-          if [[ "${SUDO:-}" == "true" ]]; then
+          if [[ "${SUDO}" == "true" ]]; then
             if builtin command -v sudo &>/dev/null; then
-              if [[ ! "${OS:-}" =~ [Ww]indows ]]; then
+              if [[ ! "${OS}" =~ [Ww]indows ]]; then
                 # isn't this redudent:
                 # --preserve-env=PATH,COMPAT_DEBUG,COMPAT_DEBUG_FS,TEST_OPTS
                 sudo='sudo -E -n'
@@ -163,7 +163,7 @@ jobs:
           printf "GOCACHE=%s\n" "$(go env GOCACHE | tr '\\' '/')" >>"${GITHUB_ENV}"
           printf "GOMODCACHE=%s\n" "$(go env GOMODCACHE | tr '\\' '/')" >>"${GITHUB_ENV}"
           printf "GOVERSION=%s\n" "$(go version | sed 's|^.*go||; s| .*||;')" >>"${GITHUB_ENV}"
-          printf "sudo=%s\n" "${sudo:-}" >>"${GITHUB_ENV}"
+          printf "sudo=%s\n" "${sudo}" >>"${GITHUB_ENV}"
           if [[ "${{ runner.os }}" == "Windows" ]]; then
             printf "UMASK=022\n" >>"${GITHUB_ENV}"
           fi
@@ -171,15 +171,16 @@ jobs:
 
       - name: Show environment variables
         run: |
-          printf 'COMPAT_DEBUG   ="%s"\n' "${COMPAT_DEBUG:-}"
-          printf 'COMPAT_DEBUG_FS="%s"\n' "${COMPAT_DEBUG_FS:-}"
-          printf 'GOCACHE        ="%s"\n' "${GOCACHE:-}"
-          printf 'GOMODCACHE     ="%s"\n' "${GOMODCACHE:-}"
-          printf 'GOVERSION      ="%s"\n' "${GOVERSION:-}"
-          printf 'PATH           ="%s"\n' "${PATH:-}"
-          printf 'sudo           ="%s"\n' "${sudo:-}"
-          printf 'SUDO           ="%s"\n' "${SUDO:-}"
-          printf 'TEST_OPTS      ="%s"\n' "${TEST_OPTS:-}"
+          printf 'COMPAT_DEBUG   ="%s"\n' "${COMPAT_DEBUG}"
+          printf 'COMPAT_DEBUG_FS="%s"\n' "${COMPAT_DEBUG_FS}"
+          printf 'ENABLED        ="%s"\n' "${ENABLED}"
+          printf 'GOCACHE        ="%s"\n' "${GOCACHE}"
+          printf 'GOMODCACHE     ="%s"\n' "${GOMODCACHE}"
+          printf 'GOVERSION      ="%s"\n' "${GOVERSION}"
+          printf 'PATH           ="%s"\n' "${PATH}"
+          printf 'sudo           ="%s"\n' "${sudo}"
+          printf 'SUDO           ="%s"\n' "${SUDO}"
+          printf 'TEST_OPTS      ="%s"\n' "${TEST_OPTS}"
 
       - name: make ${{ env.MAKE_CMD }}
         run: >-
@@ -202,19 +203,18 @@ jobs:
           name: coverage-${{ runner.os }}
           path: coverage.*
 
+      - name: chown ./dist
+        run: |
+          test -d ./dist -a -n "${sudo}" || exit 0
+          ${sudo} chown -R "$(id -un)":"$(id -gn)" ./dist "${GOCACHE}" "${GOMODCACHE}"
+
       - name: go tool goreleaser release --clean --snapshot
         if: inputs.make_cmd != 'test' && runner.os == 'Linux'
         run: |
           if [[ -f go.tool.mod ]]; then
-            export GOFLAGS="${GOFLAGS:-} -modfile=go.tool.mod"
+            export GOFLAGS="${GOFLAGS} -modfile=go.tool.mod"
           fi
           go tool goreleaser release --clean --snapshot
-
-      - name: chown ./dist
-        if: inputs.make_cmd != 'test' && env.ACT != 'true'
-        run: |
-          test -d ./dist -o -n "${sudo}" || exit 0
-          ${sudo:-} chown -R "$(id -un)":"$(id -gn)" ./dist "${GOCACHE}" "${GOMODCACHE}"
 
       - name: Upload dist
         if: inputs.make_cmd != 'test' && env.ACT != 'true'

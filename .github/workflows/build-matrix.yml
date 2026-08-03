@@ -90,7 +90,6 @@ permissions:
 
 jobs:
   build-matrix:
-    name: build-${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
@@ -112,12 +111,13 @@ jobs:
           - macos-15-large # amd64
           - macos-14 # arm64
           - macos-14-large # amd64
+    name: build-${{ matrix.os }}
     uses: ./.github/workflows/build.yml
     with:
       compat_debug: ${{ inputs.compat_debug }}
       compat_debug_fs: ${{ inputs.compat_debug_fs }}
       enabled: ${{ (
-            matrix.os == inputs.runner ||
+            inputs.runner == matrix.os ||
             inputs.runner == 'all' ||
             (inputs.runner == 'top3' && contains(fromJSON('["ubuntu-24.04","windows-2025","macos-26"]'), matrix.os)) ||
             (inputs.runner == 'top6' && contains(fromJSON('["ubuntu-24.04","windows-2025","windows-2022","windows-11-arm","macos-26","macos-14"]'), matrix.os)) ||
