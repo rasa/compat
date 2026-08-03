@@ -13,14 +13,14 @@ on:
         default: "All"
         type: string
       make_cmd:
-        default: "ci"
+        default: "all"
         type: string
       runner:
         default: "ubuntu-24.04"
         type: string
       sudo:
-        default: true
-        type: boolean
+        default: "yes"
+        type: string
       test_opts:
         default: ""
         type: string
@@ -40,7 +40,7 @@ on:
         type: string
       make_cmd:
         description: "Make command"
-        default: "ci"
+        default: "all"
         type: string
       runner:
         description: "Runner or runner group to use"
@@ -48,13 +48,13 @@ on:
         type: choice
         options:
           - ubuntu-26.04
-          - windows-2025
-          - macos-26 # arm64
+          - windows-2025 # windows-latest
+          - macos-26 # arm64 # macos-latest
           - ---previous-releases---
           - ubuntu-24.04 # ubuntu-latest
           - ubuntu-22.04
           - macos-15 # arm64
-          - windows-2022 # windows-latest
+          - windows-2022
           - ---arm-variations---
           - ubuntu-26.04-arm
           - ubuntu-24.04-arm
@@ -66,7 +66,7 @@ on:
           - macos-26-intel # amd64
           - macos-15-large # amd64
           - ---older-releases---
-          - macos-14 # arm64 # macos-latest
+          - macos-14 # arm64
           - macos-14-large # amd64
           # - macos-13 # amd64
           # - macos-13-xlarge # arm64
@@ -78,9 +78,8 @@ on:
           - macos3
           - all # all of the above runners
       sudo:
-        description: "Run tests via sudo"
-        default: true
-        type: boolean
+        default: "yes"
+        type: string
       test_opts:
         description: "Options passed to go test"
         default: ""
@@ -97,12 +96,12 @@ jobs:
       matrix:
         os:
           - ubuntu-26.04
-          - windows-2025
-          - macos-26 # arm64
+          - windows-2025 # windows-latest
+          - macos-26 # arm64 # macos-latest
           - ubuntu-24.04 # ubuntu-latest
           - ubuntu-22.04
           - macos-15 # arm64
-          - windows-2022 # windows-latest
+          - windows-2022
           - ubuntu-26.04-arm
           - ubuntu-24.04-arm
           - ubuntu-22.04-arm
@@ -111,7 +110,7 @@ jobs:
           - macos-26-large # amd64
           - macos-26-intel # amd64
           - macos-15-large # amd64
-          - macos-14 # arm64 # macos-latest
+          - macos-14 # arm64
           - macos-14-large # amd64
     uses: ./.github/workflows/build.yml
     with:
@@ -122,7 +121,7 @@ jobs:
             inputs.runner == 'all' ||
             (inputs.runner == 'top3' && contains(fromJSON('["ubuntu-24.04","windows-2025","macos-26"]'), matrix.os)) ||
             (inputs.runner == 'top6' && contains(fromJSON('["ubuntu-24.04","windows-2025","windows-2022","windows-11-arm","macos-26","macos-14"]'), matrix.os)) ||
-            (inputs.runner == 'ubuntu3' && contains(fromJSON('["ubuntu-24.04","ubuntu-24.04-arm","ubuntu-22.04"]'), matrix.os)) ||
+            (inputs.runner == 'ubuntu3' && contains(fromJSON('["ubuntu-26.04","ubuntu-24.04","ubuntu-22.04"]'), matrix.os)) ||
             (inputs.runner == 'windows3' && contains(fromJSON('["windows-2025","windows-2022","windows-11-arm"]'), matrix.os)) ||
             (inputs.runner == 'macos3' && contains(fromJSON('["macos-26","macos-15","macos-14"]'), matrix.os))
           ) && !(contains(matrix.os, 'arm') && github.repository_visibility != 'public')

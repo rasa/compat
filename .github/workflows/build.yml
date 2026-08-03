@@ -31,7 +31,7 @@ on:
         default: "yes"
         type: string
       make_cmd:
-        default: "ci"
+        default: "all"
         type: string
       runner:
         default: "ubuntu-24.04"
@@ -64,7 +64,7 @@ on:
           - "yes"
       make_cmd:
         description: "Make command"
-        default: "ci"
+        default: "all"
         type: string
       runner:
         description: "GitHub runner to use"
@@ -72,13 +72,13 @@ on:
         type: choice
         options:
           - ubuntu-26.04
-          - windows-2025
-          - macos-26 # arm64
+          - windows-2025 # windows-latest
+          - macos-26 # arm64 # macos-latest
           - ---previous-releases---
           - ubuntu-24.04 # ubuntu-latest
           - ubuntu-22.04
-          - macos-15 # arm64 # macos-latest
-          - windows-2022 # windows-latest
+          - macos-15 # arm64
+          - windows-2022
           - ---arm-variations---
           - ubuntu-26.04-arm
           - ubuntu-24.04-arm
