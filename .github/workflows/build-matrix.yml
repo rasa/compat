@@ -81,8 +81,8 @@ on:
         default: "yes"
         type: string
       test_opts:
-        description: "Options passed to go test"
-        default: ""
+        description: "Options passed to go test (-v, -tags debug, -short, etc)"
+        default: "-v"
         type: string
 
 permissions:

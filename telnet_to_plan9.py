@@ -48,8 +48,6 @@ output = bytearray()
 
 def process_telnet(data, _pending):
     """Doc me."""
-    # global pending
-
     data = _pending + data
     _pending = bytearray()
 
@@ -136,12 +134,10 @@ sock.sendall(b"cd /usr/glenda/work\r\n")
 _, pending = read_for(1, pending)
 
 TEST_CMD = (
-    # "COMPAT_DEBUG=ACLS; "
-    # "COMPAT_DEBUG_FS=All; "
     "./compat.test "
     "-test.count 1 "
     "-test.timeout 20m "
-    # "-test.v "
+    "-test.v "
     "-test.coverprofile coverage.out; "
     "teststatus=$status; "
     "if(~ $teststatus '') echo __PLAN9_^PASS__; "

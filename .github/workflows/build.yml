@@ -40,7 +40,7 @@ on:
         default: "yes"
         type: string
       test_opts:
-        default: ""
+        default: "-v"
         type: string
     secrets:
       CODECOV_TOKEN:
@@ -100,7 +100,7 @@ on:
           - "no"
       test_opts:
         description: "Options passed to go test"
-        default: ""
+        default: "-v"
         type: string
 
 env:

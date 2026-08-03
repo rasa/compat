@@ -71,7 +71,7 @@ fi
 
 printf '::notice ::build succeeded: %s\n' "${GOVERSION}"
 
-if ! go test -covermode=atomic -coverprofile=coverage.out -coverpkg=. .; then
+if ! go test -covermode=atomic -coverprofile=coverage.out -coverpkg=. -v .; then
   rv=$?
   printf '::error ::tests failed: %s (error %s)\n' "${GOVERSION}" "${rv}"
   exit "${rv}"

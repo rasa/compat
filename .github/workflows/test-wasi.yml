@@ -90,7 +90,7 @@ jobs:
 
       # https://go.dev/blog/wasi#running-go-tests-with-wasip1
       - run: |
-          go test -covermode=atomic -coverprofile=coverage.out -coverpkg=. .
+          go test -covermode=atomic -coverprofile=coverage.out -coverpkg=. -v .
           sed -i.bak "/compat\/cmd\//d; /compat\/golang\//d;" coverage.out
           rm -f *.bak
 
