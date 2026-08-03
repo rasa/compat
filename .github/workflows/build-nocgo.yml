@@ -13,7 +13,7 @@ on: # yamllint disable-line rule:truthy
         default: default
         type: string # required
       test_opts:
-        default: ""
+        default: "-v"
         type: string # required
   workflow_dispatch: # Allows you to run this workflow manually from the Actions tab
     inputs:
@@ -37,7 +37,7 @@ on: # yamllint disable-line rule:truthy
       test_opts:
         description: "Options to pass to go test command (-v, -short, -run TestX, etc.)"
         type: string
-        default: ""
+        default: "-v"
 
 env:
   CGO_ENABLED: ${{ inputs.cgo_enabled }}
@@ -78,7 +78,7 @@ jobs:
           fi
           export GOARCH="${target#*/}"
           echo "Build ${builds}: ${target}"
-          if ! go build -trimpath .; then
+          if ! go build -trimpath -o ./bin ./...; then
             echo "::warning ::Failed to build ${target}"
             ((fails++))
           fi

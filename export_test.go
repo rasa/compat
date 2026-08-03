@@ -11,6 +11,24 @@ var FSFileInfoToDirEntry = fsFileInfoToDirEntry
 
 var OSDirEntryToDirEntry = osDirEntryToDirEntry
 
+// errors.go
+
+var (
+	ExportedUnsupportedError   = unsupportedError
+	ExportedUnimplementedError = unimplementedError
+	ChmodError                 = chmodError
+	CreateError                = createError
+	CreateTempError            = createTempError
+	MkdirError                 = mkdirError
+	MkdirallError              = mkdirallError
+	MkdirTempError             = mkdirTempError
+	OpenError                  = openError
+	RenameError                = renameError
+	StatError                  = statError
+	SymlinkError               = symlinkError
+	WriteError                 = writeError
+)
+
 // globals.go
 
 var BuildOptions = buildOptions //nolint:unused

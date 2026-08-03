@@ -123,6 +123,15 @@ endif
 
 # Added by compat:
 
+.PHONY: bld
+bld: ## go build -trimpath -o ./bin ./...
+bld:
+	go build -trimpath -o ./bin ./...
+
+.PHONY: bldtest
+bldtest: ## make bld test
+bldtest: bld test
+
 .PHONY: check
 check: fmt fumpt lint modernize spell vet restore diffx ## make fmt fumpt lint modernize spell vet restore diffx
 
@@ -134,7 +143,6 @@ diffx: ## git diff -uw
 download: ## go mod download
 	go mod download
 	test -f go.tool.mod && go mod download $(TOOL_OPTS)
-	# make mod
 
 .PHONY: fmt
 fmt: ## go fmt ./...
@@ -154,7 +162,6 @@ install: ## install/update gofumpt, golangci-lint, goreleaser, govulncheck, miss
 	go get golang.org/x/vuln/cmd/govulncheck@$(VULN_VER) ;\
 	go get mvdan.cc/gofumpt@$(GOFUMPT_VER)
 	make mod
-	# golang.org/x/tools/go/analysis/passes/modernize/cmd/modernize
 
 .PHONY: modernize
 modernize: ## modernize ./...

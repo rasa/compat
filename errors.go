@@ -58,8 +58,12 @@ func mkdirError(path string, err error) error { //nolint:unused
 	return &os.PathError{Op: "mkdir", Path: path, Err: err}
 }
 
+func mkdirallError(path string, err error) error { //nolint:unused
+	return &os.PathError{Op: "mkdir", Path: path, Err: err}
+}
+
 func mkdirTempError(path string, err error) error { //nolint:unused
-	return &os.PathError{Op: "mkdirall", Path: path, Err: err}
+	return &os.PathError{Op: "mkdirtemp", Path: path, Err: err}
 }
 
 func openError(path string, err error) error { //nolint:unused

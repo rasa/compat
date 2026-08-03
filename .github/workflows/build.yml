@@ -113,7 +113,7 @@ env:
       github.event_name == 'push' ||
       github.event_name == 'pull_request'
     }}
-  MAKE_CMD: ${{ inputs.make_cmd || 'ci' }}
+  MAKE_CMD: ${{ inputs.make_cmd || 'all' }}
   RUNNER: ${{ inputs.runner || 'ubuntu-24.04' }}
   SUDO: >-
     ${{
@@ -155,7 +155,7 @@ jobs:
             if builtin command -v sudo &>/dev/null; then
               # is this really needed?
               # if [[ "${{ runner.os }}" == "Windows" ]]; then
-                # use `env PATH=$PATH` prefix instead:
+                # use 'env PATH=$PATH' prefix instead:
                 # --preserve-env=PATH,COMPAT_DEBUG,COMPAT_DEBUG_FS,TEST_OPTS
                 sudo='sudo -E -n'
               # fi
@@ -168,6 +168,7 @@ jobs:
           if [[ "${{ runner.os }}" == "Windows" ]]; then
             printf "UMASK=022\n" >>"${GITHUB_ENV}"
           fi
+          cat "${GITHUB_ENV}"
 
       - name: Show environment variables
         run: |
@@ -181,6 +182,7 @@ jobs:
           printf 'sudo           ="%s"\n' "${sudo}"
           printf 'SUDO           ="%s"\n' "${SUDO}"
           printf 'TEST_OPTS      ="%s"\n' "${TEST_OPTS}"
+          printf 'UMASK          ="%s"\n' "${UMASK}"
 
       - name: make ${{ env.MAKE_CMD }}
         run: >-

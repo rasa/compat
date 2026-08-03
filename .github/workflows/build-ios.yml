@@ -28,7 +28,7 @@ jobs:
 
       - run: go mod download
 
-      - run: go build -trimpath ./...
+      - run: go build -trimpath -o ./bin ./...
 
       - run: |
           go test -covermode=atomic -coverprofile=coverage.out -coverpkg=. .
