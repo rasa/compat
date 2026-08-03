@@ -13,7 +13,7 @@ on:
         default: "All"
         type: string
       make_cmd:
-        default: "all"
+        default: "bldtest"
         type: string
       runner:
         default: "ubuntu-24.04"
@@ -22,7 +22,7 @@ on:
         default: "yes"
         type: string
       test_opts:
-        default: ""
+        default: "-v"
         type: string
     secrets:
       CODECOV_TOKEN:
@@ -40,7 +40,7 @@ on:
         type: string
       make_cmd:
         description: "Make command"
-        default: "all"
+        default: "bldtest"
         type: string
       runner:
         description: "Runner or runner group to use"
@@ -78,10 +78,13 @@ on:
           - macos3
           - all # all of the above runners
       sudo:
-        default: "yes"
-        type: string
+        description: "Run tests under sudo"
+        type: choice
+        options:
+          - "yes"
+          - "no"
       test_opts:
-        description: "Options passed to go test (-v, -tags debug, -short, etc)"
+        description: "Test options (eg: -v -run TestX -short -tags debug)"
         default: "-v"
         type: string
 

@@ -93,13 +93,13 @@ on:
           - macos-14 # arm64
           - macos-14-large # amd64
       sudo:
-        description: "Run tests via sudo"
+        description: "Run tests under sudo"
         type: choice
         options:
           - "yes"
           - "no"
       test_opts:
-        description: "Options passed to go test"
+        description: "Test options (eg: -v -run TestX -short -tags debug)"
         default: "-v"
         type: string
 
@@ -207,8 +207,11 @@ jobs:
 
       - name: chown ./dist
         run: |
+          set -vx
           test -d ./dist -a -n "${sudo}" || exit 0
           ${sudo} chown -R "$(id -un)":"$(id -gn)" ./dist "${GOCACHE}" "${GOMODCACHE}"
+          ls -ld ./dist
+          ls -lR ./dist
 
       - name: go tool goreleaser release --clean --snapshot
         if: inputs.make_cmd != 'test' && runner.os == 'Linux'

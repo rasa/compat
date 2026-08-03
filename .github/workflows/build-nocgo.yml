@@ -35,7 +35,7 @@ on: # yamllint disable-line rule:truthy
         default: default
        # checkov:skip=CKV_GHA_7: The build output cannot be affected by user parameters...
       test_opts:
-        description: "Options to pass to go test command (-v, -short, -run TestX, etc.)"
+        description: "Test options (eg: -v -run TestX -short -tags debug)"
         type: string
         default: "-v"
 
@@ -78,7 +78,7 @@ jobs:
           fi
           export GOARCH="${target#*/}"
           echo "Build ${builds}: ${target}"
-          if ! go build -trimpath -o ./bin ./...; then
+          if ! go build -trimpath .; then
             echo "::warning ::Failed to build ${target}"
             ((fails++))
           fi
