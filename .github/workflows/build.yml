@@ -153,21 +153,21 @@ jobs:
         run: |
           if [[ "${SUDO}" == "true" ]]; then
             if builtin command -v sudo &>/dev/null; then
-              if [[ ! "${OS}" =~ [Ww]indows ]]; then
-                # isn't this redudent:
+              # is this really needed?
+              # if [[ "${{ runner.os }}" == "Windows" ]]; then
+                # use `env PATH=$PATH` prefix instead:
                 # --preserve-env=PATH,COMPAT_DEBUG,COMPAT_DEBUG_FS,TEST_OPTS
                 sudo='sudo -E -n'
-              fi
+              # fi
             fi
           fi
-          printf "GOCACHE=%s\n" "$(go env GOCACHE | tr '\\' '/')" >>"${GITHUB_ENV}"
-          printf "GOMODCACHE=%s\n" "$(go env GOMODCACHE | tr '\\' '/')" >>"${GITHUB_ENV}"
-          printf "GOVERSION=%s\n" "$(go version | sed 's|^.*go||; s| .*||;')" >>"${GITHUB_ENV}"
+          printf "GOCACHE=%s\n" "$(go env GOCACHE)" | tr '\\' '/' >>"${GITHUB_ENV}"
+          printf "GOMODCACHE=%s\n" "$(go env GOMODCACHE)" | tr '\\' '/' >>"${GITHUB_ENV}"
+          printf "GOVERSION=%s\n" "$(go version) | sed 's|^.*go||; s| .*||;' >>"${GITHUB_ENV}"
           printf "sudo=%s\n" "${sudo}" >>"${GITHUB_ENV}"
           if [[ "${{ runner.os }}" == "Windows" ]]; then
             printf "UMASK=022\n" >>"${GITHUB_ENV}"
           fi
-          # cat "${GITHUB_ENV}"
 
       - name: Show environment variables
         run: |
