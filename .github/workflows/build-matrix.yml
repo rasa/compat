@@ -119,15 +119,18 @@ jobs:
     with:
       compat_debug: ${{ inputs.compat_debug }}
       compat_debug_fs: ${{ inputs.compat_debug_fs }}
-      enabled: ${{ (
-            inputs.runner == matrix.os ||
-            inputs.runner == 'all' ||
-            (inputs.runner == 'top3' && contains(fromJSON('["ubuntu-24.04","windows-2025","macos-26"]'), matrix.os)) ||
-            (inputs.runner == 'top6' && contains(fromJSON('["ubuntu-24.04","windows-2025","windows-2022","windows-11-arm","macos-26","macos-14"]'), matrix.os)) ||
-            (inputs.runner == 'ubuntu3' && contains(fromJSON('["ubuntu-26.04","ubuntu-24.04","ubuntu-22.04"]'), matrix.os)) ||
-            (inputs.runner == 'windows3' && contains(fromJSON('["windows-2025","windows-2022","windows-11-arm"]'), matrix.os)) ||
-            (inputs.runner == 'macos3' && contains(fromJSON('["macos-26","macos-15","macos-14"]'), matrix.os))
-          ) && !(contains(matrix.os, 'arm') && github.repository_visibility != 'public')
+      enabled: ${{
+          (
+            (
+              inputs.runner == matrix.os ||
+              inputs.runner == 'all' ||
+              (inputs.runner == 'top3' && contains(fromJSON('["ubuntu-24.04","windows-2025","macos-26"]'), matrix.os)) ||
+              (inputs.runner == 'top6' && contains(fromJSON('["ubuntu-24.04","windows-2025","windows-2022","windows-11-arm","macos-26","macos-14"]'), matrix.os)) ||
+              (inputs.runner == 'ubuntu3' && contains(fromJSON('["ubuntu-26.04","ubuntu-24.04","ubuntu-22.04"]'), matrix.os)) ||
+              (inputs.runner == 'windows3' && contains(fromJSON('["windows-2025","windows-2022","windows-11-arm"]'), matrix.os)) ||
+              (inputs.runner == 'macos3' && contains(fromJSON('["macos-26","macos-15","macos-14"]'), matrix.os))
+            ) && !(contains(matrix.os, 'arm') && github.repository_visibility != 'public')
+          ) && 'yes' || 'no'
         }}
       make_cmd: ${{ inputs.make_cmd }}
       runner: ${{ matrix.os }}
