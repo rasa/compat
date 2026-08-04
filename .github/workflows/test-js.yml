@@ -3,46 +3,53 @@
 
 name: test-js
 
-on:
+on: # yamllint disable-line rule:truthy
   workflow_call:
   workflow_dispatch:
 
-permissions:
-  contents: read
+env:
+  GOOS: js
+  GOARCH: wasm
 
 jobs:
   test-js:
     name: test-js
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    env:
-      GOOS: js
-      GOARCH: wasm
     steps:
-    - uses: actions/checkout@v7
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 1
+          show-progress: false
 
-    - uses: actions/setup-go@v7
-      with:
-        go-version: '1.26'
-        check-latest: true
+      - uses: actions/setup-go@v7
+        with:
+          go-version-file: go.mod
+          check-latest: true
+          cache: true
 
-    - uses: actions/setup-node@v7
-      with:
-        node-version: 24
+      - run: printf '::notice ::%s\n' "$(go version)"
 
-    - run: |
-        # Run Go js/wasm test in node.js
-        printf '::notice ::%s\n' "$(go version)"
-        GOROOT=$(go env GOROOT)
-        cp "${GOROOT}/lib/wasm/wasm_exec.js" .
-        go test -exec="${GOROOT}/lib/wasm/go_js_wasm_exec" -covermode=atomic -coverprofile=coverage.out -coverpkg=. -v .
-        sed -i.bak "/compat\/cmd\//d; /compat\/golang\//d;" coverage.out
-        rm -f *.bak
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
 
-    - name: Upload coverage to Codecov
-      uses: codecov/codecov-action@v7
-      with:
-        # fail_ci_if_error: false
-        files: ./coverage.out
-        name: coverage-${{ env.GOOS }}
-        token: ${{ secrets.CODECOV_TOKEN }}
+      - run: |
+          # Run Go js/wasm test in node.js
+          printf '::notice ::%s\n' "$(go version)"
+          GOROOT=$(go env GOROOT)
+          cp "${GOROOT}/lib/wasm/wasm_exec.js" .
+          go test -exec="${GOROOT}/lib/wasm/go_js_wasm_exec" -covermode=atomic -coverprofile=coverage.out -coverpkg=. -v .
+          sed -i.bak "/compat\/cmd\//d; /compat\/golang\//d;" coverage.out
+          rm -f *.bak
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v7
+        with:
+          # fail_ci_if_error: false
+          files: ./coverage.out
+          name: coverage-${{ env.GOOS }}
+          token: ${{ secrets.CODECOV_TOKEN }}
+
+permissions:
+  contents: read

@@ -42,11 +42,10 @@ help:
 
 .PHONY: clean
 clean: ## remove files created during build pipeline
+	rm -rf bin/*
 	rm -rf dist
 	rm -f *.bak
 	rm -f coverage.*
-	rm -rf '"$(shell go env GOCACHE)/../golangci-lint"'
-	go clean -i -cache -testcache -modcache -fuzzcache -x
 
 # .PHONY: run
 # run: ## go run
@@ -54,8 +53,8 @@ clean: ## remove files created during build pipeline
 
 .PHONY: mod
 mod: ## go mod tidy
-	go mod tidy
-	test -f go.tool.mod && go mod tidy $(TOOL_OPTS)
+	go mod tidy -v -x
+	test -f go.tool.mod && go mod tidy -v -x $(TOOL_OPTS)
 
 .PHONY: gen
 gen: ## go generate ./...
@@ -166,6 +165,11 @@ install: ## install/update gofumpt, golangci-lint, goreleaser, govulncheck, miss
 .PHONY: modernize
 modernize: ## modernize ./...
 	go tool $(TOOL_OPTS) modernize -fix ./...
+
+.PHONY: nuke
+nuke: clean ## make clean and go clean -i -cache -testcache -modcache -fuzzcache
+	rm -rf '"$(shell go env GOCACHE)/../golangci-lint"'
+	go clean -i -cache -testcache -modcache -fuzzcache
 
 .PHONY: restore
 restore: ##	git restore format.go walk.go walk_test.go golang/*.go robustio/robustio*.go

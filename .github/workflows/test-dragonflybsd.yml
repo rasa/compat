@@ -3,44 +3,47 @@
 
 name: test-dragonflybsd
 
-on:
+on: # yamllint disable-line rule:truthy
   workflow_call:
   workflow_dispatch:
 
-permissions:
-  contents: read
+env:
+  CODECOV_SLUG: ${{ github.repository }}
+  CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+  GOOS: dragonfly
+  GOARCH: amd64
 
 jobs:
   test-dragonflybsd:
     name: test-dragonflybsd
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-latest
     timeout-minutes: 20
-    env:
-      GOOS: dragonfly
-      GOARCH: amd64
-      CODECOV_SLUG: ${{ github.repository }}
-      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-      # GITHUB_TOKEN : ${{ secrets.GITHUB_TOKEN }}
     # continue-on-error: true
     steps:
-    - uses: actions/checkout@v7
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 1
+          show-progress: false
 
-    - uses: vmactions/dragonflybsd-vm@v1
-      with:
-        envs: 'GOOS GOARCH CODECOV_SLUG CODECOV_TOKEN' # GITHUB_TOKEN'
-        usesh: true
-        # copyback: false
-        prepare: |
-          pkg update -f
-          pkg install -y bash coreutils curl git gzip gtar jq
-          cd /usr/local/bin && ln -sf gsha256sum sha256sum
-          # pkg install -y go
-        run: |
-          ./download-build-test.sh
+      - uses: vmactions/dragonflybsd-vm@v1
+        with:
+          envs: 'GOOS GOARCH CODECOV_SLUG CODECOV_TOKEN' # GITHUB_TOKEN'
+          usesh: true
+          # copyback: false
+          prepare: |
+            pkg update -f
+            pkg install -y bash coreutils curl git gzip gtar jq
+            cd /usr/local/bin && ln -sf gsha256sum sha256sum
+            # pkg install -y go
+          run: |
+            ./download-build-test.sh
 
-    - uses: codecov/codecov-action@v7
-      with:
-        # fail_ci_if_error: false
-        files: ./coverage.out
-        name: coverage-${{ env.GOOS }}
-        token: ${{ secrets.CODECOV_TOKEN }}
+      - uses: codecov/codecov-action@v7
+        with:
+          # fail_ci_if_error: false
+          files: ./coverage.out
+          name: coverage-${{ env.GOOS }}
+          token: ${{ secrets.CODECOV_TOKEN }}
+
+permissions:
+  contents: read

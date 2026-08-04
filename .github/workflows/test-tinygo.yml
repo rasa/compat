@@ -3,16 +3,15 @@
 
 name: test-tinygo
 
-on:
+on: # yamllint disable-line rule:truthy
   workflow_call:
   workflow_dispatch:
 
-permissions:
-  contents: read
-
 env:
   # See https://github.com/webassembly/binaryen/releases
-  binaryen_version: "131"
+  BINARYEN_VERSION: '131'
+  GODEBUG: 'toolchaintrace=1'
+  GOTOOLCHAIN: local
 
 jobs:
   test-tinygo:
@@ -24,28 +23,34 @@ jobs:
       fail-fast: false
       matrix:
         go-version:
-          - big: "1.26"
+          - big: '1.26'
             # https://github.com/tinygo-org/tinygo/releases
-            tiny: "0.41.1"
-          # - big: "1.25"
-          #  tiny: "0.39.0"
-
-    env:
-      GODEBUG: toolchaintrace=1
-      GOTOOLCHAIN: local
+            tiny: '0.41.1'
+          - big: '1.25'
+            tiny: '0.39.0'
 
     steps:
       - uses: actions/checkout@v7
+        with:
+          fetch-depth: 1
+          show-progress: false
 
       - uses: actions/setup-go@v7
         with:
           go-version: ${{ matrix.go-version.big }}
+          check-latest: true
+          cache: true
+
+      - run: printf '::notice ::%s\n' "$(go version)"
 
       - run: go mod download
 
       - uses: acifani/setup-tinygo@v3
         with:
-          tinygo-version: "${{ matrix.go-version.tiny }}"
-          binaryen-version: "${{ env.binaryen_version }}"
+          tinygo-version: ${{ matrix.go-version.tiny }}
+          binaryen-version: ${{ env.BINARYEN_VERSION }}
 
       - run: tinygo test -v -tags tinygo .
+
+permissions:
+  contents: read

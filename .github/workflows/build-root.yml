@@ -3,43 +3,40 @@
 
 name: build-root
 
-on:
+on: # yamllint disable-line rule:truthy
   workflow_call: # Required so this workflow can be called from another workflow
     inputs:
       compat_debug:
-        default: ""
+        default: ''
         type: string # required
       image:
-        default: "24.04"
+        default: '24.04'
         type: string # required
       verbose_testing:
-        default: "false"
+        default: 'false'
         type: string # required
   workflow_dispatch: # Allows you to run this workflow manually from the Actions tab
     inputs:
       # checkov:skip=CKV_GHA_7: The build output cannot be affected by user parameters...
       compat_debug:
-        description: "COMPAT_DEBUG environmental variable."
-        default: ""
+        description: 'COMPAT_DEBUG environmental variable.'
+        default: ''
         type: string
       # checkov:skip=CKV_GHA_7: The build output cannot be affected by user parameters...
       image:
-        description: "Ubuntu image to use"
+        description: 'Ubuntu image to use'
         type: choice
         options:
-          - "26.o4"
-          - "24.04"
-          - "22.04"
-          - "all"
-        default: "24.04"
+          - '26.o4'
+          - '24.04'
+          - '22.04'
+          - 'all'
+        default: '24.04'
       # checkov:skip=CKV_GHA_7: The build output cannot be affected by user parameters...
       verbose_testing:
-        description: "Test with -v options."
+        description: 'Test with -v options.'
         type: boolean
         default: false
-
-permissions:
-  contents: read
 
 jobs:
   build-root:
@@ -48,11 +45,11 @@ jobs:
       fail-fast: false
       matrix:
         image:
-          - "26.04"
-          - "24.04"
-          - "22.04"
+          - '26.04'
+          - '24.04'
+          - '22.04'
 
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-latest
     container:
       image: ubuntu:${{ matrix.image }}
     defaults:
@@ -61,31 +58,36 @@ jobs:
     steps:
       - name: Set SHOULD_RUN var for ubuntu:${{ inputs.image }}
         run: |
-          echo "SHOULD_RUN=yes" >> "${GITHUB_ENV}"
-          printf "::notice::inputs.image=%s\n" "${{ inputs.image }}"
+          echo 'SHOULD_RUN=yes' >> "${GITHUB_ENV}"
+          printf '::notice::inputs.image=%s\n' "${{ inputs.image }}"
         if: >
           (matrix.image == inputs.image || inputs.image == 'all') &&
           !(contains(matrix.image, 'arm') && github.repository_visibility == 'public')
 
       - uses: actions/checkout@v7
         if: env.SHOULD_RUN
+        with:
+          fetch-depth: 1
+          show-progress: false
 
       - uses: actions/setup-go@v7
         if: env.SHOULD_RUN
-        # if: runner.os != 'Windows'
         with:
-          go-version: '1.26'
+          go-version-file: go.mod
           check-latest: true
-          cache: false
+          cache: true
+
+      - run: printf '::notice ::%s\n' "$(go version)"
+        if: env.SHOULD_RUN
 
       - name: Set env vars (GOCACHE, GOMODCACHE and inputs)
         if: env.SHOULD_RUN
         run: |
           # Set env vars (GOCACHE, GOMODCACHE and inputs)
-          # printf 'GOVERSION=%s\n'  "$(go version | sed 's#^.*go##;s# .*##')" >>"${GITHUB_ENV}"
-          printf "verbose_testing=%s\n" "${{ inputs.verbose_testing }}" >>"${GITHUB_ENV}"
           printf 'GOCACHE=%s\n'    "$(go env GOCACHE | tr '\\' '/')" >>"${GITHUB_ENV}"
           printf 'GOMODCACHE=%s\n' "$(go env GOMODCACHE | tr '\\' '/')" >>"${GITHUB_ENV}"
+          # printf 'GOVERSION=%s\n'  "$(go version | sed 's#^.*go##;s# .*##')" >>"${GITHUB_ENV}"
+          printf 'verbose_testing=%s\n' "${{ inputs.verbose_testing }}" >>"${GITHUB_ENV}"
 
       - name: USE actions/cache to save Go's build and mod caches
         if: env.SHOULD_RUN
@@ -141,3 +143,6 @@ jobs:
           go version
 
           go test "${TEST_OPTS[@]}" .
+
+permissions:
+  contents: read

@@ -1,11 +1,16 @@
 #!/usr/bin/env sh
-set +x +v # don't show CODECOV_TOKEN var
+# ~/download-build-test.sh
+# Cownload go, build, and test code
+# Called by the github actions test-*bsd.yml
+
+set +vx
 
 # to run script locally
 : "${GITHUB_REPOSITORY:=rasa/$(basename "${PWD}")}"
 : "${GITHUB_WORKSPACE:=${PWD}}"
 : "${GOOS:=$(uname | tr '[:upper:]' '[:lower:]')}" || true
 : "${GOARCH:=$(uname -p)}" || true
+: "${GOVERSION:=1.26"
 case "${GOARCH}" in
   x86_64)
     GOARCH=amd64
@@ -30,8 +35,11 @@ printf 'GOARCH:            %s\n' "${GOARCH}"
 printf 'GOOS:              %s\n' "${GOOS}"
 
 tmp1=$(mktemp)
-curl -L -s -o "${tmp1}" 'https://go.dev/dl/?mode=json'
+curl -fsSL -o "${tmp1}" 'https://go.dev/dl/?mode=json'
 jqcmd="[ .[] | select(.stable == true) ][0] | .files[] | select(.os == \"${GOOS}\" and .arch == \"${GOARCH}\")"
+
+gover=$(jq -r '.[0].version | ltrimstr("go")')
+printf 'gover:  %s\n' "${gover}"
 
 name=$(jq -r "${jqcmd} | .filename" "${tmp1}")
 printf 'name:   %s\n' "${name}"
@@ -46,7 +54,7 @@ mkdir -p "../${base}"
 cd "../${base}" || exit
 
 printf 'Downloading %s...\n' "https://go.dev/dl/${name}"
-curl -L -s -o "${name}" "https://go.dev/dl/${name}"
+curl -fsSL "${name}" "https://go.dev/dl/${name}"
 
 printf '%s %s\n' "${hash}" "${name}" | sha256sum -c
 

@@ -3,23 +3,19 @@
 
 name: test-plan9
 
-on:
+on: # yamllint disable-line rule:truthy
   workflow_call:
   workflow_dispatch:
 
-permissions:
-  contents: read
-
 env:
-  ANYVM_COMMIT: "main"
-  GO_VERSION: "1.26.5"
+  ANYVM_COMMIT: main
   # See https://github.com/anyvm-org/anyvm/blob/main/.github/workflows/plan9.yml#L37
-  PLAN9_RELEASE: "11554"
-  SSH_PORT: "10023"
+  PLAN9_RELEASE: '11554'
+  SSH_PORT: '10023'
 
 jobs:
   test-plan9:
-    runs-on: ubuntu-26.04
+    runs-on: ubuntu-latest
     timeout-minutes: 40
 
     steps:
@@ -39,8 +35,11 @@ jobs:
 
       - uses: actions/setup-go@v7
         with:
-          go-version: ${{ env.GO_VERSION }}
+          go-version-file: go.mod
+          check-latest: true
           cache: true
+
+      - run: printf '::notice ::%s\n' "$(go version)"
 
       - name: Run tests on Plan9
         shell: bash
@@ -106,3 +105,5 @@ jobs:
 
           du -ah "${stage}"
 
+permissions:
+  contents: read

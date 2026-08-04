@@ -3,74 +3,75 @@
 
 name: test-netbsd
 
-on:
+on: # yamllint disable-line rule:truthy
   workflow_call:
   workflow_dispatch:
 
-permissions:
-  contents: read
+env:
+  CODECOV_SLUG: ${{ github.repository }}
+  CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+  GOOS: netbsd
+  GOARCH: amd64
 
 jobs:
   test-netbsd:
     name: test-netbsd
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-latest
     timeout-minutes: 20
-    env:
-      GOOS: netbsd
-      GOARCH: amd64
-      CODECOV_SLUG: ${{ github.repository }}
-      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-      # GITHUB_TOKEN : ${{ secrets.GITHUB_TOKEN }}
     # continue-on-error: true
     steps:
-    - uses: actions/checkout@v7
-      with:
-        show-progress: false
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 1
+          show-progress: false
 
-    - uses: vmactions/netbsd-vm@v1
-      with:
-        envs: 'GOOS GOARCH CODECOV_SLUG CODECOV_TOKEN' # GITHUB_TOKEN'
-        usesh: true
-        # copyback: false
-        # See https://github.com/fsnotify/fsnotify/blob/main/.github/workflows/test.yml
-        # default PATH:
-        # /usr/bin
-        # /bin
-        # /usr/pkg/bin
-        # /usr/local/bin
-        prepare: |
-          export PATH="/usr/sbin:${PATH}"
-          tries=9
-          left="${tries}"
-          delay=1
-          while true; do
-            pkg_add bash coreutils curl git gzip gtar jq || true
-            if which curl git gzip gtar gsha256sum jq; then
-              echo All dependencies have been installed
-              break
-            fi
-            echo One or more dependencies have not yet been installed
-            left=$((left - 1))
-            if [ "${left}" -le 0 ]; then
-              printf 'FAIL: pkg_add failed all %s attempts\n' "${tries}"
-              exit 1
-            fi
-            tried=$((tries - left + 1))
-            printf 'Attempting %s of %s tries in %s seconds...\n' "${tried}" "${tries}" "${delay}"
-            sleep "${delay}"
-            delay=$((delay * 2))
-          done
-          cd /usr/pkg/bin && ln -sf gsha256sum sha256sum
-          # pkg_add go
-        # if we are using: pkg_add go
-        # (cd /usr/pkg/bin ; ln -sf go??? go)
-        # ls -l /usr/pkg/bin
-        run: |
-          ./download-build-test.sh
+      - uses: vmactions/netbsd-vm@v1
+        with:
+          envs: 'GOOS GOARCH CODECOV_SLUG CODECOV_TOKEN' # GITHUB_TOKEN'
+          usesh: true
+          # copyback: false
+          # See https://github.com/fsnotify/fsnotify/blob/main/.github/workflows/test.yml
+          # default PATH:
+          # /usr/bin
+          # /bin
+          # /usr/pkg/bin
+          # /usr/local/bin
+          prepare: |
+            export PATH="/usr/sbin:${PATH}"
+            tries=9
+            left="${tries}"
+            delay=1
+            while true; do
+              pkg_add bash coreutils curl git gzip gtar jq || true
+              if which curl git gzip gtar gsha256sum jq; then
+                echo All dependencies have been installed
+                break
+              fi
+              echo One or more dependencies have not yet been installed
+              left=$((left - 1))
+              if [ "${left}" -le 0 ]; then
+                printf 'FAIL: pkg_add failed all %s attempts\n' "${tries}"
+                exit 1
+              fi
+              tried=$((tries - left + 1))
+              printf 'Attempting %s of %s tries in %s seconds...\n' "${tried}" "${tries}" "${delay}"
+              sleep "${delay}"
+              delay=$((delay * 2))
+            done
+            cd /usr/pkg/bin && ln -sf gsha256sum sha256sum
+            # pkg_add go
+          # if we are using: pkg_add go
+          # (cd /usr/pkg/bin ; ln -sf go??? go)
+          # ls -l /usr/pkg/bin
+          run: |
+            ./download-build-test.sh
 
-    - uses: codecov/codecov-action@v7
-      with:
-        # fail_ci_if_error: false
-        files: ./coverage.out
-        name: coverage-${{ env.GOOS }}
-        token: ${{ secrets.CODECOV_TOKEN }}
+      - uses: codecov/codecov-action@v7
+        with:
+          # fail_ci_if_error: false
+          files: ./coverage.out
+          name: coverage-${{ env.GOOS }}
+          token: ${{ secrets.CODECOV_TOKEN }}
+
+permissions:
+  contents: read

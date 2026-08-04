@@ -7,19 +7,16 @@ name: test-wasi
 # https://github.com/zonedb/zonedb/blob/main/.github/workflows/go.yaml
 # MIT Licensed
 
-on:
+on: # yamllint disable-line rule:truthy
   workflow_call:
   workflow_dispatch:
 
-permissions:
-  contents: read
-
 env:
   # See https://github.com/webassembly/binaryen/releases
-  binaryen_version: "131"
+  BINARYEN_VERSION: '131'
   # https://github.com/bytecodealliance/wasmtime/releases
   # include leading 'v'
-  wasmtime_version: v47.0.2
+  WASMTIME_VERSION: 'v47.0.3'
 
 jobs:
   test-wasi: # act fails if tag ends with a '1', so we aren't using test-wasip1
@@ -33,16 +30,16 @@ jobs:
       # Go version from go.mod. See usage in the actions/setup-go step.
       matrix:
         go-version:
-          - big: "1.26.5"
-            tiny: "0.41.1"
-          - big: "1.25.11"
-            tiny: "0.39.0"
-          # - big: "1.25"
-          #   tiny: "0.39.0"
-          # - big: "1.24"
-          #   tiny: "0.38.0"
-          # - big: "1.23.11"
-          #   tiny: "0.36.0"
+          - big: '1.26.5'
+            tiny: '0.41.1'
+          - big: '1.25.11'
+            tiny: '0.39.0'
+          # - big: '1.25'
+          #   tiny: '0.39.0'
+          # - big: '1.24'
+          #   tiny: '0.38.0'
+          # - big: '1.23.11'
+          #   tiny: '0.36.0'
         # FIXME: TinyGo needs to be manually bumped; it doesn't immediately
         # release support for new major Go versions something should ping when a
         # new version is available.
@@ -59,12 +56,18 @@ jobs:
 
     steps:
       - uses: actions/checkout@v7
+        with:
+          fetch-depth: 1
+          show-progress: false
 
       - uses: actions/setup-go@v7
         with:
           go-version: ${{ matrix.go-version.big }} # overrides go-version-file when a value is present
           go-version-file: ${{ matrix.go-version.file }}
           check-latest: true
+          cache: true
+
+      - run: printf '::notice ::%s\n' "$(go version)"    
 
       - run: go mod download
 
@@ -80,13 +83,13 @@ jobs:
       - uses: acifani/setup-tinygo@v3
         with:
           tinygo-version: "${{ matrix.go-version.tiny }}"
-          binaryen-version: "${{ env.binaryen_version }}"
+          binaryen-version: "${{ env.BINARYEN_VERSION }}"
 
       - run: wasm-opt --version
 
       - uses: bytecodealliance/actions/wasmtime/setup@v1
         with:
-          version: "${{ env.wasmtime_version }}"
+          version: "${{ env.WASMTIME_VERSION }}"
 
       # https://go.dev/blog/wasi#running-go-tests-with-wasip1
       - run: |
@@ -107,3 +110,6 @@ jobs:
           files: ./coverage.out
           name: coverage-${{ env.GOOS }}-${{ matrix.go-version.big }}
           token: ${{ secrets.CODECOV_TOKEN }}
+
+permissions:
+  contents: read

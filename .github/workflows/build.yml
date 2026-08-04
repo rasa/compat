@@ -3,7 +3,7 @@
 
 name: build
 
-on:
+on: # yamllint disable-line rule:truthy
   push:
     branches: [ main ]
     paths:
@@ -22,25 +22,25 @@ on:
   workflow_call:
     inputs:
       compat_debug:
-        default: "ACLS"
+        default: ACLS
         type: string
       compat_debug_fs:
-        default: "All"
+        default: All
         type: string
       enabled:
-        default: "yes"
+        default: 'yes'
         type: string
       make_cmd:
-        default: "bldtest"
+        default: bldtest
         type: string
       runner:
-        default: "ubuntu-24.04"
+        default: ubuntu-24.04
         type: string
       sudo:
-        default: "yes"
+        default: 'yes'
         type: string
       test_opts:
-        default: "-v"
+        default: '-v'
         type: string
     secrets:
       CODECOV_TOKEN:
@@ -49,26 +49,26 @@ on:
   workflow_dispatch:
     inputs:
       compat_debug:
-        description: "COMPAT_DEBUG environment variable"
-        default: "ACLS"
+        description: 'COMPAT_DEBUG environment variable'
+        default: ACLS
         type: string
       compat_debug_fs:
-        description: "COMPAT_DEBUG_FS environment variable"
-        default: "All"
+        description: 'COMPAT_DEBUG_FS environment variable'
+        default: All
         type: string
       enabled:
-        description: "Run action"
-        default: "yes"
+        description: 'Run action'
+        default: yes
         type: choice
         options:
-          - "yes"
+          - 'yes'
       make_cmd:
-        description: "Make command"
-        default: "bldtest"
+        description: 'Make command'
+        default: bldtest
         type: string
       runner:
-        description: "GitHub runner to use"
-        default: "ubuntu-24.04"
+        description: 'GitHub runner to use'
+        default: ubuntu-24.04
         type: choice
         options:
           - ubuntu-26.04
@@ -93,14 +93,14 @@ on:
           - macos-14 # arm64
           - macos-14-large # amd64
       sudo:
-        description: "Run tests under sudo"
+        description: 'Run tests under sudo'
         type: choice
         options:
-          - "yes"
-          - "no"
+          - yes
+          - no
       test_opts:
-        description: "Test options (eg: -v -run TestX -short -tags debug)"
-        default: "-v"
+        description: 'Test options (eg: -v -run TestX -short -tags debug)'
+        default: '-v'
         type: string
 
 env:
@@ -124,9 +124,6 @@ env:
     }}
   TEST_OPTS: ${{ inputs.test_opts || '' }}
 
-permissions:
-  contents: read
-
 jobs:
   build:
     name: build
@@ -142,12 +139,17 @@ jobs:
 
     steps:
       - uses: actions/checkout@v7
+        with:
+          fetch-depth: 1
+          show-progress: false
 
       - uses: actions/setup-go@v7
         with:
-          go-version: "1.26"
+          go-version-file: go.mod
           check-latest: true
           cache: true
+
+      - run: printf '::notice ::%s\n' "$(go version)"
 
       # is this really needed?
       # if [[ "${{ runner.os }}" == "Windows" ]]; then
@@ -227,3 +229,6 @@ jobs:
         with:
           name: dist-${{ inputs.runner }}
           path: dist
+
+permissions:
+  contents: read

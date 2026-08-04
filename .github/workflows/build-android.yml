@@ -12,26 +12,26 @@ on: # yamllint disable-line rule:truthy
       # Last checked 2026-05-24
       # checkov:skip=CKV_GHA_7: The build output cannot be affected by user parameters...
       ANDROID_SDK_URL:
-        default: "https://dl.google.com/android/repository/commandlinetools-linux-14742923_latest.zip"
-        description: "Android SDK URL"
+        default: 'https://dl.google.com/android/repository/commandlinetools-linux-14742923_latest.zip'
+        description: 'Android SDK URL'
         required: false
         type: string
       # See https://developer.android.com/ndk/downloads
       ANDROID_NDK_URL:
-        default: "https://dl.google.com/android/repository/android-ndk-r29-linux.zip"
-        description: "Android NDK URL"
+        default: 'https://dl.google.com/android/repository/android-ndk-r29-linux.zip'
+        description: 'Android NDK URL'
         required: false
         type: string
       # See https://developer.android.com/ndk/downloads
       NDK_VERSION:
-        default: "29.0.14206865"
-        description: "Android NDK Version"
+        default: '29.0.14206865'
+        description: 'Android NDK Version'
         required: false
         type: string
       # See https://apilevels.com/
       ABI_VERSION:
-        default: "21"
-        description: "ABI Version (21-36)"
+        default: '21'
+        description: 'ABI Version (21-36)'
         required: false
         type: string
 
@@ -56,7 +56,7 @@ env:
 
 jobs:
   build-android:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-latest
     defaults:
       run:
         shell: bash --noprofile --norc -o pipefail -v -x {0}
@@ -85,11 +85,15 @@ jobs:
 
     steps:
       - uses: actions/checkout@v7
+        with:
+          fetch-depth: 1
+          show-progress: false
 
       - uses: actions/setup-go@v7
         with:
-          go-version: '1.26'
+          go-version-file: go.mod
           check-latest: true
+          cache: true
 
       - run: printf '::notice ::%s\n' "$(go version)"
 
@@ -134,10 +138,9 @@ jobs:
           # go build (GOARCH=${{ matrix.goarch }})
           export GOARCH=${{ matrix.goarch }}
           export ABI_PREFIX=${{ matrix.abi_prefix }}
-          # yamllint disable-line rule:line-length
           dir="${{ matrix.android_arch }}-linux-android${ABI_PREFIX}${ABI_VERSION}-clang"
           export CC="${NDK_PATH}/toolchains/llvm/prebuilt/linux-x86_64/bin/${dir}"
-          go env
+          # go env
           export APK=uvk-${{ matrix.android_arch }}.apk
           pushd cmd/demo || exit
           go build -trimpath -o "${APK}" main.go
@@ -148,12 +151,5 @@ jobs:
           fi
           popd || exit
 
-      # Needs to run on emulator:
-      # - name: go test (GOARCH=${{ matrix.goarch }})
-      #   run: |
-      #     export GOARCH=${{ matrix.goarch }}
-      #     export ABI_PREFIX=${{ matrix.abi_prefix }}
-      # yamllint disable-line
-      #     export CC="${NDK_PATH}/toolchains/llvm/prebuilt/linux-x86_64/bin/${{ matrix.android_arch }}-linux-android${ABI_PREFIX}${ABI_VERSION}-clang"
-      #     go env
-      #     go test .
+permissions:
+  contents: read

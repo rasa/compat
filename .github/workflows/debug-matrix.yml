@@ -209,6 +209,7 @@ jobs:
 
       - uses: actions/checkout@v7
         with:
+          fetch-depth: 1
           show-progress: false
 
       # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idstepsshell
@@ -644,3 +645,6 @@ jobs:
         if: runner.os == 'Windows' && matrix.os != 'windows-2025'
         shell: cmd
         continue-on-error: true
+
+permissions:
+  contents: read
