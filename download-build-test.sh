@@ -10,7 +10,7 @@ set +vx
 : "${GITHUB_WORKSPACE:=${PWD}}"
 : "${GOOS:=$(uname | tr '[:upper:]' '[:lower:]')}" || true
 : "${GOARCH:=$(uname -p)}" || true
-: "${GOVERSION:=1.26"
+: "${GOVERSION:=1.25.0}"
 case "${GOARCH}" in
   x86_64)
     GOARCH=amd64
@@ -91,13 +91,5 @@ sed -i.bak "/compat\/cmd\//d; /compat\/golang\//d;" coverage.out
 rm -f coverage.out.bak
 
 ls -l
-
-# curl -fLso codecov.sh https://codecov.io/bash
-# chmod +x codecov.sh
-# printf "Executing: ./codecov.sh -K -v -f coverage.out -r '%s'\n" "${GITHUB_REPOSITORY}"
-# if ! ./codecov.sh -K -v -f coverage.out -r "${GITHUB_REPOSITORY}"; then
-#    printf "Error: codecov.sh returned error %d\n" $?
-# fi
-# rm -f codecov.sh
 
 exit 0
