@@ -10,37 +10,6 @@ import (
 	"time"
 )
 
-// supportsType defines a bitmask that identifies if the OS supports specific
-// fields, or not.
-type supportsType uint
-
-const (
-	// supportsATime defines if FileInfo's ATime() function is supported by
-	// the OS.
-	supportsATime supportsType = 1 << iota
-	// supportsATimeSetting defines if setting a files's atime is supported
-	//  by the OS.
-	supportsATimeSetting
-	// supportsAtomicReplace defines if atomic replacement is supported by
-	// the OS.
-	supportsAtomicReplace
-	// supportsBTime defines if FileInfo's BTime() function is supported by
-	// the OS.
-	supportsBTime
-	// supportsCTime defines if FileInfo's CTime() function is supported by
-	// the OS.
-	supportsCTime
-	// supportsFstat defines if Fstat() is supported by the OS.
-	supportsFstat
-	// supportsLinks defines if FileInfo's Links() function is supported by
-	// the OS.
-	supportsLinks
-	// supportsNice defines if Nice() is supported by the OS.
-	supportsNice
-	// supportsSymlinks defines if symlinks are supported by the OS.
-	supportsSymlinks
-)
-
 // UnknownID is returned when the UID or GID could not be determined.
 const UnknownID = int(-1)
 
@@ -124,71 +93,10 @@ func (fs *fileStat) Info() (os.FileInfo, error) {
 	return os.FileInfo(fs), fs.Error()
 }
 
-// UserIDSource returns the source of the user's ID: UserIDSourceIsInt,
-// UserIDSourceIsString, or UserIDSourceIsNone.
-func UserIDSource() UserIDSourceType {
-	return userIDSource
-}
-
-// SupportsATime returns true if FileInfo's ATime() function is supported by the OS.
-func SupportsATime() bool {
-	return supports&supportsATime == supportsATime
-}
-
-// SupportsATimeSetting returns true setting a files's atime is supported by the OS.
-func SupportsATimeSetting() bool {
-	if IsTinygo {
-		// os.Chtimes fails with 'operation not implemented' on tinygo
-		return false
-	}
-
-	return supports&supportsATimeSetting == supportsATimeSetting
-}
-
-// SupportsATime returns true if FileInfo's ATime() function is supported by the OS.
-func SupportsAtomicReplace() bool {
-	return supports&supportsAtomicReplace == supportsAtomicReplace
-}
-
-// SupportsBTime returns true if FileInfo's BTime() function is supported by the OS.
-func SupportsBTime() bool {
-	return supports&supportsBTime == supportsBTime
-}
-
-// SupportsCTime returns true if FileInfo's CTime() function is supported by the OS.
-func SupportsCTime() bool {
-	return supports&supportsCTime == supportsCTime
-}
-
-// SupportsFstat returns true if the Fstat() function is supported by the OS.
-func SupportsFstat() bool {
-	return supports&supportsFstat == supportsFstat
-}
-
-// SupportsLinks returns true if FileInfo's Links() function is supported by the OS.
-func SupportsLinks() bool {
-	return supports&supportsLinks == supportsLinks
-}
-
-// SupportsNice returns true if the Nice() function is supported by the OS.
-func SupportsNice() bool {
-	return supports&supportsNice == supportsNice
-}
-
-// SupportsSymlinks returns true if the os.Symlinks() function is supported by the OS.
-func SupportsSymlinks() bool {
-	return supports&supportsSymlinks == supportsSymlinks
-}
-
-// Stat returns a [FileInfo] describing the named file.
-// If there is an error, it will be of type [*PathError].
-func Stat(name string) (FileInfo, error) {
-	fi, err := os.Stat(name)
-	if err != nil {
-		return nil, err
-	}
-
-	return stat(fi, name, true)
+// Fstat returns a [FileInfo] structure describing file.
+// If there is an error, it will be of type *PathError.
+func Fstat(f *os.File) (FileInfo, error) {
+	return fstat(f)
 }
 
 // Lstat returns a [FileInfo] describing the named file.
@@ -208,10 +116,38 @@ func Lstat(name string) (FileInfo, error) {
 	return stat(fi, name, false)
 }
 
-// Fstat returns a [FileInfo] structure describing file.
-// If there is an error, it will be of type *PathError.
-func Fstat(f *os.File) (FileInfo, error) {
-	return fstat(f)
+// SameFile reports whether fi1 and fi2 describe the same file. For example,
+// on Unix this means that the partition (device) and inode fields of the two
+// underlying structures are identical; on other systems the decision may be
+// based on the path names.
+// SamePartition only applies to results returned by this package's [Stat].
+// It returns false in other cases.
+func SameFile(fi1, fi2 FileInfo) bool {
+	fs1, ok1 := fi1.(*fileStat)
+
+	fs2, ok2 := fi2.(*fileStat)
+
+	if !ok1 || !ok2 {
+		return false
+	}
+
+	return fs1.partID == fs2.partID && fs1.fileID == fs2.fileID
+}
+
+// SameFiles reports whether name1 and name2 are the same file.
+// The function follow symlinks.
+func SameFiles(name1, name2 string) bool {
+	fi1, err := Stat(name1)
+	if err != nil {
+		return false
+	}
+
+	fi2, err := Stat(name2)
+	if err != nil {
+		return false
+	}
+
+	return SameFile(fi1, fi2)
 }
 
 // SamePartition reports whether fi1 and fi2 describe files on the same disk
@@ -249,36 +185,62 @@ func SamePartitions(name1, name2 string) bool {
 	return SamePartition(fi1, fi2)
 }
 
-// SameFile reports whether fi1 and fi2 describe the same file. For example,
-// on Unix this means that the partition (device) and inode fields of the two
-// underlying structures are identical; on other systems the decision may be
-// based on the path names.
-// SamePartition only applies to results returned by this package's [Stat].
-// It returns false in other cases.
-func SameFile(fi1, fi2 FileInfo) bool {
-	fs1, ok1 := fi1.(*fileStat)
-
-	fs2, ok2 := fi2.(*fileStat)
-
-	if !ok1 || !ok2 {
-		return false
+// Stat returns a [FileInfo] describing the named file.
+// If there is an error, it will be of type [*PathError].
+func Stat(name string) (FileInfo, error) {
+	fi, err := os.Stat(name)
+	if err != nil {
+		return nil, err
 	}
 
-	return fs1.partID == fs2.partID && fs1.fileID == fs2.fileID
+	return stat(fi, name, true)
 }
 
-// SameFiles reports whether name1 and name2 are the same file.
-// The function follow symlinks.
-func SameFiles(name1, name2 string) bool {
-	fi1, err := Stat(name1)
-	if err != nil {
-		return false
-	}
+// SupportsATime returns true if FileInfo's ATime() function is supported by the OS.
+func SupportsATime() bool {
+	return supportsATime
+}
 
-	fi2, err := Stat(name2)
-	if err != nil {
-		return false
-	}
+// SupportsATimeSetting is defined in stat_other.go and stat_tiny.go
 
-	return SameFile(fi1, fi2)
+// SupportsATime returns true if FileInfo's ATime() function is supported by the OS.
+func SupportsAtomicReplace() bool {
+	return supportsAtomicReplace
+}
+
+// SupportsBTime returns true if FileInfo's BTime() function is supported by the OS.
+func SupportsBTime() bool {
+	return supportsBTime
+}
+
+// SupportsCTime returns true if FileInfo's CTime() function is supported by the OS.
+func SupportsCTime() bool {
+	return supportsCTime
+}
+
+// SupportsFstat returns true if the Fstat() function is supported by the OS.
+func SupportsFstat() bool {
+	return supportsFstat
+}
+
+// SupportsLinks returns true if FileInfo's Links() function is supported by the OS.
+func SupportsLinks() bool {
+	return supportsLinks
+}
+
+// SupportsNice returns true if the Nice() function is supported by the OS.
+func SupportsNice() bool {
+	return supportsNice
+}
+
+// SupportsSymlinks returns true if the os.Symlinks() function is supported by the OS.
+// Note that the underlying filesystem may not allow symlinks.
+func SupportsSymlinks() bool {
+	return supportsSymlinks
+}
+
+// UserIDSource returns the source of the user's ID: UserIDSourceIsInt,
+// UserIDSourceIsString, or UserIDSourceIsNone.
+func UserIDSource() UserIDSourceType {
+	return userIDSource
 }

@@ -5,14 +5,16 @@
 
 package compat
 
-const supports supportsType = supportsATime |
-	supportsATimeSetting |
-	supportsAtomicReplace |
-	supportsBTime |
-	supportsCTime |
-	supportsFstat |
-	supportsLinks |
-	supportsNice |
-	supportsSymlinks
+const (
+	supportsATime         = true
+	supportsATimeSetting  = true
+	supportsAtomicReplace = true
+	supportsBTime         = true
+	supportsCTime         = true
+	supportsFstat         = true
+	supportsLinks         = true
+	supportsNice          = true
+	supportsSymlinks      = true
+)
 
 const userIDSource UserIDSourceType = UserIDSourceIsInt
