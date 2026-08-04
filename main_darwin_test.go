@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"runtime"
 	"path/filepath"
 	"strings"
 	"testing"
@@ -108,8 +109,7 @@ func testMain(m *testing.M, fsToTest, nativeFSType, fsPath string) int { //nolin
 			mountPath = os.TempDir()
 		}
 
-		fmt.Printf("%d/%d: Testing on %v filesystem mounted on %v\n", n, testsToRun, fsName, mountPath)
-
+		fmt.Printf("%d/%d: Testing on %v filesystem mounted on %v on %v/%v\n", n, testsToRun, fsName, mountPath, runtime.GOOS, runtime.GOARCH)
 		if fsTest.fsName == nativeFS {
 			code = m.Run()
 			if code != 0 {

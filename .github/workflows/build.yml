@@ -113,6 +113,7 @@ env:
       github.event_name == 'push' ||
       github.event_name == 'pull_request'
     }}
+  GOVERSION: '1.25.x'
   MAKE_CMD: ${{ inputs.make_cmd || 'bldtest' }}
   RUNNER: ${{ inputs.runner || 'ubuntu-24.04' }}
   SUDO: >-
@@ -145,6 +146,8 @@ jobs:
 
       - uses: actions/setup-go@v7
         with:
+          # go-version overrides go-version-file if a value is present
+          go-version: ${{ env.GOVERSION }}
           go-version-file: go.mod
           check-latest: true
           cache: true
@@ -192,7 +195,8 @@ jobs:
           env "PATH=${PATH}"
           make "${MAKE_CMD}" TEST_OPTS="${TEST_OPTS}"
 
-      - name: Upload coverage to Codecov
+      - if: env.ACT != 'true'
+        name: Upload coverage to Codecov
         uses: codecov/codecov-action@v7
         with:
           fail_ci_if_error: false
@@ -200,8 +204,8 @@ jobs:
           name: coverage-${{ runner.os }}
           token: ${{ secrets.CODECOV_TOKEN }}
 
-      - name: Upload coverage
-        if: env.ACT != 'true'
+      - if: env.ACT != 'true'
+        name: Upload coverage
         uses: actions/upload-artifact@v7
         with:
           name: coverage-${{ runner.os }}
@@ -215,16 +219,20 @@ jobs:
           ls -ld ./dist
           ls -lR ./dist
 
-      - name: go tool goreleaser release --clean --snapshot
-        if: contains(fromJSON('["all", "build", "ci", "precommit"]'), inputs.make_cmd) && runner.os == 'Linux'
+      - if: >-
+          runner.os == 'Linux' &&
+          contains(fromJSON('["all", "build", "ci", "precommit"]'), inputs.make_cmd)
+        name: go tool goreleaser release --clean --snapshot
         run: |
           if [[ -f go.tool.mod ]]; then
             export GOFLAGS="${GOFLAGS} -modfile=go.tool.mod"
           fi
           go tool goreleaser release --clean --snapshot
 
-      - name: Upload dist
-        if: contains(fromJSON('["all", "build", "ci", "precommit"]'), inputs.make_cmd) && env.ACT != 'true'
+      - if: >-
+          env.ACT != 'true' &&
+          contains(fromJSON('["all", "build", "ci", "precommit"]'), inputs.make_cmd)
+        name: Upload dist
         uses: actions/upload-artifact@v7
         with:
           name: dist-${{ inputs.runner }}
