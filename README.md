@@ -215,6 +215,82 @@ Key:<br/>
 ‡ Not supported on openbsd/ppc64, netbsd/386, freebsd/riscv64, and aix/ppc64 (cgo only), due to compile issues.<br/>
 § Implemented via a `UMASK=0NNN` environment variable.
 
+# Environmental variables
+
+## Non-test environmental variables
+
+The following variable is used by the compat library:
+
+### UMASK (Windows only)
+
+Set to the default umask value to start with. If not set 0o022 is used. Used on
+Windows only.
+
+## Test-only environmental variables
+
+The following variables are only used by compat's testing suite:
+
+### COMPAT_DEBUG
+
+Set to DEBUG will email helpful debugging information.
+Set to DUMP to dump ACL information (on Windows only).
+
+### COMPAT_DEBUG_FS
+
+Set to the filesystem to test, or "All" to test all of them. In addition to the
+native filesystem, the following virtual filesystems are supported:
+
+On Linux:
+
+* Btrfs
+* exFAT
+* ext2
+* ext3
+* ext4
+* F2FS
+* FAT
+* FAT32
+* NTFS
+* ReiserFS
+* XFS
+
+On macOS (Darwin):
+
+* APFS
+* ExFAT
+* FAT32
+* HFS+
+* HFS+J
+* HFSX
+* JHFS+
+* JHFS+X
+* UDF
+
+On Windows:
+
+* exFAT
+* FAT32
+* FAT (Disabled for now)
+* NTFS
+* ReFS
+
+### COMPAT_DEBUG_FS_PATH
+
+Set to the path to use when mounting virtual filesystems. The defaults are:
+
+* Linux: /mnt/
+* macOS: /Volumes/
+* Windows: Z:\
+
+### COMPAT_DEBUG_FS_SIZE
+
+Set to the size of the virtual filesystem volume. The default is 2GB.
+
+### COMPAT_DEBUG_PERM (Windows only)
+
+Set to the default file permissions to test with. The default is to test with all
+permissions, which is a 511 different values (8^3 - 1). Used on Windows only.
+
 # Contributing
 
 Please feel free to submit issues, fork the repository and send pull requests!
