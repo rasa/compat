@@ -9,8 +9,8 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
-	"runtime"
 	"path/filepath"
+	"runtime"
 	"strings"
 	"testing"
 )
