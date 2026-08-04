@@ -366,8 +366,37 @@ func TestWriteFileWithAtomicityWithReadOnlyModeReset(t *testing.T) { //nolint:du
 // Tests that succeed when err != nil.
 //////////////////////////////////////
 
+func TestWriteFileInvalid(t *testing.T) { //nolint:dupl
+	opts := []compat.Option{}
+	err := compat.WriteFile(invalidName, helloBytes, 0, opts...)
+	if err == nil {
+		t.Fatalf("got nil, want an error")
+	}
+}
+
 func TestWriteFileWithAtomicityInvalid(t *testing.T) { //nolint:dupl
-	opts := []compat.Option{compat.WithAtomicity(true)}
+	opts := []compat.Option{
+		compat.WithAtomicity(true),
+		compat.WithFileMode(perm600),
+	}
+	if compat.IsPlan9 {
+		opts = append(opts, compat.WithAllowNonAtomicReplace(true))
+	}
+	err := compat.WriteFile(invalidName, helloBytes, 0, opts...)
+	if err == nil {
+		t.Fatalf("got nil, want an error")
+	}
+}
+
+func TestWriteFileWithAtomicityInvalidKeepFileMode(t *testing.T) { //nolint:dupl
+	opts := []compat.Option{
+		compat.WithAtomicity(true),
+		// compat.WithFileMode(perm600),
+		compat.WithKeepFileMode(false),
+	}
+	if compat.IsPlan9 {
+		opts = append(opts, compat.WithAllowNonAtomicReplace(true))
+	}
 	err := compat.WriteFile(invalidName, helloBytes, 0, opts...)
 	if err == nil {
 		t.Fatalf("got nil, want an error")
@@ -401,7 +430,9 @@ func TestWriteFileWithAtomicityInvalidCantRead(t *testing.T) { //nolint:dupl
 	}
 	err = compat.WriteFile(file, helloBytes, 0, opts...)
 	if err != nil {
-		t.Fatalf("WriteFile: %v", err)
+		t.Fatalf("WriteReader: %v", err)
+
+		return // Tinygo doesn't support T.Fatal
 	}
 }
 
@@ -455,3 +486,43 @@ func TestWriteFileWithAtomicityInvalidReadOnlyDirectory(t *testing.T) { //nolint
 	perm = perm777
 	_ = compat.Chmod(dir, perm)
 }
+
+/*
+func TestWriteFileWithAtomicityError(t *testing.T) {
+	file, err := tempName(t)
+	if err != nil {
+		t.Fatalf("Failed to create temp file: %v", err)
+	}
+
+	cleanup(t, file)
+
+	opts := []compat.Option{compat.WithAtomicity(true)}
+	if compat.IsPlan9 {
+		opts = append(opts, compat.WithAllowNonAtomicReplace(true))
+	}
+	err = compat.WriteFile(file, errReader{}, 0, opts...)
+	if err == nil {
+		t.Fatal("got nil, want an error")
+	}
+}
+
+func TestWriteFileExportedFileInvalid(t *testing.T) { //nolint:dupl
+	err := compat.ExportedWriteReader(invalidName, nilReader{}, 0, perm600)
+	if err == nil {
+		t.Fatalf("got nil, want an error")
+	}
+}
+
+func TestWriteFileExportedReaderInvalid(t *testing.T) { //nolint:dupl
+	file, err := tempName(t)
+	if err != nil {
+		t.Fatalf("Failed to create temp name: %v", err)
+	}
+
+	cleanup(t, file)
+	err = compat.ExportedWriteReader(file, errReader{}, 0, perm600)
+	if err == nil {
+		t.Fatalf("got nil, want an error")
+	}
+}
+*/

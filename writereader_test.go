@@ -7,7 +7,6 @@
 package compat_test
 
 import (
-	"errors"
 	"os"
 	"path/filepath"
 	"runtime"
@@ -367,44 +366,9 @@ func TestWriteReaderWithAtomicityWithReadOnlyModeReset(t *testing.T) { //nolint:
 // Tests that succeed when err != nil.
 //////////////////////////////////////
 
-type errReader struct{}
-
-func (errReader) Read(p []byte) (int, error) {
-	return 0, errors.New("simulated read failure")
-}
-
-type nilReader struct{}
-
-func (nilReader) Read(p []byte) (int, error) {
-	for i := range p {
-		p[i] = 'x'
-	}
-	return len(p), nil
-}
-
 func TestWriteReaderInvalid(t *testing.T) { //nolint:dupl
 	opts := []compat.Option{}
 	err := compat.WriteReader(invalidName, helloBuf, 0, opts...)
-	if err == nil {
-		t.Fatalf("got nil, want an error")
-	}
-}
-
-func TestWriteReaderExportedFileInvalid(t *testing.T) { //nolint:dupl
-	err := compat.ExportedWriteReader(invalidName, nilReader{}, 0, perm600)
-	if err == nil {
-		t.Fatalf("got nil, want an error")
-	}
-}
-
-func TestWriteReaderExportedReaderInvalid(t *testing.T) { //nolint:dupl
-	file, err := tempName(t)
-	if err != nil {
-		t.Fatalf("Failed to create temp name: %v", err)
-	}
-
-	cleanup(t, file)
-	err = compat.ExportedWriteReader(file, errReader{}, 0, perm600)
 	if err == nil {
 		t.Fatalf("got nil, want an error")
 	}
@@ -501,7 +465,6 @@ func TestWriteReaderWithAtomicityInvalidReadOnlyDirectory(t *testing.T) { //noli
 	fi, err := compat.Stat(dir)
 	if err != nil {
 		t.Fatalf("Failed to stat: %v", err)
-		return
 	}
 	if fi.Mode().Perm() != perm {
 		partType := partitionType(dir)
@@ -539,5 +502,25 @@ func TestWriteReaderWithAtomicityError(t *testing.T) {
 	err = compat.WriteReader(file, errReader{}, 0, opts...)
 	if err == nil {
 		t.Fatal("got nil, want an error")
+	}
+}
+
+func TestWriteReaderExportedFileInvalid(t *testing.T) { //nolint:dupl
+	err := compat.ExportedWriteReader(invalidName, nilReader{}, 0, perm600)
+	if err == nil {
+		t.Fatalf("got nil, want an error")
+	}
+}
+
+func TestWriteReaderExportedReaderInvalid(t *testing.T) { //nolint:dupl
+	file, err := tempName(t)
+	if err != nil {
+		t.Fatalf("Failed to create temp name: %v", err)
+	}
+
+	cleanup(t, file)
+	err = compat.ExportedWriteReader(file, errReader{}, 0, perm600)
+	if err == nil {
+		t.Fatalf("got nil, want an error")
 	}
 }

@@ -43,6 +43,21 @@ var (
 	helloBuf    = bytes.NewBuffer(helloBytes)
 )
 
+type errReader struct{}
+
+func (errReader) Read(p []byte) (int, error) {
+	return 0, errors.New("simulated read failure")
+}
+
+type nilReader struct{}
+
+func (nilReader) Read(p []byte) (int, error) {
+	for i := range p {
+		p[i] = 'x'
+	}
+	return len(p), nil
+}
+
 func init() {
 	// Needed for testing.Verbose() and testing.Short() to be available.
 	testing.Init()
