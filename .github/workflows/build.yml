@@ -216,7 +216,7 @@ jobs:
           ls -lR ./dist
 
       - name: go tool goreleaser release --clean --snapshot
-        if: inputs.make_cmd != 'test' && runner.os == 'Linux'
+        if: contains(fromJSON('["all", "build", "ci", "precommit"]'), inputs.make_cmd) && runner.os == 'Linux'
         run: |
           if [[ -f go.tool.mod ]]; then
             export GOFLAGS="${GOFLAGS} -modfile=go.tool.mod"
@@ -224,7 +224,7 @@ jobs:
           go tool goreleaser release --clean --snapshot
 
       - name: Upload dist
-        if: inputs.make_cmd != 'test' && env.ACT != 'true'
+        if: contains(fromJSON('["all", "build", "ci", "precommit"]'), inputs.make_cmd) && env.ACT != 'true'
         uses: actions/upload-artifact@v7
         with:
           name: dist-${{ inputs.runner }}
