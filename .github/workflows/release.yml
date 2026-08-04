@@ -10,6 +10,9 @@ on: # yamllint disable-line rule:truthy
   workflow_call:
   workflow_dispatch:
 
+env:
+  GOVERSION: '1.25.x'
+
 jobs:
   release:
     permissions:
@@ -26,6 +29,8 @@ jobs:
 
       - uses: actions/setup-go@v7
         with:
+          # go-version overrides go-version-file if a value is present
+          go-version: ${{ env.GOVERSION }}
           go-version-file: go.mod
           check-latest: true
           cache: true

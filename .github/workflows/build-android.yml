@@ -12,7 +12,7 @@ on: # yamllint disable-line rule:truthy
       # Last checked 2026-05-24
       # checkov:skip=CKV_GHA_7: The build output cannot be affected by user parameters...
       ANDROID_SDK_URL:
-        default: 'https://dl.google.com/android/repository/commandlinetools-linux-14742923_latest.zip'
+        default: 'https://dl.google.com/android/repository/commandlinetools-linux-15859902_latest.zip'
         description: 'Android SDK URL'
         required: false
         type: string
@@ -31,7 +31,7 @@ on: # yamllint disable-line rule:truthy
       # See https://apilevels.com/
       ABI_VERSION:
         default: '21'
-        description: 'ABI Version (21-36)'
+        description: 'ABI Version (21-37)'
         required: false
         type: string
 
@@ -42,7 +42,7 @@ concurrency:
 env:
   ANDROID_SDK_URL: ${{
     inputs.ANDROID_SDK_URL ||
-    'https://dl.google.com/android/repository/commandlinetools-linux-14742923_latest.zip'
+    'https://dl.google.com/android/repository/commandlinetools-linux-15859902_latest.zip'
     }}
   ANDROID_NDK_URL: ${{
     inputs.ANDROID_NDK_URL ||
@@ -53,35 +53,37 @@ env:
   ANDROID_SDK_ROOT: '/usr/local/android-sdk'
   CGO_ENABLED: '1'
   GOOS: 'android'
+  GOVERSION: '1.25.x'
 
 jobs:
   build-android:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        shell: bash --noprofile --norc -o pipefail -v -x {0}
+    # defaults:
+    #   run:
+    #     # add -v -x to standard bash options:
+    #     shell: bash --noprofile --norc -o pipefail -v -x {0}
     strategy:
       fail-fast: true
       max-parallel: 1
       matrix:
         goarch:
           - arm64
-          # - arm
-          # - amd64
-          # - '386'
+          - arm
+          - amd64
+          - '386'
         include:
           - goarch: arm64
             android_arch: aarch64
             abi_prefix: ''
-          # - goarch: arm
-          #   android_arch: armv7a
-          #   abi_prefix: 'eabi'
-          # - goarch: amd64
-          #   android_arch: x86_64
-          #   abi_prefix: ''
-          # - goarch: '386'
-          #   android_arch: i686
-          #   abi_prefix: ''
+          - goarch: arm
+            android_arch: armv7a
+            abi_prefix: 'eabi'
+          - goarch: amd64
+            android_arch: x86_64
+            abi_prefix: ''
+          - goarch: '386'
+            android_arch: i686
+            abi_prefix: ''
 
     steps:
       - uses: actions/checkout@v7
@@ -91,6 +93,8 @@ jobs:
 
       - uses: actions/setup-go@v7
         with:
+          # go-version overrides go-version-file if a value is present
+          go-version: ${{ env.GOVERSION }}
           go-version-file: go.mod
           check-latest: true
           cache: true
@@ -143,6 +147,7 @@ jobs:
           # go env
           export APK=uvk-${{ matrix.android_arch }}.apk
           pushd cmd/demo || exit
+          echo Building "${APK}" ...
           go build -trimpath -o "${APK}" main.go
           if [[ -f "${APK}" ]]; then
             go version -m "${APK}"
