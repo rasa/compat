@@ -90,6 +90,6 @@ printf '::notice ::tests succeeded: %s\n' "${GOVERSION}"
 sed -i.bak "/compat\/cmd\//d; /compat\/golang\//d;" coverage.out
 rm -f coverage.out.bak
 
-ls -l
+# ls -l
 
 exit 0

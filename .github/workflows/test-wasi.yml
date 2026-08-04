@@ -14,6 +14,11 @@ on: # yamllint disable-line rule:truthy
 env:
   # See https://github.com/webassembly/binaryen/releases
   BINARYEN_VERSION: '131'
+  GOOS: wasip1
+  GOARCH: wasm
+  GODEBUG: toolchaintrace=1
+  GOTOOLCHAIN: local
+  GOVERSION: '1.25.x'
   # https://github.com/bytecodealliance/wasmtime/releases
   # include leading 'v'
   WASMTIME_VERSION: 'v47.0.3'
@@ -30,9 +35,9 @@ jobs:
       # Go version from go.mod. See usage in the actions/setup-go step.
       matrix:
         go-version:
-          - big: '1.26.5'
+          - big: '1.26.x'
             tiny: '0.41.1'
-          - big: '1.25.6'
+          - big: ${{ env.GOVERSION }}
             tiny: '0.39.0'
           # - big: '1.25'
           #   tiny: '0.39.0'
@@ -48,12 +53,6 @@ jobs:
         #       file: "go.mod"
         #       tiny: "0.37.0"
 
-    env:
-      GOOS: wasip1
-      GOARCH: wasm
-      GODEBUG: toolchaintrace=1
-      GOTOOLCHAIN: local
-
     steps:
       - uses: actions/checkout@v7
         with:
@@ -62,8 +61,8 @@ jobs:
 
       - uses: actions/setup-go@v7
         with:
-          go-version: ${{ matrix.go-version.big }} # overrides go-version-file when a value is present
-          go-version-file: ${{ matrix.go-version.file }}
+          # go-version overrides go-version-file if a value is present
+          go-version: ${{ matrix.go-version.big }} 
           check-latest: true
           cache: true
 
