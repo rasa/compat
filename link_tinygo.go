@@ -5,8 +5,6 @@
 
 package compat
 
-import "errors"
-
 // Link creates newname as a hard link to the oldname file.
 // If there is an error, it will be of type *LinkError.
 func Link(_, _ string) error {
