@@ -35,7 +35,7 @@ printf 'GOARCH:            %s\n' "${GOARCH}"
 printf 'GOOS:              %s\n' "${GOOS}"
 
 tmp1=$(mktemp)
-curl -fsSL -o "${tmp1}" 'https://go.dev/dl/?mode=json'
+curl -L -s -o "${tmp1}" 'https://go.dev/dl/?mode=json'
 jqcmd="[ .[] | select(.stable == true) ][0] | .files[] | select(.os == \"${GOOS}\" and .arch == \"${GOARCH}\")"
 
 gover=$(jq -r '.[0].version | ltrimstr("go")')
@@ -54,7 +54,7 @@ mkdir -p "../${base}"
 cd "../${base}" || exit
 
 printf 'Downloading %s...\n' "https://go.dev/dl/${name}"
-curl -fsSL "${name}" "https://go.dev/dl/${name}"
+curl -L -s -o "${name}" "https://go.dev/dl/${name}"
 
 printf '%s %s\n' "${hash}" "${name}" | sha256sum -c
 
