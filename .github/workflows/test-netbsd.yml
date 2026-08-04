@@ -25,7 +25,7 @@ jobs:
           fetch-depth: 1
           show-progress: false
 
-      - uses: vmactions/netbsd-vm@v1
+      - uses: vmactions/netbsd-vm@v1.4.5
         with:
           envs: 'GOOS GOARCH CODECOV_SLUG CODECOV_TOKEN' # GITHUB_TOKEN'
           usesh: true
