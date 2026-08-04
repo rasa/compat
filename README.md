@@ -1,8 +1,8 @@
 # compat
 
-[![Build](https://github.com/rasa/compat/actions/workflows/build.yml/badge.svg)](https://github.com/rasa/compat/actions/workflows/build-ubuntu.yml)
+[![Build](https://github.com/rasa/compat/actions/workflows/build.yml/badge.svg)](https://github.com/rasa/compat/actions/workflows/build.yml)
 [![CodeQL](https://github.com/rasa/compat/actions/workflows/codeql.yml/badge.svg)](https://github.com/rasa/compat/actions/workflows/codeql.yml)
-[![CodeFactor Grade](https://img.shields.io/codefactor/grade/github/go-openapi/runtime)](https://www.codefactor.io/repository/github/go-openapi/runtime)
+[![CodeFactor Grade](https://img.shields.io/codefactor/grade/github/rasa/compat)](https://www.codefactor.io/repository/github/rasa/compat)
 [![Codecov](https://codecov.io/gh/rasa/compat/branch/main/graph/badge.svg)](https://codecov.io/gh/rasa/compat)
 [![MegaLinter](https://github.com/rasa/compat/actions/workflows/mega-linter.yml/badge.svg)](https://github.com/rasa/compat/actions/workflows/mega-linter.yml)
 [![Go Reference](https://pkg.go.dev/badge/github.com/rasa/compat.svg)](https://pkg.go.dev/github.com/rasa/compat)<br/>
