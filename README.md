@@ -13,151 +13,305 @@
 [![Keep a Changelog](https://img.shields.io/badge/changelog-Keep%20a%20Changelog-%23E05735)](CHANGELOG.md)
 [![License](https://img.shields.io/github/license/rasa/compat)](LICENSE)
 
-<!-- @synk: The badge feature is no longer actively being maintained or developed.
-[![Known Vulnerabilities](https://snyk.io/test/github/rasa/compat/badge.svg)](https://snyk.io/test/github/rasa/compat)
--->
+**Portable file identity, extended metadata, and reliable file operations for Go.**
+
+`compat` provides a consistent API for file information that Go's standard
+`os.FileInfo` interface does not expose portably, including:
+
+- access, birth, modification, and metadata-change times;
+- unique file and partition identifiers;
+- hard-link counts;
+- user and group IDs and names;
+- cross-platform file permission setting;
+- atomic file replacement;
+- filesystem and operating-system compatibility helpers.
+
+The package supports Linux, macOS, Windows, BSD systems, Android, iOS, Plan 9,
+Solaris, illumos, JavaScript/WebAssembly, WASI, TinyGo, and other targets
+supported by Go.
+
+## Contents
 
 <!--ts-->
-* [Overview](#overview)
-* [Usage](#usage)
-* [Stat](#stat)
-* [Installing](#installing)
-* [FileInfo Functions](#fileinfo-functions)
-* [Other Functions](#other-functions)
-* [Environmental variables](#environmental-variables)
-* [Non-test environmental variables](#non-test-environmental-variables)
-* [UMASK (Windows only)](#umask-windows-only)
-* [Test-only environmental variables](#test-only-environmental-variables)
-* [COMPAT_DEBUG](#compat_debug)
-* [COMPAT_DEBUG_FS](#compat_debug_fs)
-* [COMPAT_DEBUG_FS_PATH](#compat_debug_fs_path)
-* [COMPAT_DEBUG_FS_SIZE](#compat_debug_fs_size)
-* [COMPAT_DEBUG_PERM (Windows only)](#compat_debug_perm-windows-only)
-* [Contributing](#contributing)
-* [License](#license)
 <!--te-->
 
-# Overview
+## Why compat?
 
-compat is a pure-Go library providing unified access to file and device metadata, atomic file operations, process priority, etc. on all operating systems go supports, including Android, iOS, Linux, macOS, Windows, and many others.
+The Go standard library intentionally exposes a small, portable file interface.
+Applications such as backup tools, synchronization engines, file indexes, and
+duplicate detectors often need additional information that otherwise requires
+different code for each operating system.
 
-# Usage
+| Capability | Go standard library | `compat` |
+|---|:---:|:---:|
+| Basic name, size, mode, and modification time | Yes | Yes |
+| Access time | Platform-specific | Portable API where supported |
+| Birth or creation time | Platform-specific | Portable API where supported |
+| Metadata-change time | Platform-specific | Portable API where supported |
+| Hard-link count | Platform-specific | Portable API where supported |
+| User and group IDs | Platform-specific | Portable API |
+| User and group names | No unified API | Portable API |
+| File and partition identity | Platform-specific | Portable API |
+| Windows SID-to-POSIX ID mapping | No | Yes |
+| Atomic file replacement | No unified API | Yes, where supported |
+| Filesystem capability checks | Limited | Yes |
 
-The documentation is available at https://pkg.go.dev/github.com/rasa/compat
+`compat` does not replace the standard library for ordinary file access. Use
+`os`, `io`, `io/fs`, and `path/filepath` when their APIs already provide
+everything your application needs.
 
-## Stat
+## Use cases
 
-Here's an example of calling `compat.Stat()`:
+`compat` is intended for software that must interpret file metadata consistently
+across operating systems, including:
+
+- backup and restore tools;
+- file synchronization software;
+- duplicate-file detectors;
+- file indexes and search tools;
+- installers and self-updaters;
+- archival and migration utilities;
+- cross-platform development tools;
+- applications that need stable file identity on Windows and Unix-like systems.
+
+## Installation
+
+```console
+go get github.com/rasa/compat
+```
+
+Documentation for the public API is available on
+[pkg.go.dev](https://pkg.go.dev/github.com/rasa/compat).
+
+## Quick start
+
+### Read portable file metadata
 
 ```go
 package main
 
 import (
-	"os"
+	"fmt"
+	"log"
 
 	"github.com/rasa/compat"
 )
 
-const mode = os.FileMode(0o654)
+func main() {
+	info, err := compat.Stat("example.txt")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Printf("Name:       %s\n", info.Name())
+	fmt.Printf("Size:       %d bytes\n", info.Size())
+	fmt.Printf("Mode:       0o%o (%v)\n", info.Mode(), info.Mode())
+	fmt.Printf("Modified:   %s\n", info.ModTime())
+	fmt.Printf("Accessed:   %s\n", info.ATime())
+
+	if compat.SupportsBTime() {
+		fmt.Printf("Created:    %s\n", info.BTime())
+	}
+
+	if compat.SupportsCTime() {
+		fmt.Printf("Changed:    %s\n", info.CTime())
+	}
+
+	fmt.Printf("Owner:      %s (%d)\n", info.User(), info.UID())
+	fmt.Printf("Group:      %s (%d)\n", info.Group(), info.GID())
+	fmt.Printf("Links:      %d\n", info.Links())
+	fmt.Printf("File ID:    %d:%d\n", info.PartitionID(), info.FileID())
+
+	// Some extended values may require an additional system call.
+	if err := info.Error(); err != nil {
+		log.Printf("some extended metadata could not be read: %v", err)
+	}
+}
+```
+
+`Stat` follows symbolic links. Use `Lstat` when the returned metadata should
+describe the symbolic link itself.
+
+### Write a file atomically
+
+```go
+package main
+
+import (
+	"log"
+
+	"github.com/rasa/compat"
+)
 
 func main() {
-	_ := compat.WriteFile("hello.txt", []byte("Hello World"), mode)
+	data := []byte("configuration data\n")
 
-  fi, _ := compat.Stat("hello.txt")
-
-  print(fi.String())
+	err := compat.WriteFile(
+		"config.txt",
+		data,
+		0o600,
+		compat.WithAtomicity(true), // optional
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
 }
-
-```
-which, on Linux, produces:
-```text
-Name:   hello.txt
-Size:   11
-Mode:   0o654 (-rw-r-xr--)
-ModTime:2025-08-14 09:25:27.190602462 -0700 PDT // last Modified
-ATime:  2025-08-14 09:25:27.190602462 -0700 PDT // last Accessed
-BTime:  2025-08-14 09:25:27.190602462 -0700 PDT // Birthed/created
-CTime:  2025-08-14 09:25:27.190602462 -0700 PDT // metadata last Changed
-IsDir:  false
-Links:  1                                       // number of hard links
-UID:    1000 (ross)                             // user ID
-GID:    1000 (ross)                             // group ID
-PartID: 64512                                   // unique partition (device) ID
-FileID: 18756713                                // unique file ID on the partition
-```
-and on Windows, produces:
-```text
-Name:   hello.txt
-Size:   11
-Mode:   0o654 (-rw-r-xr--)
-ModTime:2025-08-14 09:28:50.4214934 -0700 PDT
-ATime:  2025-08-14 09:28:50.4214934 -0700 PDT
-BTime:  2025-08-14 09:28:50.4209614 -0700 PDT
-CTime:  2025-08-14 09:28:50.4214934 -0700 PDT
-IsDir:  false
-Links:  1
-UID:    197609 (domain\ross)
-GID:    197121 (domain\None)
-PartID: 8
-FileID: 844424931319952
-```
-icacls shows:
-```
-icacls hello.txt
-
-hello.txt domain\ross:(R,W,D)
-          domain\None:(RX)
-          Everyone:(R)
-```
-powershell shows:
-```
-powershell -command "Get-Acl hello.txt | Format-List"
-
-Path   : Microsoft.PowerShell.Core\FileSystem::C:\path\to\hello.txt
-Owner  : domain\ross
-Group  : domain\None
-Access : Everyone Allow  Read, Synchronize
-         domain\None Allow  ReadAndExecute, Synchronize
-         domain\ross Allow  Write, Delete, Read, Synchronize
-Audit  :
-Sddl   : O:S-1-5-21-2970224322-3395479738-1485484954-1001G:S-1-5-21-2970224322-3395479738-1485484954-513D:P(A;;FR;;;WD)(A;;0x1200a9;;;S-1-5-21-2970224322-3395479738-1485484954-5
-         19f;;;S-1-5-21-2970224322-3395479738-1485484954-1001)
-```
-Cygwin's stat shows:
-```
-$ stat hello.txt
-  File: hello.txt
-  Size: 11              Blocks: 1          IO Block: 65536  regular file
-Device: 0,8     Inode: 844424931319952  Links: 1
-Access: (0754/-rwxr-xr--)  Uid: (197609/    ross)   Gid: (197121/    None)
-Access: 2025-08-14 09:28:50.421493400 -0700
-Modify: 2025-08-14 09:28:50.421493400 -0700
-Change: 2025-08-14 09:28:50.421493400 -0700
- Birth: 2025-08-14 09:28:50.420961400 -0700
-```
-Git for Windows's stat shows:
-```
-$ stat hello.txt
-  File: hello.txt
-  Size: 11              Blocks: 1          IO Block: 65536  regular file
-Device: 8h/8d   Inode: 844424931319952  Links: 1
-Access: (0644/-rw-r--r--)  Uid: (197609/    ross)   Gid: (197121/ UNKNOWN)
-Access: 2025-08-14 09:30:06.729683700 -0700
-Modify: 2025-08-14 09:28:50.421493400 -0700
-Change: 2025-08-14 09:28:50.421493400 -0700
- Birth: 2025-08-14 09:28:50.420961400 -0700
 ```
 
-# Installing
+With `WithAtomicity(true)`, the destination is either fully replaced or left
+unchanged when the operating system and filesystem support atomic replacement.
 
-To install compat, use `go get`:
+On Plan 9, creating a new file atomically is supported, but atomically replacing
+an existing file is not. `WriteFile` returns an error matching
+`errors.ErrUnsupported` in that case. Applications that explicitly accept a
+non-atomic fallback can also pass:
 
-  `go get github.com/rasa/compat`
+```go
+compat.WithAllowNonAtomicReplace(true)
+```
 
-# FileInfo Functions
+Atomic replacement and durable persistence are different guarantees. An atomic
+rename prevents readers from observing a partially written destination; it does
+not necessarily guarantee that the data has reached permanent storage after a
+power loss.
 
-The `Stat()` and `Lstat()` functions return a `FileInfo` object.
-The table below lists the OS' support for each of the `FileInfo` functions:
+### Compare file identity
+
+Use the file and partition identifiers returned by `Stat` to determine whether
+two paths refer to the same underlying file:
+
+```go
+package main
+
+import (
+	"fmt"
+	"log"
+
+	"github.com/rasa/compat"
+)
+
+func main() {
+	first, err := compat.Stat("first.txt")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	second, err := compat.Stat("second.txt")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Printf("same file: %t\n", compat.SameFile(first, second))
+	fmt.Printf("same partition: %t\n", compat.SamePartition(first, second))
+
+	// or alternatively:
+	same, err := compat.SameFiles("first.txt, "second.txt")
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Printf("same file: %v\n", same)
+
+	same, err = compat.SamePartitions("first.txt, "second.txt")
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Printf("same partition: %v\n", same)
+}
+```
+
+## Core API
+
+### Metadata and identity
+
+| Function or type | Purpose |
+|---|---|
+| `Stat` | Returns extended information for a path and follows symbolic links |
+| `Lstat` | Returns extended information about a path without following its final symbolic link |
+| `Fstat` | Returns extended information for an open file where supported |
+| `FileInfo` | Extends `os.FileInfo` with portable metadata and identity methods |
+| `SameFile` | Reports whether two `compat.FileInfo` values describe the same file |
+| `SamePartition` | Reports whether two files reside on the same partition |
+| `PartitionType` | Reports the underlying filesystem or partition type |
+| `SupportsATime` | Reports operating-system support for access time |
+| `SupportsATimeSetting` | Reports support for setting access time |
+| `SupportsBTime` | Reports operating-system support for birth time |
+| `SupportsCTime` | Reports operating-system support for metadata-change time |
+| `SupportsFstat` | Reports support for `Fstat` |
+| `SupportsLinks` | Reports support for hard-link counts |
+| `SupportsSymlinks` | Reports operating-system support for symbolic links |
+| `UserIDSource` | Describes how user IDs are represented on the current platform |
+
+### File operations
+
+The package includes cross-platform variants of common file operations,
+including:
+
+- `Chmod` and `Fchmod`
+- `Create`, `CreateTemp`
+- `Link` and `Symlink`
+- `Mkdir`, `Mkdirall` and `MkdirTemp`
+- `Nice` and `Renice`
+- `Open`, and `OpenFile`
+- `ReadDir` and `WalkDir`
+- `Rename`
+- `Remove`, and `RemoveAll`
+- `Stat`, `Fstat` and `LStat`
+- `Umask`
+- `WriteFile` and `WriteReader`
+
+Several operations accept functional options:
+
+| Option | Purpose |
+|---|---|
+| `WithAtomicity` | Requests atomic file creation or replacement |
+| `WithAllowNonAtomicReplace` | Allows a non-atomic replacement where atomic replacement is unavailable |
+| `WithFileMode` | Sets the requested file mode |
+| `WithDefaultFileMode` | Changes the default mode used when no explicit mode is supplied |
+| `WithKeepFileMode` | Preserves the mode of an existing destination |
+| `WithFlags` | Adds file-open flags |
+| `WithReadOnlyMode` | Controls Windows read-only attribute handling |
+| `WithRetrySeconds` | Retries selected operations for a bounded period |
+| `WithSetSymlinkOwner` | Requests ownership adjustment for Windows symbolic links |
+
+An option may apply only to the operations documented for it. Options that
+control Windows-specific behavior are ignored on other operating systems.
+
+## Behavior and limitations
+
+Cross-platform filesystem behavior cannot be made identical in every case.
+Callers should account for the following:
+
+- **Filesystem support varies.** An operating system may support a metadata
+  field even when a particular local, network, virtual, or removable filesystem
+  does not.
+- **Capability functions describe platform support.** A `Supports*` result does
+  not override filesystem-specific limitations, mount options, permissions, or
+  runtime restrictions.
+- **Unavailable values use documented zero or sentinel values.** Check
+  `FileInfo.Error()` after reading extended values that may require additional
+  system calls.
+- **Windows permissions are represented through ACLs.** POSIX mode bits are
+  mapped to Windows access-control entries and cannot express every Windows ACL
+  configuration.
+- **User and group identity differ by operating system.** Windows SIDs are
+  mapped to integer values compatible with Cygwin, MSYS2, and Git for Windows.
+  Plan 9 uses hashes of user and group names.
+- **Atomic replacement is not durability.** A successful atomic rename does not
+  by itself guarantee persistence after a system or storage failure.
+- **Symbolic-link support may require privileges or configuration.** This is
+  especially relevant on Windows and restricted mobile environments.
+- **Network and virtual filesystems may have different semantics.** Test the
+  actual filesystems your application supports.
+
+The project is currently pre-v1. Review [CHANGELOG.md](CHANGELOG.md) for
+breaking changes before upgrading between releases.
+
+## Platform support
+
+### Extended file metadata
+
+`Stat`, `Fstat`, and `Lstat` return a `FileInfo` value. Support for extended metadata
+depends on both the operating system and the underlying filesystem.
 
 | OS           | PartitionID()/ <br/>FileID()* | Links()* | ATime()*<br/>(last<br/>*A*ccessed) | BTime()*<br/>(*B*irthed/<br/>created) | CTime()*<br/>(metadata<br/>last *C*hanged) | UID()/GID() |
 |--------------|--------|--------|------|--------|------|-------|
@@ -178,21 +332,24 @@ The table below lists the OS' support for each of the `FileInfo` functions:
 | Windows      | ✅     | ✅    | ✅   | ✅    | ✅   | ✅‡  |
 <!--           | PartID+ | Links | ATime | BTime | CTime | UID+ | -->
 
-Key:<br/>
-✅ fully supported.<br/>
-☑️ the UID() and GID() values are 32-bit hashes of the user and group names.<br/>
-✖️ not implemented (but if the OS supports it, so we could add support).<br/>
-❌ not implemented (as it appears the OS doesn't support it).<br/>
+**Key**
+
+- ✅ Fully supported by the operating-system implementation.
+- ☑️ Emulated or synthesized as described below.
+- ✖️ Not currently implemented although the operating system may support it.
+- ❌ Not implemented because the operating system appears not to provide it.
 <!-- 🚧 planned to be implemented.<br/> -->
 
-\* Support will depend on the underlying file system. See [Comparison of file systems](https://wikipedia.org/wiki/Comparison_of_file_systems#Metadata) for details.<br/>
-† Not supported under the Tinygo compiler.<br/>
-‡ Provides the same integer values as Cygwin/MSYS2/Git for Windows in mapping Windows SIDs (Security Identifiers).<br/>
-§ It appears Android 7 (API 24) and higher disallows hard link creation by default.<br/>
+\* Actual support depends on the underlying filesystem. See [Comparison of file systems](https://wikipedia.org/wiki/Comparison_of_file_systems#Metadata) for details.
 
-# Other Functions
+† Not supported when compiled with TinyGo.
 
-The table below lists the OS' support for other functions in this library:
+‡ Windows values use the same SID-to-integer mapping as Cygwin, MSYS2, and Git
+for Windows.
+
+§ Android 7/API 24 and later appear to disallow hard-link creation by default.
+
+### Other operations
 
 | OS           | Chmod()* | Fstat() | Nice()/<br/>Renice() | PartitionType() | Symlink() | Umask() |
 |--------------|----------|----------|--------|------|-------|------|
@@ -213,97 +370,226 @@ The table below lists the OS' support for other functions in this library:
 | Windows      | ✅       | ✅      | ✅    | ✅   | ✅   | ✅§  |
 <!--           | Chmod    | Fstat   | Nice  | Part | Symln | Umask | -->
 
-Key:<br/>
-✅ fully supported.<br/>
-☑️ Nice() always returns 0. Renice() does nothing.<br/>
-✖️ not implemented (but if the OS supports it, so we could add support).<br/>
-❌ not implemented (as it appears the OS doesn't support it).<br/>
+**Key**
 
-\* Support will depend on the underlying file system. See [Comparison of file systems](https://wikipedia.org/wiki/Comparison_of_file_systems#Metadata) for details.<br/>
-† Not supported if compiled using the Tinygo compiler.<br/>
-‡ Not supported on openbsd/ppc64, netbsd/386, freebsd/riscv64, and aix/ppc64 (cgo only), due to compile issues.<br/>
-§ Implemented via a `UMASK=0NNN` environment variable.
+- ✅ Fully supported.
+- ☑️ `Nice` always returns `0`, and `Renice` performs no operation.
+- ✖️ Not currently implemented although the operating system may support it.
+- ❌ Not implemented because the operating system appears not to provide it.
 
-# Environmental variables
+\* Actual support depends on the underlying filesystem. See [Comparison of file systems](https://wikipedia.org/wiki/Comparison_of_file_systems#Metadata) for details.
 
-## Non-test environmental variables
+† Not supported when compiled with TinyGo.
 
-The following variable is used by the compat library:
+‡ Not supported on `openbsd/ppc64`, `netbsd/386`, `freebsd/riscv64`, or
+`aix/ppc64` with CGO because of compilation limitations.
 
-### UMASK (Windows only)
+§ Implemented through the `UMASK=0NNN` environment variable.
 
-Set to the default umask value to start with. If not set 0o022 is used. Used on
-Windows only.
+## Environment variables
 
-## Test-only environmental variables
+### Runtime configuration
 
-The following variables are only used by compat's testing suite:
+#### `UMASK` — Windows only
 
-### COMPAT_DEBUG
+Sets the initial default umask. When unset, `0o022` is used.
 
-Set to DEBUG will email helpful debugging information.
-Set to DUMP to dump ACL information (on Windows only).
+### Test configuration
 
-### COMPAT_DEBUG_FS
+The following variables are used only by the project's test suite.
 
-Set to the filesystem to test, or "All" to test all of them. In addition to the
-native filesystem, the following virtual filesystems are supported:
+#### `COMPAT_DEBUG`
 
-On Linux:
+- Set to `DEBUG` to emit additional debugging information.
+- Set to `DUMP` to dump Windows ACL information.
 
-* Btrfs
-* exFAT
-* ext2
-* ext3
-* ext4
-* F2FS
-* FAT
-* FAT32
-* NTFS
-* ReiserFS
-* XFS
+#### `COMPAT_DEBUG_FS`
 
-On macOS (Darwin):
+Selects a filesystem to test. Set it to `All` to test every available
+filesystem.
 
-* APFS
-* ExFAT
-* FAT32
-* HFS+
-* HFS+J
-* HFSX
-* JHFS+
-* JHFS+X
-* UDF
+Supported test filesystems include:
 
-On Windows:
+**Linux**
 
-* exFAT
-* FAT32
-* FAT (Disabled for now)
-* NTFS
-* ReFS
+- Btrfs
+- exFAT
+- ext2
+- ext3
+- ext4
+- F2FS
+- FAT
+- FAT32
+- NTFS
+- ReiserFS
+- XFS
 
-### COMPAT_DEBUG_FS_PATH
+**macOS**
 
-Set to the path to use when mounting virtual filesystems. The defaults are:
+- APFS
+- exFAT
+- FAT32
+- HFS+
+- HFS+J
+- HFSX
+- JHFS+
+- JHFS+X
+- UDF
 
-* Linux: /mnt/
-* macOS: /Volumes/
-* Windows: Z:\
+**Windows**
 
-### COMPAT_DEBUG_FS_SIZE
+- exFAT
+- FAT32
+- FAT — currently disabled
+- NTFS
+- ReFS
 
-Set to the size of the virtual filesystem volume. The default is 2GB.
+#### `COMPAT_DEBUG_FS_PATH`
 
-### COMPAT_DEBUG_PERM (Windows only)
+Sets the path used to mount test filesystems.
 
-Set to the default file permissions to test with. The default is to test with all
-permissions, which is a 511 different values (8^3 - 1). Used on Windows only.
+Defaults:
 
-# Contributing
+| OS | Path |
+|---|---|
+| Linux | `/mnt/` |
+| macOS | `/Volumes/` |
+| Windows | `Z:\` |
 
-Please feel free to submit issues, fork the repository and send pull requests!
+#### `COMPAT_DEBUG_FS_SIZE`
 
-# License
+Sets the size of the virtual test volume. The default is `2GB`.
 
-This project is [MIT licensed](LICENSE).
+#### `COMPAT_DEBUG_PERM` — Windows only
+
+Sets a specific file-permission value to test. When unset, the suite tests all
+511 nonzero combinations of the user, group, and other permission bits.
+
+
+## Comparing Stat Across Linux and Windows
+
+
+```go
+package main
+
+import (
+	"log"
+	"os"
+
+	"github.com/rasa/compat"
+)
+
+func main() {
+	err := compat.WriteFile("hello.txt", []byte("Hello World!"), os.FileMode(0o654))
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fi, err := compat.Stat("hello.txt")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	print(fi.String())
+}
+```
+On Linux, the above program prints:
+```text
+Name:   hello.txt
+Size:   12
+Mode:   0o654 (-rw-r-xr--)
+ModTime:2025-08-14 09:25:27.190602462 -0700 PDT // last Modified
+ATime:  2025-08-14 09:25:27.190602462 -0700 PDT // last Accessed
+BTime:  2025-08-14 09:25:27.190602462 -0700 PDT // Birthed/created
+CTime:  2025-08-14 09:25:27.190602462 -0700 PDT // metadata last Changed
+IsDir:  false
+Links:  1                                       // number of hard links
+UID:    1000 (ross)                             // user ID
+GID:    1000 (ross)                             // group ID
+PartID: 64512                                   // unique partition (device) ID
+FileID: 18756713                                // unique file ID on the partition
+```
+On Windows, the program prints:
+```text
+Name:   hello.txt
+Size:   12
+Mode:   0o654 (-rw-r-xr--)
+ModTime:2025-08-14 09:28:50.4214934 -0700 PDT
+ATime:  2025-08-14 09:28:50.4214934 -0700 PDT
+BTime:  2025-08-14 09:28:50.4209614 -0700 PDT
+CTime:  2025-08-14 09:28:50.4214934 -0700 PDT
+IsDir:  false
+Links:  1
+UID:    197609 (domain\ross)
+GID:    197121 (domain\None)
+PartID: 8
+FileID: 844424931319952
+```
+icacls shows:
+```
+icacls hello.txt
+
+hello.txt domain\ross:(R,W,D)
+          domain\None:(RX)
+          Everyone:(R)
+```
+Powershell shows:
+```
+powershell -command "Get-Acl hello.txt | Format-List"
+
+Path   : Microsoft.PowerShell.Core\FileSystem::C:\path\to\hello.txt
+Owner  : domain\ross
+Group  : domain\None
+Access : Everyone Allow  Read, Synchronize
+         domain\None Allow  ReadAndExecute, Synchronize
+         domain\ross Allow  Write, Delete, Read, Synchronize
+Audit  :
+Sddl   : O:S-1-5-21-2970224322-3395479738-1485484954-1001G:S-1-5-21-2970224322-3395479738-1485484954-513D:P(A;;FR;;;WD)(A;;0x1200a9;;;S-1-5-21-2970224322-3395479738-1485484954-5
+         19f;;;S-1-5-21-2970224322-3395479738-1485484954-1001)
+```
+Cygwin's stat shows:
+```
+$ stat hello.txt
+  File: hello.txt
+  Size: 12              Blocks: 1          IO Block: 65536  regular file
+Device: 0,8     Inode: 844424931319952  Links: 1
+Access: (0754/-rwxr-xr--)  Uid: (197609/    ross)   Gid: (197121/    None)
+Access: 2025-08-14 09:28:50.421493400 -0700
+Modify: 2025-08-14 09:28:50.421493400 -0700
+Change: 2025-08-14 09:28:50.421493400 -0700
+ Birth: 2025-08-14 09:28:50.420961400 -0700
+```
+Git for Windows's stat shows:
+```
+$ stat hello.txt
+  File: hello.txt
+  Size: 11              Blocks: 1          IO Block: 65536  regular file
+Device: 8h/8d   Inode: 844424931319952  Links: 1
+Access: (0644/-rw-r--r--)  Uid: (197609/    ross)   Gid: (197121/ UNKNOWN)
+Access: 2025-08-14 09:30:06.729683700 -0700
+Modify: 2025-08-14 09:28:50.421493400 -0700
+Change: 2025-08-14 09:28:50.421493400 -0700
+ Birth: 2025-08-14 09:28:50.420961400 -0700
+```
+
+## Contributing
+
+Issues and pull requests are welcome.
+
+Filesystem behavior is highly platform-specific. Bug reports are most useful
+when they include:
+
+- the Go version;
+- `GOOS` and `GOARCH`;
+- the operating-system version;
+- the filesystem or volume type;
+- whether CGO or TinyGo was used;
+- a minimal reproducer;
+- the expected and actual results.
+
+Before submitting a pull request, run the applicable tests and format the code
+with the standard Go tools.
+
+## License
+
+`compat` is available under the [MIT License](LICENSE).
