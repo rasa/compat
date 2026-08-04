@@ -2,13 +2,14 @@
 # SPDX-FileCopyrightText: Copyright © 2025 Ross Smith II <ross@smithii.com>
 # SPDX-License-Identifier: MIT
 
-export GOTOOLCHAIN := go1.26.5+auto
+export GOTOOLCHAIN := go1.25.6+auto
 
-export GOLANGCI_LINT_VER := latest # v2.9.0
-export GOFUMPT_VER := latest # v0.9.2
-export GORELEASER_VER := latest # v2.13.0
-export MODERNIZE_VER := master # v0.42.0
-export VULN_VER := latest # v1.2.0
+export GOLANGCI_LINT_VER := v2.12.2
+export GOFUMPT_VER := v0.11.0
+export GORELEASER_VER := v2.13.3
+export MISSPELL_VER := v0.8.0
+export MODERNIZE_VER := v0.48.0
+export VULN_VER := v1.2.0
 
 export SHELL := /bin/bash
 export NO_COLOR := 1
@@ -124,15 +125,16 @@ endif
 
 .PHONY: bld
 bld: ## go build -trimpath -o ./bin/ ./...
-bld:
 	go build -trimpath -o ./bin/ ./...
 
 .PHONY: bldtest
 bldtest: ## make bld test
-bldtest: bld test
+bldtest:         bld test
 
 .PHONY: check
-check: fmt fumpt lint modernize spell vet restore diffx ## make fmt fumpt lint modernize spell vet restore diffx
+check: ## make fmt fumpt lint modernize spell vet restore diffx
+check:         fmt fumpt lint modernize spell vet restore diffx
+
 
 .PHONY: diffx
 diffx: ## git diff -uw
@@ -156,7 +158,7 @@ install: ## install/update gofumpt, golangci-lint, goreleaser, govulncheck, miss
 	export GOFLAGS="$(GOFLAGS) $(TOOL_OPTS)" ;\
 	go get github.com/golangci/golangci-lint/v2/cmd/golangci-lint@$(GOLANGCI_LINT_VER) ;\
 	go get github.com/goreleaser/goreleaser/v2@$(GORELEASER_VER) ;\
-	go get github.com/client9/misspell/cmd/misspell@latest ;\
+	go get github.com/golangci/misspell/cmd/misspell@$(MISSPELL_VER) ;\
 	go get golang.org/x/tools/go/analysis/passes/modernize/cmd/modernize@$(MODERNIZE_VER) ;\
 	go get golang.org/x/vuln/cmd/govulncheck@$(VULN_VER) ;\
 	go get mvdan.cc/gofumpt@$(GOFUMPT_VER)
@@ -167,8 +169,9 @@ modernize: ## modernize ./...
 	go tool $(TOOL_OPTS) modernize -fix ./...
 
 .PHONY: nuke
-nuke: clean ## make clean and go clean -i -cache -testcache -modcache -fuzzcache
-	rm -rf '"$(shell go env GOCACHE)/../golangci-lint"'
+nuke: ## make clean and go clean -i -cache -testcache -modcache -fuzzcache
+nuke: clean
+	rm -rf "$(shell go env GOCACHE)/../golangci-lint"
 	go clean -i -cache -testcache -modcache -fuzzcache
 
 .PHONY: restore
