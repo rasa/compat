@@ -13,10 +13,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Add `SupportsATimeSetting()` function.
 - Add `UnsupportedError` error.
 - Add `NotYetImplementedError` error.
+- Add running tests on Plan 9 VM.
 
 ### Fixed
-
-- Add running tests on Plan9 VM.
 
 ### Changed
 
