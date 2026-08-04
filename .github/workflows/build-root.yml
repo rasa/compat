@@ -127,10 +127,11 @@ jobs:
             exfatprogs \
             f2fs-tools \
             ntfs-3g \
-            reiserfsprogs \
             xfsprogs \
             kmod \
             util-linux
+
+          apt-get install -y reiserfsprogs || true
 
           modprobe loop || true
           modprobe btrfs || true
