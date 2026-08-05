@@ -160,12 +160,8 @@ jobs:
           # -count=1 disables test caching
           script: |
             set -vx
-            export CC="${ANDROID_NDK}/${CC_SUFFIX}"
             env | sort
-            ls -l ${ANDROID_NDK}/toolchains/llvm/prebuilt
-            ls -l ${ANDROID_NDK}/toolchains/llvm/prebuilt/linux-x86_64/bin
-            ls -l "${CC}"
-            CC="${CC}" go test -exec "${RUNNER_TEMP}/run-on-android" -count=1 -v .
+            CC="${ANDROID_NDK}/${CC_SUFFIX}" go test -exec "${RUNNER_TEMP}/run-on-android" -count=1 -v .
 
 permissions:
   contents: read
