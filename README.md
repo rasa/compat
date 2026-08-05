@@ -594,21 +594,21 @@ Go applications commonly rely on focused packages that normalize one category
 of operating-system behavior. The following projects solve problems adjacent to,
 but generally separate from, portable file metadata.
 
-| Capability | Package | Purpose |
+| Package | Capability | Purpose |
 |---|---|---|
-| Filesystem change notifications | [`fsnotify/fsnotify`](https://github.com/fsnotify/fsnotify) | Wraps facilities such as inotify, kqueue, `ReadDirectoryChangesW`, and FEN behind one event API |
-| Application directories | [`adrg/xdg`](https://github.com/adrg/xdg) | Provides standard configuration, data, cache, state, runtime, and user-directory paths across Unix, Windows, macOS, and Plan 9 |
-| Move files to trash | [`hymkor/trash-go`](https://github.com/hymkor/trash-go) | Uses the Windows Recycle Bin and experimentally supports Freedesktop-style trash directories on non-Windows systems |
-| Open URLs or files | [`pkg/browser`](https://github.com/pkg/browser) | Opens URLs, files, or reader contents using the platform's browser facilities |
-| System and process information | [`shirou/gopsutil`](https://github.com/shirou/gopsutil) | Provides cross-platform CPU, memory, host, disk, network, and process information |
-| Process control | [`shirou/gopsutil`](https://github.com/shirou/gopsutil) | Provides operations including process enumeration and, where supported, suspend, resume, foreground/background status, and CPU affinity |
-| Native-library calls without Cgo | [`ebitengine/purego`](https://github.com/ebitengine/purego) | Calls functions in native shared libraries without requiring conventional Cgo wrappers |
-| Credential storage | [`99designs/keyring`](https://github.com/99designs/keyring) | Provides a common interface for macOS Keychain, Windows Credential Manager, Secret Service, KWallet, pass, and other credential stores |
-| File locking | [`gofrs/flock`](https://github.com/gofrs/flock) | Provides a portable file-locking interface over platform-specific locking mechanisms |
-| Available CPU count | [`tklauser/numcpus`](https://github.com/tklauser/numcpus) | Determines the number of CPUs available to the current process using platform-specific facilities |
-| Battery and AC status | [`distatus/battery`](https://github.com/distatus/battery) | Reports battery capacity, charge state, and power information across supported operating systems |
-| Terminal detection | [`mattn/go-isatty`](https://github.com/mattn/go-isatty) | Determines whether a file descriptor refers to a terminal or character device |
-| Portable colored output | [`mattn/go-colorable`](https://github.com/mattn/go-colorable) | Makes ANSI-colored output work through Windows console handling and ordinary writers on other systems |
+| [`99designs/keyring`](https://github.com/99designs/keyring) | Credential storage | Provides a common interface for macOS Keychain, Windows Credential Manager, Secret Service, KWallet, `pass`, KeyCtl, and other credential stores |
+| [`adrg/xdg`](https://github.com/adrg/xdg) | Application directories | Provides standard configuration, data, cache, state, runtime, and user-directory paths across Unix, Windows, macOS, and Plan 9 |
+| [`distatus/battery`](https://github.com/distatus/battery) | Battery and AC status | Reports battery capacity, charging state, and power information across supported operating systems |
+| [`ebitengine/purego`](https://github.com/ebitengine/purego) | Native-library interoperability | Calls functions in native shared libraries without requiring conventional Cgo wrappers |
+| [`fsnotify/fsnotify`](https://github.com/fsnotify/fsnotify) | Filesystem change notifications | Wraps facilities such as inotify, kqueue, `ReadDirectoryChangesW`, and FEN behind one event API |
+| [`gofrs/flock`](https://github.com/gofrs/flock) | File locking | Provides a portable file-locking interface over platform-specific locking mechanisms |
+| [`hymkor/trash-go`](https://github.com/hymkor/trash-go) | Move files to trash | Uses the Windows Recycle Bin and experimentally supports Freedesktop-style trash directories on non-Windows systems |
+| [`mattn/go-colorable`](https://github.com/mattn/go-colorable) | Portable colored output | Supports ANSI-colored output through Windows console handling and ordinary writers on other systems |
+| [`mattn/go-isatty`](https://github.com/mattn/go-isatty) | Terminal detection | Determines whether a file descriptor refers to a terminal or character device |
+| [`pkg/browser`](https://github.com/pkg/browser) | Open URLs and files | Opens URLs, files, or reader contents through the platform's browser facilities |
+| [`shirou/gopsutil`](https://github.com/shirou/gopsutil) | System and process information | Provides cross-platform CPU, memory, host, disk, network, and process information |
+| [`shirou/gopsutil/process`](https://pkg.go.dev/github.com/shirou/gopsutil/v4/process) | Process information and control | Lists processes and provides operations such as suspend, resume, foreground or background detection, and CPU affinity where supported |
+| [`tklauser/numcpus`](https://github.com/tklauser/numcpus) | Available CPU count | Determines the number of CPUs available to the current process using platform-specific facilities |
 
 ## Contributing
 
