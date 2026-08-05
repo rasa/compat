@@ -122,14 +122,14 @@ func TestRenameWithAtomicity(t *testing.T) {
 	}
 }
 
-func TestRenameWithAllowNonAtomicReplace(t *testing.T) {
+func TestRenameWithNonAtomicReplace(t *testing.T) {
 	old, err := tempFile(t)
 	if err != nil {
 		t.Fatal(err)
 	}
 	new := old + ".new"
 	cleanup(t, old, new)
-	err = compat.Rename(old, new, compat.WithAllowNonAtomicReplace(true))
+	err = compat.Rename(old, new, compat.WithNonAtomicReplace(true))
 	if err != nil {
 		t.Fatalf("renaming '%v' to '%v': %v", old, new, err)
 	}

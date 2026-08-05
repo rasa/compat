@@ -9,8 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Added
 
-- Add `WithAllowNonAtomicReplace()` option.
-- Add `SupportsATimeSetting()` function.
+- Add `WithNonAtomicReplace()` option.
+- Add `SupportsATimeSetting()` function. False on Plan 9 only.
 - Add `UnsupportedError` error.
 - Add `NotYetImplementedError` error.
 - Add running tests on Plan 9 VM.
@@ -18,6 +18,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ### Fixed
 
 ### Changed
+
+- Add error return to `SameFiles` **BREAKING CHANGE**
+- Add error return to `SamePartitions` **BREAKING CHANGE**
 
 ## [0.5.5](https://github.com/rasa/compat/compare/v0.5.4...v0.5.5)
 

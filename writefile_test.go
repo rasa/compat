@@ -52,7 +52,7 @@ func TestWriteFileWithAtomicity(t *testing.T) { //nolint:dupl
 	perm := compat.CreatePerm // 0o666
 	opts := []compat.Option{compat.WithAtomicity(true)}
 	if compat.IsPlan9 {
-		opts = append(opts, compat.WithAllowNonAtomicReplace(true))
+		opts = append(opts, compat.WithNonAtomicReplace(true))
 	}
 	err = compat.WriteFile(file, helloBytes, perm, opts...)
 	if err != nil {
@@ -84,7 +84,7 @@ func TestWriteFileWithAtomicityCurrentDir(t *testing.T) { //nolint:dupl
 	perm := compat.CreatePerm // 0o666
 	opts := []compat.Option{compat.WithAtomicity(true)}
 	if compat.IsPlan9 {
-		opts = append(opts, compat.WithAllowNonAtomicReplace(true))
+		opts = append(opts, compat.WithNonAtomicReplace(true))
 	}
 	err = compat.WriteFile(base, helloBytes, perm, opts...)
 	if err != nil {
@@ -114,7 +114,7 @@ func TestWriteFileWithAtomicityNoPerms(t *testing.T) { //nolint:dupl
 	perm := compat.CreatePerm // 0o600
 	opts := []compat.Option{compat.WithAtomicity(true)}
 	if compat.IsPlan9 {
-		opts = append(opts, compat.WithAllowNonAtomicReplace(true))
+		opts = append(opts, compat.WithNonAtomicReplace(true))
 	}
 	err = compat.WriteFile(file, helloBytes, 0, opts...)
 	if err != nil {
@@ -146,7 +146,7 @@ func TestWriteFileWithAtomicityWithDefaultFileMode(t *testing.T) { //nolint:dupl
 		compat.WithDefaultFileMode(perm644),
 	}
 	if compat.IsPlan9 {
-		opts = append(opts, compat.WithAllowNonAtomicReplace(true))
+		opts = append(opts, compat.WithNonAtomicReplace(true))
 	}
 	err = compat.WriteFile(file, helloBytes, 0, opts...)
 	if err != nil {
@@ -211,7 +211,7 @@ func TestWriteFileWithAtomicityWithKeepFileMode(t *testing.T) { //nolint:dupl
 		compat.WithKeepFileMode(true),
 	}
 	if compat.IsPlan9 {
-		opts = append(opts, compat.WithAllowNonAtomicReplace(true))
+		opts = append(opts, compat.WithNonAtomicReplace(true))
 	}
 	err = compat.WriteFile(file, helloBytes, 0, opts...)
 	if err != nil {
@@ -250,7 +250,7 @@ func TestWriteFileWithAtomicityWithKeepFileModeFalse(t *testing.T) { //nolint:du
 		compat.WithKeepFileMode(false),
 	}
 	if compat.IsPlan9 {
-		opts = append(opts, compat.WithAllowNonAtomicReplace(true))
+		opts = append(opts, compat.WithNonAtomicReplace(true))
 	}
 	err = compat.WriteFile(file, helloBytes, 0, opts...)
 	if err != nil {
@@ -287,7 +287,7 @@ func TestWriteFileWithAtomicityWithFileMode(t *testing.T) { //nolint:dupl
 		compat.WithFileMode(perm644),
 	}
 	if compat.IsPlan9 {
-		opts = append(opts, compat.WithAllowNonAtomicReplace(true))
+		opts = append(opts, compat.WithNonAtomicReplace(true))
 	}
 	err = compat.WriteFile(file, helloBytes, 0, opts...)
 	if err != nil {
@@ -380,7 +380,7 @@ func TestWriteFileWithAtomicityInvalid(t *testing.T) { //nolint:dupl
 		compat.WithFileMode(perm600),
 	}
 	if compat.IsPlan9 {
-		opts = append(opts, compat.WithAllowNonAtomicReplace(true))
+		opts = append(opts, compat.WithNonAtomicReplace(true))
 	}
 	err := compat.WriteFile(invalidName, helloBytes, 0, opts...)
 	if err == nil {
@@ -395,7 +395,7 @@ func TestWriteFileWithAtomicityInvalidKeepFileMode(t *testing.T) { //nolint:dupl
 		compat.WithKeepFileMode(false),
 	}
 	if compat.IsPlan9 {
-		opts = append(opts, compat.WithAllowNonAtomicReplace(true))
+		opts = append(opts, compat.WithNonAtomicReplace(true))
 	}
 	err := compat.WriteFile(invalidName, helloBytes, 0, opts...)
 	if err == nil {
@@ -426,7 +426,7 @@ func TestWriteFileWithAtomicityInvalidCantRead(t *testing.T) { //nolint:dupl
 		compat.WithKeepFileMode(true),
 	}
 	if compat.IsPlan9 {
-		opts = append(opts, compat.WithAllowNonAtomicReplace(true))
+		opts = append(opts, compat.WithNonAtomicReplace(true))
 	}
 	err = compat.WriteFile(file, helloBytes, 0, opts...)
 	if err != nil {
@@ -473,7 +473,7 @@ func TestWriteFileWithAtomicityInvalidReadOnlyDirectory(t *testing.T) { //nolint
 
 	opts = []compat.Option{compat.WithAtomicity(true)}
 	if compat.IsPlan9 {
-		opts = append(opts, compat.WithAllowNonAtomicReplace(true))
+		opts = append(opts, compat.WithNonAtomicReplace(true))
 	}
 	err = compat.WriteFile(file, helloBytes, 0, opts...)
 	if err == nil {
@@ -498,7 +498,7 @@ func TestWriteFileWithAtomicityError(t *testing.T) {
 
 	opts := []compat.Option{compat.WithAtomicity(true)}
 	if compat.IsPlan9 {
-		opts = append(opts, compat.WithAllowNonAtomicReplace(true))
+		opts = append(opts, compat.WithNonAtomicReplace(true))
 	}
 	err = compat.WriteFile(file, errReader{}, 0, opts...)
 	if err == nil {

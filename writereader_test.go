@@ -52,7 +52,7 @@ func TestWriteReaderWithAtomicity(t *testing.T) { //nolint:dupl
 	perm := compat.CreatePerm // 0o666
 	opts := []compat.Option{compat.WithAtomicity(true)}
 	if compat.IsPlan9 {
-		opts = append(opts, compat.WithAllowNonAtomicReplace(true))
+		opts = append(opts, compat.WithNonAtomicReplace(true))
 	}
 	err = compat.WriteReader(file, helloBuf, perm, opts...)
 	if err != nil {
@@ -84,7 +84,7 @@ func TestWriteReaderWithAtomicityCurrentDir(t *testing.T) { //nolint:dupl
 	perm := compat.CreatePerm // 0o666
 	opts := []compat.Option{compat.WithAtomicity(true)}
 	if compat.IsPlan9 {
-		opts = append(opts, compat.WithAllowNonAtomicReplace(true))
+		opts = append(opts, compat.WithNonAtomicReplace(true))
 	}
 	err = compat.WriteReader(base, helloBuf, perm, opts...)
 	if err != nil {
@@ -114,7 +114,7 @@ func TestWriteReaderWithAtomicityNoPerms(t *testing.T) { //nolint:dupl
 	perm := compat.CreatePerm // 0o600
 	opts := []compat.Option{compat.WithAtomicity(true)}
 	if compat.IsPlan9 {
-		opts = append(opts, compat.WithAllowNonAtomicReplace(true))
+		opts = append(opts, compat.WithNonAtomicReplace(true))
 	}
 	err = compat.WriteReader(file, helloBuf, 0, opts...)
 	if err != nil {
@@ -146,7 +146,7 @@ func TestWriteReaderWithAtomicityWithDefaultFileMode(t *testing.T) { //nolint:du
 		compat.WithDefaultFileMode(perm644),
 	}
 	if compat.IsPlan9 {
-		opts = append(opts, compat.WithAllowNonAtomicReplace(true))
+		opts = append(opts, compat.WithNonAtomicReplace(true))
 	}
 	err = compat.WriteReader(file, helloBuf, 0, opts...)
 	if err != nil {
@@ -211,7 +211,7 @@ func TestWriteReaderWithAtomicityWithKeepFileMode(t *testing.T) { //nolint:dupl
 		compat.WithKeepFileMode(true),
 	}
 	if compat.IsPlan9 {
-		opts = append(opts, compat.WithAllowNonAtomicReplace(true))
+		opts = append(opts, compat.WithNonAtomicReplace(true))
 	}
 	err = compat.WriteReader(file, helloBuf, 0, opts...)
 	if err != nil {
@@ -250,7 +250,7 @@ func TestWriteReaderWithAtomicityWithKeepFileModeFalse(t *testing.T) { //nolint:
 		compat.WithKeepFileMode(false),
 	}
 	if compat.IsPlan9 {
-		opts = append(opts, compat.WithAllowNonAtomicReplace(true))
+		opts = append(opts, compat.WithNonAtomicReplace(true))
 	}
 	err = compat.WriteReader(file, helloBuf, 0, opts...)
 	if err != nil {
@@ -287,7 +287,7 @@ func TestWriteReaderWithAtomicityWithFileMode(t *testing.T) { //nolint:dupl
 		compat.WithFileMode(perm644),
 	}
 	if compat.IsPlan9 {
-		opts = append(opts, compat.WithAllowNonAtomicReplace(true))
+		opts = append(opts, compat.WithNonAtomicReplace(true))
 	}
 	err = compat.WriteReader(file, helloBuf, 0, opts...)
 	if err != nil {
@@ -380,7 +380,7 @@ func TestWriteReaderWithAtomicityInvalid(t *testing.T) { //nolint:dupl
 		compat.WithFileMode(perm600),
 	}
 	if compat.IsPlan9 {
-		opts = append(opts, compat.WithAllowNonAtomicReplace(true))
+		opts = append(opts, compat.WithNonAtomicReplace(true))
 	}
 	err := compat.WriteReader(invalidName, helloBuf, 0, opts...)
 	if err == nil {
@@ -395,7 +395,7 @@ func TestWriteReaderWithAtomicityInvalidKeepFileMode(t *testing.T) { //nolint:du
 		compat.WithKeepFileMode(false),
 	}
 	if compat.IsPlan9 {
-		opts = append(opts, compat.WithAllowNonAtomicReplace(true))
+		opts = append(opts, compat.WithNonAtomicReplace(true))
 	}
 	err := compat.WriteReader(invalidName, helloBuf, 0, opts...)
 	if err == nil {
@@ -426,7 +426,7 @@ func TestWriteReaderWithAtomicityInvalidCantRead(t *testing.T) { //nolint:dupl
 		compat.WithKeepFileMode(true),
 	}
 	if compat.IsPlan9 {
-		opts = append(opts, compat.WithAllowNonAtomicReplace(true))
+		opts = append(opts, compat.WithNonAtomicReplace(true))
 	}
 	err = compat.WriteReader(file, helloBuf, 0, opts...)
 	if err != nil {
@@ -473,7 +473,7 @@ func TestWriteReaderWithAtomicityInvalidReadOnlyDirectory(t *testing.T) { //noli
 
 	opts = []compat.Option{compat.WithAtomicity(true)}
 	if compat.IsPlan9 {
-		opts = append(opts, compat.WithAllowNonAtomicReplace(true))
+		opts = append(opts, compat.WithNonAtomicReplace(true))
 	}
 	err = compat.WriteReader(file, helloBuf, 0, opts...)
 	if err == nil {
@@ -497,7 +497,7 @@ func TestWriteReaderWithAtomicityError(t *testing.T) {
 
 	opts := []compat.Option{compat.WithAtomicity(true)}
 	if compat.IsPlan9 {
-		opts = append(opts, compat.WithAllowNonAtomicReplace(true))
+		opts = append(opts, compat.WithNonAtomicReplace(true))
 	}
 	err = compat.WriteReader(file, errReader{}, 0, opts...)
 	if err == nil {

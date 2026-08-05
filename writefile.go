@@ -32,7 +32,7 @@ import (
 // On Plan 9, atomic creation of a new file is supported, but atomic replacement
 // of an existing file is not. If the destination exists, WriteFile returns an
 // error matching errors.ErrUnsupported and leaves the destination unchanged.
-// To work around this issue, use the WithAllowNonAtomicReplace option.
+// To work around this issue, use the WithNonAtomicReplace option.
 func WriteFile(name string, data []byte, perm os.FileMode, opts ...Option) error {
 	return WriteReader(name, bytes.NewReader(data), perm, opts...)
 }

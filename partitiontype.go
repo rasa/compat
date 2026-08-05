@@ -38,7 +38,8 @@ func PartitionType(ctx context.Context, path string) (string, error) {
 
 	for _, p := range parts {
 		normalizedMountpoint := normalizePath(p.Mountpoint)
-		if SamePartitions(normalizedPath, normalizedMountpoint) {
+		same, _ := SamePartitions(normalizedPath, normalizedMountpoint)
+		if same {
 			return strings.ToLower(p.Fstype), nil
 		}
 	}

@@ -10,7 +10,7 @@ package compat
 // On Plan 9, atomic replacement of an existing file is not supported. If the
 // destination exists, WriteReader returns an error matching
 // errors.ErrUnsupported and leaves the destination unchanged.
-// To work around this issue, use the WithAllowNonAtomicReplace option.
+// To work around this issue, use the WithNonAtomicReplace option.
 func Rename(source, destination string, opts ...Option) error {
 	return rename(source, destination, opts...)
 }

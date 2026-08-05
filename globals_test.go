@@ -15,7 +15,7 @@ import (
 
 func TestGetOptions(t *testing.T) {
 	opts := make([]compat.Option, 0)
-	opts = append(opts, compat.WithAllowNonAtomicReplace(true))
+	opts = append(opts, compat.WithNonAtomicReplace(true))
 	opts = append(opts, compat.WithAtomicity(true))
 	opts = append(opts, compat.WithDefaultFileMode(perm777))
 	opts = append(opts, compat.WithFileMode(perm777))
@@ -39,7 +39,7 @@ func TestBuildOptions(t *testing.T) {
 	compat.SetOptions(opts...)
 	fopts := compat.BuildOptions(opts...)
 	got := fopts.String()
-	want := `allowNonAtomicReplace:      true
+	want := `nonAtomicReplace:      true
 atomically:      true
 defaultFileMode: 0o777 (-rwxrwxrwx)
 fileMode:        0o777 (-rwxrwxrwx)
@@ -58,7 +58,7 @@ setSymlinkOwner: true
 
 func TestBuildOptions2(t *testing.T) {
 	opts := make([]compat.Option, 0)
-	opts = append(opts, compat.WithAllowNonAtomicReplace(true))
+	opts = append(opts, compat.WithNonAtomicReplace(true))
 	opts = append(opts, compat.WithAtomicity(true))
 	opts = append(opts, compat.WithDefaultFileMode(perm777))
 	opts = append(opts, compat.WithFileMode(perm777))
@@ -70,7 +70,7 @@ func TestBuildOptions2(t *testing.T) {
 	compat.SetOptions(opts...)
 	fopts := compat.BuildOptions(opts...)
 	got := fopts.String()
-	want := `allowNonAtomicReplace:      true
+	want := `nonAtomicReplace:      true
 atomically:      true
 defaultFileMode: 0o777 (-rwxrwxrwx)
 fileMode:        0o777 (-rwxrwxrwx)

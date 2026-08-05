@@ -81,7 +81,8 @@ func samePartitionl() {
 func samePartitions() {
 	exe, _ := os.Executable()
 
-	fmt.Printf("SamePartitions(): %v\n", compat.SamePartitions(exe, exe))
+	same, _ := compat.SamePartitions(exe, exe)
+	fmt.Printf("SamePartitions(): %v\n", same)
 }
 
 func sameFile() {
@@ -128,5 +129,6 @@ func sameFilel() {
 func sameFiles() {
 	exe, _ := os.Executable()
 
-	fmt.Printf("SameFiles(): %v\n", compat.SameFiles(exe, exe))
+	same, _ := compat.SameFiles(exe, exe)
+	fmt.Printf("SameFiles(): %v\n", same)
 }

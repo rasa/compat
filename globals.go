@@ -22,8 +22,8 @@ func GetOptions() []Option { //nolint:unused
 	o := *options.Load()
 	opts := make([]Option, 0)
 
-	if o.allowNonAtomicReplace != optionDefaults.allowNonAtomicReplace {
-		opts = append(opts, WithAllowNonAtomicReplace(o.allowNonAtomicReplace))
+	if o.nonAtomicReplace != optionDefaults.nonAtomicReplace {
+		opts = append(opts, WithNonAtomicReplace(o.nonAtomicReplace))
 	}
 	if o.atomically != optionDefaults.atomically {
 		opts = append(opts, WithAtomicity(o.atomically))
@@ -72,7 +72,7 @@ func buildOptions(opts ...Option) Options { //nolint:unused
 func (o Options) String() string { //nolint:unused
 	var b strings.Builder
 
-	fmt.Fprintf(&b, "allowNonAtomicReplace:      %v\n", o.allowNonAtomicReplace)
+	fmt.Fprintf(&b, "nonAtomicReplace:      %v\n", o.nonAtomicReplace)
 	fmt.Fprintf(&b, "atomically:      %v\n", o.atomically)
 	fmt.Fprintf(&b, "defaultFileMode: 0o%03o (%v)\n", o.defaultFileMode, o.defaultFileMode)
 	fmt.Fprintf(&b, "fileMode:        0o%03o (%v)\n", o.fileMode, o.fileMode)

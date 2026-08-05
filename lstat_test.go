@@ -617,8 +617,13 @@ func TestLstatSamePartitions(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if got := compat.SamePartitions(name, name); !got {
-		t.Fatalf("SamePartitions(): got %v, want true", got)
+	got, err := compat.SamePartitions(name, name)
+	if err != nil {
+		t.Fatal(err)
+	}
+	want := true
+	if got != want {
+		t.Fatalf("SamePartitions(): got %v, want %v", got, want)
 	}
 }
 
@@ -657,8 +662,13 @@ func TestLstatSameFiles(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if got := compat.SameFiles(name, name); !got {
-		t.Fatalf("SameFiles(): got %v, want true", got)
+	got, err := compat.SameFiles(name, name)
+	if err != nil {
+		t.Fatal(err)
+	}
+	want := true
+	if got != want {
+		t.Fatalf("SameFiles(): got %v, want %v", got, want)
 	}
 }
 
@@ -687,8 +697,10 @@ func TestLstatDiffFile(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if got := compat.SameFile(fi1, fi2); got {
-		t.Fatalf("SameFile(): got %v, want true", got)
+	got := compat.SameFile(fi1, fi2)
+	want := false
+	if got != want {
+		t.Fatalf("SameFile(): got %v, want %v", got, want)
 	}
 }
 
@@ -707,8 +719,13 @@ func TestLstatDiffFiles(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if got := compat.SameFiles(name1, name2); got {
-		t.Fatalf("SameFiles(): got %v, want true", got)
+	got, err := compat.SameFiles(name1, name2)
+	if err != nil {
+		t.Fatal(err)
+	}
+	want := false
+	if got != want {
+		t.Fatalf("SameFiles(): got %v, want %v", got, want)
 	}
 }
 

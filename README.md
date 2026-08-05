@@ -191,7 +191,7 @@ an existing file is not. `WriteFile` returns an error matching
 non-atomic fallback can also pass:
 
 ```go
-compat.WithAllowNonAtomicReplace(true)
+compat.WithNonAtomicReplace(true)
 ```
 
 Atomic replacement and durable persistence are different guarantees. An atomic
@@ -285,7 +285,7 @@ Several operations accept functional options:
 | Option | Purpose |
 |---|---|
 | `WithAtomicity` | Requests atomic file creation or replacement |
-| `WithAllowNonAtomicReplace` | Allows a non-atomic replacement where atomic replacement is unavailable |
+| `WithNonAtomicReplace` | Allows a non-atomic replacement where atomic replacement is unavailable |
 | `WithFileMode` | Sets the requested file mode |
 | `WithDefaultFileMode` | Changes the default mode used when no explicit mode is supplied |
 | `WithKeepFileMode` | Preserves the mode of an existing destination |
@@ -361,13 +361,10 @@ depends on both the operating system and the underlying filesystem.
 - ❌ Not implemented because the operating system appears not to provide it.
 <!-- 🚧 planned to be implemented.<br/> -->
 
-\* Actual support depends on the underlying filesystem. See [Comparison of file systems](https://wikipedia.org/wiki/Comparison_of_file_systems#Metadata) for details.
-
-† Not supported when compiled with TinyGo.
-
+\* Actual support depends on the underlying filesystem. See [Comparison of file systems](https://wikipedia.org/wiki/Comparison_of_file_systems#Metadata) for details.<br/>
+† Not supported when compiled with TinyGo.<br/>
 ‡ Windows values use the same SID-to-integer mapping as Cygwin, MSYS2, and Git
-for Windows.
-
+for Windows.<br/>
 § Android 7/API 24 and later appear to disallow hard-link creation by default.
 
 ### Other operations
@@ -398,13 +395,10 @@ for Windows.
 - ✖️ Not currently implemented although the operating system may support it.
 - ❌ Not implemented because the operating system appears not to provide it.
 
-\* Actual support depends on the underlying filesystem. See [Comparison of file systems](https://wikipedia.org/wiki/Comparison_of_file_systems#Metadata) for details.
-
-† Not supported when compiled with TinyGo.
-
+\* Actual support depends on the underlying filesystem. See [Comparison of file systems](https://wikipedia.org/wiki/Comparison_of_file_systems#Metadata) for details.<br/>
+† Not supported when compiled with TinyGo.<br/>
 ‡ Not supported on `openbsd/ppc64`, `netbsd/386`, `freebsd/riscv64`, or
-`aix/ppc64` with CGO because of compilation limitations.
-
+`aix/ppc64` with CGO because of compilation limitations.<br/>
 § Implemented through the `UMASK=0NNN` environment variable.
 
 ## Environment variables
@@ -501,7 +495,8 @@ import (
 )
 
 func main() {
-	err := compat.WriteFile("hello.txt", []byte("Hello World!"), os.FileMode(0o654))
+	hello := []byte("Hello World!")
+	err := compat.WriteFile("hello.txt", hello, 0o654)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -592,6 +587,28 @@ Modify: 2025-08-14 09:28:50.421493400 -0700
 Change: 2025-08-14 09:28:50.421493400 -0700
  Birth: 2025-08-14 09:28:50.420961400 -0700
 ```
+
+## Related cross-platform Go packages
+
+Go applications commonly rely on focused packages that normalize one category
+of operating-system behavior. The following projects solve problems adjacent to,
+but generally separate from, portable file metadata.
+
+| Capability | Package | Purpose |
+|---|---|---|
+| Filesystem change notifications | [`fsnotify/fsnotify`](https://github.com/fsnotify/fsnotify) | Wraps facilities such as inotify, kqueue, `ReadDirectoryChangesW`, and FEN behind one event API |
+| Application directories | [`adrg/xdg`](https://github.com/adrg/xdg) | Provides standard configuration, data, cache, state, runtime, and user-directory paths across Unix, Windows, macOS, and Plan 9 |
+| Move files to trash | [`hymkor/trash-go`](https://github.com/hymkor/trash-go) | Uses the Windows Recycle Bin and experimentally supports Freedesktop-style trash directories on non-Windows systems |
+| Open URLs or files | [`pkg/browser`](https://github.com/pkg/browser) | Opens URLs, files, or reader contents using the platform's browser facilities |
+| System and process information | [`shirou/gopsutil`](https://github.com/shirou/gopsutil) | Provides cross-platform CPU, memory, host, disk, network, and process information |
+| Process control | [`shirou/gopsutil`](https://github.com/shirou/gopsutil) | Provides operations including process enumeration and, where supported, suspend, resume, foreground/background status, and CPU affinity |
+| Native-library calls without Cgo | [`ebitengine/purego`](https://github.com/ebitengine/purego) | Calls functions in native shared libraries without requiring conventional Cgo wrappers |
+| Credential storage | [`99designs/keyring`](https://github.com/99designs/keyring) | Provides a common interface for macOS Keychain, Windows Credential Manager, Secret Service, KWallet, pass, and other credential stores |
+| File locking | [`gofrs/flock`](https://github.com/gofrs/flock) | Provides a portable file-locking interface over platform-specific locking mechanisms |
+| Available CPU count | [`tklauser/numcpus`](https://github.com/tklauser/numcpus) | Determines the number of CPUs available to the current process using platform-specific facilities |
+| Battery and AC status | [`distatus/battery`](https://github.com/distatus/battery) | Reports battery capacity, charge state, and power information across supported operating systems |
+| Terminal detection | [`mattn/go-isatty`](https://github.com/mattn/go-isatty) | Determines whether a file descriptor refers to a terminal or character device |
+| Portable colored output | [`mattn/go-colorable`](https://github.com/mattn/go-colorable) | Makes ANSI-colored output work through Windows console handling and ordinary writers on other systems |
 
 ## Contributing
 

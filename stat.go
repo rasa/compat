@@ -136,18 +136,18 @@ func SameFile(fi1, fi2 FileInfo) bool {
 
 // SameFiles reports whether name1 and name2 are the same file.
 // The function follow symlinks.
-func SameFiles(name1, name2 string) bool {
+func SameFiles(name1, name2 string) (bool, error) {
 	fi1, err := Stat(name1)
 	if err != nil {
-		return false
+		return false, err
 	}
 
 	fi2, err := Stat(name2)
 	if err != nil {
-		return false
+		return false, err
 	}
 
-	return SameFile(fi1, fi2)
+	return SameFile(fi1, fi2), nil
 }
 
 // SamePartition reports whether fi1 and fi2 describe files on the same disk
@@ -171,18 +171,18 @@ func SamePartition(fi1, fi2 FileInfo) bool {
 // SamePartitions reports whether name1 and name2 are files on the same disk
 // partition.
 // The function follow symlinks.
-func SamePartitions(name1, name2 string) bool {
+func SamePartitions(name1, name2 string) (bool, error) {
 	fi1, err := Stat(name1)
 	if err != nil {
-		return false
+		return false, err
 	}
 
 	fi2, err := Stat(name2)
 	if err != nil {
-		return false
+		return false, err
 	}
 
-	return SamePartition(fi1, fi2)
+	return SamePartition(fi1, fi2), nil
 }
 
 // Stat returns a [FileInfo] describing the named file.

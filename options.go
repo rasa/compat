@@ -12,7 +12,7 @@ import (
 
 // Options define the behavior of `WriteFile()`, etc.
 type Options struct {
-	allowNonAtomicReplace bool         // default false
+	nonAtomicReplace      bool         // default false
 	atomically            bool         // default false
 	defaultFileMode       os.FileMode  // default 0
 	fileMode              os.FileMode  // default 0
@@ -31,9 +31,9 @@ type Option func(*Options)
 //
 // On Plan 9, this may temporarily leave the destination absent.
 // The default is false.
-func WithAllowNonAtomicReplace(allowNonAtomicReplace bool) Option {
+func WithNonAtomicReplace(nonAtomicReplace bool) Option {
 	return func(opts *Options) {
-		opts.allowNonAtomicReplace = allowNonAtomicReplace
+		opts.nonAtomicReplace = nonAtomicReplace
 	}
 }
 
