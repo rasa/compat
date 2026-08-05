@@ -12,7 +12,7 @@ env:
   GOOS: android
   GOARCH: amd64
   # GOVERSION: '1.25.x'
-  NDK_VER: '29.0.14206865'
+  NDK_VER: '27.3.13750724' # 29.0.14206865'
 
 jobs:
   test-android:
@@ -144,10 +144,8 @@ jobs:
         uses: reactivecircus/android-emulator-runner@v2
         env:
           GOARCH: ${{ matrix.goarch }}
-          ANDROID_NDK: ${{ env.ANDROID_NDK }}
-          CC: ${{ format(
-            '{0}/toolchains/llvm/prebuilt/linux-x86_64/bin/{1}-linux-android{2}-clang',
-            env.ANDROID_NDK,
+          CC_SUFFIX: ${{ format(
+            'toolchains/llvm/prebuilt/linux-x86_64/bin/{0}-linux-android{1}-clang',
             env.NDK_ARCH,
             matrix.api_level) }}
         with:
@@ -161,7 +159,8 @@ jobs:
           # emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim
           # -count=1 disables test caching
           script: |
-            env
+            env | sort
+            export CC="${ANDROID_NDK}$/{CC_SUFFIX}"
             go test -exec "${RUNNER_TEMP}/run-on-android" -count=1 -v .
 
           # ls -l ${ANDROID_NDK_HOME}/toolchains/llvm/prebuilt
