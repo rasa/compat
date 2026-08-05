@@ -12,15 +12,15 @@ import (
 
 // Options define the behavior of `WriteFile()`, etc.
 type Options struct {
-	nonAtomicReplace      bool         // default false
-	atomically            bool         // default false
-	defaultFileMode       os.FileMode  // default 0
-	fileMode              os.FileMode  // default 0
-	flags                 int          // default 0
-	keepFileMode          bool         // default false
-	readOnlyMode          ReadOnlyMode // default 0
-	retrySeconds          float64      // default 0.0
-	setSymlinkOwner       bool         // default false
+	nonAtomicReplace bool         // default false
+	atomically       bool         // default false
+	defaultFileMode  os.FileMode  // default 0
+	fileMode         os.FileMode  // default 0
+	flags            int          // default 0
+	keepFileMode     bool         // default false
+	readOnlyMode     ReadOnlyMode // default 0
+	retrySeconds     float64      // default 0.0
+	setSymlinkOwner  bool         // default false
 }
 
 // Option functions modify Options.

@@ -2,14 +2,21 @@
 # SPDX-FileCopyrightText: Copyright © 2025 Ross Smith II <ross@smithii.com>
 # SPDX-License-Identifier: MIT
 
-export GOTOOLCHAIN := go1.25.6+auto
+export GOTOOLCHAIN := go1.26.5+auto
 
-export GOLANGCI_LINT_VER := v2.12.2
-export GOFUMPT_VER := v0.11.0
-export GORELEASER_VER := v2.13.3
-export MISSPELL_VER := v0.8.0
-export MODERNIZE_VER := v0.48.0
-export VULN_VER := v1.2.0
+export GOLANGCI_LINT_VER := latest
+export GOFUMPT_VER := latest
+export GORELEASER_VER := latest
+export MISSPELL_VER := latest
+export MODERNIZE_VER := latest
+export VULN_VER := latest
+
+# export GOLANGCI_LINT_VER := v2.12.2
+# export GOFUMPT_VER := v0.11.0
+# export GORELEASER_VER := v2.13.0
+# export MISSPELL_VER := v0.8.0
+# export MODERNIZE_VER := v0.48.0
+# export VULN_VER := v1.2.0
 
 export SHELL := /bin/bash
 export NO_COLOR := 1
