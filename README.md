@@ -33,6 +33,30 @@ supported by Go.
 ## Contents
 
 <!--ts-->
+* [Why compat?](#why-compat)
+* [Use cases](#use-cases)
+* [Installation](#installation)
+* [Quick start](#quick-start)
+* [Read portable file metadata](#read-portable-file-metadata)
+* [Write a file atomically](#write-a-file-atomically)
+* [Compare file identity](#compare-file-identity)
+* [Core API](#core-api)
+* [Metadata and identity](#metadata-and-identity)
+* [File operations](#file-operations)
+* [Behavior and limitations](#behavior-and-limitations)
+* [Platform support](#platform-support)
+* [Extended file metadata](#extended-file-metadata)
+* [Other operations](#other-operations)
+* [Environment variables](#environment-variables)
+* [Runtime configuration](#runtime-configuration)
+* [Test configuration](#test-configuration)
+* [COMPAT_DEBUG](#compat_debug)
+* [COMPAT_DEBUG_FS](#compat_debug_fs)
+* [COMPAT_DEBUG_FS_PATH](#compat_debug_fs_path)
+* [COMPAT_DEBUG_FS_SIZE](#compat_debug_fs_size)
+* [Comparing Stat Across Linux and Windows](#comparing-stat-across-linux-and-windows)
+* [Contributing](#contributing)
+* [License](#license)
 <!--te-->
 
 ## Why compat?
