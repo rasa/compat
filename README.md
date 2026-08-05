@@ -219,27 +219,24 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-
 	second, err := compat.Stat("second.txt")
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	fmt.Printf("same file: %t\n", compat.SameFile(first, second))
-	fmt.Printf("same partition: %t\n", compat.SamePartition(first, second))
+	fmt.Printf("same file:      %v\n", compat.SameFile(first, second))
+	fmt.Printf("same partition: %v\n", compat.SamePartition(first, second))
 
 	// or alternatively:
-	same, err := compat.SameFiles("first.txt, "second.txt")
+	same1, err := compat.SameFiles("first.txt", "second.txt")
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Printf("same file: %v\n", same)
-
-	same, err = compat.SamePartitions("first.txt, "second.txt")
+	same2, err := compat.SamePartitions("first.txt", "second.txt")
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Printf("same partition: %v\n", same)
+	fmt.Printf("same file:      %v\n", same1)
+	fmt.Printf("same partition: %v\n", same2)
 }
 ```
 
