@@ -159,12 +159,13 @@ jobs:
           # emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim
           # -count=1 disables test caching
           script: |
-            env | sort
+            set -vx
             export CC="${ANDROID_NDK}/${CC_SUFFIX}"
-            go test -exec "${RUNNER_TEMP}/run-on-android" -count=1 -v .
-
-          # ls -l ${ANDROID_NDK_HOME}/toolchains/llvm/prebuilt
-          #  ls -l ${ANDROID_NDK_HOME}/toolchains/llvm/prebuilt/linux-x86_64/bin
+            env | sort
+            ls -l ${ANDROID_NDK}/toolchains/llvm/prebuilt
+            ls -l ${ANDROID_NDK}/toolchains/llvm/prebuilt/linux-x86_64/bin
+            ls -l "${CC}"
+            CC="${CC}" go test -exec "${RUNNER_TEMP}/run-on-android" -count=1 -v .
 
 permissions:
   contents: read
