@@ -11,7 +11,7 @@ env:
   CGO_ENABLED: '1'
   GOOS: android
   GOARCH: amd64
-  GOVERSION: '1.25.x'
+  # GOVERSION: '1.25.x'
   NDK_VER: '29.0.14206865'
 
 jobs:
@@ -49,7 +49,7 @@ jobs:
       - uses: actions/setup-go@v7
         with:
           # go-version overrides go-version-file if a value is present
-          go-version: ${{ env.GOVERSION }}
+          # go-version: ${{ env.GOVERSION }}
           go-version-file: go.mod
           check-latest: true
           cache: true
@@ -142,6 +142,11 @@ jobs:
         uses: reactivecircus/android-emulator-runner@v2
         env:
           GOARCH: ${{ matrix.goarch }}
+          CC: ${{ format(
+            '{0}/toolchains/llvm/prebuilt/linux-x86_64/bin/{1}-linux-android{2}-clang',
+            env.ANDROID_NDK_HOME,
+            env.NDK_ARCH,
+            matrix.api_level) }}
         with:
           api-level: ${{ matrix.api_level }}
           ndk: ${{ env.NDK_VER }}
@@ -152,8 +157,7 @@ jobs:
           # the default:
           # emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim
           # -count=1 disables test caching
-          script: >-
-            CC="${ANDROID_NDK_HOME}/toolchains/llvm/prebuilt/linux-x86_64/bin/${{ env.NDK_ARCH }}-linux-android${{ matrix.api_level }}-clang"
+          script: |
             go test -exec "${RUNNER_TEMP}/run-on-android" -count=1 -v .
 
           # ls -l ${ANDROID_NDK_HOME}/toolchains/llvm/prebuilt
