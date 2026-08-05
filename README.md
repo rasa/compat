@@ -55,6 +55,7 @@ supported by Go.
 * [COMPAT_DEBUG_FS_PATH](#compat_debug_fs_path)
 * [COMPAT_DEBUG_FS_SIZE](#compat_debug_fs_size)
 * [Comparing Stat Across Linux and Windows](#comparing-stat-across-linux-and-windows)
+* [Related cross-platform Go packages](#related-cross-platform-go-packages)
 * [Contributing](#contributing)
 * [License](#license)
 <!--te-->
