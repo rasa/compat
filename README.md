@@ -335,7 +335,7 @@ depends on both the operating system and the underlying filesystem.
 **Key**
 
 - ✅ Fully supported by the operating-system implementation.
-- ☑️ Emulated or synthesized as described below.
+- ☑️ The `UID()` and `GID()` values are 32-bit hashes of the user and group names.
 - ✖️ Not currently implemented although the operating system may support it.
 - ❌ Not implemented because the operating system appears not to provide it.
 <!-- 🚧 planned to be implemented.<br/> -->
