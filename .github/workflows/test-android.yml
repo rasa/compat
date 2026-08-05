@@ -159,8 +159,8 @@ jobs:
           # emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim
           # -count=1 disables test caching
           script: |
-            set -vx
-            env | sort
+            # set -vx
+            # env | sort
             CC="${ANDROID_NDK}/${CC_SUFFIX}" go test -exec "${RUNNER_TEMP}/run-on-android" -count=1 -v .
 
 permissions:
