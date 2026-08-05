@@ -58,7 +58,7 @@ on: # yamllint disable-line rule:truthy
         type: string
       enabled:
         description: 'Run action'
-        default: yes
+        default: 'yes'
         type: choice
         options:
           - 'yes'
@@ -96,8 +96,8 @@ on: # yamllint disable-line rule:truthy
         description: 'Run tests under sudo'
         type: choice
         options:
-          - yes
-          - no
+          - 'yes'
+          - 'no'
       test_opts:
         description: 'Test options (eg: -v -run TestX -short -tags debug)'
         default: '-v'
@@ -113,7 +113,7 @@ env:
       github.event_name == 'push' ||
       github.event_name == 'pull_request'
     }}
-  GOVERSION: '1.25.x'
+  # GOVERSION: '1.25.x'
   MAKE_CMD: ${{ inputs.make_cmd || 'bldtest' }}
   RUNNER: ${{ inputs.runner || 'ubuntu-24.04' }}
   SUDO: >-
@@ -147,7 +147,7 @@ jobs:
       - uses: actions/setup-go@v7
         with:
           # go-version overrides go-version-file if a value is present
-          go-version: ${{ env.GOVERSION }}
+          # go-version: ${{ env.GOVERSION }}
           go-version-file: go.mod
           check-latest: true
           cache: true
