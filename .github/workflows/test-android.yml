@@ -137,7 +137,9 @@ jobs:
           esac
           exit "${exit_code}"
           EOF
-  
+
+      - uses: crazy-max/ghaction-dump-context@v3.1.0
+
       - name: Run Go tests on Android
         uses: reactivecircus/android-emulator-runner@v2
         env:
