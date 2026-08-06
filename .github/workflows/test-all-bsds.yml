@@ -8,14 +8,13 @@ on:
     inputs:
       GOOPTS:
         type: string
-        default: '-tags fstat'
-        description: 'go build options'
+        default: ''
   workflow_dispatch:
     inputs:
       GOOPTS:
         type: string
-        default: '-tags fstat'
-        description: 'go build options'
+        default: ''
+        description: 'Build/test options (eg: -tags fstat)'
 
 jobs:
   test-dragonflybsd:

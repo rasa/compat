@@ -9,13 +9,12 @@ on: # yamllint disable-line rule:truthy
       GOOPTS:
         type: string
         default: ''
-        description: "Options to pass to go command"
   workflow_dispatch:
     inputs:
       GOOPTS:
         type: string
-        default: '-tags fstat'
-        description: "Options to pass to go command"
+        default: ''
+        description: 'Build/test options (eg: -tags fstat)'
 
 env:
   CODECOV_SLUG: ${{ github.repository }}
