@@ -36,7 +36,7 @@ func rename(source, destination string, opts ...Option) error {
 	switch {
 	case err == nil:
 		// Replacing an existing destination cannot be atomic on Plan 9.
-		if !fopts.allowNonAtomicReplace {
+		if !fopts.nonAtomicReplace {
 			return renameError(
 				source,
 				destination,
