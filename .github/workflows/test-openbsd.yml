@@ -35,7 +35,7 @@ jobs:
           fetch-depth: 1
           show-progress: false
 
-      - uses: vmactions/openbsd-vm@v1
+      - uses: vmactions/openbsd-vm@v1.4.5
         with:
           envs: 'GOOS GOARCH GOOPTS CODECOV_SLUG CODECOV_TOKEN' # GITHUB_TOKEN'
           usesh: true

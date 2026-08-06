@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: Copyright © 2025 Ross Smith II <ross@smithii.com>
 // SPDX-License-Identifier: MIT
 
-//go:build fstat && (dragonfly || netbsd)
+//go:build fstat && (dragonfly || netbsd || openbsd)
 
 // was go:build dragonfly || netbsd
 

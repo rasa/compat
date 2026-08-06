@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: Copyright © 2025 Ross Smith II <ross@smithii.com>
 // SPDX-License-Identifier: MIT
 
-//go:build (!fstat || !(freebsd || dragonfly || netbsd)) && !(darwin || linux || plan9 || windows)
+//go:build !(darwin || linux || plan9 || windows) && (!fstat || !(freebsd || dragonfly || netbsd || openbsd))
 
 package compat
 
