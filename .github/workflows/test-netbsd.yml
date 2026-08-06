@@ -14,7 +14,7 @@ on: # yamllint disable-line rule:truthy
     inputs:
       GOOPTS:
         type: string
-        default: ''
+        default: '-tags fstat'
         description: "Options to pass to go command"
 
 env:

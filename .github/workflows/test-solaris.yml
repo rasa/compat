@@ -36,7 +36,7 @@ jobs:
           fetch-depth: 1
           show-progress: false
 
-      - uses: vmactions/solaris-vm@v1.4.5
+      - uses: vmactions/solaris-vm@v1.3.8
         with:
           envs: 'GOOS GOARCH GOOPTS CODECOV_SLUG CODECOV_TOKEN' # GITHUB_TOKEN'
           usesh: true

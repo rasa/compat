@@ -1,5 +1,5 @@
 ---
-# yaml-language-server: $schema https://json.schemastore.org/github-workflow.json
+l# yaml-language-server: $schema https://json.schemastore.org/github-workflow.json
 
 name: test-illumos
 
@@ -36,7 +36,7 @@ jobs:
           fetch-depth: 1
           show-progress: false
 
-      - uses: vmactions/omnios-vm@v1.4.5
+      - uses: vmactions/omnios-vm@v1.3.4
         with:
           envs: 'GOOS GOARCH GOOPTS CODECOV_SLUG CODECOV_TOKEN' # GITHUB_TOKEN'
           usesh: true
