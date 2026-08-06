@@ -1,11 +1,10 @@
 // SPDX-FileCopyrightText: Copyright © 2025 Ross Smith II <ross@smithii.com>
 // SPDX-License-Identifier: MIT
 
-//go:build dragonfly
+//go:build !fstat && dragonfly
 
 package compat
 
-// Not supported: BTime | Fstat.
 const (
 	supportsATime         = true
 	supportsATimeSetting  = true
