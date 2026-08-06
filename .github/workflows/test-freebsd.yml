@@ -5,13 +5,24 @@ name: test-freebsd
 
 on: # yamllint disable-line rule:truthy
   workflow_call:
+    inputs:
+      GOOPTS:
+        type: string
+        default: ''
+        description: "Options to pass to go command"
   workflow_dispatch:
+    inputs:
+      GOOPTS:
+        type: string
+        default: '-tags fstat'
+        description: "Options to pass to go command"
 
 env:
   CODECOV_SLUG: ${{ github.repository }}
   CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
   GOOS: freebsd
   GOARCH: amd64
+  GOOPTS: ${{ inputs.GOOPTS }}
 
 jobs:
   test-freebsd:
@@ -25,19 +36,25 @@ jobs:
           fetch-depth: 1
           show-progress: false
 
-      - uses: vmactions/freebsd-vm@v1
+      - name: Install rsync
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y rsync
+    
+      - uses: vmactions/freebsd-vm@v1.4.5
         with:
-          # release: '15.0'
           # arch: aarch64
-          envs: 'GOOS GOARCH CODECOV_SLUG CODECOV_TOKEN' # GITHUB_TOKEN'
-          usesh: true
           # copyback: false
+          envs: 'GOOS GOARCH GOOPTS CODECOV_SLUG CODECOV_TOKEN' # GITHUB_TOKEN'
           prepare: |
             pkg update -f
             pkg install -y bash curl git gzip gtar jq
             # pkg install -y go
+          # release: '15.0'
           run: |
             ./download-build-test.sh
+          sync: scp
+          usesh: true
 
       - uses: codecov/codecov-action@v7
         with:

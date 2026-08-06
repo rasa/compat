@@ -13,8 +13,11 @@ for target in "${targets[@]}"; do
   fi
   test -z "${1:-}" && seen[${GOOS}]=1
   export GOARCH="${target#*/}"
-  echo "*** Building for ${GOOS}/${GOARCH}"
-  go build -v .
+  echo "*** Building for ${GOOS}/${GOARCH} (tags=$@)"
+  go build -v -tags "$@" .
   ((rv |= $?))
+  if ((rv)); then
+    exit "${rv}"
+  fi
 done
 exit "${rv}"

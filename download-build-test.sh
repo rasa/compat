@@ -3,13 +3,14 @@
 # Cownload go, build, and test code
 # Called by the github actions test-*bsd.yml
 
-set +vx
+set -vx
 
 # to run script locally
 : "${GITHUB_REPOSITORY:=rasa/$(basename "${PWD}")}"
 : "${GITHUB_WORKSPACE:=${PWD}}"
 : "${GOOS:=$(uname | tr '[:upper:]' '[:lower:]')}" || true
 : "${GOARCH:=$(uname -p)}" || true
+: "${GOOPTS:=}"
 : "${GOVERSION:=1.25.0}"
 case "${GOARCH}" in
   x86_64)
@@ -26,6 +27,12 @@ if ! command -v sha256sum >/dev/null 2>/dev/null; then
   sha256sum() { gsha256sum "$@"; }
 fi
 
+if [ $# -gt 0 ]; then
+  GOOPTS="$@"
+fi
+
+env | sort
+
 printf 'CODECOV_SLUG:      %s\n' "${CODECOV_SLUG:-}"
 # shellcheck disable=SC2154 # (warning): CODECOV_TOKEN is referenced but not assigned.
 printf 'CODECOV_TOKEN:     %d chars long\n' "${#CODECOV_TOKEN}"
@@ -33,13 +40,14 @@ printf 'GITHUB_REPOSITORY: %s\n' "${GITHUB_REPOSITORY}"
 printf 'GITHUB_WORKSPACE:  %s\n' "${GITHUB_WORKSPACE}"
 printf 'GOARCH:            %s\n' "${GOARCH}"
 printf 'GOOS:              %s\n' "${GOOS}"
+printf '$GOOPTS:           %s\n' "${GOOPTS}"
 
 tmp1=$(mktemp)
 curl -L -s -o "${tmp1}" 'https://go.dev/dl/?mode=json'
 jqcmd="[ .[] | select(.stable == true) ][0] | .files[] | select(.os == \"${GOOS}\" and .arch == \"${GOARCH}\")"
 
-gover=$(jq -r '.[0].version | ltrimstr("go")')
-printf 'gover:  %s\n' "${gover}"
+# gover=$(jq -r " ${jqcmd} | .[0].version | ltrimstr("go")")
+# printf 'gover:  %s\n' "${gover}"
 
 name=$(jq -r "${jqcmd} | .filename" "${tmp1}")
 printf 'name:   %s\n' "${name}"
@@ -71,7 +79,9 @@ GOVERSION=$(go version || true)
 printf 'GOVERSION:         %s\n' "${GOVERSION}"
 
 # NOTE: dragonflybsd requires -buildvcs=false
-if ! go build -buildvcs=false -trimpath ./...; then
+printf "Running: "
+echo go build -buildvcs=false -trimpath $GOOPTS ./...
+if ! go build -buildvcs=false -trimpath $GOOPTS ./...; then
   rv=$?
   printf '::error ::build failed: %s (error %s)\n' "${GOVERSION}" "${rv}"
   exit "${rv}"
@@ -79,7 +89,9 @@ fi
 
 printf '::notice ::build succeeded: %s\n' "${GOVERSION}"
 
-if ! go test -covermode=atomic -coverprofile=coverage.out -coverpkg=. -v .; then
+printf "Running: "
+echo go test -covermode=atomic -coverprofile=coverage.out -coverpkg=. $GOOPTS -v .
+if ! go test -covermode=atomic -coverprofile=coverage.out -coverpkg=. $GOOPTS -v .; then
   rv=$?
   printf '::error ::tests failed: %s (error %s)\n' "${GOVERSION}" "${rv}"
   exit "${rv}"
