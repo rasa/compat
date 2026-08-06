@@ -11,7 +11,7 @@ env:
   ANYVM_COMMIT: main
   GOVERSION: '1.25.x'
   # See https://github.com/anyvm-org/anyvm/blob/main/.github/workflows/plan9.yml#L37
-  PLAN9_RELEASE: '11554'
+  PLAN9_RELEASE: '11952' # '11554' works too
   SSH_PORT: '10023'
 
 jobs:
