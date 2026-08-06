@@ -5,27 +5,45 @@ name: test-all-bsds
 
 on:
   workflow_call:
+    inputs:
+      GOOPTS:
+        type: string
+        default: '-tags fstat'
+        description: 'go build options'
   workflow_dispatch:
-
-permissions:
-  contents: read
+    inputs:
+      GOOPTS:
+        type: string
+        default: '-tags fstat'
+        description: 'go build options'
 
 jobs:
   test-dragonflybsd:
     uses: ./.github/workflows/test-dragonflybsd.yml
     secrets: inherit
+    with:
+      GOOPTS: ${{ inputs.GOOPTS }}
   test-freebsd:
     uses: ./.github/workflows/test-freebsd.yml
     # needs: test-dragonflybsd
     # if: success()
     secrets: inherit
+    with:
+      GOOPTS: ${{ inputs.GOOPTS }}
   test-netbsd:
     uses: ./.github/workflows/test-netbsd.yml
     # needs: test-freebsd
     # if: success()
     secrets: inherit
+    with:
+      GOOPTS: ${{ inputs.GOOPTS }}
   test-openbsd:
     uses: ./.github/workflows/test-openbsd.yml
     # needs: test-netbsd
     # if: success()
     secrets: inherit
+    with:
+      GOOPTS: ${{ inputs.GOOPTS }}
+
+permissions:
+  contents: read
