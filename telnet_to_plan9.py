@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
-"""telnet_to_plan9.py."""
+"""
+SPDX-FileCopyrightText: Copyright (c) 2026 Ross Smith II <ross@smithii.com>
+
+SPDX-License-Identifier: MIT
+"""
 
 import os
 import socket
