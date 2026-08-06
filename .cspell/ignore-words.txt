@@ -15,7 +15,7 @@
 ##
 
 acifani             #  4 hits in  2 files
-adrg                #  2 hits in  1 file: cmd/updater/main.go
+adrg                #  4 hits in  2 files
 advapi              # 32 hits in  6 files
 ANYVM               #  4 hits in  1 file: .github/workflows/test-plan9.yml
 anyvm               # 10 hits in  1 file: .github/workflows/test-plan9.yml
@@ -55,9 +55,9 @@ CONIN               #  2 hits in  1 file: volume/filesystem.go
 CONOUT              #  2 hits in  1 file: volume/filesystem.go
 copyloopvar         #  2 hits in  1 file: .golangci.yml
 coreutils           #  6 hits in  3 files
-covermode           # 12 hits in  6 files
-coverpkg            # 12 hits in  6 files
-coverprofile        # 12 hits in  6 files
+covermode           # 14 hits in  6 files
+coverpkg            # 14 hits in  6 files
+coverprofile        # 14 hits in  6 files
 Cownload            #  2 hits in  1 file: download-build-test.sh
 cphandle            #  6 hits in  2 files
 createtemp          # 12 hits in  4 files
@@ -83,6 +83,7 @@ diffx               #  8 hits in  1 file: Makefile
 DISKTREE            #  2 hits in  1 file: golang/syscall/windows/syscall_windows.go
 dism                #  2 hits in  1 file: .github/workflows/debug-matrix.yml
 DISM                #  2 hits in  1 file: .github/workflows/debug-matrix.yml
+distatus            #  2 hits in  1 file: README.md
 dllname             #  2 hits in  1 file: golang/syscall/windows/registry/value.go
 dosfstools          #  2 hits in  1 file: .github/workflows/build-root.yml
 drwxr               #  2 hits in  1 file: format_test.go
@@ -91,6 +92,7 @@ dupword             #  2 hits in  1 file: .golangci.yml
 eabi                #  2 hits in  1 file: .github/workflows/build-android.yml
 eabuffer            #  6 hits in  2 files
 ealength            #  6 hits in  2 files
+ebitengine          #  2 hits in  1 file: README.md
 EFIVARFS            #  2 hits in  1 file: volume/type_linux.go
 envrc               #  2 hits in  1 file: .gitignore
 EPLAN               #  2 hits in  1 file: errors_plan9.go
@@ -108,6 +110,7 @@ fopts               # 68 hits in  8 files
 forbidigo           #  2 hits in  1 file: .golangci.yml
 forcetypeassert     #  2 hits in  1 file: .golangci.yml
 fshalt              #  2 hits in  1 file: telnet_to_plan9.py
+fsnotify            #  4 hits in  1 file: README.md
 fsprogs             #  2 hits in  1 file: .github/workflows/build-root.yml
 fsutil              #  2 hits in  1 file: .github/workflows/debug-matrix.yml
 fumpt               # 10 hits in  1 file: Makefile
@@ -128,10 +131,12 @@ goconst             # 40 hits in  8 files
 gocritic            #  8 hits in  3 files
 gocyclo             # 28 hits in 11 files
 gofmt               #  2 hits in  1 file: .github/linters/.golangci.yml
+gofrs               #  2 hits in  1 file: README.md
 gofumpt             # 12 hits in  2 files
-GOFUMPT             #  4 hits in  1 file: Makefile
+GOFUMPT             #  6 hits in  1 file: Makefile
+GOOPTS              # 80 hits in  8 files
 goprintffuncname    #  2 hits in  1 file: .golangci.yml
-gopsutil            # 12 hits in  6 files
+gopsutil            # 16 hits in  7 files
 gopsutil's          #  2 hits in  1 file: volume/mount.go
 gosec               # 66 hits in 12 files
 gosimple            #  2 hits in  1 file: .github/linters/.golangci.yml
@@ -146,6 +151,7 @@ HOSTFS              #  4 hits in  1 file: volume/type_linux.go
 hostfs              #  4 hits in  1 file: volume/type_linux.go
 HUGETLBFS           #  4 hits in  1 file: volume/type_linux.go
 hugetlbfs           #  2 hits in  1 file: volume/type_linux.go
+hymkor              #  2 hits in  1 file: README.md
 icalcs              #  2 hits in  1 file: debug/debug_windows.go
 idauth              #  6 hits in  2 files
 impersonationlevel  #  6 hits in  2 files
@@ -162,7 +168,7 @@ irthed              #  2 hits in  1 file: README.md
 Ispare              #  2 hits in  1 file: fstat_freebsd.go
 JHFS                # 20 hits in  4 files
 Joblint             #  4 hits in  1 file: .github/linters/.vale.ini
-jqcmd               #  8 hits in  1 file: download-build-test.sh
+jqcmd               # 10 hits in  1 file: download-build-test.sh
 JSONLINT            #  2 hits in  1 file: .github/mega-linter-shared.yml
 KAFS                #  2 hits in  1 file: volume/type_linux.go
 kafs                #  2 hits in  1 file: volume/type_linux.go
@@ -179,7 +185,7 @@ ltrimstr            #  2 hits in  1 file: download-build-test.sh
 luid                # 12 hits in  3 files
 LUID                # 16 hits in  3 files
 Luid                #  4 hits in  2 files
-mattn               #  2 hits in  1 file: cmd/updater/main.go
+mattn               #  6 hits in  2 files
 Mattraks            #  4 hits in  1 file: .github/workflows/clean-logs.yml
 maxiumum            #  4 hits in  1 file: volume/filesystem.go
 Minoru              #  6 hits in  2 files
@@ -231,6 +237,7 @@ ntdll               # 14 hits in  3 files
 ntfsprogs           #  4 hits in  1 file: main_linux_test.go
 NTSTATUS            #  2 hits in  1 file: golang/syscall/windows/syscall_windows.go
 ntstatus            # 20 hits in  2 files
+numcpus             #  2 hits in  1 file: README.md
 nwchar              #  6 hits in  2 files
 OEXFAT              #  2 hits in  1 file: .github/workflows/debug-matrix.yml
 oldpath             # 16 hits in  4 files
@@ -262,6 +269,7 @@ protinfo            #  6 hits in  2 files
 pstore              #  2 hits in  1 file: volume/type_linux.go
 PSTOREFS            #  2 hits in  1 file: volume/type_linux.go
 pullrequest         # 10 hits in  1 file: .github/workflows/clean-logs.yml
+purego              #  2 hits in  1 file: README.md
 pylints             #  2 hits in  1 file: .github/linters/.pylintrc
 pyversion           #  4 hits in  1 file: .github/workflows/debug-matrix.yml
 QFAT                #  2 hits in  1 file: .github/workflows/debug-matrix.yml
@@ -296,7 +304,7 @@ Sekine              #  6 hits in  2 files
 Sendq               #  2 hits in  1 file: fstat_freebsd.go
 sergi               #  2 hits in  1 file: cmd/updater/main.go
 sharemode           # 14 hits in  2 files
-shirou              # 12 hits in  6 files
+shirou              # 16 hits in  7 files
 showmanual          #  2 hits in  1 file: .github/workflows/debug-matrix.yml
 SNAPMODULE          #  4 hits in  1 file: golang/syscall/windows/syscall_windows.go
 snippetted          #  2 hits in  1 file: cmd/updater/main.go
@@ -322,6 +330,7 @@ testpackage         #  2 hits in  1 file: .golangci.yml
 teststatus          #  6 hits in  1 file: telnet_to_plan9.py
 thelper             #  2 hits in  1 file: .golangci.yml
 threadcnt           #  6 hits in  2 files
+tklauser            #  2 hits in  1 file: README.md
 tmpfs               #  6 hits in  1 file: volume/type_linux.go
 TMPFS               #  2 hits in  1 file: volume/type_linux.go
 Tokenprimarygroup   #  2 hits in  1 file: file_windows.go
@@ -381,8 +390,9 @@ zram                #  2 hits in  1 file: volume/type_linux.go
 # acifani            :  4 hits in  2 files
 #   .github/workflows/test-tinygo.yml: 2 hits
 #   .github/workflows/test-wasi.yml: 2 hits
-# adrg               :  2 hits in  1 file
+# adrg               :  4 hits in  2 files
 #   cmd/updater/main.go: 2 hits
+#   README.md: 2 hits
 # advapi             : 32 hits in  6 files
 #   golang/syscall/windows/registry/syscall.go: 10 hits
 #   golang/syscall/windows/registry/zsyscall_windows.go: 2 hits
@@ -487,25 +497,25 @@ zram                #  2 hits in  1 file: volume/type_linux.go
 #   .github/workflows/test-dragonflybsd.yml: 2 hits
 #   .github/workflows/test-netbsd.yml: 2 hits
 #   .github/workflows/test-openbsd.yml: 2 hits
-# covermode          : 12 hits in  6 files
+# covermode          : 14 hits in  6 files
 #   .github/workflows/build-ios.yml: 2 hits
 #   .github/workflows/test-js.yml: 2 hits
 #   .github/workflows/test-plan9.yml: 2 hits
 #   .github/workflows/test-wasi.yml: 2 hits
-#   download-build-test.sh: 2 hits
+#   download-build-test.sh: 4 hits
 #   Makefile: 2 hits
-# coverpkg           : 12 hits in  6 files
+# coverpkg           : 14 hits in  6 files
 #   .github/workflows/build-ios.yml: 2 hits
 #   .github/workflows/test-js.yml: 2 hits
 #   .github/workflows/test-plan9.yml: 2 hits
 #   .github/workflows/test-wasi.yml: 2 hits
-#   download-build-test.sh: 2 hits
+#   download-build-test.sh: 4 hits
 #   Makefile: 2 hits
-# coverprofile       : 12 hits in  6 files
+# coverprofile       : 14 hits in  6 files
 #   .github/workflows/build-ios.yml: 2 hits
 #   .github/workflows/test-js.yml: 2 hits
 #   .github/workflows/test-wasi.yml: 2 hits
-#   download-build-test.sh: 2 hits
+#   download-build-test.sh: 4 hits
 #   Makefile: 2 hits
 #   telnet_to_plan9.py: 2 hits
 # Cownload           :  2 hits in  1 file
@@ -574,6 +584,8 @@ zram                #  2 hits in  1 file: volume/type_linux.go
 #   .github/workflows/debug-matrix.yml: 2 hits
 # DISM               :  2 hits in  1 file
 #   .github/workflows/debug-matrix.yml: 2 hits
+# distatus           :  2 hits in  1 file
+#   README.md: 2 hits
 # dllname            :  2 hits in  1 file
 #   golang/syscall/windows/registry/value.go: 2 hits
 # dosfstools         :  2 hits in  1 file
@@ -599,6 +611,8 @@ zram                #  2 hits in  1 file: volume/type_linux.go
 # ealength           :  6 hits in  2 files
 #   golang/syscall/windows/syscall_windows.go: 2 hits
 #   golang/syscall/windows/zsyscall_windows.go: 4 hits
+# ebitengine         :  2 hits in  1 file
+#   README.md: 2 hits
 # EFIVARFS           :  2 hits in  1 file
 #   volume/type_linux.go: 2 hits
 # envrc              :  2 hits in  1 file
@@ -641,6 +655,8 @@ zram                #  2 hits in  1 file: volume/type_linux.go
 #   .golangci.yml: 2 hits
 # fshalt             :  2 hits in  1 file
 #   telnet_to_plan9.py: 2 hits
+# fsnotify           :  4 hits in  1 file
+#   README.md: 4 hits
 # fsprogs            :  2 hits in  1 file
 #   .github/workflows/build-root.yml: 2 hits
 # fsutil             :  2 hits in  1 file
@@ -707,16 +723,28 @@ zram                #  2 hits in  1 file: volume/type_linux.go
 #   writereader.go: 2 hits
 # gofmt              :  2 hits in  1 file
 #   .github/linters/.golangci.yml: 2 hits
+# gofrs              :  2 hits in  1 file
+#   README.md: 2 hits
 # gofumpt            : 12 hits in  2 files
 #   .golangci.yml: 2 hits
 #   Makefile: 10 hits
-# GOFUMPT            :  4 hits in  1 file
-#   Makefile: 4 hits
+# GOFUMPT            :  6 hits in  1 file
+#   Makefile: 6 hits
+# GOOPTS             : 80 hits in  8 files
+#   .github/workflows/test-all-bsds.yml: 10 hits
+#   .github/workflows/test-dragonflybsd.yml: 10 hits
+#   .github/workflows/test-freebsd.yml: 10 hits
+#   .github/workflows/test-illumos.yml: 10 hits
+#   .github/workflows/test-netbsd.yml: 10 hits
+#   .github/workflows/test-openbsd.yml: 10 hits
+#   .github/workflows/test-solaris.yml: 10 hits
+#   download-build-test.sh: 10 hits
 # goprintffuncname   :  2 hits in  1 file
 #   .golangci.yml: 2 hits
-# gopsutil           : 12 hits in  6 files
+# gopsutil           : 16 hits in  7 files
 #   cmd/parttest/main.go: 2 hits
 #   partitiontype.go: 2 hits
+#   README.md: 4 hits
 #   util_other_test.go: 2 hits
 #   volume/mount_unix.go: 2 hits
 #   volume/type_linux.go: 2 hits
@@ -772,6 +800,8 @@ zram                #  2 hits in  1 file: volume/type_linux.go
 #   volume/type_linux.go: 4 hits
 # hugetlbfs          :  2 hits in  1 file
 #   volume/type_linux.go: 2 hits
+# hymkor             :  2 hits in  1 file
+#   README.md: 2 hits
 # icalcs             :  2 hits in  1 file
 #   debug/debug_windows.go: 2 hits
 # idauth             :  6 hits in  2 files
@@ -811,8 +841,8 @@ zram                #  2 hits in  1 file: volume/type_linux.go
 #   volume/filesystem.go: 4 hits
 # Joblint            :  4 hits in  1 file
 #   .github/linters/.vale.ini: 4 hits
-# jqcmd              :  8 hits in  1 file
-#   download-build-test.sh: 8 hits
+# jqcmd              : 10 hits in  1 file
+#   download-build-test.sh: 10 hits
 # JSONLINT           :  2 hits in  1 file
 #   .github/mega-linter-shared.yml: 2 hits
 # KAFS               :  2 hits in  1 file
@@ -851,8 +881,9 @@ zram                #  2 hits in  1 file: volume/type_linux.go
 # Luid               :  4 hits in  2 files
 #   file_windows.go: 2 hits
 #   golang/syscall/windows/security_windows.go: 2 hits
-# mattn              :  2 hits in  1 file
+# mattn              :  6 hits in  2 files
 #   cmd/updater/main.go: 2 hits
+#   README.md: 4 hits
 # Mattraks           :  4 hits in  1 file
 #   .github/workflows/clean-logs.yml: 4 hits
 # maxiumum           :  4 hits in  1 file
@@ -1052,6 +1083,8 @@ zram                #  2 hits in  1 file: volume/type_linux.go
 # ntstatus           : 20 hits in  2 files
 #   golang/syscall/windows/syscall_windows.go: 10 hits
 #   golang/syscall/windows/zsyscall_windows.go: 10 hits
+# numcpus            :  2 hits in  1 file
+#   README.md: 2 hits
 # nwchar             :  6 hits in  2 files
 #   golang/syscall/windows/syscall_windows.go: 2 hits
 #   golang/syscall/windows/zsyscall_windows.go: 4 hits
@@ -1128,6 +1161,8 @@ zram                #  2 hits in  1 file: volume/type_linux.go
 #   volume/type_linux.go: 2 hits
 # pullrequest        : 10 hits in  1 file
 #   .github/workflows/clean-logs.yml: 10 hits
+# purego             :  2 hits in  1 file
+#   README.md: 2 hits
 # pylints            :  2 hits in  1 file
 #   .github/linters/.pylintrc: 2 hits
 # pyversion          :  4 hits in  1 file
@@ -1218,9 +1253,10 @@ zram                #  2 hits in  1 file: volume/type_linux.go
 # sharemode          : 14 hits in  2 files
 #   golang/golang_windows.go: 8 hits
 #   golang/shim_windows.go: 6 hits
-# shirou             : 12 hits in  6 files
+# shirou             : 16 hits in  7 files
 #   cmd/parttest/main.go: 2 hits
 #   partitiontype.go: 2 hits
+#   README.md: 4 hits
 #   util_other_test.go: 2 hits
 #   volume/mount_unix.go: 2 hits
 #   volume/type_linux.go: 2 hits
@@ -1279,6 +1315,8 @@ zram                #  2 hits in  1 file: volume/type_linux.go
 # threadcnt          :  6 hits in  2 files
 #   golang/syscall/windows/syscall_windows.go: 2 hits
 #   golang/syscall/windows/zsyscall_windows.go: 4 hits
+# tklauser           :  2 hits in  1 file
+#   README.md: 2 hits
 # tmpfs              :  6 hits in  1 file
 #   volume/type_linux.go: 6 hits
 # TMPFS              :  2 hits in  1 file

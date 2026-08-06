@@ -1,4 +1,6 @@
 #!/usr/bin/env sh
+# SPDX-FileCopyrightText: Copyright (c) 2026 Ross Smith II <ross@smithii.com>
+# SPDX-License-Identifier: MIT
 # ~/download-build-test.sh
 # Cownload go, build, and test code
 # Called by the github actions test-*bsd.yml
@@ -28,7 +30,7 @@ if ! command -v sha256sum >/dev/null 2>/dev/null; then
 fi
 
 if [ $# -gt 0 ]; then
-  GOOPTS="$@"
+  GOOPTS="$*"
 fi
 
 env | sort
@@ -40,7 +42,7 @@ printf 'GITHUB_REPOSITORY: %s\n' "${GITHUB_REPOSITORY}"
 printf 'GITHUB_WORKSPACE:  %s\n' "${GITHUB_WORKSPACE}"
 printf 'GOARCH:            %s\n' "${GOARCH}"
 printf 'GOOS:              %s\n' "${GOOS}"
-printf '$GOOPTS:           %s\n' "${GOOPTS}"
+printf 'GOOPTS:            %s\n' "${GOOPTS}"
 
 tmp1=$(mktemp)
 curl -L -s -o "${tmp1}" 'https://go.dev/dl/?mode=json'
@@ -80,8 +82,10 @@ printf 'GOVERSION:         %s\n' "${GOVERSION}"
 
 # NOTE: dragonflybsd requires -buildvcs=false
 printf "Running: "
-echo go build -buildvcs=false -trimpath $GOOPTS ./...
-if ! go build -buildvcs=false -trimpath $GOOPTS ./...; then
+# shellcheck disable=SC2086 # (info): Double quote to prevent globbing and word splitting.
+echo go build -buildvcs=false -trimpath ${GOOPTS} ./...
+# shellcheck disable=SC2086 # (info): Double quote to prevent globbing and word splitting.
+if ! go build -buildvcs=false -trimpath ${GOOPTS} ./...; then
   rv=$?
   printf '::error ::build failed: %s (error %s)\n' "${GOVERSION}" "${rv}"
   exit "${rv}"
@@ -90,8 +94,10 @@ fi
 printf '::notice ::build succeeded: %s\n' "${GOVERSION}"
 
 printf "Running: "
-echo go test -covermode=atomic -coverprofile=coverage.out -coverpkg=. $GOOPTS -v .
-if ! go test -covermode=atomic -coverprofile=coverage.out -coverpkg=. $GOOPTS -v .; then
+# shellcheck disable=SC2086 # (info): Double quote to prevent globbing and word splitting.
+echo go test -covermode=atomic -coverprofile=coverage.out -coverpkg=. ${GOOPTS} -v .
+# shellcheck disable=SC2086 # (info): Double quote to prevent globbing and word splitting.
+if ! go test -covermode=atomic -coverprofile=coverage.out -coverpkg=. ${GOOPTS} -v .; then
   rv=$?
   printf '::error ::tests failed: %s (error %s)\n' "${GOVERSION}" "${rv}"
   exit "${rv}"

@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: Copyright © 2025 Ross Smith II <ross@smithii.com>
 // SPDX-License-Identifier: MIT
 
-//go:build !fstat && (aix || illumos || openbsd || solaris)
+//go:build fstat && (aix || illumos || openbsd || solaris)
 
 package compat
 
@@ -11,7 +11,7 @@ const (
 	supportsAtomicReplace = true
 	supportsBTime         = false
 	supportsCTime         = true
-	supportsFstat         = false
+	supportsFstat         = true
 	supportsLinks         = true
 	supportsNice          = true
 	supportsSymlinks      = true

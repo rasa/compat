@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: Copyright © 2025 Ross Smith II <ross@smithii.com>
 // SPDX-License-Identifier: MIT
 
-//go:build freebsd || netbsd
+//go:build !fstat && (freebsd || netbsd)
 
 package compat
 
