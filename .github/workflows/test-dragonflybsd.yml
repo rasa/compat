@@ -5,14 +5,24 @@ name: test-dragonflybsd
 
 on: # yamllint disable-line rule:truthy
   workflow_call:
+    inputs:
+      GOOPTS:
+        type: string
+        default: ''
+        description: "Options to pass to go command"
   workflow_dispatch:
+    inputs:
+      GOOPTS:
+        type: string
+        default: ''
+        description: "Options to pass to go command"
 
 env:
   CODECOV_SLUG: ${{ github.repository }}
   CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
   GOOS: dragonfly
   GOARCH: amd64
-
+  GOOPTS: ${{ inputs.GOOPTS }}
 jobs:
   test-dragonflybsd:
     name: test-dragonflybsd
@@ -25,10 +35,11 @@ jobs:
           fetch-depth: 1
           show-progress: false
 
-      - uses: vmactions/dragonflybsd-vm@v1
+      - uses: vmactions/dragonflybsd-vm@v1.4.5
         with:
-          envs: 'GOOS GOARCH CODECOV_SLUG CODECOV_TOKEN' # GITHUB_TOKEN'
+          envs: 'GOOS GOARCH GOOPTS CODECOV_SLUG CODECOV_TOKEN' # GITHUB_TOKEN'
           usesh: true
+          sync: scp
           # copyback: false
           prepare: |
             pkg update -f

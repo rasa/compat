@@ -5,14 +5,24 @@ name: test-openbsd
 
 on: # yamllint disable-line rule:truthy
   workflow_call:
+    inputs:
+      GOOPTS:
+        type: string
+        default: ''
+        description: "Options to pass to go command"
   workflow_dispatch:
+    inputs:
+      GOOPTS:
+        type: string
+        default: ''
+        description: "Options to pass to go command"
 
 env:
   CODECOV_SLUG: ${{ github.repository }}
   CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
   GOOS: openbsd
   GOARCH: amd64
-
+  GOOPTS: ${{ inputs.GOOPTS }}
 jobs:
   test-openbsd:
     name: test-openbsd
@@ -27,8 +37,9 @@ jobs:
 
       - uses: vmactions/openbsd-vm@v1
         with:
-          envs: 'GOOS GOARCH CODECOV_SLUG CODECOV_TOKEN' # GITHUB_TOKEN'
+          envs: 'GOOS GOARCH GOOPTS CODECOV_SLUG CODECOV_TOKEN' # GITHUB_TOKEN'
           usesh: true
+          sync: scp
           # copyback: false
           prepare: |
             # the double dashes are needed to avoid "ambiguous" warning.
