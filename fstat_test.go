@@ -6,12 +6,17 @@ package compat_test
 import (
 	"os"
 	"path/filepath"
+	"runtime"
 	"testing"
 
 	"github.com/rasa/compat"
 )
 
 func TestFstat(t *testing.T) {
+	if compat.SupportsFstat() {
+		skipf(t, "Fstat not supported on %v/%v", runtime.GOOS, runtime.GOARCH)
+		return
+	}
 	name, err := tempFile(t)
 	if err != nil {
 		t.Fatal(err)
@@ -26,11 +31,8 @@ func TestFstat(t *testing.T) {
 
 	fi, err := compat.Fstat(f)
 	if err != nil {
-		if compat.SupportsFstat() {
-			t.Fatalf("Fstat: got %v, want nil", err)
-			return
-		}
-		t.Logf("Fstat: got %v, want nil", err)
+		t.Fatalf("Fstat: got %v, want nil", err)
+		return
 	}
 
 	got := fi.Name()
