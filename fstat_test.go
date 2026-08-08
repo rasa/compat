@@ -13,7 +13,7 @@ import (
 )
 
 func TestFstat(t *testing.T) {
-	if compat.SupportsFstat() {
+	if !compat.SupportsFstat() {
 		skipf(t, "Fstat not supported on %v/%v", runtime.GOOS, runtime.GOARCH)
 		return
 	}
