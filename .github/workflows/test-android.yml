@@ -113,8 +113,12 @@ jobs:
           set -euo pipefail
 
           printf '$@='
-          printf "'%' " "$@"
-          printf "\n"
+          n=1
+          for i im "$@"; do
+            printf "%d: '%s'\n" "${n}" "${i}"
+            ((n++))
+          done
+
           test_bin="$1"
           shift
 
