@@ -5,8 +5,10 @@ package compat_test
 
 import (
 	"errors"
+	"go/version"
 	"os"
 	"path/filepath"
+	"runtime"
 	"syscall"
 	"testing"
 
@@ -19,8 +21,13 @@ func TestReadDir(t *testing.T) {
 	// t.Parallel()
 	if compat.IsTinygo && compat.IsWasip1 {
 		skip(t, "Skipping test: fdopendir /tmp/TestReadDir256423683/000/foo: errno 8")
+		return
+	}
 
-		return // tinygo doesn't support t.Skip
+	if compat.IsPlan9 && version.Compare(runtime.Version(), "go1.26") < 0 {
+		skipf(t, "Skipping test: test requires go v1.26 or greater on %v", runtime.GOOS)
+
+		return
 	}
 
 	dirname := "rumpelstilzchen"
