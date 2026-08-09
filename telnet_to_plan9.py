@@ -142,7 +142,6 @@ TEST_CMD = (
     "-test.count 1 "
     "-test.timeout 20m "
     "-test.v "
-    "-test.gocoverdir /tmp/gocover "
     "-test.coverprofile /tmp/coverage.out; "
     "teststatus=$status; "
     "cp -v /tmp/coverage.out /usr/glenda/work/coverage.out; "
