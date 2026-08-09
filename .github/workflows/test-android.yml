@@ -18,6 +18,7 @@ jobs:
   test-android:
     runs-on: ubuntu-latest
     timeout-minutes: 30
+
     strategy:
       fail-fast: true
       max-parallel: 1
@@ -32,14 +33,20 @@ jobs:
         # 34: Android 14
         # 35: Android 15
         # 36: Android 16
+        #
         # For API level 36:
         # stat /usr/local/lib/android/sdk/ndk/27.3.13750724/toolchains/
-        # llvm/prebuilt/linux-x86_64/bin/x86_64-linux-android36-clang: no such file or directory
+        # llvm/prebuilt/linux-x86_64/bin/x86_64-linux-android36-clang:
+        # no such file or directory
         api_level: [21, 35]
+
         # QEMU2 emulator does not support arm64 CPU architecture
         goarch: [amd64] # 386 fails
-        # See https://github.com/ReactiveCircus/android-emulator-runner#configurations
+
+        # See:
+        # https://github.com/ReactiveCircus/android-emulator-runner#configurations
         target: [default]
+
     steps:
       - uses: actions/checkout@v7
         with:
@@ -77,31 +84,41 @@ jobs:
             exit 1
             ;;
           esac
+
           echo "ARCH=${ARCH}" >> "$GITHUB_ENV"
           echo "NDK_ARCH=${NDK_ARCH}" >> "$GITHUB_ENV"
 
       - name: Enable KVM
         run: |
           test -d /etc/udev/rules.d || exit 0
+
           echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' \
             | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+
           sudo udevadm control --reload-rules
           sudo udevadm trigger --name-match=kvm
 
       - name: Create Android execution wrapper
+        shell: bash
         run: |
           cmd="${RUNNER_TEMP}/run-on-android"
+
           : >"${cmd}"
           chmod +x "${cmd}"
+
           cat >>"${cmd}" <<'EOF'
           #!/usr/bin/env bash
+
           set -vx
           set -euo pipefail
 
           test_bin="$1"
           shift
 
+          coverage_out="${COVERAGE_OUT:-}"
+
           tmp1="/data/local/tmp/go-test-$$"
+
           adb shell mkdir -p "${tmp1}"
           trap "adb shell rm -rf ${tmp1} >/dev/null" EXIT
 
@@ -109,32 +126,65 @@ jobs:
           if test -d "${testdata}"; then
             adb push "${testdata}" "${tmp1}/testdata" >/dev/null
           fi
+
           test_cmd="${tmp1}/test"
+
           adb push "${test_bin}" "${test_cmd}" >/dev/null
           adb shell chmod 755 "${test_cmd}"
+
+          test_args=("$@")
+
+          if [[ -n "${coverage_out}" ]]; then
+            test_args+=("-test.coverprofile=${tmp1}/coverage.out")
+          fi
 
           # API 21 adb shell does not propagate the remote exit status.
           # Save it on the device and retrieve it afterward.
           exit_code_file="${tmp1}/exit-code"
+
           set +e
-          adb shell cd "${tmp1}" \; "${test_cmd}" "$@" \; echo \$? \> "${exit_code_file}"
+
+          adb shell \
+            cd "${tmp1}" \; \
+            "${test_cmd}" "${test_args[@]}" \; \
+            echo \$? \> "${exit_code_file}"
+
           exit_code=$?
+
           set -e
 
           if (( exit_code != 0 )); then
-            echo "'go test .' failed with status ${exit_code}" >&2
+            echo "'go test .' failed with adb status ${exit_code}" >&2
             exit "${exit_code}"
           fi
 
           exit_code=$(adb shell cat "${exit_code_file}")
           exit_code="${exit_code//$'\n'/}"
           exit_code="${exit_code//$'\r'/}"
+
           case "${exit_code}" in
             ''|*[!0-9]*)
-              echo "Invalid or missing Android test exit status: ${exit_code@Q}" >&2
+              echo \
+                "Invalid or missing Android test exit status: ${exit_code@Q}" \
+                >&2
               exit 1
               ;;
           esac
+
+          # Retrieve the coverage profile before the temporary directory
+          # is removed by the EXIT trap.
+          if [[ -n "${coverage_out}" ]]; then
+            adb pull \
+              "${tmp1}/coverage.out" \
+              "${coverage_out}" \
+              >/dev/null
+
+            if [[ ! -s "${coverage_out}" ]]; then
+              echo "Android coverage profile is missing or empty" >&2
+              exit 1
+            fi
+          fi
+
           exit "${exit_code}"
           EOF
 
@@ -153,15 +203,48 @@ jobs:
           ndk: ${{ env.NDK_VER }}
           target: ${{ matrix.target }}
           arch: ${{ env.ARCH }}
+
           # default: true
           # disable-animations: true
-          # the default:
-          # emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim
-          # -count=1 disables test caching
+
+          # The default:
+          # emulator-options: -no-window -gpu swiftshader_indirect
+          #                   -no-snapshot -noaudio -no-boot-anim
+
           script: |
-            # set -vx
-            # env | sort
-            CC="${ANDROID_NDK}/${CC_SUFFIX}" go test -exec "${RUNNER_TEMP}/run-on-android" -count=1 -v .
+            test_bin="${RUNNER_TEMP}/compat-android.test"
+
+            # Build a native Android test executable with Go coverage
+            # instrumentation. The test itself is executed on Android.
+            CC="${ANDROID_NDK}/${CC_SUFFIX}" \
+              go test \
+                -c \
+                -covermode=atomic \
+                -coverpkg=. \
+                -o "${test_bin}" \
+                .
+
+            # Execute the instrumented binary on Android. The wrapper writes
+            # coverage.out on the device and pulls it back to the runner.
+            COVERAGE_OUT="${GITHUB_WORKSPACE}/coverage.out" \
+              "${RUNNER_TEMP}/run-on-android" \
+                "${test_bin}" \
+                -test.count=1 \
+                -test.v
+
+      - name: Verify coverage
+        shell: bash
+        run: |
+          test -s ./coverage.out
+          head -5 ./coverage.out
+
+      - uses: codecov/codecov-action@v7
+        with:
+          # fail_ci_if_error: false
+          files: ./coverage.out
+          name: coverage-android-${{ matrix.api_level }}-${{ matrix.goarch }}
+          token: ${{ secrets.CODECOV_TOKEN }}
 
 permissions:
   contents: read
+  
