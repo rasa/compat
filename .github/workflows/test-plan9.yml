@@ -114,7 +114,7 @@ jobs:
         with:
           # fail_ci_if_error: false
           files: ./coverage.out
-          name: coverage-${{ env.GOOS }}
+          name: coverage-plan9
           token: ${{ secrets.CODECOV_TOKEN }}
 
 permissions:
