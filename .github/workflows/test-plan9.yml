@@ -11,7 +11,7 @@ env:
   ANYVM_COMMIT: main
   GOVERSION: '1.25.x'
   # See https://github.com/anyvm-org/anyvm/blob/main/.github/workflows/plan9.yml#L37
-  PLAN9_RELEASE: '11554' # works '11952' failed
+  PLAN9_RELEASE: '11554' # works; '11952' failed
   SSH_PORT: '10023'
 
 jobs:
@@ -52,7 +52,6 @@ jobs:
           GOOS: plan9
           GOARCH: amd64
         run: |
-          # Run tests on Plan9
           set -euxo pipefail
 
           sudo apt-get update
@@ -65,11 +64,13 @@ jobs:
             zstd
 
           stage="${RUNNER_TEMP}/plan9-stage"
+          anyvm_log="${RUNNER_TEMP}/anyvm-plan9.log"
 
           rm -rf "${stage}"
           mkdir -p "${stage}"
 
-          # Build one native Plan 9 test executable.
+          # Build one native Plan 9 test executable with coverage
+          # instrumentation.
           go test \
             -c \
             -mod=readonly \
@@ -92,7 +93,9 @@ jobs:
             sudo rm -f /dev/kvm
           fi
 
-          # Transfer only compat.test and testdata.
+          # Boot Plan 9 detached. AnyVM's 9p synchronization copies stage
+          # into /usr/glenda/work. --debug lets us obtain the dynamically
+          # allocated host port forwarding to the guest's exportfs :564.
           timeout --signal=TERM 15m \
             python3 .anyvm/anyvm.py \
               --os plan9 \
@@ -100,15 +103,69 @@ jobs:
               --data-dir "${RUNNER_TEMP}/anyvm-data" \
               --ssh-port "${SSH_PORT}" \
               --sync 9p \
+              --debug \
               -v "${stage}:/usr/glenda/work" \
               -d \
-              --remote-vnc no
+              --remote-vnc no \
+              2>&1 | tee "${anyvm_log}"
 
+          # AnyVM dynamically forwards a host TCP port in the 20564-20999
+          # range to the guest exportfs service on port 564.
+          p9_port="$(
+            sed -n \
+              's/.*hostfwd: 9P .*:\([0-9][0-9]*\) -> :564 OK.*/\1/p' \
+              "${anyvm_log}" |
+              tail -1
+          )"
+
+          if [[ -z "${p9_port}" ]]; then
+            echo "::error::Unable to determine Plan 9 exportfs port"
+            cat "${anyvm_log}"
+            exit 1
+          fi
+
+          printf '::notice ::Plan 9 exportfs port: %s\n' "${p9_port}"
+
+          # Run the test executable inside Plan 9. telnet_to_plan9.py must
+          # leave the VM running and write its coverage profile to:
+          #
+          #     /tmp/coverage.out
+          #
           python3 ./telnet_to_plan9.py
 
-          du -ah "${stage}"
+          # AnyVM's --sync 9p operation is host -> guest only. Mount the
+          # guest's exported filesystem again and retrieve the coverage file.
+          mountdir="$(mktemp -d "${RUNNER_TEMP}/plan9-export.XXXXXX")"
 
-          cp "${stage}/coverage.out" .
+          cleanup()
+          {
+            if mountpoint -q "${mountdir}"; then
+              sudo umount "${mountdir}"
+            fi
+            rmdir "${mountdir}" 2>/dev/null || true
+          }
+
+          trap cleanup EXIT
+
+          sudo mount \
+            -t 9p \
+            -o "trans=tcp,port=${p9_port},version=9p2000,uname=glenda,aname=/,dfltuid=$(id -u),dfltgid=$(id -g)" \
+            127.0.0.1 \
+            "${mountdir}"
+
+          echo "Coverage file in Plan 9:"
+          ls -l "${mountdir}/tmp/coverage.out"
+
+          test -s "${mountdir}/tmp/coverage.out"
+          cp "${mountdir}/tmp/coverage.out" ./coverage.out
+
+          # Release the 9P mount now rather than waiting for the EXIT trap.
+          cleanup
+          trap - EXIT
+
+          echo "Retrieved coverage:"
+          ls -lh ./coverage.out
+          head -5 ./coverage.out
 
       - uses: codecov/codecov-action@v7
         with:
