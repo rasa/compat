@@ -108,5 +108,14 @@ jobs:
 
           du -ah "${stage}"
 
+          cp "${stage}/coverage.out .
+
+      - uses: codecov/codecov-action@v7
+        with:
+          # fail_ci_if_error: false
+          files: ./coverage.out
+          name: coverage-${{ env.GOOS }}
+          token: ${{ secrets.CODECOV_TOKEN }}
+
 permissions:
   contents: read
