@@ -109,15 +109,8 @@ jobs:
           cat >>"${cmd}" <<'EOF'
           #!/usr/bin/env bash
 
-          set -vx
+          # set -vx
           set -euo pipefail
-
-          printf '$@='
-          n=1
-          for i in "$@"; do
-            printf "%d: '%s'\n" "${n}" "${i}"
-            ((n++))
-          done
 
           test_bin="$1"
           shift
@@ -139,8 +132,6 @@ jobs:
           adb push "${test_bin}" "${test_cmd}" >/dev/null
           adb shell chmod 755 "${test_cmd}"
 
-          test_args=("$@")
-
           if [[ -n "${coverage_out}" ]]; then
             test_args+=("-test.coverprofile=${tmp1}/coverage.out")
           fi
@@ -153,7 +144,7 @@ jobs:
 
           adb shell \
             cd "${tmp1}" \; \
-            "${test_cmd}" "${test_args[@]}" \; \
+            "${test_cmd}" "$@" \; \
             echo \$? \> "${exit_code_file}"
 
           exit_code=$?
