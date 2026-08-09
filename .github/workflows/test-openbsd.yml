@@ -22,6 +22,7 @@ env:
   GOOS: openbsd
   GOARCH: amd64
   GOOPTS: ${{ inputs.GOOPTS }}
+
 jobs:
   test-openbsd:
     name: test-openbsd

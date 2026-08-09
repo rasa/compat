@@ -2,10 +2,10 @@
 # SPDX-FileCopyrightText: Copyright (c) 2026 Ross Smith II <ross@smithii.com>
 # SPDX-License-Identifier: MIT
 # ~/download-build-test.sh
-# Cownload go, build, and test code
-# Called by the github actions test-*bsd.yml
+# Download go, build, and test code
+# Called by the github actions test-{*bsd|illumos|solaris}.yml
 
-set -vx
+# set -vx
 
 # to run script locally
 : "${GITHUB_REPOSITORY:=rasa/$(basename "${PWD}")}"
@@ -108,6 +108,6 @@ printf '::notice ::tests succeeded: %s\n' "${GOVERSION}"
 sed -i.bak "/compat\/cmd\//d; /compat\/golang\//d;" coverage.out
 rm -f coverage.out.bak
 
-# ls -l
+ls -l
 
 exit 0
