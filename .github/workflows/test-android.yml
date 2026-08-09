@@ -112,6 +112,9 @@ jobs:
           set -vx
           set -euo pipefail
 
+          printf '$@='
+          printf "'%' " "$@"
+          printf "\n"
           test_bin="$1"
           shift
 
@@ -212,6 +215,7 @@ jobs:
           #                   -no-snapshot -noaudio -no-boot-anim
 
           script: |
+            set -vx
             test_bin="${RUNNER_TEMP}/compat-android.test"
 
             # Build a native Android test executable with Go coverage
