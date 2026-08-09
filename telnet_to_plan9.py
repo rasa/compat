@@ -142,9 +142,10 @@ TEST_CMD = (
     "-test.count 1 "
     "-test.timeout 20m "
     "-test.v "
+    "-test.gocoverdir /tmp/gocover "
     "-test.coverprofile /tmp/coverage.out; "
     "teststatus=$status; "
-    "cp /tmp/coverage.out /usr/glenda/work/coverage.out; "
+    "cp -v /tmp/coverage.out /usr/glenda/work/coverage.out; "
     "copystatus=$status; "
     "if(~ $teststatus '') { "
     "    if(~ $copystatus '') echo __PLAN9_^PASS__; "
@@ -153,26 +154,6 @@ TEST_CMD = (
     "if(! ~ $teststatus '') echo __PLAN9_^FAIL__"
     "\r\n"
 )
-
-"""
-TEST_CMD = (
-    "mkdir /tmp/gocover; "
-    "./compat.test "
-    "-test.count 1 "
-    "-test.timeout 20m "
-    "-test.v "
-    "-test.gocoverdir /tmp/gocover "
-    "-test.coverprofile /tmp/coverage.out; "
-    "teststatus=$status; "
-    "ls -l /tmp/coverage.out; "
-    "echo __COVERAGE_BEGIN__; "
-    "cat /tmp/coverage.out; "
-    "echo __COVERAGE_END__; "
-    "if(~ $teststatus '') echo __PLAN9_^PASS__; "
-    "if(! ~ $teststatus '') echo __PLAN9_^FAIL__"
-    "\r\n"
-)
-"""
 
 sock.sendall(TEST_CMD.encode())
 
