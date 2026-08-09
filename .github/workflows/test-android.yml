@@ -220,10 +220,8 @@ jobs:
 
           script: >
             test_bin="${RUNNER_TEMP}/compat-android.test" ;
-            CC="${ANDROID_NDK}/${CC_SUFFIX}" ;
-            COVERAGE_OUT="${GITHUB_WORKSPACE}/coverage.out" ;
-            go test -c -covermode=atomic -coverpkg=. -o "${test_bin}" . ;
-            "${RUNNER_TEMP}/run-on-android" "${test_bin}" -test.count=1  -test.v
+            CC="${ANDROID_NDK}/${CC_SUFFIX}" go test -c -covermode=atomic -coverpkg=. -o "${test_bin}" . ;
+            COVERAGE_OUT="${GITHUB_WORKSPACE}/coverage.out" "${RUNNER_TEMP}/run-on-android" "${test_bin}" -test.count=1 -test.v
   
       - name: Verify coverage
         shell: bash
