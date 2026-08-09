@@ -114,7 +114,7 @@ jobs:
 
           printf '$@='
           n=1
-          for i im "$@"; do
+          for i in "$@"; do
             printf "%d: '%s'\n" "${n}" "${i}"
             ((n++))
           done
