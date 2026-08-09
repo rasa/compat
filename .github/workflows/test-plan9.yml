@@ -108,7 +108,7 @@ jobs:
 
           du -ah "${stage}"
 
-          cp "${stage}/coverage.out .
+          cp "${stage}/coverage.out" .
 
       - uses: codecov/codecov-action@v7
         with:
