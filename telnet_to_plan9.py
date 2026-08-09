@@ -138,6 +138,24 @@ sock.sendall(b"cd /usr/glenda/work\r\n")
 _, pending = read_for(1, pending)
 
 TEST_CMD = (
+    "./compat.test "
+    "-test.count 1 "
+    "-test.timeout 20m "
+    "-test.v "
+    "-test.coverprofile /tmp/coverage.out; "
+    "teststatus=$status; "
+    "cp /tmp/coverage.out /usr/glenda/work/coverage.out; "
+    "copystatus=$status; "
+    "if(~ $teststatus '') { "
+    "    if(~ $copystatus '') echo __PLAN9_^PASS__; "
+    "    if(! ~ $copystatus '') echo __PLAN9_^FAIL__ "
+    "}; "
+    "if(! ~ $teststatus '') echo __PLAN9_^FAIL__"
+    "\r\n"
+)
+
+"""
+TEST_CMD = (
     "mkdir /tmp/gocover; "
     "./compat.test "
     "-test.count 1 "
@@ -150,19 +168,6 @@ TEST_CMD = (
     "echo __COVERAGE_BEGIN__; "
     "cat /tmp/coverage.out; "
     "echo __COVERAGE_END__; "
-    "if(~ $teststatus '') echo __PLAN9_^PASS__; "
-    "if(! ~ $teststatus '') echo __PLAN9_^FAIL__"
-    "\r\n"
-)
-
-"""
-TEST_CMD = (
-    "./compat.test "
-    "-test.count 1 "
-    "-test.timeout 20m "
-    "-test.v "
-    "-test.coverprofile coverage.out; "
-    "teststatus=$status; "
     "if(~ $teststatus '') echo __PLAN9_^PASS__; "
     "if(! ~ $teststatus '') echo __PLAN9_^FAIL__"
     "\r\n"
