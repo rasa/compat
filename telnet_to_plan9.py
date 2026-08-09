@@ -173,6 +173,8 @@ else:
 
 passed = PASS in output
 
+sock.close()
+"""
 try:
     sock.sendall(b"fshalt\r\n")
     _, pending = read_for(3, pending)
@@ -180,5 +182,5 @@ except OSError:
     pass
 finally:
     sock.close()
-
+"""
 raise SystemExit(0 if passed else 1)
