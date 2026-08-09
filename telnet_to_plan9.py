@@ -144,7 +144,7 @@ TEST_CMD = (
     "-test.v "
     "-test.coverprofile /tmp/coverage.out; "
     "teststatus=$status; "
-    "cp -v /tmp/coverage.out /usr/glenda/work/coverage.out; "
+    "cp /tmp/coverage.out /usr/glenda/work/coverage.out; "
     "copystatus=$status; "
     "if(~ $teststatus '') { "
     "    if(~ $copystatus '') echo __PLAN9_^PASS__; "
