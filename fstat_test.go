@@ -42,8 +42,15 @@ func TestFstat(t *testing.T) {
 	}
 }
 
-func TestFstatInvalid(t *testing.T) {
+func TestFstatInvalidNil(t *testing.T) {
 	_, err := compat.Fstat(nil)
+	if err == nil {
+		t.Fatal("Fstat: got nil, want an error")
+	}
+}
+
+func TestFstatInvalidName(t *testing.T) {
+	_, err := compat.Fstat(invalidName)
 	if err == nil {
 		t.Fatal("Fstat: got nil, want an error")
 	}
