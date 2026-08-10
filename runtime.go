@@ -10,9 +10,6 @@ import (
 	"sync"
 )
 
-// IsTinygo is true if the go compiler is tinygo.
-const IsTinygo = runtime.Compiler == "tinygo"
-
 // IsAct is true when running github actions locally using the act command.
 var IsAct = os.Getenv("ACT") == "true"
 

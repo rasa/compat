@@ -37,9 +37,7 @@ jobs:
     uses: ./.github/workflows/test-android.yml
     needs: test-plan9
     secrets: inherit
-
-  # @todo add code coverage for tinygo
-  # test-tinygo:
-  #   uses: ./.github/workflows/test-tinygo.yml
-  #   needs: test-android
-  #   secrets: inherit
+  test-tiny:
+    uses: ./.github/workflows/test-tiny.yml
+    needs: test-android
+    secrets: inherit
