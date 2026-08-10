@@ -132,6 +132,8 @@ jobs:
           adb push "${test_bin}" "${test_cmd}" >/dev/null
           adb shell chmod 755 "${test_cmd}"
 
+          test_args=("$@")
+
           if [[ -n "${coverage_out}" ]]; then
             test_args+=("-test.coverprofile=${tmp1}/coverage.out")
           fi
@@ -144,7 +146,7 @@ jobs:
 
           adb shell \
             cd "${tmp1}" \; \
-            "${test_cmd}" "$@" \; \
+            "${test_cmd}" "${test_args[@]}" \; \
             echo \$? \> "${exit_code_file}"
 
           exit_code=$?
