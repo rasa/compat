@@ -80,7 +80,7 @@ jobs:
           # Gone on 30-Jun-25 per https://github.com/actions/runner-images/issues/12045
           # - windows-2019
     steps:
-      - uses: crazy-max/ghaction-dump-context@v3.1.0
+      - uses: crazy-max/ghaction-dump-context@v2.3.0
 
       - name: List installed apt/snap packages (Linux)
         if: runner.os == 'Linux'
@@ -209,7 +209,6 @@ jobs:
 
       - uses: actions/checkout@v7
         with:
-          fetch-depth: 1
           show-progress: false
 
       # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idstepsshell
@@ -645,6 +644,3 @@ jobs:
         if: runner.os == 'Windows' && matrix.os != 'windows-2025'
         shell: cmd
         continue-on-error: true
-
-permissions:
-  contents: read
