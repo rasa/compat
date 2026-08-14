@@ -54,11 +54,11 @@ configfs            #  2 hits in  1 file: volume/type_linux.go
 CONIN               #  2 hits in  1 file: volume/filesystem.go
 CONOUT              #  2 hits in  1 file: volume/filesystem.go
 copyloopvar         #  2 hits in  1 file: .golangci.yml
+copystatus          #  6 hits in  1 file: telnet_to_plan9.py
 coreutils           #  6 hits in  3 files
-covermode           # 14 hits in  6 files
-coverpkg            # 14 hits in  6 files
-coverprofile        # 14 hits in  6 files
-Cownload            #  2 hits in  1 file: download-build-test.sh
+covermode           # 18 hits in  8 files
+coverpkg            # 18 hits in  8 files
+coverprofile        # 18 hits in  8 files
 cphandle            #  6 hits in  2 files
 createtemp          # 12 hits in  4 files
 croutine            #  8 hits in  1 file: golang/syscall/windows/syscall_windows.go
@@ -78,6 +78,8 @@ depguard            #  2 hits in  1 file: .golangci.yml
 DEVICEMAP           #  2 hits in  1 file: golang/syscall/windows/types_windows.go
 DEVPTS              #  2 hits in  1 file: volume/type_linux.go
 DEVSKIM             #  8 hits in  2 files
+dfltgid             #  2 hits in  1 file: .github/workflows/test-plan9.yml
+dfltuid             #  2 hits in  1 file: .github/workflows/test-plan9.yml
 diffmatchpatch      #  2 hits in  1 file: cmd/updater/main.go
 diffx               #  8 hits in  1 file: Makefile
 DISKTREE            #  2 hits in  1 file: golang/syscall/windows/syscall_windows.go
@@ -149,6 +151,7 @@ gsha                # 10 hits in  4 files
 gtar                # 16 hits in  5 files
 HOSTFS              #  4 hits in  1 file: volume/type_linux.go
 hostfs              #  4 hits in  1 file: volume/type_linux.go
+hostfwd             #  2 hits in  1 file: .github/workflows/test-plan9.yml
 HUGETLBFS           #  4 hits in  1 file: volume/type_linux.go
 hugetlbfs           #  2 hits in  1 file: volume/type_linux.go
 hymkor              #  2 hits in  1 file: README.md
@@ -204,6 +207,7 @@ modntdll            # 10 hits in  1 file: golang/syscall/windows/zsyscall_window
 modpsapi            #  4 hits in  1 file: golang/syscall/windows/zsyscall_windows.go
 moduserenv          #  8 hits in  1 file: golang/syscall/windows/zsyscall_windows.go
 modws               #  8 hits in  1 file: golang/syscall/windows/zsyscall_windows.go
+mountdir            # 10 hits in  1 file: .github/workflows/test-plan9.yml
 mountvol            #  2 hits in  1 file: .github/workflows/debug-matrix.yml
 MQUEUE              #  4 hits in  1 file: volume/type_linux.go
 msixbundle          #  6 hits in  1 file: .github/workflows/debug-matrix.yml
@@ -493,33 +497,39 @@ zram                #  2 hits in  1 file: volume/type_linux.go
 #   volume/filesystem.go: 2 hits
 # copyloopvar        :  2 hits in  1 file
 #   .golangci.yml: 2 hits
+# copystatus         :  6 hits in  1 file
+#   telnet_to_plan9.py: 6 hits
 # coreutils          :  6 hits in  3 files
 #   .github/workflows/test-dragonflybsd.yml: 2 hits
 #   .github/workflows/test-netbsd.yml: 2 hits
 #   .github/workflows/test-openbsd.yml: 2 hits
-# covermode          : 14 hits in  6 files
+# covermode          : 18 hits in  8 files
 #   .github/workflows/build-ios.yml: 2 hits
+#   .github/workflows/test-android.yml: 2 hits
 #   .github/workflows/test-js.yml: 2 hits
 #   .github/workflows/test-plan9.yml: 2 hits
+#   .github/workflows/test-tiny.yml: 2 hits
 #   .github/workflows/test-wasi.yml: 2 hits
 #   download-build-test.sh: 4 hits
 #   Makefile: 2 hits
-# coverpkg           : 14 hits in  6 files
+# coverpkg           : 18 hits in  8 files
 #   .github/workflows/build-ios.yml: 2 hits
+#   .github/workflows/test-android.yml: 2 hits
 #   .github/workflows/test-js.yml: 2 hits
 #   .github/workflows/test-plan9.yml: 2 hits
+#   .github/workflows/test-tiny.yml: 2 hits
 #   .github/workflows/test-wasi.yml: 2 hits
 #   download-build-test.sh: 4 hits
 #   Makefile: 2 hits
-# coverprofile       : 14 hits in  6 files
+# coverprofile       : 18 hits in  8 files
 #   .github/workflows/build-ios.yml: 2 hits
+#   .github/workflows/test-android.yml: 2 hits
 #   .github/workflows/test-js.yml: 2 hits
+#   .github/workflows/test-tiny.yml: 2 hits
 #   .github/workflows/test-wasi.yml: 2 hits
 #   download-build-test.sh: 4 hits
 #   Makefile: 2 hits
 #   telnet_to_plan9.py: 2 hits
-# Cownload           :  2 hits in  1 file
-#   download-build-test.sh: 2 hits
 # cphandle           :  6 hits in  2 files
 #   golang/syscall/windows/syscall_windows.go: 2 hits
 #   golang/syscall/windows/zsyscall_windows.go: 4 hits
@@ -574,6 +584,10 @@ zram                #  2 hits in  1 file: volume/type_linux.go
 # DEVSKIM            :  8 hits in  2 files
 #   .github/mega-linter-shared.yml: 6 hits
 #   .mega-linter.yml: 2 hits
+# dfltgid            :  2 hits in  1 file
+#   .github/workflows/test-plan9.yml: 2 hits
+# dfltuid            :  2 hits in  1 file
+#   .github/workflows/test-plan9.yml: 2 hits
 # diffmatchpatch     :  2 hits in  1 file
 #   cmd/updater/main.go: 2 hits
 # diffx              :  8 hits in  1 file
@@ -796,6 +810,8 @@ zram                #  2 hits in  1 file: volume/type_linux.go
 #   volume/type_linux.go: 4 hits
 # hostfs             :  4 hits in  1 file
 #   volume/type_linux.go: 4 hits
+# hostfwd            :  2 hits in  1 file
+#   .github/workflows/test-plan9.yml: 2 hits
 # HUGETLBFS          :  4 hits in  1 file
 #   volume/type_linux.go: 4 hits
 # hugetlbfs          :  2 hits in  1 file
@@ -934,6 +950,8 @@ zram                #  2 hits in  1 file: volume/type_linux.go
 #   golang/syscall/windows/zsyscall_windows.go: 8 hits
 # modws              :  8 hits in  1 file
 #   golang/syscall/windows/zsyscall_windows.go: 8 hits
+# mountdir           : 10 hits in  1 file
+#   .github/workflows/test-plan9.yml: 10 hits
 # mountvol           :  2 hits in  1 file
 #   .github/workflows/debug-matrix.yml: 2 hits
 # MQUEUE             :  4 hits in  1 file
