@@ -17,7 +17,7 @@ import (
 
 // Source: https://github.com/golang/go/blob/ac803b59/src/os/read_test.go#L104-L144
 
-func TestReadDir(t *testing.T) {
+func TestReadDir(t *testing.T) { //nolint:gocyclo
 	// t.Parallel()
 	if compat.IsTinygo && compat.IsWasip1 {
 		skip(t, "Skipping test: fdopendir /tmp/TestReadDir256423683/000/foo: errno 8")
@@ -26,7 +26,6 @@ func TestReadDir(t *testing.T) {
 
 	if compat.IsPlan9 && version.Compare(runtime.Version(), "go1.26") < 0 {
 		skipf(t, "Skipping test: test requires go v1.26 or greater on %v", runtime.GOOS)
-
 		return
 	}
 

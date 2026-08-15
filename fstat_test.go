@@ -48,4 +48,3 @@ func TestFstatInvalidNil(t *testing.T) {
 		t.Fatal("Fstat: got nil, want an error")
 	}
 }
-
