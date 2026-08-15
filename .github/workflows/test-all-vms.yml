@@ -16,6 +16,6 @@ jobs:
     secrets: inherit
   test-all-solaria:
     uses: ./.github/workflows/test-all-solaria.yml
-    # needs: test-all-bsds
+    needs: test-all-bsds
     # if: success()
     secrets: inherit
