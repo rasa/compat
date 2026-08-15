@@ -1,7 +1,7 @@
 ---
 # yaml-language-server: $schema https://json.schemastore.org/github-workflow.json
 
-name: test-cover
+name: test-all
 
 on:
   workflow_call:
@@ -17,9 +17,21 @@ jobs:
       runner: top3
       make_cmd: test
     secrets: inherit
+  test-android:
+    uses: ./.github/workflows/test-android.yml
+    needs: test-top3
+    secrets: inherit
+  test-plan9:
+      uses: ./.github/workflows/test-plan9.yml
+      needs: test-android
+      secrets: inherit
+  test-tiny:
+    uses: ./.github/workflows/test-tiny.yml
+    needs: test-plan9
+    secrets: inherit
   test-all-wasms:
     uses: ./.github/workflows/test-all-wasms.yml
-    needs: test-top3
+    needs: test-tiny
     secrets: inherit
   test-all-bsds:
     uses: ./.github/workflows/test-all-bsds.yml
@@ -28,16 +40,4 @@ jobs:
   test-all-solaria:
     uses: ./.github/workflows/test-all-solaria.yml
     needs: test-all-bsds
-    secrets: inherit
-  test-plan9:
-      uses: ./.github/workflows/test-plan9.yml
-      needs: test-all-solaria
-      secrets: inherit
-  test-android:
-    uses: ./.github/workflows/test-android.yml
-    needs: test-plan9
-    secrets: inherit
-  test-tiny:
-    uses: ./.github/workflows/test-tiny.yml
-    needs: test-android
     secrets: inherit
