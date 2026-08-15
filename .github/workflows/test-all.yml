@@ -18,26 +18,27 @@ jobs:
       make_cmd: test
     secrets: inherit
   test-android:
+    # if: success()
     uses: ./.github/workflows/test-android.yml
     needs: test-top3
     secrets: inherit
   test-plan9:
-      uses: ./.github/workflows/test-plan9.yml
-      needs: test-android
-      secrets: inherit
+    # if: success()
+    uses: ./.github/workflows/test-plan9.yml
+    needs: test-android
+    secrets: inherit
   test-tiny:
+    # if: success()
     uses: ./.github/workflows/test-tiny.yml
     needs: test-plan9
     secrets: inherit
   test-all-wasms:
+    # if: success()
     uses: ./.github/workflows/test-all-wasms.yml
     needs: test-tiny
     secrets: inherit
-  test-all-bsds:
+  test-all-vms:
+    # if: success()
     uses: ./.github/workflows/test-all-bsds.yml
     needs: test-all-wasms
-    secrets: inherit
-  test-all-solaria:
-    uses: ./.github/workflows/test-all-solaria.yml
-    needs: test-all-bsds
     secrets: inherit
