@@ -15,7 +15,7 @@ const (
 	supportsLinks         = true
 	supportsNice          = false
 	supportsSymlinks      = false
-	supportsUmask         = true
+	supportsUmask         = false
 )
 
 const userIDSource UserIDSourceType = UserIDSourceIsNone
