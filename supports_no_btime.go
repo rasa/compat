@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: Copyright © 2026 Ross Smith II <ross@smithii.com>
 // SPDX-License-Identifier: MIT
 
-//go:build fstat && (freebsd || netbsd)
+//go:build android || ((aix || dragonfly || illumos || openbsd || solaris) && fstat)
 
 package compat
 
@@ -9,7 +9,7 @@ const (
 	supportsATime         = true
 	supportsATimeSetting  = true
 	supportsAtomicReplace = true
-	supportsBTime         = true
+	supportsBTime         = false
 	supportsCTime         = true
 	supportsFstat         = true
 	supportsLinks         = true

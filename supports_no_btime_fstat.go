@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: Copyright © 2025 Ross Smith II <ross@smithii.com>
 // SPDX-License-Identifier: MIT
 
-//go:build wasip1 && !tinygo
+//go:build (wasip1 && !tinygo) || ((aix || dragonfly || illumos || openbsd || solaris) && !fstat)
 
 package compat
 
@@ -13,9 +13,9 @@ const (
 	supportsCTime         = true
 	supportsFstat         = false
 	supportsLinks         = true
-	supportsNice          = false
-	supportsSymlinks      = false
-	supportsUmask         = false
+	supportsNice          = true
+	supportsSymlinks      = true
+	supportsUmask         = true
 )
 
-const userIDSource UserIDSourceType = UserIDSourceIsNone
+const userIDSource UserIDSourceType = UserIDSourceIsInt

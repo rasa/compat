@@ -1,7 +1,9 @@
-// SPDX-FileCopyrightText: Copyright ?? 2025 Ross Smith II <ross@smithii.com>
+// SPDX-FileCopyrightText: Copyright © 2025 Ross Smith II <ross@smithii.com>
 // SPDX-License-Identifier: MIT
 
-//go:build windows
+//go:build (darwin && !ios) || ((freebsd || netbsd) && fstat) || (linux && !android) || windows
+
+// The darwin build flag includes ios (which doesn't support Nice())
 
 package compat
 
@@ -18,4 +20,4 @@ const (
 	supportsUmask         = true
 )
 
-const userIDSource UserIDSourceType = UserIDSourceIsSID
+const userIDSource UserIDSourceType = UserIDSourceIsInt
