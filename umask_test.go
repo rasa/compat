@@ -26,7 +26,7 @@ func TestUmask(t *testing.T) {
 	}
 
 	// Umask is unsupported on Plan 9 and TinyGo/wasip1.
-	if compat.IsPlan9 || (compat.IsWasip1 && compat.IsTinygo) {
+	if !compat.SupportsUmask() {
 		for _, mask := range masks {
 			if got := compat.Umask(mask); got != 0 {
 				t.Errorf("Umask(0o%03o): got previous mask 0o%03o, want 0", mask, got)

@@ -9,10 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Added
 
-- Add `WithNonAtomicReplace()` option.
-- Add `SupportsATimeSetting()` function. False on Plan 9 only.
-- Add `UnsupportedError` error.
 - Add `NotYetImplementedError` error.
+- Add `SupportsATimeSetting()` function. False on Plan 9 only.
+- Add `SupportsUmask()` function. Fasle on Plan 9 and Wasm/Tinygo.
+- Add `UnsupportedError` error.
+- Add `WithNonAtomicReplace()` option.
 - Add running tests on Plan 9 VM.
 
 ### Fixed
