@@ -261,6 +261,7 @@ func main() {
 | `SupportsFstat` | Reports support for `Fstat` |
 | `SupportsLinks` | Reports support for hard-link counts |
 | `SupportsSymlinks` | Reports operating-system support for symbolic links |
+| `SupportsUmask` | Reports support for `Umask` |
 | `UserIDSource` | Describes how user IDs are represented on the current platform |
 
 ### File operations
