@@ -10,7 +10,7 @@ on: # yamllint disable-line rule:truthy
 jobs:
   test-wsl:
     name: test-wsl
-    runs-on: windows-2022
+    runs-on: windows-2025-vs2026
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v7
@@ -20,7 +20,9 @@ jobs:
 
       - run: wsl --list --online
       - run: wsl --set-default-version 2
+      - run: wsl --list --verbose
       - run: wsl --status
+        continue-on-error: true
       - run: wsl --version
       - run: wsl --help
       - run: wsl --install -d Ubuntu
