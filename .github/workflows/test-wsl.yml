@@ -18,7 +18,12 @@ jobs:
           fetch-depth: 1
           show-progress: false
 
-      - run: wsl --install Ubuntu
+      - run: wsl --list --online
+      - run: wsl --set-default-version 2
+      - run: wsl --status
+      - run: wsl --version
+      - run: wsl --help
+      - run: wsl --install -d Ubuntu
       - run: wsl bash -c "apt update"
       - run: wsl bash -c "apt install -y golang
       - run: wsl bash -c "go version"
