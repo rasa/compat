@@ -16,6 +16,8 @@ import (
 
 func TestLstatStat(t *testing.T) { //nolint:dupl
 	if !supportsSymlinks(t) {
+		skip(t, "Skipping test: Symlinks not supported on "+runtime.GOOS)
+
 		return
 	}
 
@@ -67,6 +69,8 @@ func TestLstatStat(t *testing.T) { //nolint:dupl
 
 func TestLstatLstat(t *testing.T) { //nolint:dupl
 	if !supportsSymlinks(t) {
+		skip(t, "Skipping test: Symlinks not supported on "+runtime.GOOS)
+
 		return
 	}
 
@@ -118,11 +122,15 @@ func TestLstatLstat(t *testing.T) { //nolint:dupl
 }
 
 func TestLstatLinks(t *testing.T) {
-	if !supportsHardLinks(t) {
+	if !supportsSymlinks(t) {
+		skip(t, "Skipping test: Symlinks not supported on "+runtime.GOOS)
+
 		return
 	}
 
-	if !supportsSymlinks(t) {
+	if !supportsHardLinks(t) {
+		skip(t, "Skipping test: Hard links not supported on "+runtime.GOOS)
+
 		return
 	}
 
@@ -180,13 +188,15 @@ func TestLstatLinks(t *testing.T) {
 }
 
 func TestLstatATime(t *testing.T) { //nolint:dupl
-	if !compat.SupportsATime() {
-		skip(t, "Skipping test: ATime() not supported on "+runtime.GOOS)
+	if !supportsSymlinks(t) {
+		skip(t, "Skipping test: Symlinks not supported on "+runtime.GOOS)
 
 		return
 	}
 
-	if !supportsSymlinks(t) {
+	if !compat.SupportsATime() {
+		skip(t, "Skipping test: ATime() not supported on "+runtime.GOOS)
+
 		return
 	}
 
@@ -238,12 +248,14 @@ func TestLstatATime(t *testing.T) { //nolint:dupl
 }
 
 func TestLstatBTime(t *testing.T) {
-	if !compat.SupportsBTime() {
-		skipf(t, "Skipping test: BTime() not supported on %v", runtime.GOOS)
+	if !supportsSymlinks(t) {
+		skip(t, "Skipping test: Symlinks not supported on "+runtime.GOOS)
+
 		return
 	}
 
-	if !supportsSymlinks(t) {
+	if !compat.SupportsBTime() {
+		skipf(t, "Skipping test: BTime() not supported on %v", runtime.GOOS)
 		return
 	}
 
@@ -265,12 +277,14 @@ func TestLstatBTime(t *testing.T) {
 }
 
 func TestLstatCTime(t *testing.T) {
-	if !compat.SupportsCTime() {
-		skipf(t, "Skipping test: CTime() not supported on %v", runtime.GOOS)
+	if !supportsSymlinks(t) {
+		skip(t, "Skipping test: Symlinks not supported on "+runtime.GOOS)
+
 		return
 	}
 
-	if !supportsSymlinks(t) {
+	if !compat.SupportsCTime() {
+		skipf(t, "Skipping test: CTime() not supported on %v", runtime.GOOS)
 		return
 	}
 
@@ -293,6 +307,8 @@ func TestLstatCTime(t *testing.T) {
 
 func TestLstatMTime(t *testing.T) { //nolint:dupl
 	if !supportsSymlinks(t) {
+		skip(t, "Skipping test: Symlinks not supported on "+runtime.GOOS)
+
 		return
 	}
 
@@ -345,6 +361,8 @@ func TestLstatMTime(t *testing.T) { //nolint:dupl
 
 func TestLstatUID(t *testing.T) {
 	if !supportsSymlinks(t) {
+		skip(t, "Skipping test: Symlinks not supported on "+runtime.GOOS)
+
 		return
 	}
 
@@ -376,6 +394,8 @@ func TestLstatUID(t *testing.T) {
 
 func TestLstatGID(t *testing.T) {
 	if !supportsSymlinks(t) {
+		skip(t, "Skipping test: Symlinks not supported on "+runtime.GOOS)
+
 		return
 	}
 
@@ -415,6 +435,8 @@ func TestLstatGID(t *testing.T) {
 
 func TestLstatUser(t *testing.T) {
 	if !supportsSymlinks(t) {
+		skip(t, "Skipping test: Symlinks not supported on "+runtime.GOOS)
+
 		return
 	}
 
@@ -455,6 +477,8 @@ func TestLstatUser(t *testing.T) {
 
 func TestLstatUserSetOwner(t *testing.T) {
 	if !supportsSymlinks(t) {
+		skip(t, "Skipping test: Symlinks not supported on "+runtime.GOOS)
+
 		return
 	}
 
@@ -488,6 +512,8 @@ func TestLstatUserSetOwner(t *testing.T) {
 
 func TestLstatGroup(t *testing.T) {
 	if !supportsSymlinks(t) {
+		skip(t, "Skipping test: Symlinks not supported on "+runtime.GOOS)
+
 		return
 	}
 
@@ -541,6 +567,8 @@ func TestLstatGroup(t *testing.T) {
 
 func TestLstatGroupSetOwner(t *testing.T) {
 	if !supportsSymlinks(t) {
+		skip(t, "Skipping test: Symlinks not supported on "+runtime.GOOS)
+
 		return
 	}
 
@@ -584,6 +612,8 @@ func TestLstatGroupSetOwner(t *testing.T) {
 
 func TestLstatSamePartition(t *testing.T) {
 	if !supportsSymlinks(t) {
+		skip(t, "Skipping test: Symlinks not supported on "+runtime.GOOS)
+
 		return
 	}
 
@@ -609,6 +639,8 @@ func TestLstatSamePartition(t *testing.T) {
 
 func TestLstatSamePartitions(t *testing.T) {
 	if !supportsSymlinks(t) {
+		skip(t, "Skipping test: Symlinks not supported on "+runtime.GOOS)
+
 		return
 	}
 
@@ -629,6 +661,8 @@ func TestLstatSamePartitions(t *testing.T) {
 
 func TestLstatSameFile(t *testing.T) {
 	if !supportsSymlinks(t) {
+		skip(t, "Skipping test: Symlinks not supported on "+runtime.GOOS)
+
 		return
 	}
 
@@ -654,6 +688,8 @@ func TestLstatSameFile(t *testing.T) {
 
 func TestLstatSameFiles(t *testing.T) {
 	if !supportsSymlinks(t) {
+		skip(t, "Skipping test: Symlinks not supported on "+runtime.GOOS)
+
 		return
 	}
 
@@ -674,6 +710,8 @@ func TestLstatSameFiles(t *testing.T) {
 
 func TestLstatDiffFile(t *testing.T) {
 	if !supportsSymlinks(t) {
+		skip(t, "Skipping test: Symlinks not supported on "+runtime.GOOS)
+
 		return
 	}
 
@@ -706,6 +744,8 @@ func TestLstatDiffFile(t *testing.T) {
 
 func TestLstatDiffFiles(t *testing.T) {
 	if !supportsSymlinks(t) {
+		skip(t, "Skipping test: Symlinks not supported on "+runtime.GOOS)
+
 		return
 	}
 
