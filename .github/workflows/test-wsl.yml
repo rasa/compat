@@ -25,6 +25,7 @@ jobs:
       - run: wsl --status
         continue-on-error: true
       - run: wsl --version
+        continue-on-error: true
       - run: wsl --help
         continue-on-error: true
       - run: wsl --install -d Ubuntu
