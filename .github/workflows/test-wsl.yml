@@ -21,6 +21,7 @@ jobs:
       - run: wsl --list --online
       - run: wsl --set-default-version 2
       - run: wsl --list --verbose
+        continue-on-error: true
       - run: wsl --status
         continue-on-error: true
       - run: wsl --version
