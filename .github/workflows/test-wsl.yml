@@ -26,6 +26,7 @@ jobs:
         continue-on-error: true
       - run: wsl --version
       - run: wsl --help
+        continue-on-error: true
       - run: wsl --install -d Ubuntu
       - run: wsl bash -c "apt update"
       - run: wsl bash -c "apt install -y golang
