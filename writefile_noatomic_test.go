@@ -14,6 +14,7 @@ import (
 func TestWriteFileNonAtomicReplace(t *testing.T) {
 	if compat.SupportsAtomicReplace() {
 		skip(t, "Skipping test: requires non-atomic rename")
+
 		return
 	}
 
@@ -25,6 +26,7 @@ func TestWriteFileNonAtomicReplace(t *testing.T) {
 	cleanup(t, file)
 
 	oldData := []byte("old")
+
 	err = os.WriteFile(file, oldData, 0o600)
 	if err != nil {
 		t.Fatal(err)
@@ -54,6 +56,7 @@ func TestWriteFileNonAtomicReplace(t *testing.T) {
 func TestWriteFileNonAtomicCreate(t *testing.T) {
 	if compat.SupportsAtomicReplace() {
 		skip(t, "Skipping test: requires non-atomic rename")
+
 		return
 	}
 

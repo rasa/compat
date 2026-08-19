@@ -22,6 +22,7 @@ func TestRootIsRoot(t *testing.T) {
 
 	if !isRoot {
 		skip(t, "Skipping test: we aren't the root/admin user")
+
 		return
 	}
 

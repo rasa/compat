@@ -14,6 +14,7 @@ import (
 func TestWriteReaderNonAtomicReplace(t *testing.T) {
 	if compat.SupportsAtomicReplace() {
 		skip(t, "Skipping test: requires non-atomic rename")
+
 		return
 	}
 
@@ -61,6 +62,7 @@ func TestWriteReaderNonAtomicReplace(t *testing.T) {
 func TestWriteReaderNonAtomicCreate(t *testing.T) {
 	if compat.SupportsAtomicReplace() {
 		skip(t, "Skipping test: requires non-atomic rename")
+
 		return
 	}
 

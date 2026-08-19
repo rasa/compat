@@ -24,10 +24,12 @@ func fstat(f *os.File) (FileInfo, error) {
 	fd := int(f.Fd())
 
 	link := "/proc/self/fd/" + strconv.Itoa(fd)
+
 	path, err := os.Readlink(link)
 	if err != nil {
 		return nil, statError(f.Name(), err)
 	}
+
 	path = filepath.Clean(path)
 
 	return stat(fi, path, false)

@@ -21,30 +21,38 @@ func TestReadDir(t *testing.T) { //nolint:gocyclo
 	// t.Parallel()
 	if compat.IsTinygo && compat.IsWasip1 {
 		skip(t, "Skipping test: fdopendir /tmp/TestReadDir256423683/000/foo: errno 8")
+
 		return
 	}
 
 	if compat.IsPlan9 && version.Compare(runtime.Version(), "go1.26") < 0 {
 		skipf(t, "Skipping test: test requires go v1.26 or greater on %v", runtime.GOOS)
+
 		return
 	}
 
 	dirname := "rumpelstilzchen"
-	if _, err := compat.ReadDir(dirname); err == nil { // compat: s|ReadDir|compat.ReadDir|
+
+	_, err := compat.ReadDir(dirname)
+	if err == nil { // compat: s|ReadDir|compat.ReadDir|
 		t.Fatalf("ReadDir %s: error expected, none found", dirname)
 	}
 
 	filename := filepath.Join(t.TempDir(), "foo")
+
 	f, err := os.Create(filename) // compat: s|Create|os.Create|
 	if err != nil {
 		t.Fatal(err)
 	}
+
 	f.Close()
-	if list, err := compat.ReadDir(filename); list != nil || !errors.Is(err, syscall.ENOTDIR) { //nolint:govet // compat: s|ReadDir|compat.ReadDir|
+
+	if list, err := compat.ReadDir(filename); list != nil || !errors.Is(err, syscall.ENOTDIR) { //nolint:govet,noinlineerr // compat: s|ReadDir|compat.ReadDir|
 		t.Fatalf("ReadDir %s: (nil, ENOTDIR) expected, got (%v, %v)", filename, list, err)
 	}
 
 	dirname = "testdata"
+
 	list, err := compat.ReadDir(dirname) // compat: s|ReadDir|compat.ReadDir|
 	if err != nil {
 		t.Fatalf("ReadDir %s: %v", dirname, err)
@@ -52,6 +60,7 @@ func TestReadDir(t *testing.T) { //nolint:gocyclo
 
 	foundFile := false
 	foundSubDir := false
+
 	for _, dir := range list {
 		switch {
 		case !dir.IsDir() && dir.Name() == "a-file":
@@ -60,9 +69,11 @@ func TestReadDir(t *testing.T) { //nolint:gocyclo
 			foundSubDir = true
 		}
 	}
+
 	if !foundFile {
 		t.Fatalf("ReadDir %s: a-file file not found", dirname)
 	}
+
 	if !foundSubDir {
 		t.Fatalf("ReadDir %s: a-dir directory not found", dirname)
 	}
@@ -70,6 +81,7 @@ func TestReadDir(t *testing.T) { //nolint:gocyclo
 
 func TestDirEntry(t *testing.T) {
 	dirname := "."
+
 	list, err := compat.ReadDir(dirname)
 	if err != nil {
 		t.Fatalf("ReadDir %s: %v", dirname, err)
@@ -80,15 +92,19 @@ func TestDirEntry(t *testing.T) {
 		if err != nil {
 			t.Fatalf("ReadDir %s: %v", dirname, err)
 		}
+
 		if info == nil {
 			t.Fatalf("ReadDir %s: %v", dirname, "info is nil")
 		}
+
 		if info.Name() != dir.Name() {
 			t.Fatalf("ReadDir %s: Name(): got %v; want %v", dirname, info.Name(), dir.Name())
 		}
+
 		if info.IsDir() != dir.IsDir() {
 			t.Fatalf("ReadDir %s: IsDir(): got %v; want %v", dirname, info.IsDir(), dir.IsDir())
 		}
+
 		if info.Mode().Type() != dir.Type() {
 			t.Fatalf("ReadDir %s: Type(): got %v; want %v", dirname, info.Mode().Type(), dir.Type())
 		}

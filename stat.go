@@ -32,7 +32,7 @@ const (
 
 // A FileInfo describes a file and is returned by [Stat].
 // See https://github.com/golang/go/blob/ad7a6f81/src/io/fs/fs.go#L158
-type FileInfo interface {
+type FileInfo interface { //nolang:interfacebloat
 	Name() string       // base name of the file
 	Size() int64        // length in bytes for regular files; system-dependent for others
 	Mode() os.FileMode  // file mode bits
@@ -72,6 +72,7 @@ func (fs *fileStat) Error() error        { return fs.err }
 
 func (fs *fileStat) String() string {
 	var b strings.Builder
+
 	fmt.Fprintf(&b, "Name:   %v\n", fs.Name())
 	fmt.Fprintf(&b, "Size:   %v\n", fs.Size())
 	fmt.Fprintf(&b, "Mode:   0o%o (%v)\n", fs.Mode(), fs.Mode())

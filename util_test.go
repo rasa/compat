@@ -46,7 +46,7 @@ var (
 type errReader struct{}
 
 func (errReader) Read(p []byte) (int, error) {
-	return 0, errors.New("simulated read failure")
+	return 0, errors.New("simulated read failure") //nolint:err113
 }
 
 type nilReader struct{}
@@ -55,6 +55,7 @@ func (nilReader) Read(p []byte) (int, error) {
 	for i := range p {
 		p[i] = 'x'
 	}
+
 	return len(p), nil
 }
 
@@ -91,7 +92,9 @@ func compareNames(got string, want string) bool {
 	if got == "" || want == "" {
 		return false
 	}
+
 	gotDomain, gotName := parseName(got)
+
 	wantDomain, wantName := parseName(want)
 	if gotName == wantName {
 		if gotDomain == wantDomain || gotDomain == "" || wantDomain == "" {
@@ -178,6 +181,7 @@ func fixPerms(perm os.FileMode, isDir bool) os.FileMode {
 		if compat.IsTinygo {
 			return perm600
 		}
+
 		if isDir {
 			return perm700
 		}
@@ -197,6 +201,7 @@ func fixPerms(perm os.FileMode, isDir bool) os.FileMode {
 			if osVersion.major != 13 {
 				return compat.DefaultAppleDirPerm
 			}
+
 			fallthrough
 		default:
 			return compat.DefaultUnixDirPerm
@@ -210,6 +215,7 @@ func fixPerms(perm os.FileMode, isDir bool) os.FileMode {
 		if osVersion.major != 13 {
 			return compat.DefaultAppleFilePerm
 		}
+
 		fallthrough
 	default:
 		return compat.DefaultUnixFilePerm
@@ -221,6 +227,7 @@ func fixPosixPerms(perm os.FileMode, isDir bool) os.FileMode {
 		if compat.IsTinygo {
 			return perm000
 		}
+
 		if isDir {
 			return perm700
 		}
@@ -276,6 +283,7 @@ func normalizeSize(s string) string {
 
 func parseName(name string) (string, string) {
 	parts := strings.Split(name, `\`)
+
 	switch {
 	case len(parts) == 1:
 		return "", strings.ToLower(parts[0])
@@ -289,15 +297,18 @@ func partitionType(name string) string {
 	if err != nil {
 		return "n/a"
 	}
+
 	return partType
 }
 
 func randomBase36String(n int) string {
 	const base36 = "0123456789abcdefghijklmnopqrstuvwxyz"
+
 	out := make([]byte, n)
 	for i := range out {
 		out[i] = base36[rand.IntN(len(base36))] //nolint:gosec
 	}
+
 	return string(out)
 }
 
@@ -306,24 +317,31 @@ func removeIt(name string) {
 	if errors.Is(err, os.ErrNotExist) {
 		return
 	}
+
 	if strings.Contains(compatDebug, "NODEL") {
 		return
 	}
+
 	if fi.IsDir() {
 		_ = filepath.WalkDir(name, func(path string, d fs.DirEntry, err error) error {
 			if err != nil {
 				// ignore errors
 				return nil //nolint:nilerr
 			}
+
 			_ = compat.Chmod(path, 0o777, compat.WithReadOnlyMode(compat.ReadOnlyModeReset))
+
 			return nil
 		})
 	}
+
 	_ = compat.RemoveAll(name)
+
 	_, err = os.Stat(name)
 	if errors.Is(err, os.ErrNotExist) {
 		return
 	}
+
 	if compat.IsWindows {
 		args := []string{name, "/q", "/t", "/c", "/grant", os.Getenv("USERNAME") + ":F"}
 		_ = exec.CommandContext(context.Background(), "icacls.exe", args...).Run() //nolint:gosec
@@ -339,25 +357,33 @@ func removeItFunc(name string) func() {
 
 func run(name string, args ...string) error {
 	log("Executing: " + name + " " + strings.Join(args, " "))
+
 	ctx := context.Background()
 	cmd := exec.CommandContext(ctx, name, args...)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	cmd.Stdin = io.NopCloser(bytes.NewReader(nil))
+
 	return cmd.Run()
 }
 
 func runCapture(name string, args ...string) (string, error) {
 	log("Executing: " + name + " " + strings.Join(args, " "))
+
 	ctx := context.Background()
 	cmd := exec.CommandContext(ctx, name, args...)
+
 	var out, errb bytes.Buffer
+
 	cmd.Stdout = &out
 	cmd.Stderr = &errb
 	cmd.Stdin = io.NopCloser(bytes.NewReader(nil))
-	if err := cmd.Run(); err != nil {
+
+	err := cmd.Run()
+	if err != nil {
 		return "", fmt.Errorf("%s %v: %w\nstderr:\n%s", name, args, err, errb.String())
 	}
+
 	return out.String(), nil
 }
 
@@ -371,6 +397,7 @@ func skip(t *testing.T, msg any) {
 
 		return
 	}
+
 	if compat.IsAct {
 		s += " (" + runtime.GOOS + "/act" + ")"
 	}
@@ -410,13 +437,14 @@ func supportsHardLinks(t *testing.T) bool {
 	src := filepath.Join(dir, "source")
 	dst := filepath.Join(dir, "link")
 
-	if err := os.WriteFile(src, nil, 0o600); err != nil {
+	err := os.WriteFile(src, nil, 0o600)
+	if err != nil {
 		t.Fatalf("probe hard-link support on %v: %v", runtime.GOOS, err)
 
 		return false // tinygo doesn't support t.Fatalf
 	}
 
-	err := os.Link(src, dst)
+	err = os.Link(src, dst)
 	if err == nil {
 		return true
 	}
@@ -430,6 +458,7 @@ func supportsHardLinks(t *testing.T) bool {
 	}
 
 	t.Fatalf("unexpected hard-link probe failure: %v", err)
+
 	return false
 }
 
@@ -471,6 +500,7 @@ func tempFile(t *testing.T) (string, error) {
 	}
 
 	name := f.Name()
+
 	_, err = os.Stat(name)
 	if errors.Is(err, os.ErrNotExist) {
 		return "", err
@@ -483,6 +513,7 @@ func tempName(t *testing.T) (string, error) { //nolint:unparam
 	t.Helper()
 
 	name := filepath.Join(tempDir(t), randomBase36String(8)+".tmp")
+
 	return name, nil
 }
 
@@ -495,9 +526,11 @@ func tempDir(t *testing.T) string {
 		parts := strings.Split(t.TempDir(), string(os.PathSeparator))
 
 		idx := -1
+
 		for i, p := range parts {
 			if strings.HasPrefix(p, "Test") {
 				idx = i
+
 				break
 			}
 		}
@@ -507,6 +540,7 @@ func tempDir(t *testing.T) string {
 		}
 
 		tempDir = filepath.Join(append([]string{tempPath, "tmp"}, parts[idx:]...)...)
+
 		err := compat.MkdirAll(tempDir, perm777)
 		if err != nil {
 			t.Fatal(err)
@@ -519,7 +553,8 @@ func tempDir(t *testing.T) string {
 	}
 
 	if compat.IsPlan9 {
-		if err := os.Chmod(tempDir, 0o777); err != nil {
+		err := os.Chmod(tempDir, 0o777)
+		if err != nil {
 			t.Fatal(err)
 		}
 	}

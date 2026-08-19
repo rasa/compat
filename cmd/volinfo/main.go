@@ -35,6 +35,7 @@ nextMount:
 				continue nextMount
 			}
 		}
+
 		fmt.Printf("%d: %v: %v\n", i, mnt.Mountpoint, mnt.Device)
 	}
 
@@ -50,6 +51,7 @@ nextVolume:
 				continue nextVolume
 			}
 		}
+
 		fmt.Printf("%d: %v: \n", i, vol.Mountpoint)
 		fmt.Printf("%v\n", vol)
 		// entries, err := compat.ReadDir(volume.MountPoint())
@@ -77,6 +79,7 @@ nextVolume2:
 				continue nextVolume2
 			}
 		}
+
 		fmt.Printf("%d: %v: \n", i, vol.Mountpoint)
 		keys := slices.Collect(maps.Keys(vol.Filesystem.OSFeatures))
 
@@ -87,9 +90,11 @@ nextVolume2:
 		})
 
 		fmt.Println("Supported:")
+
 		for _, k := range keys {
 			fmt.Printf("  %s\n", k)
 		}
+
 		fmt.Println("")
 	}
 }

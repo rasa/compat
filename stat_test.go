@@ -21,12 +21,14 @@ func TestStatStat(t *testing.T) {
 	name, err := createTempFile(t)
 	if err != nil {
 		fatal(t, err)
+
 		return
 	}
 
 	fi, err := compat.Stat(name)
 	if err != nil {
 		fatal(t, err)
+
 		return
 	}
 
@@ -34,34 +36,41 @@ func TestStatStat(t *testing.T) {
 
 	if got := fi.Name(); got != base {
 		fatalf(t, "Name(): got %v, want %v", got, base)
+
 		return
 	}
 
 	size := int64(len(helloBytes))
 	if got := fi.Size(); got != size {
 		fatalf(t, "Size(): got %v, want %v", got, size)
+
 		return
 	}
 
 	perm := compat.CreateTempPerm
+
 	want := fixPerms(perm, false)
 	if got := fi.Mode().Perm(); got != want {
 		fatalf(t, "Mode(): got 0o%o, want 0o%o", got, want)
+
 		return
 	}
 
 	if got := fi.Mode().Type(); got != 0 {
 		fatalf(t, "fi.Mode().Type(): got 0o%o, want 0o%o", got, 0)
+
 		return
 	}
 
 	if got := fi.IsDir(); got != false {
 		fatalf(t, "IsDir(): got %v, want %v", got, false)
+
 		return
 	}
 
 	if got := fi.ModTime(); !compareTimes(got, now, testEnv.mtimeGranularity) {
 		fatalTimes(t, "ModTime()", got, now, testEnv.mtimeGranularity)
+
 		return
 	}
 
@@ -130,6 +139,7 @@ func TestStatLinks(t *testing.T) {
 func TestStatATime(t *testing.T) {
 	if !compat.SupportsATime() {
 		skipf(t, "Skipping test: ATime() not supported on %v", runtime.GOOS)
+
 		return
 	}
 
@@ -151,6 +161,7 @@ func TestStatATime(t *testing.T) {
 
 	if !compat.SupportsATimeSetting() {
 		skipf(t, "Skipping test: setting atime not supported on %v with %v", runtime.GOOS, runtime.Compiler)
+
 		return
 	}
 
@@ -174,6 +185,7 @@ func TestStatATime(t *testing.T) {
 func TestStatBTime(t *testing.T) {
 	if !compat.SupportsBTime() {
 		skipf(t, "Skipping test: BTime() not supported on %v", runtime.GOOS)
+
 		return
 	}
 
@@ -197,6 +209,7 @@ func TestStatBTime(t *testing.T) {
 func TestStatCTime(t *testing.T) {
 	if !compat.SupportsCTime() {
 		skipf(t, "Skipping test: CTime() not supported on %v", runtime.GOOS)
+
 		return
 	}
 
@@ -223,12 +236,14 @@ func TestStatMTime(t *testing.T) {
 	name, err := createTempFile(t)
 	if err != nil {
 		fatal(t, err)
+
 		return
 	}
 
 	fi, err := compat.Stat(name)
 	if err != nil {
 		fatal(t, err)
+
 		return
 	}
 
@@ -261,18 +276,21 @@ func TestStatMTime(t *testing.T) {
 func TestStatUID(t *testing.T) {
 	if compat.IsPlan9 {
 		skipf(t, "Skipping test: Geteuid not supported on %s", runtime.GOOS)
+
 		return
 	}
 
 	name, err := createTempFile(t)
 	if err != nil {
 		fatal(t, err)
+
 		return
 	}
 
 	fi, err := compat.Stat(name)
 	if err != nil {
 		fatal(t, err)
+
 		return
 	}
 
@@ -302,18 +320,21 @@ func TestStatUID(t *testing.T) {
 func TestStatGID(t *testing.T) {
 	if compat.IsPlan9 {
 		skipf(t, "Skipping test: Getegid not supported on %s", runtime.GOOS)
+
 		return
 	}
 
 	name, err := createTempFile(t)
 	if err != nil {
 		fatal(t, err)
+
 		return
 	}
 
 	fi, err := compat.Stat(name)
 	if err != nil {
 		fatal(t, err)
+
 		return
 	}
 
@@ -338,6 +359,7 @@ func TestStatGID(t *testing.T) {
 		}
 
 		fatalf(t, "GID(): got %v, want %v", got, want)
+
 		return
 	}
 }
@@ -346,6 +368,7 @@ func TestStatUser(t *testing.T) {
 	if compat.IsTinygo {
 		// tinygo: Current requires cgo or $USER, $HOME set in environment
 		skip(t, "Skipping test: User() not supported on tinygo")
+
 		return
 	}
 
@@ -365,6 +388,7 @@ func TestStatUser(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+
 	want := u.Username
 
 	if !compareNames(got, want) {
@@ -382,11 +406,13 @@ func TestStatUser(t *testing.T) {
 func TestStatGroup(t *testing.T) {
 	if compat.IsTinygo {
 		skip(t, "Skipping test: Group() not supported on tinygo")
+
 		return
 	}
 
 	if compat.IsAndroid || compat.IsPlan9 {
 		skipf(t, "Skipping test: user: LookupGroupId not implemented on %s", runtime.GOOS)
+
 		return
 	}
 
@@ -430,18 +456,21 @@ func TestStatError(t *testing.T) {
 	name, err := createTempFile(t)
 	if err != nil {
 		fatal(t, err)
+
 		return
 	}
 
 	fi, err := compat.Stat(name)
 	if err != nil {
 		fatal(t, err)
+
 		return
 	}
 
 	err = fi.Error()
 	if err != nil {
 		fatalf(t, "got %v, want nil", err)
+
 		return
 	}
 }
@@ -450,18 +479,21 @@ func TestStatFileID(t *testing.T) {
 	name, err := createTempFile(t)
 	if err != nil {
 		fatal(t, err)
+
 		return
 	}
 
 	fi, err := compat.Stat(name)
 	if err != nil {
 		fatal(t, err)
+
 		return
 	}
 
 	got := fi.FileID()
 	if got == 0 {
 		fatal(t, "got 0, want !0")
+
 		return
 	}
 }
@@ -470,18 +502,21 @@ func TestStatPartitionID(t *testing.T) {
 	name, err := createTempFile(t)
 	if err != nil {
 		fatal(t, err)
+
 		return
 	}
 
 	fi, err := compat.Stat(name)
 	if err != nil {
 		fatal(t, err)
+
 		return
 	}
 
 	got := fi.PartitionID()
 	if got == 0 {
 		fatal(t, "got 0, want !0")
+
 		return
 	}
 }
@@ -506,12 +541,14 @@ func TestStatString(t *testing.T) {
 	name, err := createTempFile(t)
 	if err != nil {
 		fatal(t, err)
+
 		return
 	}
 
 	fi, err := compat.Stat(name)
 	if err != nil {
 		fatal(t, err)
+
 		return
 	}
 
@@ -527,12 +564,14 @@ func TestStatInfo(t *testing.T) {
 	name, err := createTempFile(t)
 	if err != nil {
 		fatal(t, err)
+
 		return
 	}
 
 	fi, err := compat.Stat(name)
 	if err != nil {
 		fatal(t, err)
+
 		return
 	}
 
@@ -540,6 +579,7 @@ func TestStatInfo(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+
 	if got == nil {
 		t.Fatal("got nil, want a value")
 	}
@@ -549,12 +589,14 @@ func TestStatSamePartition(t *testing.T) {
 	name, err := createTempFile(t)
 	if err != nil {
 		fatal(t, err)
+
 		return
 	}
 
 	fi1, err := compat.Stat(name)
 	if err != nil {
 		fatal(t, err)
+
 		return
 	}
 
@@ -572,14 +614,17 @@ func TestStatSamePartitions(t *testing.T) {
 	name, err := createTempFile(t)
 	if err != nil {
 		fatal(t, err)
+
 		return
 	}
 
 	got, err := compat.SamePartitions(name, name)
 	if err != nil {
 		fatal(t, err)
+
 		return
 	}
+
 	want := true
 	if got != want {
 		t.Fatalf("SamePartitions(): got %v, want %v", got, want)
@@ -590,23 +635,27 @@ func TestStatSameFile(t *testing.T) {
 	name, err := createTempFile(t)
 	if err != nil {
 		fatal(t, err)
+
 		return
 	}
 
 	fi1, err := compat.Stat(name)
 	if err != nil {
 		fatal(t, err)
+
 		return
 	}
 
 	fi2, err := compat.Stat(name)
 	if err != nil {
 		fatal(t, err)
+
 		return
 	}
 
 	if got := compat.SameFile(fi1, fi2); !got {
 		t.Fatalf("SameFile(): got %v, want true", got)
+
 		return
 	}
 }
@@ -615,17 +664,21 @@ func TestStatSameFiles(t *testing.T) {
 	name, err := createTempFile(t)
 	if err != nil {
 		fatal(t, err)
+
 		return
 	}
 
 	got, err := compat.SameFiles(name, name)
 	if err != nil {
 		fatal(t, err)
+
 		return
 	}
+
 	want := true
 	if got != want {
 		t.Fatalf("SameFiles(): got %v, want %v", got, want)
+
 		return
 	}
 }
@@ -634,28 +687,33 @@ func TestStatDiffFile(t *testing.T) {
 	name1, err := createTempFile(t)
 	if err != nil {
 		fatal(t, err)
+
 		return
 	}
 
 	name2, err := createTempFile(t)
 	if err != nil {
 		fatal(t, err)
+
 		return
 	}
 
 	fi1, err := compat.Stat(name1)
 	if err != nil {
 		fatal(t, err)
+
 		return
 	}
 
 	fi2, err := compat.Stat(name2)
 	if err != nil {
 		fatal(t, err)
+
 		return
 	}
 
 	got := compat.SameFile(fi1, fi2)
+
 	want := false
 	if got != want {
 		t.Fatalf("SameFile(): got %v, want %v", got, want)
@@ -666,20 +724,24 @@ func TestStatDiffFiles(t *testing.T) {
 	name1, err := createTempFile(t)
 	if err != nil {
 		fatal(t, err)
+
 		return
 	}
 
 	name2, err := createTempFile(t)
 	if err != nil {
 		fatal(t, err)
+
 		return
 	}
 
 	got, err := compat.SameFiles(name1, name2)
 	if err != nil {
 		fatal(t, err)
+
 		return
 	}
+
 	want := false
 	if got != want {
 		t.Fatalf("SameFiles(): got %v, want %v", got, want)
@@ -711,6 +773,7 @@ func TestStatSamePartitionInvalid1(t *testing.T) {
 	name2, err := createTempFile(t)
 	if err != nil {
 		fatal(t, err)
+
 		return
 	}
 
@@ -727,6 +790,7 @@ func TestStatSamePartitionInvalid2(t *testing.T) {
 	name1, err := createTempFile(t)
 	if err != nil {
 		fatal(t, err)
+
 		return
 	}
 
@@ -747,12 +811,14 @@ func TestStatSamePartitionsInvalid1(t *testing.T) {
 	name2, err := createTempFile(t)
 	if err != nil {
 		fatal(t, err)
+
 		return
 	}
 
 	_, err = compat.SamePartitions(name1, name2)
 	if err == nil {
 		fatal(t, "got no error, expected one")
+
 		return
 	}
 }
@@ -761,6 +827,7 @@ func TestStatSamePartitionsInvalid2(t *testing.T) {
 	name1, err := createTempFile(t)
 	if err != nil {
 		fatal(t, err)
+
 		return
 	}
 
@@ -769,6 +836,7 @@ func TestStatSamePartitionsInvalid2(t *testing.T) {
 	_, err = compat.SamePartitions(name1, name2)
 	if err == nil {
 		fatal(t, "got no error, expected one")
+
 		return
 	}
 }
@@ -779,6 +847,7 @@ func TestStatSameFileInvalid1(t *testing.T) {
 	name2, err := createTempFile(t)
 	if err != nil {
 		fatal(t, err)
+
 		return
 	}
 
@@ -796,6 +865,7 @@ func TestStatSameFileInvalid2(t *testing.T) {
 	name1, err := createTempFile(t)
 	if err != nil {
 		fatal(t, err)
+
 		return
 	}
 
@@ -817,12 +887,14 @@ func TestStatSameFilesInvalid1(t *testing.T) {
 	name2, err := createTempFile(t)
 	if err != nil {
 		fatal(t, err)
+
 		return
 	}
 
 	_, err = compat.SameFiles(name1, name2)
 	if err == nil {
 		fatal(t, "got no error, expected one")
+
 		return
 	}
 }
@@ -831,6 +903,7 @@ func TestStatSameFilesInvalid2(t *testing.T) {
 	name1, err := createTempFile(t)
 	if err != nil {
 		fatal(t, err)
+
 		return
 	}
 
@@ -839,6 +912,7 @@ func TestStatSameFilesInvalid2(t *testing.T) {
 	_, err = compat.SameFiles(name1, name2)
 	if err == nil {
 		fatal(t, "got no error, expected one")
+
 		return
 	}
 }
@@ -847,6 +921,7 @@ func TestStatExportedStatInvalidFileInfo(t *testing.T) {
 	name, err := createTempFile(t)
 	if err != nil {
 		fatal(t, err)
+
 		return
 	}
 
@@ -859,17 +934,21 @@ func TestStatExportedStatInvalidFileInfo(t *testing.T) {
 func TestStatExportedStatInvalidName(t *testing.T) {
 	if !compat.IsWindows {
 		skip(t, "skipping test: requires Windows")
+
 		return
 	}
+
 	name, err := createTempFile(t)
 	if err != nil {
 		fatal(t, err)
+
 		return
 	}
 
 	fi, err := os.Stat(name)
 	if err != nil {
 		fatal(t, err)
+
 		return
 	}
 

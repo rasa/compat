@@ -9,6 +9,7 @@ import (
 
 var cpuBitsOnce struct {
 	sync.Once
+
 	cpuBits int
 	err     error
 }
@@ -19,5 +20,6 @@ func CPUBits() (int, error) {
 	cpuBitsOnce.Do(func() {
 		cpuBitsOnce.cpuBits, cpuBitsOnce.err = cpuBits()
 	})
+
 	return cpuBitsOnce.cpuBits, cpuBitsOnce.err
 }

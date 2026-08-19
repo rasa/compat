@@ -50,25 +50,39 @@ func main() {
 	if len(os.Args) > 1 {
 		dir = os.Args[1]
 	}
-	var cp CaseProcessing
-	var err error
 
-	if cp.CaseSensitive, err = DetectCaseSensitivity(dir); err != nil {
+	var (
+		cp  CaseProcessing
+		err error
+	)
+
+	cp.CaseSensitive, err = DetectCaseSensitivity(dir)
+	if err != nil {
 		fmt.Println("CaseSensitivity error:", err)
 	}
-	if cp.CasePreserving, err = DetectCasePreserving(dir); err != nil {
+
+	cp.CasePreserving, err = DetectCasePreserving(dir)
+	if err != nil {
 		fmt.Println("CasePreserving error:", err)
 	}
-	if cp.AccentInsensitive, err = DetectAccentInsensitivity(dir); err != nil {
+
+	cp.AccentInsensitive, err = DetectAccentInsensitivity(dir)
+	if err != nil {
 		fmt.Println("AccentInsensitivity error:", err)
 	}
-	if cp.NormalizationForm, err = DetectNormalization(dir); err != nil {
+
+	cp.NormalizationForm, err = DetectNormalization(dir)
+	if err != nil {
 		fmt.Println("Normalization error:", err)
 	}
-	if cp.SortOrder, _, err = DetectSortOrder(dir); err != nil {
+
+	cp.SortOrder, _, err = DetectSortOrder(dir)
+	if err != nil {
 		fmt.Println("SortOrder error:", err)
 	}
-	if cp.CaseFoldingMode, err = DetectCaseFoldingMode(dir); err != nil {
+
+	cp.CaseFoldingMode, err = DetectCaseFoldingMode(dir)
+	if err != nil {
 		fmt.Println("CaseFolding error:", err)
 	}
 
@@ -85,10 +99,12 @@ func main() {
 // ────────────────────────────── CASE SENSITIVITY ──────────────────────────────
 //
 
-func DetectCaseSensitivity(dir string) (bool, error) { //nolint:dupl
+func DetectCaseSensitivity(dir string) (bool, error) {
 	tmp := filepath.Join(dir, ".case_sense_test")
-	os.RemoveAll(tmp)                                 //nolint:gosec
-	if err := os.MkdirAll(tmp, perm755); err != nil { //nolint:gosec //nolint:mnd
+	os.RemoveAll(tmp) //nolint:gosec
+
+	err := os.MkdirAll(tmp, perm755) //nolint:gosec
+	if err != nil {
 		return false, err
 	}
 	defer os.RemoveAll(tmp)
@@ -100,12 +116,15 @@ func DetectCaseSensitivity(dir string) (bool, error) { //nolint:dupl
 	if err != nil {
 		return false, fmt.Errorf("create lower: %w", err)
 	}
+
 	f1.Close()
 
 	f2, err := os.OpenFile(upper, os.O_CREATE|os.O_EXCL|os.O_WRONLY, perm600) //nolint:gosec
+
 	switch {
 	case err == nil:
 		f2.Close()
+
 		return true, nil
 	case os.IsExist(err):
 		return false, nil
@@ -120,15 +139,19 @@ func DetectCaseSensitivity(dir string) (bool, error) { //nolint:dupl
 
 func DetectCasePreserving(dir string) (bool, error) {
 	tmp := filepath.Join(dir, ".case_preserve_test")
-	os.RemoveAll(tmp)                                 //nolint:gosec
-	if err := os.MkdirAll(tmp, perm755); err != nil { //nolint:gosec
+	os.RemoveAll(tmp) //nolint:gosec
+
+	err := os.MkdirAll(tmp, perm755) //nolint:gosec
+	if err != nil {
 		return false, err
 	}
 	defer os.RemoveAll(tmp)
 
 	name := "MiXeDcAsE.txt"
 	path := filepath.Join(tmp, name)
-	if err := os.WriteFile(path, []byte("data"), perm600); err != nil { //nolint:gosec
+
+	err = os.WriteFile(path, []byte("data"), perm600) //nolint:gosec
+	if err != nil {
 		return false, err
 	}
 
@@ -136,11 +159,13 @@ func DetectCasePreserving(dir string) (bool, error) {
 	if err != nil {
 		return false, err
 	}
+
 	for _, e := range entries {
 		if e.Name() == name {
 			return true, nil
 		}
 	}
+
 	return false, nil
 }
 
@@ -148,10 +173,12 @@ func DetectCasePreserving(dir string) (bool, error) {
 // ────────────────────────────── ACCENT INSENSITIVITY ──────────────────────────────
 //
 
-func DetectAccentInsensitivity(dir string) (bool, error) { //nolint:dupl
+func DetectAccentInsensitivity(dir string) (bool, error) {
 	tmp := filepath.Join(dir, ".accent_test")
-	os.RemoveAll(tmp)                                 //nolint:gosec
-	if err := os.MkdirAll(tmp, perm755); err != nil { //nolint:gosec
+	os.RemoveAll(tmp) //nolint:gosec
+
+	err := os.MkdirAll(tmp, perm755) //nolint:gosec
+	if err != nil {
 		return false, err
 	}
 	defer os.RemoveAll(tmp)
@@ -163,12 +190,15 @@ func DetectAccentInsensitivity(dir string) (bool, error) { //nolint:dupl
 	if err != nil {
 		return false, fmt.Errorf("create a: %w", err)
 	}
+
 	fa.Close()
 
 	fb, err := os.OpenFile(b, os.O_CREATE|os.O_EXCL|os.O_WRONLY, perm600) //nolint:gosec
+
 	switch {
 	case err == nil:
 		fb.Close()
+
 		return false, nil
 	case os.IsExist(err):
 		return true, nil
@@ -184,8 +214,10 @@ func DetectAccentInsensitivity(dir string) (bool, error) { //nolint:dupl
 // DetectNormalization writes both NFC and NFD forms of "é.txt" and checks what survives.
 func DetectNormalization(dir string) (string, error) {
 	tmp := filepath.Join(dir, ".normalize_test")
-	os.RemoveAll(tmp)                                 //nolint:gosec
-	if err := os.MkdirAll(tmp, perm755); err != nil { //nolint:gosec
+	os.RemoveAll(tmp) //nolint:gosec
+
+	err := os.MkdirAll(tmp, perm755) //nolint:gosec
+	if err != nil {
 		return "", err
 	}
 	defer os.RemoveAll(tmp)
@@ -196,10 +228,13 @@ func DetectNormalization(dir string) (string, error) {
 	nfcPath := filepath.Join(tmp, nfcName)
 	nfdPath := filepath.Join(tmp, nfdName)
 
-	if err := os.WriteFile(nfcPath, nil, perm600); err != nil { //nolint:gosec
+	err = os.WriteFile(nfcPath, nil, perm600) //nolint:gosec
+	if err != nil {
 		return "", fmt.Errorf("write NFC: %w", err)
 	}
-	if err := os.WriteFile(nfdPath, nil, perm600); err != nil { //nolint:gosec
+
+	err = os.WriteFile(nfdPath, nil, perm600) //nolint:gosec
+	if err != nil {
 		return "", fmt.Errorf("write NFD: %w", err)
 	}
 
@@ -211,6 +246,7 @@ func DetectNormalization(dir string) (string, error) {
 	switch len(entries) {
 	case 1:
 		name := entries[0].Name()
+
 		switch {
 		case norm.NFC.IsNormalString(name):
 			return "NFC", nil
@@ -232,8 +268,10 @@ func DetectNormalization(dir string) (string, error) {
 
 func DetectSortOrder(dir string) (sortOrder string, unicodeAware bool, err error) {
 	tmp := filepath.Join(dir, ".sort_test")
-	os.RemoveAll(tmp)                                //nolint:gosec
-	if err = os.MkdirAll(tmp, perm755); err != nil { //nolint:gosec
+	os.RemoveAll(tmp) //nolint:gosec
+
+	err = os.MkdirAll(tmp, perm755) //nolint:gosec
+	if err != nil {
 		return "", false, err
 	}
 	defer os.RemoveAll(tmp)
@@ -263,11 +301,14 @@ func DetectSortOrder(dir string) (sortOrder string, unicodeAware bool, err error
 			if ar[i] == br[i] {
 				continue
 			}
+
 			if ar[i] < br[i] {
 				return -1
 			}
+
 			return 1
 		}
+
 		return len(ar) - len(br)
 	})
 
@@ -288,20 +329,25 @@ func DetectSortOrder(dir string) (sortOrder string, unicodeAware bool, err error
 // DetectCaseFoldingMode detects whether the FS performs Unicode or ASCII-only case folding.
 func DetectCaseFoldingMode(dir string) (CaseFoldingMode, error) {
 	tmp := filepath.Join(dir, ".fold_test")
-	os.RemoveAll(tmp)                                 //nolint:gosec
-	if err := os.MkdirAll(tmp, perm755); err != nil { //nolint:gosec
+	os.RemoveAll(tmp) //nolint:gosec
+
+	err := os.MkdirAll(tmp, perm755) //nolint:gosec
+	if err != nil {
 		return CaseFoldingNone, err
 	}
 	defer os.RemoveAll(tmp)
 
 	// 1. Write lowercase ä.txt
 	lower := filepath.Join(tmp, "ä.txt")
-	if err := os.WriteFile(lower, []byte("x"), perm600); err != nil { //nolint:gosec
+
+	err = os.WriteFile(lower, []byte("x"), perm600) //nolint:gosec,lll
+	if err != nil {
 		return CaseFoldingNone, err
 	}
 
 	// 2. Try creating uppercase form (Ä.TXT)
 	upper := filepath.Join(tmp, "Ä.TXT")
+
 	f, err := os.OpenFile(upper, os.O_CREATE|os.O_EXCL|os.O_WRONLY, perm600) //nolint:gosec
 	if err == nil {
 		f.Close()
@@ -311,14 +357,18 @@ func DetectCaseFoldingMode(dir string) (CaseFoldingMode, error) {
 	}
 
 	// 3. Test ASCII-only (z.txt vs Z.TXT)
-	if err := os.WriteFile(filepath.Join(tmp, "z.txt"), []byte("z"), perm600); err != nil { //nolint:gosec
+	err = os.WriteFile(filepath.Join(tmp, "z.txt"), []byte("z"), perm600) //nolint:gosec
+	if err != nil {
 		return CaseFoldingNone, err
 	}
-	if _, err := os.OpenFile(filepath.Join(tmp, "Z.TXT"), os.O_CREATE|os.O_EXCL|os.O_WRONLY, perm600); err != nil { //nolint:gosec,lll
+
+	_, err = os.OpenFile(filepath.Join(tmp, "Z.TXT"), os.O_CREATE|os.O_EXCL|os.O_WRONLY, perm600) //nolint:gosec,lll
+	if err != nil {
 		if os.IsExist(err) {
 			// ASCII folds but ä/Ä did not
 			return CaseFoldingASCII, nil
 		}
 	}
+
 	return CaseFoldingNone, nil
 }

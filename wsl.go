@@ -14,6 +14,7 @@ import (
 
 var isWSLOnce struct {
 	sync.Once
+
 	isWSL bool
 }
 
@@ -22,10 +23,12 @@ func isWSL() bool {
 	if err != nil {
 		data, err = os.ReadFile("/proc/version")
 	}
+
 	if err == nil {
 		return strings.Contains(strings.ToLower(string(data)), "microsoft")
 	}
 
 	_, err = exec.LookPath("wslpath")
+
 	return err == nil
 }

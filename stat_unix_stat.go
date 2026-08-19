@@ -29,8 +29,8 @@ func stat(fi os.FileInfo, name string, followSymlinks bool) (FileInfo, error) {
 	fs.size = fi.Size()
 	fs.mode = fi.Mode()
 	fs.mtime = fi.ModTime()
-	fs.sys = *fi.Sys().(*syscall.Stat_t)
-	fs.partID = uint64(fs.sys.Dev) //nolint:gosec,unconvert,nolintlint // intentional int32 → uint64 conversion
+	fs.sys = *fi.Sys().(*syscall.Stat_t) //nolint:forcetypeassert
+	fs.partID = uint64(fs.sys.Dev)       //nolint:gosec,unconvert,nolintlint // intentional int32 → uint64 conversion
 	fs.fileID = fs.sys.Ino
 	fs.links = uint(fs.sys.Nlink) //nolint:gosec,unconvert,nolintlint // intentional int32 → uint conversion
 	fs.uid = int(fs.sys.Uid)
@@ -49,6 +49,7 @@ func (fs *fileStat) GID() int { return fs.gid }
 func (fs *fileStat) User() string {
 	if !fs.usered {
 		fs.usered = true
+
 		u, err := user.LookupId(strconv.Itoa(fs.uid))
 		if err != nil {
 			fs.err = err
@@ -63,6 +64,7 @@ func (fs *fileStat) User() string {
 func (fs *fileStat) Group() string {
 	if !fs.grouped {
 		fs.grouped = true
+
 		g, err := user.LookupGroupId(strconv.Itoa(fs.gid))
 		if err != nil {
 			fs.err = err

@@ -72,6 +72,7 @@ var volTypeMap = map[Type]string{
 
 func (v Volume) String() string {
 	var b strings.Builder
+
 	fmt.Fprintf(&b, "Device:   %v\n", v.Device)
 	fmt.Fprintf(&b, "Mount:    %v\n", v.Mountpoint)
 	fmt.Fprintf(&b, "ID:       %v\n", v.ID)
@@ -84,6 +85,7 @@ func (v Volume) String() string {
 	fmt.Fprintf(&b, "Total:    %10v\n", si(float64(v.Total)))
 	fmt.Fprintf(&b, "Used:     %10v\n", si(float64(v.Used)))
 	fmt.Fprintf(&b, "Free:     %10v\n", si(float64(v.Free)))
+
 	if v.InodesTotal != 0 {
 		fmt.Fprintf(&b, "ITotal:   %10v\n", v.InodesTotal)
 		fmt.Fprintf(&b, "IUsed:    %19v\n", v.InodesUsed)
@@ -93,6 +95,7 @@ func (v Volume) String() string {
 	// fmt.Fprintf(&b, "OSFeatures: %v\n", v.OSFeatures)
 	fmt.Fprintf(&b, "Options:    %v\n", v.Options)
 	fmt.Fprintf(&b, "Filesystem: %v\n", v.Filesystem)
+
 	return b.String()
 }
 

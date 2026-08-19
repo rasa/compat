@@ -310,12 +310,15 @@ func (v DisallowedRunes) String() string {
 		if i > 0 {
 			fmt.Fprint(&b, ",")
 		}
+
 		fmt.Fprint(&b, addRune(runeRange.Start))
+
 		if runeRange.Start != runeRange.End {
 			fmt.Fprint(&b, "-")
 			fmt.Fprint(&b, addRune(runeRange.End))
 		}
 	}
+
 	return b.String()
 }
 
@@ -369,6 +372,7 @@ func si(f float64) string {
 
 func NewFilesystem(name string) Filesystem {
 	var fs Filesystem
+
 	fs.Name = name
 	fs.Features = make(map[Feature]Availability)
 	fs.OSFeatures = make(map[OSFeature]Availability)
@@ -496,7 +500,7 @@ const (
 
 var filesystemMap = map[string]Filesystem{}
 
-func init() {
+func init() { //nolint:funlen
 	// @TODO complete this table
 	featuresExt4 := map[Feature]Availability{
 		FeatureStoresFileOwner:              AvailabilityAlways,

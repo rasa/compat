@@ -26,8 +26,10 @@ func TestGetOptions(t *testing.T) {
 	opts = append(opts, compat.WithSetSymlinkOwner(true))
 
 	compat.SetOptions(opts...)
+
 	o := compat.GetOptions()
 	got := len(o)
+
 	want := reflect.TypeFor[compat.Options]().NumField()
 	if got != want {
 		t.Fatalf("got %d, want %d", got, want)
@@ -50,6 +52,7 @@ retrySeconds:    1
 setSymlinkOwner: true
 `
 	flags := fmt.Sprintf("0x%x", os.O_CREATE)
+
 	want = strings.ReplaceAll(want, "$flags", flags)
 	if got != want {
 		t.Fatalf("got:\n---\n%v\n---\nwant:\n---\n%v\n---\n", got, want)
@@ -81,6 +84,7 @@ retrySeconds:    1
 setSymlinkOwner: true
 `
 	flags := fmt.Sprintf("0x%x", os.O_CREATE)
+
 	want = strings.ReplaceAll(want, "$flags", flags)
 	if got != want {
 		t.Fatalf("got:\n---\n%v\n---\nwant:\n---\n%v\n---\n", got, want)

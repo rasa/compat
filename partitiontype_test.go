@@ -21,27 +21,33 @@ func TestPartitionType(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+
 	name := f.Name()
 	_ = f.Close()
+
 	testPartitionType(t, name)
 }
 
 func TestPartitionTypeRel(t *testing.T) {
 	dir := tempDir(t)
+
 	f, err := os.CreateTemp(dir, "")
 	if err != nil {
 		t.Fatal(err)
 	}
+
 	t.Chdir(dir)
 
 	name := filepath.Base(f.Name())
 	_ = f.Close()
+
 	testPartitionType(t, name)
 }
 
 func TestPartitionTypePrefix(t *testing.T) {
 	if !compat.IsWindows {
 		skip(t, "Skipping test: requires Windows")
+
 		return
 	}
 
@@ -49,14 +55,17 @@ func TestPartitionTypePrefix(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+
 	name := `\\?\` + f.Name()
 	_ = f.Close()
+
 	testPartitionType(t, name)
 }
 
 func TestPartitionTypeUNC(t *testing.T) {
 	if !compat.IsWindows {
 		skip(t, "Skipping test: requires Windows")
+
 		return
 	}
 
@@ -69,6 +78,7 @@ func TestPartitionTypeUNC(t *testing.T) {
 	ctx := context.Background()
 	sharename := randomBase36String(8)
 	args := []string{"share", sharename + "=" + dir, "/grant:" + usr.Username + ",READ"}
+
 	err = exec.CommandContext(ctx, "net.exe", args...).Run()
 	if err != nil {
 		t.Fatal(err)
@@ -76,6 +86,7 @@ func TestPartitionTypeUNC(t *testing.T) {
 
 	defer func() {
 		args := []string{"share", sharename, "/del", "/yes"}
+
 		err = exec.CommandContext(ctx, "net.exe", args...).Run()
 		if err != nil {
 			t.Fatal(err)
@@ -89,12 +100,14 @@ func TestPartitionTypeUNC(t *testing.T) {
 
 	name := `\\?\UNC\127.0.0.1\` + sharename + `\` + filepath.Base(f.Name())
 	_ = f.Close()
+
 	testPartitionType(t, name)
 }
 
 func TestPartitionTypeRoot(t *testing.T) {
 	if !compat.IsWindows {
 		skip(t, "Skipping test: requires Windows")
+
 		return
 	}
 
@@ -102,6 +115,7 @@ func TestPartitionTypeRoot(t *testing.T) {
 	if systemDrive == "" {
 		systemDrive = "C:"
 	}
+
 	testPartitionType(t, systemDrive)
 }
 
@@ -116,6 +130,7 @@ func testPartitionType(t *testing.T, name string) {
 	t.Helper()
 
 	ctx := context.Background()
+
 	partitionType, err := compat.PartitionType(ctx, name)
 	if err != nil {
 		if strings.Contains(err.Error(), "not implemented") {
@@ -124,9 +139,11 @@ func testPartitionType(t *testing.T, name string) {
 
 		t.Fatal(err)
 	}
+
 	if testEnv.fsType == "" || testEnv.fsType == nativeFS {
 		return
 	}
+
 	fsType := strings.ToLower(testEnv.fsType)
 	if !strings.Contains(partitionType, fsType) {
 		// @TODO change this to Errorf eventually

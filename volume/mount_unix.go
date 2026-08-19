@@ -17,6 +17,7 @@ func Mounts() ([]Mount, error) {
 	mounts := []Mount{}
 
 	ctx := context.Background()
+
 	parts, err := disk.PartitionsWithContext(ctx, false)
 	if err != nil {
 		return mounts, fmt.Errorf("PartitionsWithContext: %w", err)

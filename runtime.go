@@ -103,6 +103,7 @@ var tinygoThresholds = []struct {
 
 var goVersionOnce struct {
 	sync.Once
+
 	goVersion string
 }
 
@@ -114,6 +115,7 @@ func GoVersion() string {
 	goVersionOnce.Do(func() {
 		goVersionOnce.goVersion = goVersion(runtime.Version(), IsTinygo)
 	})
+
 	return goVersionOnce.goVersion
 }
 
@@ -125,6 +127,7 @@ func goVersion(v string, isTinygo bool) string {
 	v = "go" + v
 	// TinyGo: runtime.Version() is like "0.39.1"
 	best := ""
+
 	for _, th := range tinygoThresholds {
 		if version.Compare(v, "go"+th.tinygo) >= 0 {
 			best = th.goMaxVer

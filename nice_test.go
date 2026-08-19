@@ -16,6 +16,7 @@ func TestNice(t *testing.T) {
 	if err != nil {
 		if !compat.SupportsNice() {
 			skipf(t, "Skipping test: Nice() is not supported on %v/%v", runtime.GOOS, runtime.GOARCH)
+
 			return
 		}
 
@@ -28,6 +29,7 @@ func TestNiceRenice(t *testing.T) {
 	if err != nil {
 		if !compat.SupportsNice() {
 			skipf(t, "Skipping test: Renice() is not supported on %v/%v", runtime.GOOS, runtime.GOARCH)
+
 			return
 		}
 
@@ -41,6 +43,7 @@ func TestNiceReniceIfRootValid(t *testing.T) {
 		isRoot, _ := compat.IsRoot()
 		if !isRoot {
 			skip(t, "Skipping test: we aren't the root/admin user")
+
 			return
 		}
 	}
@@ -49,6 +52,7 @@ func TestNiceReniceIfRootValid(t *testing.T) {
 	if err != nil {
 		if !compat.SupportsNice() {
 			skipf(t, "Skipping test: Nice() is not supported on %v/%v", runtime.GOOS, runtime.GOARCH)
+
 			return
 		}
 
@@ -60,6 +64,7 @@ func TestNiceReniceIfRootValid(t *testing.T) {
 		if err != nil {
 			if !compat.SupportsNice() {
 				skipf(t, "Skipping test: Renice() is not supported on %v/%v", runtime.GOOS, runtime.GOARCH)
+
 				return
 			}
 
@@ -76,6 +81,7 @@ func TestNiceReniceIfRootInvalid(t *testing.T) {
 		isRoot, _ := compat.IsRoot()
 		if !isRoot {
 			skip(t, "Skipping test: we aren't the root/admin user")
+
 			return
 		}
 	}
@@ -86,6 +92,7 @@ func TestNiceReniceIfRootInvalid(t *testing.T) {
 	if err == nil {
 		if !compat.SupportsNice() {
 			skipf(t, "Skipping test: Nice() is not supported on %v/%v", runtime.GOOS, runtime.GOARCH)
+
 			return
 		}
 
@@ -98,7 +105,7 @@ func TestNiceReniceIfRootInvalid(t *testing.T) {
 }
 
 func TestNiceErrors(t *testing.T) {
-	err := errors.New("Test")
+	err := errors.New("Test") //nolint:err113
 
 	e1 := &compat.NiceError{err}
 	if e1.Error() == "" {

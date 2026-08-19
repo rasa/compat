@@ -98,6 +98,7 @@ func WriteReader(name string, r io.Reader, perm os.FileMode, opts ...Option) (er
 	f, err := createTemp(dir, "~*.tmp", fileMode, fopts.flags)
 	if err != nil {
 		err = fmt.Errorf("cannot create tempfile: %w", err)
+
 		return writeError(name, err)
 	}
 
@@ -117,24 +118,28 @@ func WriteReader(name string, r io.Reader, perm os.FileMode, opts ...Option) (er
 	_, err = io.Copy(f, r)
 	if err != nil {
 		err = fmt.Errorf("cannot write to '%v': %w", tempFileName, err)
+
 		return writeError(name, err)
 	}
 	// fsync is important, otherwise os.Rename could rename a zero-length file
 	err = f.Sync()
 	if err != nil {
 		err = fmt.Errorf("cannot sync '%v': %w", tempFileName, err)
+
 		return writeError(name, err)
 	}
 
 	err = f.Close()
 	if err != nil {
 		err = fmt.Errorf("cannot close '%v': %w", tempFileName, err)
+
 		return writeError(name, err)
 	}
 
 	err = Rename(tempFileName, name, WithNonAtomicReplace(fopts.nonAtomicReplace))
 	if err != nil {
 		err = fmt.Errorf("cannot rename to '%v': %w", tempFileName, err)
+
 		return writeError(name, err)
 	}
 

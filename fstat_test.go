@@ -15,12 +15,15 @@ import (
 func TestFstat(t *testing.T) {
 	if !compat.SupportsFstat() {
 		skipf(t, "Fstat not supported on %v/%v", runtime.GOOS, runtime.GOARCH)
+
 		return
 	}
+
 	name, err := tempFile(t)
 	if err != nil {
 		t.Fatal(err)
 	}
+
 	cleanup(t, name)
 
 	f, err := os.Open(name)
@@ -32,10 +35,12 @@ func TestFstat(t *testing.T) {
 	fi, err := compat.Fstat(f)
 	if err != nil {
 		t.Fatalf("Fstat: got %v, want nil", err)
+
 		return
 	}
 
 	got := fi.Name()
+
 	want := filepath.Base(name)
 	if got != want {
 		t.Fatalf("Fstat: got %v, want %v", got, want)

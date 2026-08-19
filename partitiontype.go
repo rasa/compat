@@ -7,12 +7,15 @@ package compat
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"path/filepath"
 	"strings"
 
 	"github.com/shirou/gopsutil/v4/disk"
 )
+
+var ErrMountpointNotFound = errors.New("mountpoint not found")
 
 // PartitionType returns the filesystem type (e.g., "apfs", "btrfs", "exfat",
 // "ext4", "f2fs", "fat32", "hfs+", "ntfs", "refs", "udf", "xfs", etc.)
@@ -38,13 +41,14 @@ func PartitionType(ctx context.Context, path string) (string, error) {
 
 	for _, p := range parts {
 		normalizedMountpoint := normalizePath(p.Mountpoint)
+
 		same, _ := SamePartitions(normalizedPath, normalizedMountpoint)
 		if same {
 			return strings.ToLower(p.Fstype), nil
 		}
 	}
 
-	return "", fmt.Errorf("no mountpoint found for '%v'", path)
+	return "", fmt.Errorf("path %q: %w", path, ErrMountpointNotFound)
 }
 
 func normalizePath(path string) string {

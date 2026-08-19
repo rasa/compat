@@ -16,21 +16,25 @@ import (
 
 var uname struct {
 	sync.Once
+
 	macOSMajor int
 }
 
 func getMacOSMajor() int {
 	uname.Do(func() {
 		var u unix.Utsname
+
 		err := unix.Uname(&u)
 		if err != nil {
 			return
 		}
+
 		rel := unix.ByteSliceToString(u.Release[:])
 		ver := strings.Split(rel, ".")
 		maj, _ := strconv.Atoi(ver[0])
 		uname.macOSMajor = maj
 	})
+
 	return uname.macOSMajor
 }
 
@@ -53,13 +57,15 @@ func getOSVersion() (ver semanticVersion, err error) {
 	}
 
 	var u unix.Utsname
+
 	err = unix.Uname(&u)
 	if err != nil {
 		return ver, err
 	}
+
 	rel := unix.ByteSliceToString(u.Release[:])
 
-	return ver, fmt.Errorf("cannot parse '%v'", rel)
+	return ver, fmt.Errorf("cannot parse '%v'", rel) //nolint:err113
 }
 
 /*

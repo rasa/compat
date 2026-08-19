@@ -64,10 +64,12 @@ func (d dirEntry) Type() os.FileMode {
 func (d dirEntry) Info() (FileInfo, error) {
 	if !d.infoed { //nolint:nestif
 		d.infoed = true //nolint:staticcheck
+
 		path := d.name
 		if d.parent != "" {
 			path = filepath.Join(d.parent, d.name)
 		}
+
 		if d.osInfo == nil {
 			// WalkDir doesn't follow symlinks
 			d.osInfo, d.err = os.Lstat(path)
@@ -75,10 +77,12 @@ func (d dirEntry) Info() (FileInfo, error) {
 				return nil, d.err
 			}
 		}
+
 		d.info, d.err = stat(d.osInfo, path, false)
 		if d.err != nil {
 			return nil, d.err
 		}
+
 		d.typ = d.info.Mode().Type() //nolint:govet,staticcheck
 	}
 
@@ -105,10 +109,12 @@ func ReadDir(name string) ([]DirEntry, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	dirs := make([]DirEntry, len(osDirs))
 	for i, dir := range osDirs {
 		dirs[i] = osDirEntryToDirEntry(dir, name)
 	}
+
 	slices.SortFunc(dirs, func(a, b DirEntry) int {
 		return strings.Compare(a.Name(), b.Name())
 	})

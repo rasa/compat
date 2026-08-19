@@ -16,6 +16,7 @@ func TestWalkDirSkipDir(t *testing.T) {
 		if entry.IsDir() {
 			return compat.SkipDir
 		}
+
 		return err
 	}
 

@@ -42,6 +42,7 @@ func TestFileOptionsCreateExcl(t *testing.T) {
 	fh, err := compat.Create(name, compat.WithFlags(os.O_EXCL))
 	if err == nil {
 		_ = fh.Close()
+
 		t.Fatal("got no error")
 	}
 }
@@ -75,6 +76,7 @@ func TestFileOptionsCreateTempFileMode(t *testing.T) {
 	fh, err := compat.CreateTemp(dir, "", compat.WithFileMode(want))
 	if err != nil {
 		fatal(t, err)
+
 		return
 	}
 
@@ -83,18 +85,21 @@ func TestFileOptionsCreateTempFileMode(t *testing.T) {
 	err = fh.Close()
 	if err != nil {
 		fatal(t, err)
+
 		return
 	}
 
 	fi, err := os.Stat(name)
 	if err != nil {
 		fatal(t, err)
+
 		return
 	}
 
 	got := fi.Mode().Perm()
 	if got != want {
 		fatalf(t, "got 0%03o, want 0%03o", got, want)
+
 		return
 	}
 }
@@ -133,6 +138,7 @@ func TestFileOptionsOpenFileDelete(t *testing.T) {
 		if compat.IsApple {
 			t.Skip(err)
 		}
+
 		t.Fatal(err)
 	}
 
@@ -154,30 +160,35 @@ func TestFileOptionsOpenFileFileMode(t *testing.T) {
 	name, err := tempName(t)
 	if err != nil {
 		fatal(t, err)
+
 		return
 	}
 
 	fh, err := compat.OpenFile(name, os.O_RDWR|os.O_CREATE, 0, compat.WithFileMode(want))
 	if err != nil {
 		fatal(t, err)
+
 		return
 	}
 
 	err = fh.Close()
 	if err != nil {
 		fatal(t, err)
+
 		return
 	}
 
 	fi, err := os.Stat(name)
 	if err != nil {
 		fatal(t, err)
+
 		return
 	}
 
 	got := fi.Mode().Perm()
 	if got != want {
 		fatalf(t, "got 0%03o, want 0%03o", got, want)
+
 		return
 	}
 }

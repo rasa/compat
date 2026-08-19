@@ -49,11 +49,12 @@ var arches = []string{
 	"wasm",
 }
 
-func TestRuntimeConsts(t *testing.T) { //nolint:funlen,gocyclo
+func TestRuntimeConsts(t *testing.T) { //nolint:gocyclo
 	goExe, err := exec.LookPath("go")
 	if err != nil {
 		if compat.IsAndroid || compat.IsPlan9 || compat.IsTinygo || compat.IsWasm {
-			skipf(t, "Skipping test: %v (1)", err)
+			skipf(t, "Skipping test on %v: %v (1)", runtime.GOOS, err)
+
 			return
 		}
 
@@ -63,7 +64,8 @@ func TestRuntimeConsts(t *testing.T) { //nolint:funlen,gocyclo
 	out, err := exec.Command(goExe, "tool", "dist", "list").Output() //nolint:noctx
 	if err != nil {
 		if compat.IsAndroid || compat.IsPlan9 || compat.IsTinygo || compat.IsWasm {
-			skipf(t, "Skipping test: %v (2)", err)
+			skipf(t, "Skipping test on %v: %v (2)", runtime.GOOS, err)
+
 			return
 		}
 
@@ -120,10 +122,12 @@ func TestRuntimeConsts(t *testing.T) { //nolint:funlen,gocyclo
 func TestRuntimeGoVersion(t *testing.T) {
 	if compat.IsTinygo {
 		skip(t, "Skipping test: fails on tinygo")
+
 		return
 	}
 
 	want := runtime.Version()
+
 	got := compat.GoVersion()
 	if got != want {
 		t.Fatalf("got %v, want %v", got, want)
@@ -132,6 +136,7 @@ func TestRuntimeGoVersion(t *testing.T) {
 
 func TestRuntimeGetGoVersionFalse(t *testing.T) {
 	want := runtime.Version()
+
 	got := compat.ExportedGoVersion(want, false)
 	if got != want {
 		t.Fatalf("got %v, want %v", got, want)
@@ -140,6 +145,7 @@ func TestRuntimeGetGoVersionFalse(t *testing.T) {
 
 func TestRuntimeGetGoVersionTrue(t *testing.T) {
 	want := "go1.25"
+
 	got := compat.ExportedGoVersion("0.39.1", true)
 	if got != want {
 		t.Fatalf("got %v, want %v", got, want)

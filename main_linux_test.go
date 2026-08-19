@@ -90,178 +90,208 @@ var fsTests = []fsTest{
 	}}, // requires ntfs-3g/ntfsprogs
 }
 
-func testMain(m *testing.M, fsToTest, nativeFSType, fsPath string) int { //nolint:gocyclo,gocognit
+func testMain(m *testing.M, fsToTest, nativeFSType, fsPath string) int { //nolint:gocyclo
 	if tempPath != "" && !strings.HasSuffix(tempPath, "/") {
 		tempPath += "/"
 	}
 
-	code := -1
 	supported := []string{allFS}
 
 	workdir, err := os.MkdirTemp("", "compat-fs-*")
 	if err != nil {
 		fmt.Printf("cannot create temp workdir: %v\n", err)
+
 		return 1
 	}
 	defer removeIt(workdir)
 
 	testsToRun := 0
+
 	for _, fsTest := range fsTests {
 		supported = append(supported, fsTest.fsName)
 		fsNameUpper := strings.ToUpper(fsTest.fsName)
+
 		fsToTestUpper := strings.ToUpper(fsToTest)
 		if fsToTest != "" && fsToTestUpper != strings.ToUpper(allFS) && fsToTestUpper != fsNameUpper {
 			continue
 		}
+
 		testsToRun++
 	}
 
 	n := 0
+	code := -1
+
 	for _, fsTest := range fsTests {
-		fsNameUpper := strings.ToUpper(fsTest.fsName)
-		fsToTestUpper := strings.ToUpper(fsToTest)
-		if fsToTest != "" && fsToTestUpper != strings.ToUpper(allFS) && fsToTestUpper != fsNameUpper {
-			continue
-		}
 		n++
 
-		fsName := fsTest.fsName
-		if fsTest.fsName == nativeFS {
-			fsTest.vars.fsType = testEnv.fsType
-			fsName += " (" + nativeFSType + ")"
+		code = doTest(m, fsTest, n, testsToRun, fsToTest, nativeFSType, fsPath, workdir)
+		if code != 0 {
+			break
 		}
-
-		testEnv = fsTest.vars
-
-		if fsNameUpper == "NTFS" && os.Getenv("CI") != "" {
-			testEnv.noACLs = true
-			fmt.Println("Skipping NTFS on CI on Linux")
-			continue
-		}
-
-		if fsTest.fsName != nativeFS {
-			testEnv.fsType = fsTest.fsName
-			tempPath = getMountPoint()
-		}
-
-		if fsPath != "" {
-			tempPath = fsPath
-		}
-
-		mountPath := tempPath
-		if mountPath == "" {
-			mountPath = os.TempDir()
-		}
-
-		fmt.Printf("%d/%d: Testing on %v filesystem mounted on %v on %v/%v\n", n, testsToRun, fsName, mountPath, runtime.GOOS, runtime.GOARCH)
-
-		if fsTest.fsName == "Native" {
-			code = m.Run()
-			if code != 0 {
-				return code
-			}
-
-			continue
-		}
-
-		spec, ok := mkfsSpecFor(fsTest.fsName)
-		if !ok {
-			fmt.Printf("Skipping testing on %v: unsupported on Linux\n", fsTest.fsName)
-			code = 0
-			continue
-		}
-		_, err := exec.LookPath(spec.tool)
-		if err != nil {
-			fmt.Printf("Skipping testing on %v: missing tool %q\n", fsTest.fsName, spec.tool)
-			code = 0
-			continue
-		}
-		if os.Geteuid() != 0 {
-			fmt.Printf("Skipping testing on %v: must run as root for loop/mount\n", fsTest.fsName)
-			code = 0
-			continue
-		}
-
-		imgPath := filepath.Join(workdir, "img-"+strings.ToLower(fsTest.fsName)+".bin")
-		err = allocateImage(imgPath, normalizeSize(tempSize))
-		if err != nil {
-			fmt.Printf("Skipping testing on %v: %v\n", fsTest.fsName, err)
-			code = 0
-			continue
-		}
-
-		loopDev, err := runCapture("losetup", "-f", "--show", imgPath)
-		if err != nil {
-			fmt.Printf("Skipping testing on %v: losetup: %v\n", fsTest.fsName, err)
-			_ = os.Remove(imgPath)
-			code = 0
-			continue
-		}
-		loopDev = strings.TrimSpace(loopDev)
-
-		_, err = runCapture(spec.tool, append(spec.args, loopDev)...)
-		if err != nil {
-			fmt.Printf("Skipping testing on %v: mkfs failed: %v\n", fsTest.fsName, err)
-			_ = run("losetup", "-d", loopDev)
-			_ = os.Remove(imgPath)
-			code = 0
-			continue
-		}
-
-		mntBase := defaultMountBase
-		_, err = os.Stat(mntBase)
-		if err != nil {
-			mntBase = workdir
-		}
-		mnt, err := os.MkdirTemp(mntBase, "mnt-*")
-		if err != nil {
-			fmt.Printf("Skipping testing on %v: mkdir: %v\n", fsTest.fsName, err)
-			_ = run("losetup", "-d", loopDev)
-			_ = os.Remove(imgPath)
-			code = 0
-			continue
-		}
-
-		_, mountErr := runCapture("mount", "-t", spec.fstype, loopDev, mnt)
-		if mountErr != nil && spec.fstype == "ntfs3" {
-			_, mountErr = runCapture("mount", "-t", "ntfs", loopDev, mnt)
-		}
-		if mountErr != nil {
-			fmt.Printf("Skipping testing on %v: mount: %v\n", fsTest.fsName, mountErr)
-			_ = os.RemoveAll(mnt)
-			_ = run("losetup", "-d", loopDev)
-			_ = os.Remove(imgPath)
-			code = 0
-			continue
-		}
-
-		fsTest.vars.fsType = fsTest.fsName
-		tempPath = mnt
-		testEnv = fsTest.vars
-
-		runCode := m.Run()
-
-		_ = run("umount", mnt)
-		_ = run("losetup", "-d", loopDev)
-		_ = os.RemoveAll(mnt)
-		_ = os.Remove(imgPath)
-
-		if runCode != 0 {
-			return runCode
-		}
-		code = 0
 	}
 
 	if code == 0 {
 		return 0
 	}
+
 	fmt.Printf("Unsupported filesystem: %q; use one of %v\n", fsToTest, strings.Join(supported, ","))
 
 	return 1
 }
 
+func doTest(m *testing.M, fsTest fsTest, n, testsToRun int, fsToTest, nativeFSType, fsPath, workdir string) int { //nolint:funlen
+	fsNameUpper := strings.ToUpper(fsTest.fsName)
+
+	fsToTestUpper := strings.ToUpper(fsToTest)
+	if fsToTest != "" && fsToTestUpper != strings.ToUpper(allFS) && fsToTestUpper != fsNameUpper {
+		return 0
+	}
+
+	fsName := fsTest.fsName
+	if fsTest.fsName == nativeFS {
+		fsTest.vars.fsType = testEnv.fsType
+		fsName += " (" + nativeFSType + ")"
+	}
+
+	testEnv = fsTest.vars
+
+	if fsNameUpper == "NTFS" && os.Getenv("CI") != "" {
+		testEnv.noACLs = true
+
+		fmt.Println("Skipping NTFS on CI on Linux")
+
+		return 0
+	}
+
+	if fsTest.fsName != nativeFS {
+		testEnv.fsType = fsTest.fsName
+		tempPath = getMountPoint()
+	}
+
+	if fsPath != "" {
+		tempPath = fsPath
+	}
+
+	mountPath := tempPath
+	if mountPath == "" {
+		mountPath = os.TempDir()
+	}
+
+	fmt.Printf("%d/%d: Testing on %v filesystem mounted on %v on %v/%v\n", n, testsToRun, fsName, mountPath, runtime.GOOS, runtime.GOARCH)
+
+	if fsTest.fsName == "Native" {
+		code := m.Run()
+		if code != 0 {
+			return code
+		}
+
+		return 0
+	}
+
+	spec, ok := mkfsSpecFor(fsTest.fsName)
+	if !ok {
+		fmt.Printf("Skipping testing on %v: unsupported on Linux\n", fsTest.fsName)
+
+		return 0
+	}
+
+	_, err := exec.LookPath(spec.tool)
+	if err != nil {
+		fmt.Printf("Skipping testing on %v: missing tool %q\n", fsTest.fsName, spec.tool)
+
+		return 0
+	}
+
+	if os.Geteuid() != 0 {
+		fmt.Printf("Skipping testing on %v: must run as root for loop/mount\n", fsTest.fsName)
+
+		return 0
+	}
+
+	imgPath := filepath.Join(workdir, "img-"+strings.ToLower(fsTest.fsName)+".bin")
+
+	err = allocateImage(imgPath, normalizeSize(tempSize))
+	if err != nil {
+		fmt.Printf("Skipping testing on %v: %v\n", fsTest.fsName, err)
+
+		return 0
+	}
+
+	loopDev, err := runCapture("losetup", "-f", "--show", imgPath)
+	if err != nil {
+		fmt.Printf("Skipping testing on %v: losetup: %v\n", fsTest.fsName, err)
+
+		_ = os.Remove(imgPath)
+
+		return 0
+	}
+
+	loopDev = strings.TrimSpace(loopDev)
+
+	_, err = runCapture(spec.tool, append(spec.args, loopDev)...)
+	if err != nil {
+		fmt.Printf("Skipping testing on %v: mkfs failed: %v\n", fsTest.fsName, err)
+
+		_ = run("losetup", "-d", loopDev)
+		_ = os.Remove(imgPath)
+
+		return 0
+	}
+
+	mntBase := defaultMountBase
+
+	_, err = os.Stat(mntBase)
+	if err != nil {
+		mntBase = workdir
+	}
+
+	mnt, err := os.MkdirTemp(mntBase, "mnt-*")
+	if err != nil {
+		fmt.Printf("Skipping testing on %v: mkdir: %v\n", fsTest.fsName, err)
+
+		_ = run("losetup", "-d", loopDev)
+		_ = os.Remove(imgPath)
+
+		return 0
+	}
+
+	_, mountErr := runCapture("mount", "-t", spec.fstype, loopDev, mnt)
+	if mountErr != nil && spec.fstype == "ntfs3" {
+		_, mountErr = runCapture("mount", "-t", "ntfs", loopDev, mnt)
+	}
+
+	if mountErr != nil {
+		fmt.Printf("Skipping testing on %v: mount: %v\n", fsTest.fsName, mountErr)
+
+		_ = os.RemoveAll(mnt)
+		_ = run("losetup", "-d", loopDev)
+		_ = os.Remove(imgPath)
+
+		return 0
+	}
+
+	fsTest.vars.fsType = fsTest.fsName
+	tempPath = mnt
+	testEnv = fsTest.vars
+
+	runCode := m.Run()
+
+	_ = run("umount", mnt)
+	_ = run("losetup", "-d", loopDev)
+	_ = os.RemoveAll(mnt)
+	_ = os.Remove(imgPath)
+
+	if runCode != 0 {
+		return runCode
+	}
+
+	return 0
+}
+
 func getMountPoint() string {
 	base := defaultMountBase
+
 	_, err := os.Stat(base)
 	if err != nil {
 		base = os.TempDir()
@@ -271,7 +301,8 @@ func getMountPoint() string {
 }
 
 func allocateImage(path, size string) error {
-	if _, err := runCapture("fallocate", "-l", size, path); err == nil {
+	_, err := runCapture("fallocate", "-l", size, path)
+	if err == nil {
 		return nil
 	}
 

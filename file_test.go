@@ -115,6 +115,7 @@ func TestFilePosixCreateTemp(t *testing.T) {
 	fh, err := compat.CreateTemp(dir, "")
 	if err != nil {
 		fatal(t, err)
+
 		return
 	}
 
@@ -123,18 +124,21 @@ func TestFilePosixCreateTemp(t *testing.T) {
 	err = fh.Close()
 	if err != nil {
 		fatal(t, err)
+
 		return
 	}
 
 	fi, err := os.Stat(name)
 	if err != nil {
 		fatal(t, err)
+
 		return
 	}
 
 	got := fi.Mode().Perm()
 	if got != want {
 		fatalf(t, "got 0%03o (%v), want 0%03o (%v)", got, got, want, want)
+
 		return
 	}
 }
@@ -375,6 +379,7 @@ func TestFilePosixSymlink(t *testing.T) {
 	}
 
 	gnu := old + ".link"
+
 	err = compat.Symlink(old, gnu)
 	if err != nil {
 		t.Fatalf("Symlink: %q to %q: %v", old, gnu, err)
@@ -473,6 +478,7 @@ func TestFilePosixSymlinkInvalidOld(t *testing.T) {
 
 	old := invalidName
 	gnu := old + ".link"
+
 	err := compat.Symlink(old, gnu)
 	if err == nil {
 		t.Fatal("got nil, want an error")

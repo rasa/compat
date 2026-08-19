@@ -17,6 +17,7 @@ const mode = os.FileMode(0o654) // Something other than the default.
 
 func main() {
 	name := "hello.txt"
+
 	err := compat.WriteFile(name, []byte("Hello World"), mode)
 	if err != nil {
 		log.Fatal(err)
@@ -27,7 +28,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	print(fi.String())
+	fmt.Println(fi.String())
 
 	samePartition()
 	samePartitionl()
@@ -35,6 +36,7 @@ func main() {
 	sameFile()
 	sameFilel()
 	sameFiles()
+
 	_ = os.Remove(name)
 }
 
@@ -58,6 +60,7 @@ func samePartitionl() {
 	if !compat.SupportsLinks() {
 		return
 	}
+
 	exe, _ := os.Executable()
 	link := "link" + filepath.Ext(exe)
 

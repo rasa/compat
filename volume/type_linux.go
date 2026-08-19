@@ -81,9 +81,11 @@ func typeOf(mount Mount) (Type, error) {
 	if strings.HasPrefix(base, "loop") {
 		return TypeLoop, nil
 	}
+
 	if strings.HasPrefix(base, "ram") || strings.HasPrefix(base, "zram") {
 		return TypeRamdisk, nil
 	}
+
 	if strings.HasPrefix(base, "sr") {
 		if readSys(filepath.Join("/sys/class/block", base, "device/type")) == "5" {
 			return TypeOptical, nil
@@ -92,12 +94,14 @@ func typeOf(mount Mount) (Type, error) {
 
 	// If it's not a block device, check filesystem type (network, tmpfs, etc.)
 	var st unix.Statfs_t
+
 	err := unix.Statfs(device, &st)
 	if err != nil {
 		return TypeUnknown, fmt.Errorf("statfs: %w", err)
 	}
 
 	magicID := st.Type
+
 	type_, ok := magicMap[magicID]
 	if ok {
 		return type_, nil
@@ -105,6 +109,7 @@ func typeOf(mount Mount) (Type, error) {
 
 	// Try sysfs to detect fixed/removable
 	sysPath := filepath.Join("/sys/class/block", base)
+
 	_, err = os.Stat(sysPath)
 	if os.IsNotExist(err) {
 		return TypeUnavailable, nil
@@ -112,10 +117,12 @@ func typeOf(mount Mount) (Type, error) {
 
 	// Partitions: resolve parent
 	path := filepath.Join(sysPath, "partition")
+
 	_, err = os.Stat(path)
 	if err != nil {
 		return TypeUnknown, fmt.Errorf("os.Stat(%v): %w", path, err)
 	}
+
 	sysPath, _ = filepath.EvalSymlinks(filepath.Join(sysPath, ".."))
 
 	if readSys(filepath.Join(sysPath, "removable")) == "1" {
@@ -130,5 +137,6 @@ func readSys(path string) string {
 	if err != nil {
 		return ""
 	}
+
 	return strings.TrimSpace(string(data))
 }

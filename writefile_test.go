@@ -24,6 +24,7 @@ func TestWriteFile(t *testing.T) {
 	cleanup(t, file)
 
 	perm := compat.CreatePerm // 0o666
+
 	err = compat.WriteFile(file, helloBytes, perm)
 	if err != nil {
 		t.Fatalf("Failed to write file: %q: %v", file, err)
@@ -35,6 +36,7 @@ func TestWriteFile(t *testing.T) {
 	}
 
 	want := fixPerms(perm, false)
+
 	got := fi.Mode().Perm()
 	if got != want {
 		t.Fatalf("got %04o, want %04o", got, want)
@@ -50,10 +52,12 @@ func TestWriteFileWithAtomicity(t *testing.T) {
 	cleanup(t, file)
 
 	perm := compat.CreatePerm // 0o666
+
 	opts := []compat.Option{compat.WithAtomicity(true)}
 	if compat.IsPlan9 {
 		opts = append(opts, compat.WithNonAtomicReplace(true))
 	}
+
 	err = compat.WriteFile(file, helloBytes, perm, opts...)
 	if err != nil {
 		t.Fatalf("Failed to write file: %q: %v", file, err)
@@ -65,6 +69,7 @@ func TestWriteFileWithAtomicity(t *testing.T) {
 	}
 
 	want := fixPerms(perm, false)
+
 	got := fi.Mode().Perm()
 	if got != want {
 		t.Fatalf("got %04o, want %04o", got, want)
@@ -76,16 +81,19 @@ func TestWriteFileWithAtomicityCurrentDir(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Failed to create temp file: %v", err)
 	}
+
 	dir, base := filepath.Split(file)
 	t.Chdir(dir)
 
 	cleanup(t, file)
 
 	perm := compat.CreatePerm // 0o666
+
 	opts := []compat.Option{compat.WithAtomicity(true)}
 	if compat.IsPlan9 {
 		opts = append(opts, compat.WithNonAtomicReplace(true))
 	}
+
 	err = compat.WriteFile(base, helloBytes, perm, opts...)
 	if err != nil {
 		t.Fatalf("Failed to write file: %q: %v", file, err)
@@ -97,6 +105,7 @@ func TestWriteFileWithAtomicityCurrentDir(t *testing.T) {
 	}
 
 	want := fixPerms(perm, false)
+
 	got := fi.Mode().Perm()
 	if got != want {
 		t.Fatalf("got %04o, want %04o", got, want)
@@ -112,10 +121,12 @@ func TestWriteFileWithAtomicityNoPerms(t *testing.T) {
 	cleanup(t, file)
 
 	perm := compat.CreatePerm // 0o600
+
 	opts := []compat.Option{compat.WithAtomicity(true)}
 	if compat.IsPlan9 {
 		opts = append(opts, compat.WithNonAtomicReplace(true))
 	}
+
 	err = compat.WriteFile(file, helloBytes, 0, opts...)
 	if err != nil {
 		t.Fatalf("Failed to write file: %q: %v", file, err)
@@ -127,6 +138,7 @@ func TestWriteFileWithAtomicityNoPerms(t *testing.T) {
 	}
 
 	want := fixPerms(perm, false)
+
 	got := fi.Mode().Perm()
 	if got != want {
 		t.Fatalf("got %04o, want %04o", got, want)
@@ -148,6 +160,7 @@ func TestWriteFileWithAtomicityWithDefaultFileMode(t *testing.T) {
 	if compat.IsPlan9 {
 		opts = append(opts, compat.WithNonAtomicReplace(true))
 	}
+
 	err = compat.WriteFile(file, helloBytes, 0, opts...)
 	if err != nil {
 		t.Fatalf("Failed to write file: %q: %v", file, err)
@@ -213,6 +226,7 @@ func TestWriteFileWithAtomicityWithKeepFileMode(t *testing.T) {
 	if compat.IsPlan9 {
 		opts = append(opts, compat.WithNonAtomicReplace(true))
 	}
+
 	err = compat.WriteFile(file, helloBytes, 0, opts...)
 	if err != nil {
 		t.Fatalf("Failed to write file: %q: %v", file, err)
@@ -224,6 +238,7 @@ func TestWriteFileWithAtomicityWithKeepFileMode(t *testing.T) {
 	}
 
 	want := fixPerms(perm, false)
+
 	got := fi.Mode().Perm()
 	if got != want {
 		t.Fatalf("got %04o, want %04o: perm=%3o (%v) (1)", got, want, perm, perm)
@@ -252,6 +267,7 @@ func TestWriteFileWithAtomicityWithKeepFileModeFalse(t *testing.T) {
 	if compat.IsPlan9 {
 		opts = append(opts, compat.WithNonAtomicReplace(true))
 	}
+
 	err = compat.WriteFile(file, helloBytes, 0, opts...)
 	if err != nil {
 		t.Fatalf("Failed to write file: %q: %v", file, err)
@@ -263,13 +279,16 @@ func TestWriteFileWithAtomicityWithKeepFileModeFalse(t *testing.T) {
 	}
 
 	want := fixPerms(perm, false)
+
 	got := fi.Mode().Perm()
 	if got == want {
 		if perm != want {
 			partType := partitionType(file)
 			t.Logf("got %v, want %v (ignoring: %v on %v)", got, want, partType, runtime.GOOS)
+
 			return
 		}
+
 		t.Fatalf("got %04o, want !%04o (2)", got, want)
 	}
 }
@@ -289,6 +308,7 @@ func TestWriteFileWithAtomicityWithFileMode(t *testing.T) {
 	if compat.IsPlan9 {
 		opts = append(opts, compat.WithNonAtomicReplace(true))
 	}
+
 	err = compat.WriteFile(file, helloBytes, 0, opts...)
 	if err != nil {
 		t.Fatalf("Failed to write file: %q: %v", file, err)
@@ -330,6 +350,7 @@ func TestWriteFileWithAtomicityWithFileMode(t *testing.T) {
 func TestWriteFileWithAtomicityWithReadOnlyModeReset(t *testing.T) {
 	if !compat.IsWindows {
 		skip(t, "Skipping test: requires Windows")
+
 		return
 	}
 
@@ -345,6 +366,7 @@ func TestWriteFileWithAtomicityWithReadOnlyModeReset(t *testing.T) {
 		compat.WithFileMode(perm400),
 		compat.WithReadOnlyMode(compat.ReadOnlyModeReset),
 	}
+
 	err = compat.WriteFile(file, helloBytes, 0, opts...)
 	if err != nil {
 		t.Fatalf("Failed to write file: %q: %v", file, err)
@@ -356,6 +378,7 @@ func TestWriteFileWithAtomicityWithReadOnlyModeReset(t *testing.T) {
 	}
 
 	want := true // user-writable bit is set.
+
 	got := fi.Mode().Perm()&perm200 == perm200
 	if got != want {
 		t.Fatalf("got %v, want %v", got, want)
@@ -368,6 +391,7 @@ func TestWriteFileWithAtomicityWithReadOnlyModeReset(t *testing.T) {
 
 func TestWriteFileInvalid(t *testing.T) {
 	opts := []compat.Option{}
+
 	err := compat.WriteFile(invalidName, helloBytes, 0, opts...)
 	if err == nil {
 		t.Fatalf("got nil, want an error")
@@ -382,6 +406,7 @@ func TestWriteFileWithAtomicityInvalid(t *testing.T) {
 	if compat.IsPlan9 {
 		opts = append(opts, compat.WithNonAtomicReplace(true))
 	}
+
 	err := compat.WriteFile(invalidName, helloBytes, 0, opts...)
 	if err == nil {
 		t.Fatalf("got nil, want an error")
@@ -397,6 +422,7 @@ func TestWriteFileWithAtomicityInvalidKeepFileMode(t *testing.T) {
 	if compat.IsPlan9 {
 		opts = append(opts, compat.WithNonAtomicReplace(true))
 	}
+
 	err := compat.WriteFile(invalidName, helloBytes, 0, opts...)
 	if err == nil {
 		t.Fatalf("got nil, want an error")
@@ -416,6 +442,7 @@ func TestWriteFileWithAtomicityInvalidCantRead(t *testing.T) {
 		partType := partitionType(file)
 		t.Skipf("Skipping test: ACLs are not supported on a %v filesystem", partType)
 	}
+
 	err = compat.Chmod(file, perm)
 	if err != nil {
 		t.Fatalf("Chmod: %v", err)
@@ -428,6 +455,7 @@ func TestWriteFileWithAtomicityInvalidCantRead(t *testing.T) {
 	if compat.IsPlan9 {
 		opts = append(opts, compat.WithNonAtomicReplace(true))
 	}
+
 	err = compat.WriteFile(file, helloBytes, 0, opts...)
 	if err != nil {
 		t.Fatalf("WriteReader: %v", err)
@@ -441,6 +469,7 @@ func TestWriteFileWithAtomicityInvalidReadOnlyDirectory(t *testing.T) {
 		isRoot, _ := compat.IsRoot()
 		if isRoot {
 			skip(t, "Skipping test: doesn't fail when root")
+
 			return
 		}
 	}
@@ -449,23 +478,28 @@ func TestWriteFileWithAtomicityInvalidReadOnlyDirectory(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Failed to create temp file: %v", err)
 	}
+
 	dir, base := filepath.Split(name)
 	cleanup(t, dir)
+
 	perm := perm400
 	opts := []compat.Option{
 		compat.WithFileMode(perm),
 		compat.WithReadOnlyMode(compat.ReadOnlyModeSet),
 	}
+
 	dir, err = compat.MkdirTemp(dir, "~*.tmp", opts...)
 	if err != nil {
 		t.Fatalf("MkdirTemp(%v, 0o%o) failed: %v", dir, perm, err)
 	}
 
 	file := filepath.Join(dir, base)
+
 	fi, err := compat.Stat(dir)
 	if err != nil {
 		t.Fatalf("Failed to stat: %v", err)
 	}
+
 	if fi.Mode().Perm() != perm {
 		partType := partitionType(dir)
 		t.Skipf("Skipping test: the %v filesystem does not support permissions", partType)
@@ -475,11 +509,11 @@ func TestWriteFileWithAtomicityInvalidReadOnlyDirectory(t *testing.T) {
 	if compat.IsPlan9 {
 		opts = append(opts, compat.WithNonAtomicReplace(true))
 	}
+
 	err = compat.WriteFile(file, helloBytes, 0, opts...)
 	if err == nil {
 		// @TODO determine why test passes when run individually, but fails when running alongside other tests
 		t.Log("got nil, want an error")
-
 		// return
 	}
 

@@ -45,6 +45,7 @@ func TestLstatStat(t *testing.T) {
 	}
 
 	perm := compat.CreateTempPerm
+
 	want := fixPerms(perm, false)
 	if got := fi.Mode().Perm(); got != want {
 		if compat.IsWindows {
@@ -98,6 +99,7 @@ func TestLstatLstat(t *testing.T) {
 	}
 
 	perm := compat.CreateTempPerm
+
 	want := fixPerms(perm, false)
 	if got := fi.Mode().Perm(); got == want {
 		if testEnv.noACLs {
@@ -256,6 +258,7 @@ func TestLstatBTime(t *testing.T) {
 
 	if !compat.SupportsBTime() {
 		skipf(t, "Skipping test: BTime() not supported on %v", runtime.GOOS)
+
 		return
 	}
 
@@ -285,6 +288,7 @@ func TestLstatCTime(t *testing.T) {
 
 	if !compat.SupportsCTime() {
 		skipf(t, "Skipping test: CTime() not supported on %v", runtime.GOOS)
+
 		return
 	}
 
@@ -461,6 +465,7 @@ func TestLstatUser(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+
 	want := u.Username
 
 	if compareNames(got, want) == compat.IsWindows {
@@ -503,6 +508,7 @@ func TestLstatUserSetOwner(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+
 	want := u.Username
 
 	if !compareNames(got, want) {
@@ -574,6 +580,7 @@ func TestLstatGroupSetOwner(t *testing.T) {
 
 	if compat.IsTinygo {
 		skip(t, "Skipping test: Group() not supported on tinygo")
+
 		return
 	}
 
@@ -653,6 +660,7 @@ func TestLstatSamePartitions(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+
 	want := true
 	if got != want {
 		t.Fatalf("SamePartitions(): got %v, want %v", got, want)
@@ -702,6 +710,7 @@ func TestLstatSameFiles(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+
 	want := true
 	if got != want {
 		t.Fatalf("SameFiles(): got %v, want %v", got, want)
@@ -736,6 +745,7 @@ func TestLstatDiffFile(t *testing.T) {
 	}
 
 	got := compat.SameFile(fi1, fi2)
+
 	want := false
 	if got != want {
 		t.Fatalf("SameFile(): got %v, want %v", got, want)
@@ -763,6 +773,7 @@ func TestLstatDiffFiles(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+
 	want := false
 	if got != want {
 		t.Fatalf("SameFiles(): got %v, want %v", got, want)

@@ -86,6 +86,7 @@ func mkdirTemp(dir, pattern string, opts ...Option) (string, error) {
 func openFile(name string, flag int, perm os.FileMode) (*os.File, error) {
 	// don't pass compat-only flags to os function.
 	oflag := flag & ^(O_FILE_FLAG_DELETE_ON_CLOSE | O_FILE_FLAG_NO_RO_ATTR)
+
 	f, err := os.OpenFile(name, oflag, perm)
 	if err != nil {
 		return nil, err
@@ -113,9 +114,11 @@ func wrap(name string, flag int, f *os.File) (*os.File, error) {
 	if err == nil || os.IsNotExist(err) {
 		return f, nil
 	}
+
 	if f != nil {
 		_ = f.Close()
 	}
+
 	_ = os.Remove(name)
 
 	return nil, err

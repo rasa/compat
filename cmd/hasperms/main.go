@@ -13,15 +13,19 @@ import (
 func supportsChmod(path string) (bool, error) {
 	// Create a temp file in the target path
 	tmp := path + "/.permtest.tmp"
+
 	f, err := os.Create(tmp) //nolint:gosec
 	if err != nil {
 		return false, err
 	}
+
 	_ = f.Close()
+
 	defer os.Remove(tmp)
 
 	// Try to chmod
 	perm := os.FileMode(0o765) //nolint:mnd
+
 	fi, err := compat.Stat(tmp)
 	if err == nil {
 		log.Printf("stat:\n%v", fi)
@@ -35,6 +39,7 @@ func supportsChmod(path string) (bool, error) {
 	if err != nil {
 		// Check for ENOTSUP / EOPNOTSUPP
 		errno := &os.PathError{}
+
 		ok := errors.As(err, &errno)
 		if ok {
 			if compat.IsUnsupportedError(err) {
@@ -51,9 +56,11 @@ func supportsChmod(path string) (bool, error) {
 	if err != nil {
 		return false, err
 	}
+
 	log.Printf("stat:\n%v", fi2)
+
 	if fi.ModTime() != fi2.ModTime() {
-		return false, errors.New("file updated externally")
+		return false, errors.New("file updated externally") //nolint:err113
 	}
 
 	if fi2.Mode().Perm() != perm {
@@ -68,9 +75,11 @@ func main() {
 	if len(os.Args) > 1 {
 		arg = os.Args[1]
 	}
+
 	b, err := supportsChmod(arg)
 	if err != nil {
 		log.Fatal(err)
 	}
+
 	fmt.Printf("Supports chmod: %v (%v)\n", b, arg)
 }

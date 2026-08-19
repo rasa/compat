@@ -19,6 +19,7 @@ import (
 // This function will be removed in a future release.
 func WriteFileAtomic(filename string, data []byte, opts ...Option) error {
 	opts = append(opts, WithAtomicity(true))
+
 	return WriteFile(filename, data, CreatePerm, opts...)
 }
 
@@ -34,6 +35,7 @@ func WriteFileAtomic(filename string, data []byte, opts ...Option) error {
 // This function will be removed in a future release.
 func WriteReaderAtomic(filename string, r io.Reader, opts ...Option) error {
 	opts = append(opts, WithAtomicity(true))
+
 	return WriteReader(filename, r, CreatePerm, opts...)
 }
 

@@ -25,27 +25,35 @@ func GetOptions() []Option {
 	if o.nonAtomicReplace != optionDefaults.nonAtomicReplace {
 		opts = append(opts, WithNonAtomicReplace(o.nonAtomicReplace))
 	}
+
 	if o.atomically != optionDefaults.atomically {
 		opts = append(opts, WithAtomicity(o.atomically))
 	}
+
 	if o.defaultFileMode != optionDefaults.defaultFileMode {
 		opts = append(opts, WithDefaultFileMode(o.defaultFileMode))
 	}
+
 	if o.fileMode != optionDefaults.fileMode {
 		opts = append(opts, WithFileMode(o.fileMode))
 	}
+
 	if o.flags != optionDefaults.flags {
 		opts = append(opts, WithFlags(o.flags))
 	}
+
 	if o.keepFileMode != optionDefaults.keepFileMode {
 		opts = append(opts, WithKeepFileMode(o.keepFileMode))
 	}
+
 	if o.readOnlyMode != optionDefaults.readOnlyMode {
 		opts = append(opts, WithReadOnlyMode(o.readOnlyMode))
 	}
+
 	if o.retrySeconds != optionDefaults.retrySeconds {
 		opts = append(opts, WithRetrySeconds(o.retrySeconds))
 	}
+
 	if o.setSymlinkOwner != optionDefaults.setSymlinkOwner {
 		opts = append(opts, WithSetSymlinkOwner(o.setSymlinkOwner))
 	}
@@ -58,6 +66,7 @@ func SetOptions(opts ...Option) {
 	for _, fn := range opts {
 		fn(&base)
 	}
+
 	options.Store(&base)
 }
 
@@ -66,6 +75,7 @@ func buildOptions(opts ...Option) Options {
 	for _, fn := range opts {
 		fn(&fopts)
 	}
+
 	return fopts
 }
 

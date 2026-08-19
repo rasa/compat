@@ -16,6 +16,7 @@ import (
 func TestWriteFileAtomic(t *testing.T) {
 	if !compat.SupportsAtomicReplace() {
 		skipf(t, "Skipping test: atomicity not supported on %v", runtime.GOOS)
+
 		return
 	}
 
@@ -25,6 +26,7 @@ func TestWriteFileAtomic(t *testing.T) {
 	}
 
 	cleanup(t, file)
+
 	perm := compat.CreatePerm // 0o666
 	opts := []compat.Option{compat.WithFileMode(perm)}
 
@@ -39,6 +41,7 @@ func TestWriteFileAtomic(t *testing.T) {
 	}
 
 	want := fixPerms(perm, false)
+
 	got := fi.Mode().Perm()
 	if got != want {
 		t.Fatalf("got %04o, want %04o", got, want)
@@ -47,8 +50,10 @@ func TestWriteFileAtomic(t *testing.T) {
 
 func TestWriteReaderAtomic(t *testing.T) {
 	file, err := tempName(t)
+
 	if !compat.SupportsAtomicReplace() {
 		skipf(t, "Skipping test: atomicity not supported on %v", runtime.GOOS)
+
 		return
 	}
 
@@ -60,6 +65,7 @@ func TestWriteReaderAtomic(t *testing.T) {
 
 	perm := compat.CreatePerm // 0o666
 	opts := []compat.Option{compat.WithFileMode(perm)}
+
 	err = compat.WriteReaderAtomic(file, helloBuf, opts...)
 	if err != nil {
 		t.Fatalf("Failed to write file: %q: %v", file, err)
@@ -71,6 +77,7 @@ func TestWriteReaderAtomic(t *testing.T) {
 	}
 
 	want := fixPerms(perm, false)
+
 	got := fi.Mode().Perm()
 	if got != want {
 		t.Fatalf("got %04o, want %04o", got, want)

@@ -15,8 +15,10 @@ func TestRename(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+
 	gnu := old + ".new"
 	cleanup(t, old, gnu)
+
 	err = compat.Rename(old, gnu)
 	if err != nil {
 		t.Fatalf("renaming '%v' to '%v': %v", old, gnu, err)
@@ -25,10 +27,12 @@ func TestRename(t *testing.T) {
 
 func TestRenameEmptyOld(t *testing.T) {
 	old := ""
+
 	gnu, err := tempName(t)
 	if err != nil {
 		t.Fatal(err)
 	}
+
 	err = compat.Rename(old, gnu)
 	if err == nil {
 		t.Fatalf("got no error renaming '%v' to '%v'", old, gnu)
@@ -40,7 +44,9 @@ func TestRenameEmptyNew(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+
 	cleanup(t, old)
+
 	gnu := ""
 
 	err = compat.Rename(old, gnu)
@@ -68,7 +74,9 @@ func TestRenameInvalidNew(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+
 	cleanup(t, old)
+
 	gnu := invalidName
 
 	err = compat.Rename(old, gnu)
@@ -98,6 +106,7 @@ func TestRenameCantRead(t *testing.T) {
 
 	gnu := old + ".new"
 	cleanup(t, gnu)
+
 	err = compat.Rename(old, gnu)
 	if err != nil {
 		t.Fatalf("renaming '%v' to '%v': %v", old, gnu, err)
@@ -107,6 +116,7 @@ func TestRenameCantRead(t *testing.T) {
 func TestRenameWithAtomicity(t *testing.T) {
 	if !compat.SupportsAtomicReplace() {
 		skipf(t, "Skipping test: WithAtomicity() not supported on %v", runtime.GOOS)
+
 		return
 	}
 
@@ -114,8 +124,10 @@ func TestRenameWithAtomicity(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+
 	gnu := old + ".new"
 	cleanup(t, old, gnu)
+
 	err = compat.Rename(old, gnu, compat.WithAtomicity(true))
 	if err != nil {
 		t.Fatalf("renaming '%v' to '%v': %v", old, gnu, err)
@@ -127,8 +139,10 @@ func TestRenameWithNonAtomicReplace(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+
 	gnu := old + ".new"
 	cleanup(t, old, gnu)
+
 	err = compat.Rename(old, gnu, compat.WithNonAtomicReplace(true))
 	if err != nil {
 		t.Fatalf("renaming '%v' to '%v': %v", old, gnu, err)
