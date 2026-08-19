@@ -34,54 +34,54 @@ func (e *UnimplementedError) Unwrap() error {
 	return errors.ErrUnsupported
 }
 
-func unsupportedError(prefix string) error { //nolint:unused
+func unsupportedError(prefix string) error {
 	return &UnsupportedError{prefix}
 }
 
-func unimplementedError(prefix string) error { //nolint:unused
+func unimplementedError(prefix string) error {
 	return &UnimplementedError{prefix}
 }
 
-func chmodError(path string, err error) error { //nolint:unused
+func chmodError(path string, err error) error {
 	return &os.PathError{Op: "chmod", Path: path, Err: err}
 }
 
-func createError(path string, err error) error { //nolint:unused
+func createError(path string, err error) error {
 	return &os.PathError{Op: "create", Path: path, Err: err}
 }
 
-func createTempError(path string, err error) error { //nolint:unused
+func createTempError(path string, err error) error {
 	return &os.PathError{Op: "createtemp", Path: path, Err: err}
 }
 
-func mkdirError(path string, err error) error { //nolint:unused
+func mkdirError(path string, err error) error {
 	return &os.PathError{Op: "mkdir", Path: path, Err: err}
 }
 
-func mkdirallError(path string, err error) error { //nolint:unused
+func mkdirallError(path string, err error) error {
 	return &os.PathError{Op: "mkdir", Path: path, Err: err}
 }
 
-func mkdirTempError(path string, err error) error { //nolint:unused
+func mkdirTempError(path string, err error) error {
 	return &os.PathError{Op: "mkdirtemp", Path: path, Err: err}
 }
 
-func openError(path string, err error) error { //nolint:unused
+func openError(path string, err error) error {
 	return &os.PathError{Op: "open", Path: path, Err: err}
 }
 
-func renameError(old_, new_ string, err error) error { //nolint:unused
+func renameError(old_, new_ string, err error) error {
 	return &os.LinkError{Op: "rename", Old: old_, New: new_, Err: err}
 }
 
-func statError(path string, err error) error { //nolint:unused
+func statError(path string, err error) error {
 	return &os.PathError{Op: "stat", Path: path, Err: err}
 }
 
-func symlinkError(old_, new_ string, err error) error { //nolint:unused
+func symlinkError(old_, new_ string, err error) error {
 	return &os.LinkError{Op: "symlink", Old: old_, New: new_, Err: err}
 }
 
-func writeError(name string, err error) error { //nolint:unused
+func writeError(name string, err error) error {
 	return &os.PathError{Op: "write", Path: name, Err: err}
 }

@@ -62,7 +62,7 @@ func (d dirEntry) Type() os.FileMode {
 }
 
 func (d dirEntry) Info() (FileInfo, error) {
-	if !d.infoed {
+	if !d.infoed { //nolint:nestif
 		d.infoed = true //nolint:staticcheck
 		path := d.name
 		if d.parent != "" {

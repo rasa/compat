@@ -18,7 +18,7 @@ func supportsChmod(path string) (bool, error) {
 		return false, err
 	}
 	_ = f.Close()
-	defer os.Remove(tmp) //nolint:errcheck
+	defer os.Remove(tmp)
 
 	// Try to chmod
 	perm := os.FileMode(0o765) //nolint:mnd

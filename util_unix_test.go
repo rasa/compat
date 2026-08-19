@@ -44,7 +44,7 @@ var macOSMap = map[int]semanticVersion{
 	25: {26, 0, 0},
 }
 
-func getOSVersion() (ver semanticVersion, err error) { //nolint:gocyclo
+func getOSVersion() (ver semanticVersion, err error) {
 	major := getMacOSMajor()
 
 	v, ok := macOSMap[major]

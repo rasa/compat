@@ -35,7 +35,7 @@ func TestReadDir(t *testing.T) { //nolint:gocyclo
 	}
 
 	filename := filepath.Join(t.TempDir(), "foo")
-	f, err := os.Create(filename) //nolint:govet // compat: s|Create|os.Create|
+	f, err := os.Create(filename) // compat: s|Create|os.Create|
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -45,7 +45,7 @@ func TestReadDir(t *testing.T) { //nolint:gocyclo
 	}
 
 	dirname = "testdata"
-	list, err := compat.ReadDir(dirname) //nolint:govet // compat: s|ReadDir|compat.ReadDir|
+	list, err := compat.ReadDir(dirname) // compat: s|ReadDir|compat.ReadDir|
 	if err != nil {
 		t.Fatalf("ReadDir %s: %v", dirname, err)
 	}

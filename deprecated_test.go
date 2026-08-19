@@ -13,7 +13,7 @@ import (
 	"github.com/rasa/compat"
 )
 
-func TestWriteFileAtomic(t *testing.T) { //nolint:dupl
+func TestWriteFileAtomic(t *testing.T) {
 	if !compat.SupportsAtomicReplace() {
 		skipf(t, "Skipping test: atomicity not supported on %v", runtime.GOOS)
 		return
@@ -45,7 +45,7 @@ func TestWriteFileAtomic(t *testing.T) { //nolint:dupl
 	}
 }
 
-func TestWriteReaderAtomic(t *testing.T) { //nolint:dupl
+func TestWriteReaderAtomic(t *testing.T) {
 	file, err := tempName(t)
 	if !compat.SupportsAtomicReplace() {
 		skipf(t, "Skipping test: atomicity not supported on %v", runtime.GOOS)

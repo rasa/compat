@@ -1,4 +1,3 @@
-//nolint:mnd
 // SPDX-FileCopyrightText: Copyright © 2025 Ross Smith II <ross@smithii.com>
 // SPDX-License-Identifier: MIT
 
@@ -104,7 +103,7 @@ func doFile(src string) {
 		log.Printf("No snips found in %v", src) //nolint:gosec
 		return
 	}
-	log.Printf("Found %d snips in %v", len(snips), src) //nolint:gosec
+	log.Printf("Found %d snips in %v", len(snips), src)
 
 	must(DownloadBase(snips))
 
@@ -231,7 +230,7 @@ var (
 // SnipThem finds in "them" the region most similar to the base snippet and writes *.them.
 // If an exact substring match exists, it is used; otherwise, choose the best window by
 // minimal normalized edit distance.
-func SnipThem(snips []Snip) error { //nolint:gocyclo
+func SnipThem(snips []Snip) error { //nolint:gocyclo,gocognit
 	for i, s := range snips {
 		snip_id := i + 1
 		log.Printf("[them] Creating snip %2d/%2d: %v@%d", snip_id, len(snips), s.Path, s.StartLine)
@@ -696,7 +695,7 @@ func must(err error) {
 }
 
 type repoInfo struct {
-	DefaultBranch string `json:"default_branch"`
+	DefaultBranch string `json:"defaultBranch"`
 }
 type commitInfo struct {
 	SHA string `json:"sha"`

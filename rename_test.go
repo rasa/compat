@@ -15,23 +15,23 @@ func TestRename(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	new := old + ".new"
-	cleanup(t, old, new)
-	err = compat.Rename(old, new)
+	gnu := old + ".new"
+	cleanup(t, old, gnu)
+	err = compat.Rename(old, gnu)
 	if err != nil {
-		t.Fatalf("renaming '%v' to '%v': %v", old, new, err)
+		t.Fatalf("renaming '%v' to '%v': %v", old, gnu, err)
 	}
 }
 
 func TestRenameEmptyOld(t *testing.T) {
 	old := ""
-	new, err := tempName(t)
+	gnu, err := tempName(t)
 	if err != nil {
 		t.Fatal(err)
 	}
-	err = compat.Rename(old, new)
+	err = compat.Rename(old, gnu)
 	if err == nil {
-		t.Fatalf("got no error renaming '%v' to '%v'", old, new)
+		t.Fatalf("got no error renaming '%v' to '%v'", old, gnu)
 	}
 }
 
@@ -41,25 +41,25 @@ func TestRenameEmptyNew(t *testing.T) {
 		t.Fatal(err)
 	}
 	cleanup(t, old)
-	new := ""
+	gnu := ""
 
-	err = compat.Rename(old, new)
+	err = compat.Rename(old, gnu)
 	if err == nil {
-		t.Fatalf("got no error renaming '%v' to '%v'", old, new)
+		t.Fatalf("got no error renaming '%v' to '%v'", old, gnu)
 	}
 }
 
 func TestRenameInvalidOld(t *testing.T) {
 	old := invalidName
 
-	new, err := tempName(t)
+	gnu, err := tempName(t)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	err = compat.Rename(old, new)
+	err = compat.Rename(old, gnu)
 	if err == nil {
-		t.Fatalf("got no error renaming '%v' to '%v'", old, new)
+		t.Fatalf("got no error renaming '%v' to '%v'", old, gnu)
 	}
 }
 
@@ -69,11 +69,11 @@ func TestRenameInvalidNew(t *testing.T) {
 		t.Fatal(err)
 	}
 	cleanup(t, old)
-	new := invalidName
+	gnu := invalidName
 
-	err = compat.Rename(old, new)
+	err = compat.Rename(old, gnu)
 	if err == nil {
-		t.Fatalf("got no error renaming '%v' to '%v'", old, new)
+		t.Fatalf("got no error renaming '%v' to '%v'", old, gnu)
 	}
 }
 
@@ -96,11 +96,11 @@ func TestRenameCantRead(t *testing.T) {
 		t.Fatalf("Chmod: %v", err)
 	}
 
-	new := old + ".new"
-	cleanup(t, new)
-	err = compat.Rename(old, new)
+	gnu := old + ".new"
+	cleanup(t, gnu)
+	err = compat.Rename(old, gnu)
 	if err != nil {
-		t.Fatalf("renaming '%v' to '%v': %v", old, new, err)
+		t.Fatalf("renaming '%v' to '%v': %v", old, gnu, err)
 	}
 }
 
@@ -114,11 +114,11 @@ func TestRenameWithAtomicity(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	new := old + ".new"
-	cleanup(t, old, new)
-	err = compat.Rename(old, new, compat.WithAtomicity(true))
+	gnu := old + ".new"
+	cleanup(t, old, gnu)
+	err = compat.Rename(old, gnu, compat.WithAtomicity(true))
 	if err != nil {
-		t.Fatalf("renaming '%v' to '%v': %v", old, new, err)
+		t.Fatalf("renaming '%v' to '%v': %v", old, gnu, err)
 	}
 }
 
@@ -127,10 +127,10 @@ func TestRenameWithNonAtomicReplace(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	new := old + ".new"
-	cleanup(t, old, new)
-	err = compat.Rename(old, new, compat.WithNonAtomicReplace(true))
+	gnu := old + ".new"
+	cleanup(t, old, gnu)
+	err = compat.Rename(old, gnu, compat.WithNonAtomicReplace(true))
 	if err != nil {
-		t.Fatalf("renaming '%v' to '%v': %v", old, new, err)
+		t.Fatalf("renaming '%v' to '%v': %v", old, gnu, err)
 	}
 }

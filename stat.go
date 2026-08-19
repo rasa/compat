@@ -203,7 +203,7 @@ func SupportsATime() bool {
 
 // SupportsATimeSetting is defined in stat_other.go and stat_tiny.go
 
-// SupportsATime returns true if FileInfo's ATime() function is supported by the OS.
+// SupportsAtomicReplace returns true if atomically replacing a file is supported by the OS.
 func SupportsAtomicReplace() bool {
 	return supportsAtomicReplace
 }

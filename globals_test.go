@@ -14,7 +14,7 @@ import (
 )
 
 func TestGetOptions(t *testing.T) {
-	opts := make([]compat.Option, 0)
+	opts := make([]compat.Option, 0, 9)
 	opts = append(opts, compat.WithNonAtomicReplace(true))
 	opts = append(opts, compat.WithAtomicity(true))
 	opts = append(opts, compat.WithDefaultFileMode(perm777))
@@ -57,7 +57,7 @@ setSymlinkOwner: true
 }
 
 func TestBuildOptions2(t *testing.T) {
-	opts := make([]compat.Option, 0)
+	opts := make([]compat.Option, 0, 9)
 	opts = append(opts, compat.WithNonAtomicReplace(true))
 	opts = append(opts, compat.WithAtomicity(true))
 	opts = append(opts, compat.WithDefaultFileMode(perm777))

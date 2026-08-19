@@ -45,7 +45,7 @@ type Volume struct {
 // Type
 ///////////////////////////////////////////////////////////////////////////////
 
-// rename to Type.
+// Type defines the type of volume.
 type Type uint
 
 const (

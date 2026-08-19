@@ -127,7 +127,7 @@ func TestStatLinks(t *testing.T) {
 	}
 }
 
-func TestStatATime(t *testing.T) { //nolint:dupl
+func TestStatATime(t *testing.T) {
 	if !compat.SupportsATime() {
 		skipf(t, "Skipping test: ATime() not supported on %v", runtime.GOOS)
 		return
@@ -217,7 +217,7 @@ func TestStatCTime(t *testing.T) {
 	}
 }
 
-func TestStatMTime(t *testing.T) { //nolint:dupl
+func TestStatMTime(t *testing.T) {
 	now := time.Now()
 
 	name, err := createTempFile(t)
@@ -369,7 +369,7 @@ func TestStatUser(t *testing.T) {
 
 	if !compareNames(got, want) {
 		partType := partitionType(name)
-		if compat.IsApple && (partType == "exfat" || partType == "msdos") { //nolint:goconst
+		if compat.IsApple && (partType == "exfat" || partType == "msdos") {
 			t.Logf("User(): got %v, want %v (ignoring: %v on %v)", got, want, partType, runtime.GOOS)
 
 			return
@@ -426,7 +426,7 @@ func TestStatGroup(t *testing.T) {
 	}
 }
 
-func TestStatError(t *testing.T) { //nolint:dupl
+func TestStatError(t *testing.T) {
 	name, err := createTempFile(t)
 	if err != nil {
 		fatal(t, err)
@@ -446,7 +446,7 @@ func TestStatError(t *testing.T) { //nolint:dupl
 	}
 }
 
-func TestStatFileID(t *testing.T) { //nolint:dupl
+func TestStatFileID(t *testing.T) {
 	name, err := createTempFile(t)
 	if err != nil {
 		fatal(t, err)
@@ -466,7 +466,7 @@ func TestStatFileID(t *testing.T) { //nolint:dupl
 	}
 }
 
-func TestStatPartitionID(t *testing.T) { //nolint:dupl
+func TestStatPartitionID(t *testing.T) {
 	name, err := createTempFile(t)
 	if err != nil {
 		fatal(t, err)
@@ -502,7 +502,7 @@ var stringPrefixes = []string{
 	"FileID:",
 }
 
-func TestStatString(t *testing.T) { //nolint:dupl
+func TestStatString(t *testing.T) {
 	name, err := createTempFile(t)
 	if err != nil {
 		fatal(t, err)
@@ -523,7 +523,7 @@ func TestStatString(t *testing.T) { //nolint:dupl
 	}
 }
 
-func TestStatInfo(t *testing.T) { //nolint:dupl
+func TestStatInfo(t *testing.T) {
 	name, err := createTempFile(t)
 	if err != nil {
 		fatal(t, err)
@@ -691,7 +691,7 @@ const (
 	userIDSourceMax = compat.UserIDSourceIsNone
 )
 
-func TestStatUserIDSource(t *testing.T) { //nolint:dupl
+func TestStatUserIDSource(t *testing.T) {
 	src := compat.UserIDSource()
 	if src < userIDSourceMin || src > userIDSourceMax {
 		t.Fatalf("got %v, want between %v and %v", src, userIDSourceMin, userIDSourceMax)

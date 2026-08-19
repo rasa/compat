@@ -31,16 +31,16 @@ var (
 
 // globals.go
 
-var BuildOptions = buildOptions //nolint:unused
+var BuildOptions = buildOptions
 
 // runtime.go
 
-var ExportedGoVersion = goVersion //nolint:unused
+var ExportedGoVersion = goVersion
 
 // stat_*.go
 
-var ExportedStat = stat //nolint:unused
+var ExportedStat = stat
 
 // writereader.go
 
-var ExportedWriteReader = writeReader //nolint:unused
+var ExportedWriteReader = writeReader

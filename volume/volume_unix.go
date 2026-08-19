@@ -18,7 +18,7 @@ import (
 var osFeatureMap = map[OSFeature]string{}
 
 func Volumes(mounts []Mount) ([]Volume, error) {
-	volumes := []Volume{}
+	volumes := make([]Volume, 0, len(mounts))
 
 	ctx := context.Background()
 

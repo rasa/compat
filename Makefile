@@ -160,8 +160,8 @@ fmt: ## go fmt ./...
 fumpt: ## gofumpt -w .
 	go tool $(TOOL_OPTS) gofumpt -w .
 
-.PHONY: install
-install: ## install/update gofumpt, golangci-lint, goreleaser, govulncheck, misspell, modernize
+.PHONY: get
+get: ## get gofumpt, golangci-lint, goreleaser, govulncheck, misspell, modernize
 	export GOFLAGS="$(GOFLAGS) $(TOOL_OPTS)" ;\
 	go get github.com/golangci/golangci-lint/v2/cmd/golangci-lint@$(GOLANGCI_LINT_VER) ;\
 	go get github.com/goreleaser/goreleaser/v2@$(GORELEASER_VER) ;\
@@ -169,6 +169,17 @@ install: ## install/update gofumpt, golangci-lint, goreleaser, govulncheck, miss
 	go get golang.org/x/tools/go/analysis/passes/modernize/cmd/modernize@$(MODERNIZE_VER) ;\
 	go get golang.org/x/vuln/cmd/govulncheck@$(VULN_VER) ;\
 	go get mvdan.cc/gofumpt@$(GOFUMPT_VER)
+	make mod
+
+.PHONY: install
+install: ## install gofumpt, golangci-lint, goreleaser, govulncheck, misspell, modernize
+	export GOFLAGS="$(GOFLAGS) $(TOOL_OPTS)" ;\
+	go install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@$(GOLANGCI_LINT_VER) ;\
+	go install github.com/goreleaser/goreleaser/v2@$(GORELEASER_VER) ;\
+	go install github.com/golangci/misspell/cmd/misspell@$(MISSPELL_VER) ;\
+	go install golang.org/x/tools/go/analysis/passes/modernize/cmd/modernize@$(MODERNIZE_VER) ;\
+	go install golang.org/x/vuln/cmd/govulncheck@$(VULN_VER) ;\
+	go install mvdan.cc/gofumpt@$(GOFUMPT_VER)
 	make mod
 
 .PHONY: modernize

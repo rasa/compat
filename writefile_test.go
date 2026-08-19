@@ -15,7 +15,7 @@ import (
 	"github.com/rasa/compat"
 )
 
-func TestWriteFile(t *testing.T) { //nolint:dupl
+func TestWriteFile(t *testing.T) {
 	file, err := tempName(t)
 	if err != nil {
 		t.Fatalf("Failed to create temp file: %v", err)
@@ -41,7 +41,7 @@ func TestWriteFile(t *testing.T) { //nolint:dupl
 	}
 }
 
-func TestWriteFileWithAtomicity(t *testing.T) { //nolint:dupl
+func TestWriteFileWithAtomicity(t *testing.T) {
 	file, err := tempName(t)
 	if err != nil {
 		t.Fatalf("Failed to create temp file: %v", err)
@@ -71,7 +71,7 @@ func TestWriteFileWithAtomicity(t *testing.T) { //nolint:dupl
 	}
 }
 
-func TestWriteFileWithAtomicityCurrentDir(t *testing.T) { //nolint:dupl
+func TestWriteFileWithAtomicityCurrentDir(t *testing.T) {
 	file, err := tempName(t)
 	if err != nil {
 		t.Fatalf("Failed to create temp file: %v", err)
@@ -103,7 +103,7 @@ func TestWriteFileWithAtomicityCurrentDir(t *testing.T) { //nolint:dupl
 	}
 }
 
-func TestWriteFileWithAtomicityNoPerms(t *testing.T) { //nolint:dupl
+func TestWriteFileWithAtomicityNoPerms(t *testing.T) {
 	file, err := tempName(t)
 	if err != nil {
 		t.Fatalf("Failed to create temp file: %v", err)
@@ -133,7 +133,7 @@ func TestWriteFileWithAtomicityNoPerms(t *testing.T) { //nolint:dupl
 	}
 }
 
-func TestWriteFileWithAtomicityWithDefaultFileMode(t *testing.T) { //nolint:dupl
+func TestWriteFileWithAtomicityWithDefaultFileMode(t *testing.T) {
 	file, err := tempName(t)
 	if err != nil {
 		t.Fatalf("Failed to create temp file: %v", err)
@@ -191,7 +191,7 @@ func TestWriteFileWithAtomicityWithDefaultFileMode(t *testing.T) { //nolint:dupl
 	}
 }
 
-func TestWriteFileWithAtomicityWithKeepFileMode(t *testing.T) { //nolint:dupl
+func TestWriteFileWithAtomicityWithKeepFileMode(t *testing.T) {
 	file, err := tempName(t)
 	if err != nil {
 		t.Fatalf("Failed to create temp file: %v", err)
@@ -230,7 +230,7 @@ func TestWriteFileWithAtomicityWithKeepFileMode(t *testing.T) { //nolint:dupl
 	}
 }
 
-func TestWriteFileWithAtomicityWithKeepFileModeFalse(t *testing.T) { //nolint:dupl
+func TestWriteFileWithAtomicityWithKeepFileModeFalse(t *testing.T) {
 	file, err := tempName(t)
 	if err != nil {
 		t.Fatalf("Failed to create temp file: %v", err)
@@ -274,7 +274,7 @@ func TestWriteFileWithAtomicityWithKeepFileModeFalse(t *testing.T) { //nolint:du
 	}
 }
 
-func TestWriteFileWithAtomicityWithFileMode(t *testing.T) { //nolint:dupl
+func TestWriteFileWithAtomicityWithFileMode(t *testing.T) {
 	file, err := tempName(t)
 	if err != nil {
 		t.Fatalf("Failed to create temp file: %v", err)
@@ -327,7 +327,7 @@ func TestWriteFileWithAtomicityWithFileMode(t *testing.T) { //nolint:dupl
 	}
 }
 
-func TestWriteFileWithAtomicityWithReadOnlyModeReset(t *testing.T) { //nolint:dupl
+func TestWriteFileWithAtomicityWithReadOnlyModeReset(t *testing.T) {
 	if !compat.IsWindows {
 		skip(t, "Skipping test: requires Windows")
 		return
@@ -366,7 +366,7 @@ func TestWriteFileWithAtomicityWithReadOnlyModeReset(t *testing.T) { //nolint:du
 // Tests that succeed when err != nil.
 //////////////////////////////////////
 
-func TestWriteFileInvalid(t *testing.T) { //nolint:dupl
+func TestWriteFileInvalid(t *testing.T) {
 	opts := []compat.Option{}
 	err := compat.WriteFile(invalidName, helloBytes, 0, opts...)
 	if err == nil {
@@ -374,7 +374,7 @@ func TestWriteFileInvalid(t *testing.T) { //nolint:dupl
 	}
 }
 
-func TestWriteFileWithAtomicityInvalid(t *testing.T) { //nolint:dupl
+func TestWriteFileWithAtomicityInvalid(t *testing.T) {
 	opts := []compat.Option{
 		compat.WithAtomicity(true),
 		compat.WithFileMode(perm600),
@@ -388,7 +388,7 @@ func TestWriteFileWithAtomicityInvalid(t *testing.T) { //nolint:dupl
 	}
 }
 
-func TestWriteFileWithAtomicityInvalidKeepFileMode(t *testing.T) { //nolint:dupl
+func TestWriteFileWithAtomicityInvalidKeepFileMode(t *testing.T) {
 	opts := []compat.Option{
 		compat.WithAtomicity(true),
 		// compat.WithFileMode(perm600),
@@ -403,7 +403,7 @@ func TestWriteFileWithAtomicityInvalidKeepFileMode(t *testing.T) { //nolint:dupl
 	}
 }
 
-func TestWriteFileWithAtomicityInvalidCantRead(t *testing.T) { //nolint:dupl
+func TestWriteFileWithAtomicityInvalidCantRead(t *testing.T) {
 	file, err := tempFile(t)
 	if err != nil {
 		t.Fatalf("Failed to create temp file: %v", err)
@@ -436,7 +436,7 @@ func TestWriteFileWithAtomicityInvalidCantRead(t *testing.T) { //nolint:dupl
 	}
 }
 
-func TestWriteFileWithAtomicityInvalidReadOnlyDirectory(t *testing.T) { //nolint:dupl
+func TestWriteFileWithAtomicityInvalidReadOnlyDirectory(t *testing.T) {
 	if !compat.IsWindows {
 		isRoot, _ := compat.IsRoot()
 		if isRoot {
@@ -506,14 +506,14 @@ func TestWriteFileWithAtomicityError(t *testing.T) {
 	}
 }
 
-func TestWriteFileExportedFileInvalid(t *testing.T) { //nolint:dupl
+func TestWriteFileExportedFileInvalid(t *testing.T) {
 	err := compat.ExportedWriteReader(invalidName, nilReader{}, 0, perm600)
 	if err == nil {
 		t.Fatalf("got nil, want an error")
 	}
 }
 
-func TestWriteFileExportedReaderInvalid(t *testing.T) { //nolint:dupl
+func TestWriteFileExportedReaderInvalid(t *testing.T) {
 	file, err := tempName(t)
 	if err != nil {
 		t.Fatalf("Failed to create temp name: %v", err)

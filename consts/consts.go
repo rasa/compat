@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: Copyright © 2025 Ross Smith II <ross@smithii.com>
 // SPDX-License-Identifier: MIT
 
+// Package consts contains constants used by compat.
 package consts
 
 const (

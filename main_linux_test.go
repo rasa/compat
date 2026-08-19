@@ -90,7 +90,7 @@ var fsTests = []fsTest{
 	}}, // requires ntfs-3g/ntfsprogs
 }
 
-func testMain(m *testing.M, fsToTest, nativeFSType, fsPath string) int { //nolint:gocyclo
+func testMain(m *testing.M, fsToTest, nativeFSType, fsPath string) int { //nolint:gocyclo,gocognit
 	if tempPath != "" && !strings.HasSuffix(tempPath, "/") {
 		tempPath += "/"
 	}

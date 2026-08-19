@@ -18,7 +18,7 @@ func init() {
 	options.Store(optionDefaults)
 }
 
-func GetOptions() []Option { //nolint:unused
+func GetOptions() []Option {
 	o := *options.Load()
 	opts := make([]Option, 0)
 
@@ -53,7 +53,7 @@ func GetOptions() []Option { //nolint:unused
 	return opts
 }
 
-func SetOptions(opts ...Option) { //nolint:unused
+func SetOptions(opts ...Option) {
 	base := *options.Load()
 	for _, fn := range opts {
 		fn(&base)
@@ -61,7 +61,7 @@ func SetOptions(opts ...Option) { //nolint:unused
 	options.Store(&base)
 }
 
-func buildOptions(opts ...Option) Options { //nolint:unused
+func buildOptions(opts ...Option) Options {
 	fopts := *options.Load()
 	for _, fn := range opts {
 		fn(&fopts)
@@ -69,7 +69,7 @@ func buildOptions(opts ...Option) Options { //nolint:unused
 	return fopts
 }
 
-func (o Options) String() string { //nolint:unused
+func (o Options) String() string {
 	var b strings.Builder
 
 	fmt.Fprintf(&b, "nonAtomicReplace:      %v\n", o.nonAtomicReplace)

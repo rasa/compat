@@ -126,7 +126,7 @@ func debugf(t *testing.T, format string, a ...any) { //nolint:unused
 	debugln(t, fmt.Sprintf(format, a...))
 }
 
-func fatal(t *testing.T, msg any) { //nolint:unused
+func fatal(t *testing.T, msg any) {
 	t.Helper()
 
 	s := fmt.Sprint(msg)
@@ -141,13 +141,13 @@ func fatal(t *testing.T, msg any) { //nolint:unused
 	t.Fatal(s)
 }
 
-func fatalf(t *testing.T, format string, a ...any) { //nolint:unused
+func fatalf(t *testing.T, format string, a ...any) {
 	t.Helper()
 
 	fatal(t, fmt.Sprintf(format, a...))
 }
 
-func fatalTimes(t *testing.T, prefix string, got, want time.Time, granularity int) { //nolint:unused
+func fatalTimes(t *testing.T, prefix string, got, want time.Time, granularity int) {
 	t.Helper()
 
 	diff := got.Sub(want).Abs().Seconds()
@@ -163,8 +163,8 @@ func fclose(f *os.File) {
 
 type semanticVersion struct {
 	major int
-	minor int //nolint:unused
-	patch int //nolint:unused
+	minor int
+	patch int
 }
 
 var osVersion semanticVersion
@@ -239,7 +239,7 @@ func fixPosixPerms(perm os.FileMode, isDir bool) os.FileMode {
 	return fixPerms(perm, isDir)
 }
 
-func log(msg string) { //nolint:unused
+func log(msg string) {
 	if testing.Verbose() {
 		fmt.Println(msg)
 	}
@@ -251,14 +251,14 @@ func logf(format string, a ...any) { //nolint:unused
 	}
 }
 
-func must(err error) { // nolint:unused
+func must(err error) { //nolint:unused
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "error: %v\n", err)
 		os.Exit(1)
 	}
 }
 
-func normalizeSize(s string) string { //nolint:unused
+func normalizeSize(s string) string {
 	r := strings.ToUpper(strings.TrimSpace(s))
 	r = strings.ReplaceAll(r, "BYTES", "B")
 	r = strings.ReplaceAll(r, "IB", "I")
@@ -292,7 +292,7 @@ func partitionType(name string) string {
 	return partType
 }
 
-func randomBase36String(n int) string { //nolint:unparam,unused
+func randomBase36String(n int) string {
 	const base36 = "0123456789abcdefghijklmnopqrstuvwxyz"
 	out := make([]byte, n)
 	for i := range out {
@@ -301,7 +301,7 @@ func randomBase36String(n int) string { //nolint:unparam,unused
 	return string(out)
 }
 
-func removeIt(name string) { //nolint:unused
+func removeIt(name string) {
 	fi, err := os.Stat(name)
 	if errors.Is(err, os.ErrNotExist) {
 		return
@@ -312,7 +312,8 @@ func removeIt(name string) { //nolint:unused
 	if fi.IsDir() {
 		_ = filepath.WalkDir(name, func(path string, d fs.DirEntry, err error) error {
 			if err != nil {
-				return nil
+				// ignore errors
+				return nil //nolint:nilerr
 			}
 			_ = compat.Chmod(path, 0o777, compat.WithReadOnlyMode(compat.ReadOnlyModeReset))
 			return nil
@@ -336,20 +337,20 @@ func removeItFunc(name string) func() {
 	}
 }
 
-func run(name string, args ...string) error { //nolint:unparam,unused
+func run(name string, args ...string) error {
 	log("Executing: " + name + " " + strings.Join(args, " "))
 	ctx := context.Background()
-	cmd := exec.CommandContext(ctx, name, args...) //nolint:gosec
+	cmd := exec.CommandContext(ctx, name, args...)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	cmd.Stdin = io.NopCloser(bytes.NewReader(nil))
 	return cmd.Run()
 }
 
-func runCapture(name string, args ...string) (string, error) { //nolint:unused
+func runCapture(name string, args ...string) (string, error) {
 	log("Executing: " + name + " " + strings.Join(args, " "))
 	ctx := context.Background()
-	cmd := exec.CommandContext(ctx, name, args...) //nolint:gosec
+	cmd := exec.CommandContext(ctx, name, args...)
 	var out, errb bytes.Buffer
 	cmd.Stdout = &out
 	cmd.Stderr = &errb

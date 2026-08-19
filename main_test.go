@@ -23,7 +23,7 @@ const (
 	defaultTempSize = "2GB"
 )
 
-type fsTest struct { //nolint:unused
+type fsTest struct {
 	fsName string
 	vars   testVars
 }

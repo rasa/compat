@@ -32,7 +32,7 @@ func WriteFileAtomic(filename string, data []byte, opts ...Option) error {
 // Deprecated: Use WriteReader() with WithAtomicity(true) instead.
 //
 // This function will be removed in a future release.
-func WriteReaderAtomic(filename string, r io.Reader, opts ...Option) error { //nolint:funlen,gocyclo
+func WriteReaderAtomic(filename string, r io.Reader, opts ...Option) error {
 	opts = append(opts, WithAtomicity(true))
 	return WriteReader(filename, r, CreatePerm, opts...)
 }

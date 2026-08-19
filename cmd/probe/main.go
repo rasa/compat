@@ -314,7 +314,7 @@ func DetectCaseFoldingMode(dir string) (CaseFoldingMode, error) {
 	if err := os.WriteFile(filepath.Join(tmp, "z.txt"), []byte("z"), perm600); err != nil { //nolint:gosec
 		return CaseFoldingNone, err
 	}
-	if _, err := os.OpenFile(filepath.Join(tmp, "Z.TXT"), os.O_CREATE|os.O_EXCL|os.O_WRONLY, perm600); err != nil { //nolint:gosec
+	if _, err := os.OpenFile(filepath.Join(tmp, "Z.TXT"), os.O_CREATE|os.O_EXCL|os.O_WRONLY, perm600); err != nil { //nolint:gosec,lll
 		if os.IsExist(err) {
 			// ASCII folds but ä/Ä did not
 			return CaseFoldingASCII, nil

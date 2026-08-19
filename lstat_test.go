@@ -14,7 +14,7 @@ import (
 	"github.com/rasa/compat"
 )
 
-func TestLstatStat(t *testing.T) { //nolint:dupl
+func TestLstatStat(t *testing.T) {
 	if !supportsSymlinks(t) {
 		skip(t, "Skipping test: Symlinks not supported on "+runtime.GOOS)
 
@@ -67,7 +67,7 @@ func TestLstatStat(t *testing.T) { //nolint:dupl
 	}
 }
 
-func TestLstatLstat(t *testing.T) { //nolint:dupl
+func TestLstatLstat(t *testing.T) {
 	if !supportsSymlinks(t) {
 		skip(t, "Skipping test: Symlinks not supported on "+runtime.GOOS)
 
@@ -187,7 +187,7 @@ func TestLstatLinks(t *testing.T) {
 	}
 }
 
-func TestLstatATime(t *testing.T) { //nolint:dupl
+func TestLstatATime(t *testing.T) {
 	if !supportsSymlinks(t) {
 		skip(t, "Skipping test: Symlinks not supported on "+runtime.GOOS)
 
@@ -305,7 +305,7 @@ func TestLstatCTime(t *testing.T) {
 	}
 }
 
-func TestLstatMTime(t *testing.T) { //nolint:dupl
+func TestLstatMTime(t *testing.T) {
 	if !supportsSymlinks(t) {
 		skip(t, "Skipping test: Symlinks not supported on "+runtime.GOOS)
 
