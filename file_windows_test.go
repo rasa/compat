@@ -318,9 +318,6 @@ func TestFileWindowsChmodReadOnlyModeResetSet(t *testing.T) {
 
 func TestFileWindowsCreate(t *testing.T) {
 	name := tempName(t)
-	if err != nil {
-		t.Fatal(err)
-	}
 
 	cleanup(t, name)
 
@@ -342,9 +339,6 @@ func TestFileWindowsCreateReadOnlyModeSet(t *testing.T) {
 	perm := perm400
 
 	name := tempName(t)
-	if err != nil {
-		t.Fatal(err)
-	}
 
 	cleanup(t, name)
 
@@ -689,11 +683,8 @@ func TestFileWindowsFchmodReadOnlyModeResetSet(t *testing.T) {
 func TestFileWindowsMkdir(t *testing.T) {
 	for _, perm := range perms {
 		name := tempName(t)
-		if err != nil {
-			t.Fatal(err)
-		}
 		cleanup(t, name)
-		err = compat.Mkdir(name, perm)
+		err := compat.Mkdir(name, perm)
 		checkPerm(t, name, perm, true)
 		if err != nil {
 			t.Fatal(err)
@@ -709,11 +700,8 @@ func TestFileWindowsMkdir(t *testing.T) {
 func TestFileWindowsMkdirAll(t *testing.T) {
 	for _, perm := range perms {
 		name := tempName(t)
-		if err != nil {
-			t.Fatal(err)
-		}
 		cleanup(t, name)
-		err = compat.MkdirAll(name, perm)
+		err := compat.MkdirAll(name, perm)
 		checkPerm(t, name, perm, true)
 		if err != nil {
 			t.Fatal(err)
@@ -746,9 +734,6 @@ func TestFileWindowsOpenFile(t *testing.T) {
 	for _, perm := range perms {
 		name := tempName(t)
 		cleanup(t, name)
-		if err != nil {
-			t.Fatal(err)
-		}
 		fh, err := compat.OpenFile(name, os.O_CREATE, perm)
 		checkPerm(t, name, perm, false)
 		if err != nil {
@@ -850,11 +835,8 @@ func TestFileWindowsRemoveAllRetry(t *testing.T) {
 func TestFileWindowsWriteFile(t *testing.T) {
 	for _, perm := range perms {
 		name := tempName(t)
-		if err != nil {
-			t.Fatal(err)
-		}
 		cleanup(t, name)
-		err = compat.WriteFile(name, helloBytes, perm)
+		err := compat.WriteFile(name, helloBytes, perm)
 		checkPerm(t, name, perm, false)
 		if err != nil {
 			t.Fatal(err)
