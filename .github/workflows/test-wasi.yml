@@ -13,7 +13,7 @@ on: # yamllint disable-line rule:truthy
 
 env:
   # See https://github.com/webassembly/binaryen/releases
-  BINARYEN_VERSION: '131'
+  BINARYEN_VERSION: '132'
   GOOS: wasip1
   GOARCH: wasm
   GODEBUG: toolchaintrace=1
