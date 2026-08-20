@@ -148,7 +148,7 @@ func DownloadBase(snips []Snip) error {
 			return fmt.Errorf("DownloadBase %s: %w", rawURL, err)
 		}
 
-		err = writeFileAtomic(dst, body, perm644)
+		err = writeFileAtomic(dst, body)
 		if err != nil {
 			return err
 		}
@@ -183,7 +183,7 @@ func DownloadThem(snips []Snip) ([]Snip, error) {
 			return snips, fmt.Errorf("DownloadThem %s: %w", rawURL, err)
 		}
 
-		err = writeFileAtomic(dst, body, perm644)
+		err = writeFileAtomic(dst, body)
 		if err != nil {
 			return snips, err
 		}
@@ -203,7 +203,7 @@ func SnipOurs(snips []Snip) error {
 			continue
 		}
 
-		err := writeFileAtomic(name, snip.Ours, perm644)
+		err := writeFileAtomic(name, snip.Ours)
 		if err != nil {
 			return err
 		}
@@ -235,7 +235,7 @@ func SnipBase(snips []Snip) error {
 			continue
 		}
 
-		err = writeFileAtomic(out, part, perm644)
+		err = writeFileAtomic(out, part)
 		if err != nil {
 			return err
 		}
@@ -275,7 +275,7 @@ func SnipThem(snips []Snip) error { //nolint:gocyclo,gocognit
 		if found {
 			out := snipName(snipDir, "them", snip)
 			if !fileExists(out) {
-				err = writeFileAtomic(out, baseContent, perm644)
+				err = writeFileAtomic(out, baseContent)
 				if err != nil {
 					return err
 				}
@@ -335,7 +335,7 @@ func SnipThem(snips []Snip) error { //nolint:gocyclo,gocognit
 		out := snipName(snipDir, "them", snip)
 		if !fileExists(out) {
 			// log.Printf("[them] Created snip %2d/%2d: %v (%d bytes)", snipID, len(snips), out, len(best))
-			err = writeFileAtomic(out, best, perm644)
+			err = writeFileAtomic(out, best)
 			if err != nil {
 				return err
 			}
@@ -379,7 +379,7 @@ func Meld(snips []Snip) error {
 
 		log.Printf("[meld] snip %2d/%2d: %sWriting %v", snipID, len(snips), conflicts, meldPath)
 
-		must(writeFileAtomic(meldPath, out, perm644))
+		must(writeFileAtomic(meldPath, out))
 
 		if exit == 1 {
 			// conflicts present, extract rejects
@@ -393,7 +393,7 @@ func Meld(snips []Snip) error {
 
 			log.Printf("[meld] snip %2d/%2d: REJECTS: Writing %v", snipID, len(snips), rejPath)
 
-			err := writeFileAtomic(rejPath, rej, perm644)
+			err := writeFileAtomic(rejPath, rej)
 			if err != nil {
 				return err
 			}
@@ -643,7 +643,7 @@ func httpGet(url string) ([]byte, error) {
 	return io.ReadAll(res.Body)
 }
 
-func writeFileAtomic(path string, data []byte, mode os.FileMode) error { //nolint:unparam
+func writeFileAtomic(path string, data []byte) error {
 	tmp := path + ".tmp"
 
 	err := os.MkdirAll(filepath.Dir(path), perm755)
@@ -651,7 +651,7 @@ func writeFileAtomic(path string, data []byte, mode os.FileMode) error { //nolin
 		return err
 	}
 
-	err = os.WriteFile(tmp, data, mode) //nolint:gosec
+	err = os.WriteFile(tmp, data, perm644) //nolint:gosec
 	if err != nil {
 		return err
 	}

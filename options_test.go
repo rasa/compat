@@ -12,10 +12,7 @@ import (
 )
 
 func TestFileOptionsCreateDelete(t *testing.T) {
-	name, err := tempName(t)
-	if err != nil {
-		t.Fatal(err)
-	}
+	name := tempName(t)
 
 	fh, err := compat.Create(name, compat.WithFlags(compat.O_FILE_FLAG_DELETE_ON_CLOSE))
 	if err != nil {
@@ -126,10 +123,7 @@ func TestFileOptionsMkdirTempFileMode(t *testing.T) {
 }
 
 func TestFileOptionsOpenFileDelete(t *testing.T) {
-	name, err := tempName(t)
-	if err != nil {
-		t.Fatal(err)
-	}
+	name := tempName(t)
 
 	fh, err := compat.OpenFile(name, os.O_RDWR|os.O_CREATE, os.FileMode(0o666), compat.WithFlags(compat.O_FILE_FLAG_DELETE_ON_CLOSE))
 	if err != nil {
@@ -157,12 +151,7 @@ func TestFileOptionsOpenFileFileMode(t *testing.T) {
 	perm := os.FileMode(0o666)
 	want := fixPosixPerms(perm, false)
 
-	name, err := tempName(t)
-	if err != nil {
-		fatal(t, err)
-
-		return
-	}
+	name := tempName(t)
 
 	fh, err := compat.OpenFile(name, os.O_RDWR|os.O_CREATE, 0, compat.WithFileMode(want))
 	if err != nil {
@@ -197,12 +186,9 @@ func TestFileOptionsWriteFileFileMode(t *testing.T) {
 	perm := os.FileMode(0o764)
 	want := fixPosixPerms(perm, false)
 
-	name, err := tempName(t)
-	if err != nil {
-		t.Fatal(err)
-	}
+	name := tempName(t)
 
-	err = compat.WriteFile(name, helloBytes, 0, compat.WithFileMode(want))
+	err := compat.WriteFile(name, helloBytes, 0, compat.WithFileMode(want))
 	if err != nil {
 		t.Fatal(err)
 	}

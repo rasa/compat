@@ -27,13 +27,9 @@ func TestRename(t *testing.T) {
 
 func TestRenameEmptyOld(t *testing.T) {
 	old := ""
+	gnu := tempName(t)
 
-	gnu, err := tempName(t)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	err = compat.Rename(old, gnu)
+	err := compat.Rename(old, gnu)
 	if err == nil {
 		t.Fatalf("got no error renaming '%v' to '%v'", old, gnu)
 	}
@@ -57,13 +53,9 @@ func TestRenameEmptyNew(t *testing.T) {
 
 func TestRenameInvalidOld(t *testing.T) {
 	old := invalidName
+	gnu := tempName(t)
 
-	gnu, err := tempName(t)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	err = compat.Rename(old, gnu)
+	err := compat.Rename(old, gnu)
 	if err == nil {
 		t.Fatalf("got no error renaming '%v' to '%v'", old, gnu)
 	}

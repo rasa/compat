@@ -20,17 +20,14 @@ func TestWriteFileAtomic(t *testing.T) {
 		return
 	}
 
-	file, err := tempName(t)
-	if err != nil {
-		t.Fatalf("Failed to create temp file: %v", err)
-	}
+	file := tempName(t)
 
 	cleanup(t, file)
 
 	perm := compat.CreatePerm // 0o666
 	opts := []compat.Option{compat.WithFileMode(perm)}
 
-	err = compat.WriteFileAtomic(file, helloBytes, opts...)
+	err := compat.WriteFileAtomic(file, helloBytes, opts...)
 	if err != nil {
 		t.Fatalf("Failed to write file: %q: %v", file, err)
 	}
@@ -49,24 +46,20 @@ func TestWriteFileAtomic(t *testing.T) {
 }
 
 func TestWriteReaderAtomic(t *testing.T) {
-	file, err := tempName(t)
-
 	if !compat.SupportsAtomicReplace() {
 		skipf(t, "Skipping test: atomicity not supported on %v", runtime.GOOS)
 
 		return
 	}
 
-	if err != nil {
-		t.Fatalf("Failed to create temp file: %v", err)
-	}
+	file := tempName(t)
 
 	cleanup(t, file)
 
 	perm := compat.CreatePerm // 0o666
 	opts := []compat.Option{compat.WithFileMode(perm)}
 
-	err = compat.WriteReaderAtomic(file, helloBuf, opts...)
+	err := compat.WriteReaderAtomic(file, helloBuf, opts...)
 	if err != nil {
 		t.Fatalf("Failed to write file: %q: %v", file, err)
 	}

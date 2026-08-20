@@ -18,16 +18,13 @@ func TestWriteFileNonAtomicReplace(t *testing.T) {
 		return
 	}
 
-	file, err := tempName(t)
-	if err != nil {
-		t.Fatal(err)
-	}
+	file := tempName(t)
 
 	cleanup(t, file)
 
 	oldData := []byte("old")
 
-	err = os.WriteFile(file, oldData, 0o600)
+	err := os.WriteFile(file, oldData, 0o600)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -60,14 +57,11 @@ func TestWriteFileNonAtomicCreate(t *testing.T) {
 		return
 	}
 
-	file, err := tempName(t)
-	if err != nil {
-		t.Fatal(err)
-	}
+	file := tempName(t)
 
 	cleanup(t, file)
 
-	err = compat.WriteFile(
+	err := compat.WriteFile(
 		file,
 		helloBytes,
 		0o600,

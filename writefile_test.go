@@ -16,16 +16,13 @@ import (
 )
 
 func TestWriteFile(t *testing.T) {
-	file, err := tempName(t)
-	if err != nil {
-		t.Fatalf("Failed to create temp file: %v", err)
-	}
+	file := tempName(t)
 
 	cleanup(t, file)
 
 	perm := compat.CreatePerm // 0o666
 
-	err = compat.WriteFile(file, helloBytes, perm)
+	err := compat.WriteFile(file, helloBytes, perm)
 	if err != nil {
 		t.Fatalf("Failed to write file: %q: %v", file, err)
 	}
@@ -44,10 +41,7 @@ func TestWriteFile(t *testing.T) {
 }
 
 func TestWriteFileWithAtomicity(t *testing.T) {
-	file, err := tempName(t)
-	if err != nil {
-		t.Fatalf("Failed to create temp file: %v", err)
-	}
+	file := tempName(t)
 
 	cleanup(t, file)
 
@@ -58,7 +52,7 @@ func TestWriteFileWithAtomicity(t *testing.T) {
 		opts = append(opts, compat.WithNonAtomicReplace(true))
 	}
 
-	err = compat.WriteFile(file, helloBytes, perm, opts...)
+	err := compat.WriteFile(file, helloBytes, perm, opts...)
 	if err != nil {
 		t.Fatalf("Failed to write file: %q: %v", file, err)
 	}
@@ -77,10 +71,7 @@ func TestWriteFileWithAtomicity(t *testing.T) {
 }
 
 func TestWriteFileWithAtomicityCurrentDir(t *testing.T) {
-	file, err := tempName(t)
-	if err != nil {
-		t.Fatalf("Failed to create temp file: %v", err)
-	}
+	file := tempName(t)
 
 	dir, base := filepath.Split(file)
 	t.Chdir(dir)
@@ -94,7 +85,7 @@ func TestWriteFileWithAtomicityCurrentDir(t *testing.T) {
 		opts = append(opts, compat.WithNonAtomicReplace(true))
 	}
 
-	err = compat.WriteFile(base, helloBytes, perm, opts...)
+	err := compat.WriteFile(base, helloBytes, perm, opts...)
 	if err != nil {
 		t.Fatalf("Failed to write file: %q: %v", file, err)
 	}
@@ -113,10 +104,7 @@ func TestWriteFileWithAtomicityCurrentDir(t *testing.T) {
 }
 
 func TestWriteFileWithAtomicityNoPerms(t *testing.T) {
-	file, err := tempName(t)
-	if err != nil {
-		t.Fatalf("Failed to create temp file: %v", err)
-	}
+	file := tempName(t)
 
 	cleanup(t, file)
 
@@ -127,7 +115,7 @@ func TestWriteFileWithAtomicityNoPerms(t *testing.T) {
 		opts = append(opts, compat.WithNonAtomicReplace(true))
 	}
 
-	err = compat.WriteFile(file, helloBytes, 0, opts...)
+	err := compat.WriteFile(file, helloBytes, 0, opts...)
 	if err != nil {
 		t.Fatalf("Failed to write file: %q: %v", file, err)
 	}
@@ -146,10 +134,7 @@ func TestWriteFileWithAtomicityNoPerms(t *testing.T) {
 }
 
 func TestWriteFileWithAtomicityWithDefaultFileMode(t *testing.T) {
-	file, err := tempName(t)
-	if err != nil {
-		t.Fatalf("Failed to create temp file: %v", err)
-	}
+	file := tempName(t)
 
 	cleanup(t, file)
 
@@ -161,7 +146,7 @@ func TestWriteFileWithAtomicityWithDefaultFileMode(t *testing.T) {
 		opts = append(opts, compat.WithNonAtomicReplace(true))
 	}
 
-	err = compat.WriteFile(file, helloBytes, 0, opts...)
+	err := compat.WriteFile(file, helloBytes, 0, opts...)
 	if err != nil {
 		t.Fatalf("Failed to write file: %q: %v", file, err)
 	}
@@ -205,16 +190,13 @@ func TestWriteFileWithAtomicityWithDefaultFileMode(t *testing.T) {
 }
 
 func TestWriteFileWithAtomicityWithKeepFileMode(t *testing.T) {
-	file, err := tempName(t)
-	if err != nil {
-		t.Fatalf("Failed to create temp file: %v", err)
-	}
+	file := tempName(t)
 
 	cleanup(t, file)
 
 	perm := perm555
 
-	err = compat.WriteFile(file, helloBytes, perm)
+	err := compat.WriteFile(file, helloBytes, perm)
 	if err != nil {
 		t.Fatalf("Failed to create file: %q: %v", file, err)
 	}
@@ -246,16 +228,13 @@ func TestWriteFileWithAtomicityWithKeepFileMode(t *testing.T) {
 }
 
 func TestWriteFileWithAtomicityWithKeepFileModeFalse(t *testing.T) {
-	file, err := tempName(t)
-	if err != nil {
-		t.Fatalf("Failed to create temp file: %v", err)
-	}
+	file := tempName(t)
 
 	cleanup(t, file)
 
 	perm := perm555
 
-	err = compat.WriteFile(file, helloBytes, perm)
+	err := compat.WriteFile(file, helloBytes, perm)
 	if err != nil {
 		t.Fatalf("Failed to create file: %q: %v", file, err)
 	}
@@ -294,10 +273,7 @@ func TestWriteFileWithAtomicityWithKeepFileModeFalse(t *testing.T) {
 }
 
 func TestWriteFileWithAtomicityWithFileMode(t *testing.T) {
-	file, err := tempName(t)
-	if err != nil {
-		t.Fatalf("Failed to create temp file: %v", err)
-	}
+	file := tempName(t)
 
 	cleanup(t, file)
 
@@ -309,7 +285,7 @@ func TestWriteFileWithAtomicityWithFileMode(t *testing.T) {
 		opts = append(opts, compat.WithNonAtomicReplace(true))
 	}
 
-	err = compat.WriteFile(file, helloBytes, 0, opts...)
+	err := compat.WriteFile(file, helloBytes, 0, opts...)
 	if err != nil {
 		t.Fatalf("Failed to write file: %q: %v", file, err)
 	}
@@ -354,10 +330,7 @@ func TestWriteFileWithAtomicityWithReadOnlyModeReset(t *testing.T) {
 		return
 	}
 
-	file, err := tempName(t)
-	if err != nil {
-		t.Fatalf("Failed to create temp file: %v", err)
-	}
+	file := tempName(t)
 
 	cleanup(t, file)
 
@@ -367,7 +340,7 @@ func TestWriteFileWithAtomicityWithReadOnlyModeReset(t *testing.T) {
 		compat.WithReadOnlyMode(compat.ReadOnlyModeReset),
 	}
 
-	err = compat.WriteFile(file, helloBytes, 0, opts...)
+	err := compat.WriteFile(file, helloBytes, 0, opts...)
 	if err != nil {
 		t.Fatalf("Failed to write file: %q: %v", file, err)
 	}
@@ -474,10 +447,7 @@ func TestWriteFileWithAtomicityInvalidReadOnlyDirectory(t *testing.T) {
 		}
 	}
 
-	name, err := tempName(t)
-	if err != nil {
-		t.Fatalf("Failed to create temp file: %v", err)
-	}
+	name := tempName(t)
 
 	dir, base := filepath.Split(name)
 	cleanup(t, dir)
@@ -488,7 +458,7 @@ func TestWriteFileWithAtomicityInvalidReadOnlyDirectory(t *testing.T) {
 		compat.WithReadOnlyMode(compat.ReadOnlyModeSet),
 	}
 
-	dir, err = compat.MkdirTemp(dir, "~*.tmp", opts...)
+	dir, err := compat.MkdirTemp(dir, "~*.tmp", opts...)
 	if err != nil {
 		t.Fatalf("MkdirTemp(%v, 0o%o) failed: %v", dir, perm, err)
 	}
@@ -523,10 +493,7 @@ func TestWriteFileWithAtomicityInvalidReadOnlyDirectory(t *testing.T) {
 
 /*
 func TestWriteFileWithAtomicityError(t *testing.T) {
-	file, err := tempName(t)
-	if err != nil {
-		t.Fatalf("Failed to create temp file: %v", err)
-	}
+	file := tempName(t)
 
 	cleanup(t, file)
 
@@ -534,7 +501,7 @@ func TestWriteFileWithAtomicityError(t *testing.T) {
 	if compat.IsPlan9 {
 		opts = append(opts, compat.WithNonAtomicReplace(true))
 	}
-	err = compat.WriteFile(file, errReader{}, 0, opts...)
+	err := compat.WriteFile(file, errReader{}, 0, opts...)
 	if err == nil {
 		t.Fatal("got nil, want an error")
 	}
@@ -548,7 +515,7 @@ func TestWriteFileExportedFileInvalid(t *testing.T) {
 }
 
 func TestWriteFileExportedReaderInvalid(t *testing.T) {
-	file, err := tempName(t)
+	file := tempName(t)
 	if err != nil {
 		t.Fatalf("Failed to create temp name: %v", err)
 	}

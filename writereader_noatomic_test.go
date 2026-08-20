@@ -18,10 +18,7 @@ func TestWriteReaderNonAtomicReplace(t *testing.T) {
 		return
 	}
 
-	file, err := tempName(t)
-	if err != nil {
-		t.Fatal(err)
-	}
+	file := tempName(t)
 
 	cleanup(t, file)
 
@@ -29,7 +26,7 @@ func TestWriteReaderNonAtomicReplace(t *testing.T) {
 
 	// The destination must already exist to test unsupported
 	// atomic replacement.
-	err = os.WriteFile(file, oldData, 0o600)
+	err := os.WriteFile(file, oldData, 0o600)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -66,15 +63,12 @@ func TestWriteReaderNonAtomicCreate(t *testing.T) {
 		return
 	}
 
-	file, err := tempName(t)
-	if err != nil {
-		t.Fatal(err)
-	}
+	file := tempName(t)
 
 	cleanup(t, file)
 
 	// The destination does not exist, so atomic creation should succeed.
-	err = compat.WriteReader(
+	err := compat.WriteReader(
 		file,
 		bytes.NewReader(helloBytes),
 		0o6,

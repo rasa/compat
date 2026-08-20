@@ -511,12 +511,10 @@ func tempFile(t *testing.T) (string, error) {
 	return name, nil
 }
 
-func tempName(t *testing.T) (string, error) { //nolint:unparam
+func tempName(t *testing.T) string {
 	t.Helper()
 
-	name := filepath.Join(tempDir(t), randomBase36String(8)+".tmp")
-
-	return name, nil
+	return filepath.Join(tempDir(t), randomBase36String(8)+".tmp")
 }
 
 func tempDir(t *testing.T) string {

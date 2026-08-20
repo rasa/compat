@@ -39,10 +39,7 @@ func TestFilePosixChmod(t *testing.T) {
 func TestFilePosixCreate(t *testing.T) {
 	want := fixPosixPerms(compat.CreatePerm, false) // 0o666
 
-	name, err := tempName(t)
-	if err != nil {
-		t.Fatalf("tempName failed: %v", err)
-	}
+	name := tempName(t)
 
 	fh, err := compat.Create(name)
 	if err != nil {
@@ -75,10 +72,7 @@ func TestFilePosixCreateWithFileMode(t *testing.T) {
 	perm := compat.CreatePerm
 	want := fixPosixPerms(perm, false) // 0o666
 
-	name, err := tempName(t)
-	if err != nil {
-		t.Fatalf("tempName failed: %v", err)
-	}
+	name := tempName(t)
 
 	fh, err := compat.Create(name, compat.WithFileMode(perm))
 	if err != nil {
@@ -179,12 +173,9 @@ func TestFilePosixMkdir(t *testing.T) {
 	perm := os.FileMode(0o777)
 	want := fixPosixPerms(perm, true)
 
-	name, err := tempName(t)
-	if err != nil {
-		t.Fatal(err)
-	}
+	name := tempName(t)
 
-	err = compat.Mkdir(name, perm)
+	err := compat.Mkdir(name, perm)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -204,12 +195,9 @@ func TestFilePosixMkdirAll(t *testing.T) {
 	perm := os.FileMode(0o777)
 	want := fixPosixPerms(perm, true)
 
-	name, err := tempName(t)
-	if err != nil {
-		t.Fatal(err)
-	}
+	name := tempName(t)
 
-	err = compat.MkdirAll(name, perm)
+	err := compat.MkdirAll(name, perm)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -272,10 +260,7 @@ func TestFilePosixOpenFile(t *testing.T) {
 	perm := os.FileMode(0o666)
 	want := fixPosixPerms(perm, false)
 
-	name, err := tempName(t)
-	if err != nil {
-		t.Fatalf("tempName failed: %v", err)
-	}
+	name := tempName(t)
 
 	fh, err := compat.OpenFile(name, os.O_RDWR|os.O_CREATE, perm)
 	if err != nil {
@@ -305,10 +290,7 @@ func TestFilePosixOpenFile(t *testing.T) {
 }
 
 func TestFilePosixOpenFileDelete(t *testing.T) {
-	name, err := tempName(t)
-	if err != nil {
-		t.Fatal(err)
-	}
+	name := tempName(t)
 
 	fh, err := compat.OpenFile(name, os.O_RDWR|os.O_CREATE|compat.O_FILE_FLAG_DELETE_ON_CLOSE, os.FileMode(0o666))
 	if err != nil {
@@ -390,12 +372,9 @@ func TestFilePosixWriteFile(t *testing.T) {
 	perm := os.FileMode(0o666)
 	want := fixPosixPerms(perm, false)
 
-	name, err := tempName(t)
-	if err != nil {
-		t.Fatal(err)
-	}
+	name := tempName(t)
 
-	err = compat.WriteFile(name, helloBytes, want)
+	err := compat.WriteFile(name, helloBytes, want)
 	if err != nil {
 		t.Fatal(err)
 	}
