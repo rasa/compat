@@ -8,22 +8,17 @@ package compat
 import (
 	"os"
 	"path/filepath"
-	"strconv"
 )
 
 func fstat(f *os.File) (FileInfo, error) {
 	if f == nil {
 		return nil, statError("", os.ErrInvalid)
 	}
+
 	fi, err := f.Stat()
 	if err != nil {
 		return nil, statError(f.Name(), err)
 	}
-	fdpath := "/proc/self/fd/" + strconv.Itoa(int(f.Fd()))
-	path, err := os.Readlink(fdpath)
-	if err != nil {
-		return nil, statError(f.Name(), err)
-	}
 
-	return stat(fi, filepath.Clean(path), false)
+	return stat(fi, filepath.Clean(f.Name()), false)
 }
