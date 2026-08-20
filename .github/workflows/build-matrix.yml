@@ -94,7 +94,7 @@ permissions:
 jobs:
   build-matrix:
     strategy:
-      fail-fast: false
+      fail-fast: true
       matrix:
         os:
           - ubuntu-26.04
