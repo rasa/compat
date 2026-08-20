@@ -11,7 +11,7 @@ const (
 	supportsAtomicReplace = false
 	supportsBTime         = false
 	supportsCTime         = false
-	supportsFstat         = false
+	supportsFstat         = true
 	supportsLinks         = false
 	supportsNice          = true
 	supportsSymlinks      = false
