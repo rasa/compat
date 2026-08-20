@@ -3,8 +3,6 @@
 
 //go:build fstat && freebsd
 
-// was go:build freebsd
-
 package compat
 
 import (
@@ -80,6 +78,7 @@ func fstat(f *os.File) (FileInfo, error) {
 	fd := int(f.Fd())
 
 	var kif _KinfoFile
+	kif.KfStructsize = int32(unsafe.Sizeof(kif))
 
 	_, _, errno := syscall.Syscall(
 		syscall.SYS_FCNTL,
@@ -92,14 +91,13 @@ func fstat(f *os.File) (FileInfo, error) {
 	}
 
 	n := 0
-	for ; n < len(kif.KfPath); n++ {
-		if kif.KfPath[n] == 0 {
-			break
-		}
+	for n < len(kif.KfPath) && kif.KfPath[n] != 0 {
+		n++
 	}
 	if n == 0 {
 		return nil, statError(f.Name(), os.ErrInvalid)
 	}
+
 	path := string(kif.KfPath[:n])
 
 	return stat(fi, path, false)
