@@ -59,15 +59,15 @@ func Volumes(mounts []Mount) ([]Volume, error) {
 
 		fsName := strings.ToLower(mount.Fstype)
 
-		filesystem, ok := filesystemMap[fsName]
-		if ok {
+		filesystem, found := filesystemMap[fsName]
+		if found {
 			volume.Filesystem = filesystem
 		} else {
 			log.Printf("No filesystem defined for %v filesystem", fsName)
 			volume.Filesystem = NewFilesystem(fsName)
 		}
 
-		volume.KnownFilesystem = ok
+		volume.KnownFilesystem = found
 		volume.Filesystem.Name = fsName
 		volumes = append(volumes, volume)
 	}

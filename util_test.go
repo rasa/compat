@@ -45,8 +45,8 @@ var (
 
 type errReader struct{}
 
-func (errReader) Read(p []byte) (int, error) {
-	return 0, errors.New("simulated read failure") //nolint:err113
+func (errReader) Read(_ []byte) (int, error) {
+	return 0, errors.New("simulated read failure")
 }
 
 type nilReader struct{}
@@ -69,6 +69,8 @@ func init() {
 }
 
 func cleanup(t *testing.T, names ...string) {
+	t.Helper()
+
 	for _, name := range names {
 		t.Cleanup(removeItFunc(name))
 	}
@@ -110,12 +112,12 @@ func compareTimes(a, b time.Time, granularity int) bool {
 		return a.IsZero()
 	}
 	// add 1 second for fractional seconds
-	granularity += 1
+	granularity++
 
 	return a.Sub(b).Abs() <= time.Duration(granularity)*time.Second
 }
 
-func debugln(t *testing.T, msg string) { //nolint:unused
+func debugln(t *testing.T, msg string) {
 	t.Helper()
 
 	if testing.Verbose() && strings.Contains(compatDebug, "DEBUG") {
@@ -123,7 +125,7 @@ func debugln(t *testing.T, msg string) { //nolint:unused
 	}
 }
 
-func debugf(t *testing.T, format string, a ...any) { //nolint:unused
+func debugf(t *testing.T, format string, a ...any) {
 	t.Helper()
 
 	debugln(t, fmt.Sprintf(format, a...))
@@ -252,13 +254,13 @@ func log(msg string) {
 	}
 }
 
-func logf(format string, a ...any) { //nolint:unused
+func logf(format string, a ...any) {
 	if testing.Verbose() {
 		fmt.Printf(format, a...)
 	}
 }
 
-func must(err error) { //nolint:unused
+func must(err error) {
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "error: %v\n", err)
 		os.Exit(1)
@@ -306,7 +308,7 @@ func randomBase36String(n int) string {
 
 	out := make([]byte, n)
 	for i := range out {
-		out[i] = base36[rand.IntN(len(base36))] //nolint:gosec
+		out[i] = base36[rand.IntN(len(base36))]
 	}
 
 	return string(out)
@@ -323,7 +325,7 @@ func removeIt(name string) {
 	}
 
 	if fi.IsDir() {
-		_ = filepath.WalkDir(name, func(path string, d fs.DirEntry, err error) error {
+		_ = filepath.WalkDir(name, func(path string, _ fs.DirEntry, err error) error {
 			if err != nil {
 				// ignore errors
 				return nil //nolint:nilerr
@@ -344,7 +346,7 @@ func removeIt(name string) {
 
 	if compat.IsWindows {
 		args := []string{name, "/q", "/t", "/c", "/grant", os.Getenv("USERNAME") + ":F"}
-		_ = exec.CommandContext(context.Background(), "icacls.exe", args...).Run() //nolint:gosec
+		_ = exec.CommandContext(context.Background(), "icacls.exe", args...).Run()
 		_ = compat.RemoveAll(name)
 	}
 }

@@ -12,7 +12,7 @@ import (
 
 // Doesn't test anything, but increases code coverage for SkipDir processing.
 func TestWalkDirSkipDir(t *testing.T) {
-	walkFn := func(path string, entry compat.DirEntry, err error) error {
+	walkFn := func(_ string, entry compat.DirEntry, err error) error {
 		if entry.IsDir() {
 			return compat.SkipDir
 		}
@@ -27,7 +27,7 @@ func TestWalkDirSkipDir(t *testing.T) {
 }
 
 func TestWalkDirInvalid(t *testing.T) {
-	walkFn := func(path string, entry compat.DirEntry, err error) error {
+	walkFn := func(_ string, _ compat.DirEntry, err error) error {
 		return err
 	}
 

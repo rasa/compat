@@ -71,23 +71,23 @@ func (fs *fileStat) FileID() uint64      { return fs.fileID }
 func (fs *fileStat) Error() error        { return fs.err }
 
 func (fs *fileStat) String() string {
-	var b strings.Builder
+	var builder strings.Builder
 
-	fmt.Fprintf(&b, "Name:   %v\n", fs.Name())
-	fmt.Fprintf(&b, "Size:   %v\n", fs.Size())
-	fmt.Fprintf(&b, "Mode:   0o%o (%v)\n", fs.Mode(), fs.Mode())
-	fmt.Fprintf(&b, "ModTime:%v\n", fs.ModTime())
-	fmt.Fprintf(&b, "ATime:  %v\n", fs.ATime())
-	fmt.Fprintf(&b, "BTime:  %v\n", fs.BTime())
-	fmt.Fprintf(&b, "CTime:  %v\n", fs.CTime())
-	fmt.Fprintf(&b, "IsDir:  %v\n", fs.IsDir())
-	fmt.Fprintf(&b, "Links:  %v\n", fs.Links())
-	fmt.Fprintf(&b, "UID:    %v (%v)\n", fs.UID(), fs.User())
-	fmt.Fprintf(&b, "GID:    %v (%v)\n", fs.GID(), fs.Group())
-	fmt.Fprintf(&b, "PartID: %v\n", fs.PartitionID())
-	fmt.Fprintf(&b, "FileID: %v\n", fs.FileID())
+	fmt.Fprintf(&builder, "Name:   %v\n", fs.Name())
+	fmt.Fprintf(&builder, "Size:   %v\n", fs.Size())
+	fmt.Fprintf(&builder, "Mode:   0o%o (%v)\n", fs.Mode(), fs.Mode())
+	fmt.Fprintf(&builder, "ModTime:%v\n", fs.ModTime())
+	fmt.Fprintf(&builder, "ATime:  %v\n", fs.ATime())
+	fmt.Fprintf(&builder, "BTime:  %v\n", fs.BTime())
+	fmt.Fprintf(&builder, "CTime:  %v\n", fs.CTime())
+	fmt.Fprintf(&builder, "IsDir:  %v\n", fs.IsDir())
+	fmt.Fprintf(&builder, "Links:  %v\n", fs.Links())
+	fmt.Fprintf(&builder, "UID:    %v (%v)\n", fs.UID(), fs.User())
+	fmt.Fprintf(&builder, "GID:    %v (%v)\n", fs.GID(), fs.Group())
+	fmt.Fprintf(&builder, "PartID: %v\n", fs.PartitionID())
+	fmt.Fprintf(&builder, "FileID: %v\n", fs.FileID())
 
-	return b.String()
+	return builder.String()
 }
 
 func (fs *fileStat) Info() (os.FileInfo, error) {

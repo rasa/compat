@@ -96,10 +96,10 @@ func main() {
 
 func doFile(src string) {
 	log.Printf("Reading %v", src) //nolint:gosec
-	b, err := os.ReadFile(src)    //nolint:gosec
+	file, err := os.ReadFile(src) //nolint:gosec
 	must(err)
 
-	snips, err := findSnips(b)
+	snips, err := findSnips(file)
 	must(err)
 
 	if len(snips) == 0 {
@@ -131,17 +131,17 @@ func doFile(src string) {
 // DownloadBase downloads each "base" file at the exact ref from the Source URL
 // into cache/base/<joined>.
 func DownloadBase(snips []Snip) error {
-	for i, s := range snips {
-		snip_id := i + 1
+	for idx, snip := range snips {
+		snipID := idx + 1
 
-		dst := cacheName(baseDir, s)
+		dst := cacheName(baseDir, snip)
 		if fileExists(dst) {
 			continue
 		}
 
-		log.Printf("[base] Downloading snip %2d/%2d: %v", snip_id, len(snips), dst)
+		log.Printf("[base] Downloading snip %2d/%2d: %v", snipID, len(snips), dst)
 
-		rawURL := fmt.Sprintf("https://raw.githubusercontent.com/%s/%s/%s/%s", s.Owner, s.Repo, s.BaseRef, s.Path)
+		rawURL := fmt.Sprintf("https://raw.githubusercontent.com/%s/%s/%s/%s", snip.Owner, snip.Repo, snip.BaseRef, snip.Path)
 
 		body, err := httpGet(rawURL)
 		if err != nil {
@@ -159,24 +159,24 @@ func DownloadBase(snips []Snip) error {
 
 // DownloadThem downloads the same path at repository HEAD into cache/them/<joined>.
 func DownloadThem(snips []Snip) ([]Snip, error) {
-	for i, s := range snips {
-		snip_id := i + 1
-		defBranch, err := getDefaultBranch(s.Owner, s.Repo)
+	for idx, snip := range snips {
+		snipID := idx + 1
+		defBranch, err := getDefaultBranch(snip.Owner, snip.Repo)
 		must(err)
-		themRef, err := getCommitSHA(s.Owner, s.Repo, defBranch)
+		themRef, err := getCommitSHA(snip.Owner, snip.Repo, defBranch)
 		must(err)
 
-		snips[i].ThemRef = themRef
-		s.ThemRef = themRef
+		snips[idx].ThemRef = themRef
+		snip.ThemRef = themRef
 
-		dst := cacheNameThem(themDir, s)
+		dst := cacheNameThem(themDir, snip)
 		if fileExists(dst) {
 			continue
 		}
 
-		log.Printf("[base] Downloading snip %2d/%2d: %v", snip_id, len(snips), dst)
+		log.Printf("[base] Downloading snip %2d/%2d: %v", snipID, len(snips), dst)
 		// Use HEAD to track the latest on default branch.
-		rawURL := fmt.Sprintf("https://raw.githubusercontent.com/%s/%s/HEAD/%s", s.Owner, s.Repo, s.Path)
+		rawURL := fmt.Sprintf("https://raw.githubusercontent.com/%s/%s/HEAD/%s", snip.Owner, snip.Repo, snip.Path)
 
 		body, err := httpGet(rawURL)
 		if err != nil {
@@ -194,16 +194,16 @@ func DownloadThem(snips []Snip) ([]Snip, error) {
 
 // SnipOurs writes the section between Source lines as *.ours.
 func SnipOurs(snips []Snip) error {
-	for i, s := range snips {
-		snip_id := i + 1
-		p := snipName(snipDir, "ours", s)
-		log.Printf("[ours] Creating snip %2d/%2d: %v (%d bytes)", snip_id, len(snips), p, len(s.Ours))
+	for idx, snip := range snips {
+		snipID := idx + 1
+		name := snipName(snipDir, "ours", snip)
+		log.Printf("[ours] Creating snip %2d/%2d: %v (%d bytes)", snipID, len(snips), name, len(snip.Ours))
 
-		if fileExists(p) {
+		if fileExists(name) {
 			continue
 		}
 
-		err := writeFileAtomic(p, s.Ours, perm644)
+		err := writeFileAtomic(name, snip.Ours, perm644)
 		if err != nil {
 			return err
 		}
@@ -214,22 +214,22 @@ func SnipOurs(snips []Snip) error {
 
 // SnipBase uses the start/end lines from the URL to slice the base file into *.base.
 func SnipBase(snips []Snip) error {
-	for i, s := range snips {
-		snip_id := i + 1
-		basePath := cacheName(baseDir, s)
+	for idx, snip := range snips {
+		snipID := idx + 1
+		basePath := cacheName(baseDir, snip)
 
 		content, err := os.ReadFile(basePath)
 		if err != nil {
 			return fmt.Errorf("SnipBase read base %s: %w", basePath, err)
 		}
 
-		part, err := extractLines(content, s.StartLine, s.EndLine)
+		part, err := extractLines(content, snip.StartLine, snip.EndLine)
 		if err != nil {
-			return fmt.Errorf("SnipBase extract %s L%d-L%d: %w", s.Joined, s.StartLine, s.EndLine, err)
+			return fmt.Errorf("SnipBase extract %s L%d-L%d: %w", snip.Joined, snip.StartLine, snip.EndLine, err)
 		}
 
-		out := snipName(snipDir, "base", s)
-		log.Printf("[base] Creating snip %2d/%2d: %v (%d bytes)", snip_id, len(snips), out, len(part))
+		out := snipName(snipDir, "base", snip)
+		log.Printf("[base] Creating snip %2d/%2d: %v (%d bytes)", snipID, len(snips), out, len(part))
 
 		if fileExists(out) {
 			continue
@@ -253,17 +253,17 @@ var (
 // If an exact substring match exists, it is used; otherwise, choose the best window by
 // minimal normalized edit distance.
 func SnipThem(snips []Snip) error { //nolint:gocyclo,gocognit
-	for i, s := range snips {
-		snip_id := i + 1
-		log.Printf("[them] Creating snip %2d/%2d: %v@%d", snip_id, len(snips), s.Path, s.StartLine)
-		themPath := cacheNameThem(themDir, s)
+	for idx, snip := range snips {
+		snipID := idx + 1
+		log.Printf("[them] Creating snip %2d/%2d: %v@%d", snipID, len(snips), snip.Path, snip.StartLine)
+		themPath := cacheNameThem(themDir, snip)
 
 		themContent, err := os.ReadFile(themPath)
 		if err != nil {
 			return fmt.Errorf("SnipThem read them %s: %w", themPath, err)
 		}
 
-		basePath := snipName(snipDir, "base", s)
+		basePath := snipName(snipDir, "base", snip)
 
 		baseContent, err := os.ReadFile(basePath)
 		if err != nil {
@@ -273,13 +273,13 @@ func SnipThem(snips []Snip) error { //nolint:gocyclo,gocognit
 		// Try exact match first.
 		found := bytes.Contains(themContent, baseContent)
 		if found {
-			out := snipName(snipDir, "them", s)
+			out := snipName(snipDir, "them", snip)
 			if !fileExists(out) {
 				err = writeFileAtomic(out, baseContent, perm644)
 				if err != nil {
 					return err
 				}
-				// log.Printf("[them] Created snip %2d: %v (%d bytes)", snip_id, out, len(baseContent))
+				// log.Printf("[them] Created snip %2d: %v (%d bytes)", snipID, out, len(baseContent))
 			}
 
 			continue
@@ -301,7 +301,8 @@ func SnipThem(snips []Snip) error { //nolint:gocyclo,gocognit
 		}
 
 		if funcName == "" {
-			log.Printf("[them] snip %2d/%2d: Cannot find function name in %v (%d lines)", snip_id, len(snips), basePath, len(baseLines))
+			log.Printf("[them] snip %2d/%2d: Cannot find function name in %v (%d lines)",
+				snipID, len(snips), basePath, len(baseLines))
 			os.Exit(1)
 		}
 
@@ -328,11 +329,12 @@ func SnipThem(snips []Snip) error { //nolint:gocyclo,gocognit
 		}
 
 		best = []byte(strings.Join(lines, "\n"))
-		log.Printf("[them] snip %2d/%2d: found function %v (%d lines) (%d bytes)", snip_id, len(snips), funcName, len(lines), len(best))
+		log.Printf("[them] snip %2d/%2d: found function %v (%d lines) (%d bytes)",
+			snipID, len(snips), funcName, len(lines), len(best))
 
-		out := snipName(snipDir, "them", s)
+		out := snipName(snipDir, "them", snip)
 		if !fileExists(out) {
-			// log.Printf("[them] Created snip %2d/%2d: %v (%d bytes)", snip_id, len(snips), out, len(best))
+			// log.Printf("[them] Created snip %2d/%2d: %v (%d bytes)", snipID, len(snips), out, len(best))
 			err = writeFileAtomic(out, best, perm644)
 			if err != nil {
 				return err
@@ -352,13 +354,13 @@ var conflictMarkersRE = regexp.MustCompile(`(?s)<<<<<<.*?=======.*?>>>>>>>`)
 // and writes meld/X (no @NNNN). On conflicts (exit 1), keep markers and
 // create meld/X.rej containing just the conflicting regions.
 func Meld(snips []Snip) error {
-	for i, s := range snips {
-		snip_id := i + 1
-		ours := snipName(snipDir, "ours", s)
-		them := snipName(snipDir, "them", s)
-		base := snipName(snipDir, "base", s)
+	for idx, snip := range snips {
+		snipID := idx + 1
+		ours := snipName(snipDir, "ours", snip)
+		them := snipName(snipDir, "them", snip)
+		base := snipName(snipDir, "base", snip)
 
-		meldPath := filepath.Join(meldDir, fmt.Sprintf("%s@%s.%s", s.Joined, lineTag(s.StartLine), "meld"))
+		meldPath := filepath.Join(meldDir, fmt.Sprintf("%s@%snip.%s", snip.Joined, lineTag(snip.StartLine), "meld"))
 
 		// Run: git merge-file -p -L ours -L base -L them <ours> <them> <base>
 		out, exit, runErr := runGitMergeFile(ours, them, base)
@@ -375,7 +377,7 @@ func Meld(snips []Snip) error {
 			conflicts = fmt.Sprintf("%d CONFLICTS FOUND: ", len(conflictLocations))
 		}
 
-		log.Printf("[meld] snip %2d/%2d: %sWriting %v", snip_id, len(snips), conflicts, meldPath)
+		log.Printf("[meld] snip %2d/%2d: %sWriting %v", snipID, len(snips), conflicts, meldPath)
 
 		must(writeFileAtomic(meldPath, out, perm644))
 
@@ -389,7 +391,7 @@ func Meld(snips []Snip) error {
 				rej = out
 			}
 
-			log.Printf("[meld] snip %2d/%2d: REJECTS: Writing %v", snip_id, len(snips), rejPath)
+			log.Printf("[meld] snip %2d/%2d: REJECTS: Writing %v", snipID, len(snips), rejPath)
 
 			err := writeFileAtomic(rejPath, rej, perm644)
 			if err != nil {
@@ -405,11 +407,11 @@ func Compare(snips []Snip) error {
 	out := colorable.NewColorableStdout()
 	updates := 0
 
-	for i, s := range snips {
-		snip_id := i + 1
-		oursPath := snipName(snipDir, "ours", s)
+	for idx, snip := range snips {
+		snipID := idx + 1
+		oursPath := snipName(snipDir, "ours", snip)
 
-		meldPath := filepath.Join(meldDir, fmt.Sprintf("%s@%s.%s", s.Joined, lineTag(s.StartLine), "meld"))
+		meldPath := filepath.Join(meldDir, fmt.Sprintf("%s@%s.%s", snip.Joined, lineTag(snip.StartLine), "meld"))
 
 		oursContent, err := os.ReadFile(oursPath)
 		if err != nil {
@@ -434,7 +436,7 @@ func Compare(snips []Snip) error {
 			updates++
 		}
 
-		log.Printf("[comp] snip %2d/%2d: %v%v", snip_id, len(snips), meldPath, updated)
+		log.Printf("[comp] snip %2d/%2d: %v%v", snipID, len(snips), meldPath, updated)
 
 		if diff != "" {
 			fmt.Fprintln(out, diff)
@@ -453,8 +455,8 @@ func findSnips(file []byte) ([]Snip, error) {
 
 	var out []Snip
 
-	for i := 0; i < len(lines); i++ {
-		m := srcLineRE.FindSubmatch(lines[i])
+	for idx := 0; idx < len(lines); idx++ {
+		m := srcLineRE.FindSubmatch(lines[idx])
 		if m == nil {
 			continue
 		}
@@ -467,16 +469,16 @@ func findSnips(file []byte) ([]Snip, error) {
 		}
 
 		// ours content: from this Snippet: line up to (but excluding) the next Snippet: line
-		start := i
+		start := idx
 
-		j := i + 1
-		for ; j < len(lines); j++ {
-			if srcLineRE.Match(lines[j]) {
+		idx2 := idx + 1
+		for ; idx2 < len(lines); idx2++ {
+			if srcLineRE.Match(lines[idx2]) {
 				break
 			}
 		}
 
-		ours := bytes.Join(lines[start:j], []byte("\n"))
+		ours := bytes.Join(lines[start:idx2], []byte("\n"))
 
 		out = append(out, Snip{
 			URL:       url,
@@ -490,7 +492,7 @@ func findSnips(file []byte) ([]Snip, error) {
 			Ours:      ours,
 		})
 		// continue after the block
-		i = j - 1
+		idx = idx2 - 1
 	}
 
 	return out, nil
@@ -505,70 +507,70 @@ type urlMeta struct {
 	End   int
 }
 
-func parseGitHubURL(u string) (urlMeta, error) {
-	// Expect: https://github.com/<owner>/<repo>/blob/<ref>/<path>#Lstart[-Lend]
+func parseGitHubURL(url string) (urlMeta, error) {
+	// Expect: https://github.com/<owner>/<repo>/blob/<ref>/<path>#Lstart[-Lend
 	// Example: https://github.com/golang/go/blob/e282cbb1/src/os/tempfile.go#L22-L24
-	var m urlMeta
+	var meta urlMeta
 
-	noFrag, frag, _ := strings.Cut(u, "#")
+	noFrag, frag, _ := strings.Cut(url, "#")
 	if frag == "" {
-		return m, errors.New("missing #Lstart[-Lend] fragment") //nolint:err113
+		return meta, errors.New("missing #Lstart[-Lend] fragment") //nolint:err113
 	}
 
 	parts := strings.Split(noFrag, "/")
 	// ... https: '' github.com owner repo blob ref <path...>
 	if len(parts) < 7 || parts[2] != "github.com" || parts[5] != "blob" {
-		return m, fmt.Errorf("unsupported github URL format: %s", u) //nolint:err113
+		return meta, fmt.Errorf("unsupported github URL format: %s", url) //nolint:err113
 	}
 
-	m.Owner = parts[3]
-	m.Repo = parts[4]
-	m.Ref = parts[6]
-	m.Path = strings.Join(parts[7:], "/")
+	meta.Owner = parts[3]
+	meta.Repo = parts[4]
+	meta.Ref = parts[6]
+	meta.Path = strings.Join(parts[7:], "/")
 
 	// Lines
 	// Accept LNNN or LNNN-LMMM
 	if !strings.HasPrefix(frag, "L") {
-		return m, fmt.Errorf("unexpected fragment %q", frag) //nolint:err113
+		return meta, fmt.Errorf("unexpected fragment %q", frag) //nolint:err113
 	}
 
 	segs := strings.Split(frag, "-")
 
 	start, err := strconv.Atoi(strings.TrimPrefix(segs[0], "L"))
 	if err != nil {
-		return m, fmt.Errorf("bad start line in %q: %w", frag, err)
+		return meta, fmt.Errorf("bad start line in %q: %w", frag, err)
 	}
 
 	end := start
 
 	if len(segs) == 2 { //nolint:mnd
 		if !strings.HasPrefix(segs[1], "L") {
-			return m, fmt.Errorf("bad end fragment %q", segs[1]) //nolint:err113
+			return meta, fmt.Errorf("bad end fragment %q", segs[1]) //nolint:err113
 		}
 
 		end, err = strconv.Atoi(strings.TrimPrefix(segs[1], "L"))
 		if err != nil {
-			return m, fmt.Errorf("bad end line in %q: %w", frag, err)
+			return meta, fmt.Errorf("bad end line in %q: %w", frag, err)
 		}
 	}
 
-	m.Start = start
-	m.End = end
+	meta.Start = start
+	meta.End = end
 
-	return m, nil
+	return meta, nil
 }
 
 func joinPathForName(repoPath string) string {
 	// Prefer trimming up to and including "src/" if present (per examples),
 	// then join remaining components with underscores.
-	p := repoPath
+	path := repoPath
 
-	idx := strings.Index(p, "/src/")
+	idx := strings.Index(path, "/src/")
 	if idx >= 0 {
-		p = p[idx+len("/src/"):]
+		path = path[idx+len("/src/"):]
 	}
 
-	parts := strings.Split(p, "/")
+	parts := strings.Split(path, "/")
 
 	return strings.Join(parts, "_")
 }
@@ -765,22 +767,22 @@ func synthesizeConflict(ours, them, _ string) []byte {
 
 const shaLen = 8
 
-func cacheName(dir string, s Snip) string {
-	sha8 := s.BaseRef
+func cacheName(dir string, snip Snip) string {
+	sha8 := snip.BaseRef
 	if len(sha8) > shaLen {
 		sha8 = sha8[:shaLen]
 	}
 
-	return filepath.Join(dir, sha8, s.Joined)
+	return filepath.Join(dir, sha8, snip.Joined)
 }
 
-func cacheNameThem(dir string, s Snip) string {
-	sha8 := s.ThemRef
+func cacheNameThem(dir string, snip Snip) string {
+	sha8 := snip.ThemRef
 	if len(sha8) > shaLen {
 		sha8 = sha8[:shaLen]
 	}
 
-	return filepath.Join(dir, sha8, s.Joined)
+	return filepath.Join(dir, sha8, snip.Joined)
 }
 
 func snipName(dir string, ext string, s Snip) string {
@@ -833,16 +835,16 @@ func getCommitSHA(owner, repo, ref string) (string, error) {
 		return sha, nil
 	}
 
-	var c commitInfo
+	var info commitInfo
 
-	err := ghJSON(fmt.Sprintf("https://api.github.com/repos/%s/%s/commits/%s", owner, repo, ref), &c)
+	err := ghJSON(fmt.Sprintf("https://api.github.com/repos/%s/%s/commits/%s", owner, repo, ref), &info)
 	if err != nil {
 		return "", err
 	}
 
-	shas[key] = c.SHA
+	shas[key] = info.SHA
 
-	return c.SHA, nil
+	return info.SHA, nil
 }
 
 func addAuth(req *http.Request) {
@@ -852,11 +854,11 @@ func addAuth(req *http.Request) {
 	}
 }
 
-func ghJSON(u string, out any) error {
+func ghJSON(url string, out any) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second) //nolint:mnd
 	defer cancel()                                                           // always cancel to release resources
 
-	req, _ := http.NewRequestWithContext(ctx, http.MethodGet, u, nil)
+	req, _ := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 	req.Header.Set("Accept", "application/vnd.github+json")
 	addAuth(req)
 
@@ -869,7 +871,7 @@ func ghJSON(u string, out any) error {
 	if resp.StatusCode != http.StatusOK {
 		_, _ = io.Copy(io.Discard, resp.Body)
 
-		return fmt.Errorf("GET %s: %s", u, resp.Status) //nolint:err113
+		return fmt.Errorf("GET %s: %s", url, resp.Status) //nolint:err113
 	}
 
 	return json.NewDecoder(resp.Body).Decode(out)

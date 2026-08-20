@@ -54,7 +54,7 @@ var fsTests = []fsTest{
 	}},
 }
 
-func testMain(m *testing.M, fsToTest, nativeFSType, fsPath string) int { //nolint:gocyclo
+func testMain(m *testing.M, fsToTest, nativeFSType, fsPath string) int {
 	if tempPath != "" && !strings.HasSuffix(tempPath, "/") {
 		tempPath += "/"
 	}

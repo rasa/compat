@@ -34,7 +34,7 @@ func loadPerms() {
 	if p != "" {
 		o, err := parseOctal(p)
 		if err == nil {
-			perms = []os.FileMode{os.FileMode(o)} //nolint:gosec
+			perms = []os.FileMode{os.FileMode(o)}
 		}
 		return
 	}
@@ -49,7 +49,7 @@ func loadPerms() {
 	for u := 7; u >= 0; u-- {
 		for g := 7; g >= 0; g-- {
 			for o := 7; o >= 0; o-- {
-				mode := os.FileMode(u<<0o6 | g<<0o3 | o) //nolint:gosec
+				mode := os.FileMode(u<<0o6 | g<<0o3 | o)
 				// @TODO(rasa) support 0o0 perms on Windows
 				if mode == perm000 {
 					break
@@ -120,7 +120,7 @@ func TestFileWindowsChmodReadOnlyModeIgnoreNotSet(t *testing.T) {
 	}
 }
 
-func TestFileWindowsChmodReadOnlyModeIgnoreSet(t *testing.T) { //nolint:dupl
+func TestFileWindowsChmodReadOnlyModeIgnoreSet(t *testing.T) {
 	for _, perm := range perms {
 		name, err := tempFile(t)
 		if err != nil {
@@ -282,7 +282,7 @@ func TestFileWindowsChmodReadOnlyModeResetNotSet(t *testing.T) {
 	}
 }
 
-func TestFileWindowsChmodReadOnlyModeResetSet(t *testing.T) { //nolint:dupl
+func TestFileWindowsChmodReadOnlyModeResetSet(t *testing.T) {
 	for _, perm := range perms {
 		name, err := tempFile(t)
 		if err != nil {
@@ -450,7 +450,7 @@ func TestFileWindowsFchmodReadOnlyModeIgnoreNotSet(t *testing.T) {
 	}
 }
 
-func TestFileWindowsFchmodReadOnlyModeIgnoreSet(t *testing.T) { //nolint:dupl
+func TestFileWindowsFchmodReadOnlyModeIgnoreSet(t *testing.T) {
 	for _, perm := range perms {
 		name, err := tempFile(t)
 		if err != nil {
@@ -644,7 +644,7 @@ func TestFileWindowsFchmodReadOnlyModeResetNotSet(t *testing.T) {
 	}
 }
 
-func TestFileWindowsFchmodReadOnlyModeResetSet(t *testing.T) { //nolint:dupl
+func TestFileWindowsFchmodReadOnlyModeResetSet(t *testing.T) {
 	for _, perm := range perms {
 		name, err := tempFile(t)
 		if err != nil {
@@ -996,7 +996,7 @@ func logOutput(t *testing.T, exe string, args []string) error {
 		return err
 	}
 
-	cmd := exec.Command(exe, args...) //nolint:noctx
+	cmd := exec.Command(exe, args...)
 	out, err := cmd.CombinedOutput()
 	if err != nil {
 		t.Logf("Error running %v: %v", exe, err)
@@ -1007,7 +1007,7 @@ func logOutput(t *testing.T, exe string, args []string) error {
 	return nil
 }
 
-func errno(err error) uint32 { //nolint:unused
+func errno(err error) uint32 {
 	if err == nil {
 		return 0
 	}

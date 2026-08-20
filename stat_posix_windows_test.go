@@ -168,14 +168,14 @@ func TestStatPosixWindowsGetUserGroup(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	_, _, _, _, err = compat.GetUserGroup(name) //nolint:dogsled
+	_, _, _, _, err = compat.GetUserGroup(name)
 	if err != nil {
 		t.Fatalf("got %q, want nil", err)
 	}
 }
 
 func TestStatPosixWindowsGetUserGroupInvalid(t *testing.T) {
-	_, _, _, _, err := compat.GetUserGroup(invalidName) //nolint:dogsled
+	_, _, _, _, err := compat.GetUserGroup(invalidName)
 	if err == nil {
 		t.Fatal("got nil, want an error")
 	}

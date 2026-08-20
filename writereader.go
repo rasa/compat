@@ -38,7 +38,7 @@ import (
 // of an existing file is not. If the destination exists, WriteReader returns an
 // error matching errors.ErrUnsupported and leaves the destination unchanged.
 // To work around this issue, use the WithNonAtomicReplace option.
-func WriteReader(name string, r io.Reader, perm os.FileMode, opts ...Option) (err error) { //nolint:funlen,gocyclo
+func WriteReader(name string, reader io.Reader, perm os.FileMode, opts ...Option) (err error) { //nolint:funlen,gocyclo
 	fopts := Options{
 		flags:        os.O_CREATE | os.O_WRONLY | os.O_TRUNC,
 		fileMode:     perm,
@@ -85,7 +85,7 @@ func WriteReader(name string, r io.Reader, perm os.FileMode, opts ...Option) (er
 	}
 
 	if !fopts.atomically {
-		return writeReader(name, r, fopts.flags, fileMode)
+		return writeReader(name, reader, fopts.flags, fileMode)
 	}
 
 	// write to a temp file first, then we'll atomically replace the target file
@@ -95,14 +95,14 @@ func WriteReader(name string, r io.Reader, perm os.FileMode, opts ...Option) (er
 		dir = "."
 	}
 
-	f, err := createTemp(dir, "~*.tmp", fileMode, fopts.flags)
+	file, err := createTemp(dir, "~*.tmp", fileMode, fopts.flags)
 	if err != nil {
 		err = fmt.Errorf("cannot create tempfile: %w", err)
 
 		return writeError(name, err)
 	}
 
-	tempFileName := f.Name()
+	tempFileName := file.Name()
 
 	defer func() {
 		if err != nil {
@@ -113,23 +113,23 @@ func WriteReader(name string, r io.Reader, perm os.FileMode, opts ...Option) (er
 	}()
 	// ensure we always close f. Note that this does not conflict with the
 	// close below, as close is idempotent.
-	defer f.Close()
+	defer file.Close()
 
-	_, err = io.Copy(f, r)
+	_, err = io.Copy(file, reader)
 	if err != nil {
 		err = fmt.Errorf("cannot write to '%v': %w", tempFileName, err)
 
 		return writeError(name, err)
 	}
 	// fsync is important, otherwise os.Rename could rename a zero-length file
-	err = f.Sync()
+	err = file.Sync()
 	if err != nil {
 		err = fmt.Errorf("cannot sync '%v': %w", tempFileName, err)
 
 		return writeError(name, err)
 	}
 
-	err = f.Close()
+	err = file.Close()
 	if err != nil {
 		err = fmt.Errorf("cannot close '%v': %w", tempFileName, err)
 
@@ -146,19 +146,19 @@ func WriteReader(name string, r io.Reader, perm os.FileMode, opts ...Option) (er
 	return nil
 }
 
-func writeReader(name string, r io.Reader, flag int, perm os.FileMode) error {
-	f, err := openFile(name, flag, perm)
+func writeReader(name string, reader io.Reader, flag int, perm os.FileMode) error {
+	file, err := openFile(name, flag, perm)
 	if err != nil {
 		return writeError(name, err)
 	}
-	defer f.Close()
+	defer file.Close()
 
-	_, err = io.Copy(f, r)
+	_, err = io.Copy(file, reader)
 	if err != nil {
 		return writeError(name, err)
 	}
 
-	err = f.Sync()
+	err = file.Sync()
 	if err != nil {
 		return writeError(name, err)
 	}

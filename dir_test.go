@@ -17,7 +17,7 @@ import (
 
 // Source: https://github.com/golang/go/blob/ac803b59/src/os/read_test.go#L104-L144
 
-func TestReadDir(t *testing.T) { //nolint:gocyclo
+func TestReadDir(t *testing.T) {
 	// t.Parallel()
 	if compat.IsTinygo && compat.IsWasip1 {
 		skip(t, "Skipping test: fdopendir /tmp/TestReadDir256423683/000/foo: errno 8")
@@ -47,7 +47,7 @@ func TestReadDir(t *testing.T) { //nolint:gocyclo
 
 	f.Close()
 
-	if list, err := compat.ReadDir(filename); list != nil || !errors.Is(err, syscall.ENOTDIR) { //nolint:govet,noinlineerr // compat: s|ReadDir|compat.ReadDir|
+	if list, err := compat.ReadDir(filename); list != nil || !errors.Is(err, syscall.ENOTDIR) { // compat: s|ReadDir|compat.ReadDir|
 		t.Fatalf("ReadDir %s: (nil, ENOTDIR) expected, got (%v, %v)", filename, list, err)
 	}
 

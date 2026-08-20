@@ -29,14 +29,14 @@ func main() {
 	})
 
 nextMount:
-	for i, mnt := range mounts {
+	for idx, mnt := range mounts {
 		for _, ignore := range IgnoreMounts {
 			if strings.HasPrefix(mnt.Mountpoint, ignore) {
 				continue nextMount
 			}
 		}
 
-		fmt.Printf("%d: %v: %v\n", i, mnt.Mountpoint, mnt.Device)
+		fmt.Printf("%d: %v: %v\n", idx, mnt.Mountpoint, mnt.Device)
 	}
 
 	volumes, err := volume.Volumes(mounts)
@@ -45,14 +45,14 @@ nextMount:
 	}
 
 nextVolume:
-	for i, vol := range volumes {
+	for idx, vol := range volumes {
 		for _, ignore := range IgnoreMounts {
 			if strings.HasPrefix(vol.Mountpoint, ignore) {
 				continue nextVolume
 			}
 		}
 
-		fmt.Printf("%d: %v: \n", i, vol.Mountpoint)
+		fmt.Printf("%d: %v: \n", idx, vol.Mountpoint)
 		fmt.Printf("%v\n", vol)
 		// entries, err := compat.ReadDir(volume.MountPoint())
 		// if err != nil {
@@ -73,14 +73,14 @@ nextVolume:
 	fmt.Println("")
 
 nextVolume2:
-	for i, vol := range volumes {
+	for idx, vol := range volumes {
 		for _, ignore := range IgnoreMounts {
 			if strings.HasPrefix(vol.Mountpoint, ignore) {
 				continue nextVolume2
 			}
 		}
 
-		fmt.Printf("%d: %v: \n", i, vol.Mountpoint)
+		fmt.Printf("%d: %v: \n", idx, vol.Mountpoint)
 		keys := slices.Collect(maps.Keys(vol.Filesystem.OSFeatures))
 
 		// Sort keys by comparing their values in the map

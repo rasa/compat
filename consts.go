@@ -57,23 +57,33 @@ const (
 	// https://github.com/golang/go/blob/ac803b59/src/syscall/types_windows.go#L37-L55
 
 	// O_FILE_FLAG_DELETE_ON_CLOSE deletes the file when closed.
-	O_FILE_FLAG_DELETE_ON_CLOSE = consts.O_FILE_FLAG_DELETE_ON_CLOSE // 0x04000000
+	O_FILE_FLAG_DELETE_ON_CLOSE = consts.O_FILE_FLAG_DELETE_ON_CLOSE
 	// O_FILE_FLAG_NO_RO_ATTR skips setting a file's read-only attribute on Windows.
-	O_FILE_FLAG_NO_RO_ATTR = consts.O_FILE_FLAG_NO_RO_ATTR // 0x00010000
+	O_FILE_FLAG_NO_RO_ATTR = consts.O_FILE_FLAG_NO_RO_ATTR
 
 	// The following constants are not used by the compat library, but are
 	// provided to make code migration easier.
 
 	// Source: https://github.com/golang/go/blob/ac803b59/src/os/file.go#L81-L89
-	O_RDONLY = os.O_RDONLY // open the file read-only. //nolint:revive
-	O_WRONLY = os.O_WRONLY // open the file write-only. //nolint:revive
-	O_RDWR   = os.O_RDWR   // open the file read-write. //nolint:revive
+
+	// O_RDONLY open the file readonly.
+	O_RDONLY = os.O_RDONLY
+	// O_WRONLY open the file write-only.
+	O_WRONLY = os.O_WRONLY
+	// O_RDWR open the file read-write.
+	O_RDWR = os.O_RDWR
 	// The remaining values may be or'ed in to control behavior.
-	O_APPEND = os.O_APPEND // append data to the file when writing.
-	O_CREATE = os.O_CREATE // create a new file if none exists.
-	O_EXCL   = os.O_EXCL   // used with O_CREATE, file must not exist.
-	O_SYNC   = os.O_SYNC   // open for synchronous I/O.
-	O_TRUNC  = os.O_TRUNC  // truncate regular writable file when opened.
+
+	// O_APPEND append data to the file when writing.
+	O_APPEND = os.O_APPEND
+	// O_CREATE create a new file if none exists.
+	O_CREATE = os.O_CREATE
+	// O_EXCL used with O_CREATE, file must not exist.
+	O_EXCL = os.O_EXCL
+	// O_SYNC open for synchronous I/O.
+	O_SYNC = os.O_SYNC
+	// O_TRUNC truncate regular writable file when opened.
+	O_TRUNC = os.O_TRUNC
 
 	ModeDir        = fs.ModeDir        // d: is a directory
 	ModeAppend     = fs.ModeAppend     // a: append-only
@@ -96,6 +106,11 @@ const (
 	ModePerm = fs.ModePerm
 )
 
+// A FileMode represents a file's mode and permission bits.
+// The bits have the same definition on all systems, so that
+// information about files can be moved from one system
+// to another portably. Not all bits apply to all systems.
+// The only required bit is [ModeDir] for directories.
 type FileMode = os.FileMode
 
 // ReadOnlyMode defines how to handle a file's read-only attribute on Windows.
@@ -105,11 +120,11 @@ const (
 	// ReadOnlyModeIgnore does not set a file's read-only attribute, and ignores
 	// if it's set (Windows only).
 	ReadOnlyModeIgnore ReadOnlyMode = 0 + iota
-	// ReadOnlyMaskSet set a file's read-only attribute, if the specified
+	// ReadOnlyModeSet set a file's read-only attribute, if the specified
 	// perm FileMode has the user writable bit (0o200) set. Otherwise, it will
 	// resets (clears) it. (Windows only).
 	ReadOnlyModeSet
-	// ReadOnlyMaskReset does not set a file's read-only attribute, and if it's
+	// ReadOnlyModeReset does not set a file's read-only attribute, and if it's
 	// set, it resets (clears) it. (Windows only).
 	ReadOnlyModeReset
 )

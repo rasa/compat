@@ -44,24 +44,19 @@ type Filesystem struct {
 
 const (
 	// Binary (IEC) powers of two exponents.
-	KiBPow2 = (iota + 1) * 10 // 10, 20, 30, ...
-	MiBPow2
-	GiBPow2
-	TiBPow2
-	PiBPow2
-	EiBPow2
-	ZiBPow2
-	YiBPow2
-	// KiBPow2 = 10 // 2^10
-	// MiBPow2 = 20 // 2^20
-	// GiBPow2 = 30 // 2^30
-	// TiBPow2 = 40 // 2^40
-	// PiBPow2 = 50 // 2^50
-	// EiBPow2 = 60 // 2^60
-	// ZiBPow2 = 70 // 2^70
-	// YiBPow2 = 80 // 2^80.
+
+	// KiBPow2 defines 10.
+	KiBPow2 = (iota + 1) * 10 // 10
+	MiBPow2                   // 20
+	GiBPow2                   // 30
+	TiBPow2                   // 40
+	PiBPow2                   // 50
+	EiBPow2                   // 60
+	ZiBPow2                   // 70
+	YiBPow2                   // 80
 
 	// Binary (IEC) byte sizes
+	// Does not compile.
 	// _  = 1 << (10 * iota) // ignore iota=0
 	// KiB                    // 1 << 10 (2^10 bytes)
 	// MiB                    // 1 << 20 (2^20 bytes)
@@ -71,6 +66,8 @@ const (
 	// EiB                    // 1 << 60 (2^60 bytes)
 	// ZiB                    // 1 << 70 (2^70 bytes) (overflow if typed as uint64)
 	// YiB                    // 1 << 80 (2^80 bytes).
+
+	// Binary (IEC) byte sizes.
 
 	KiB = 1 << 10 // 2^10 bytes
 	MiB = 1 << 20 // 2^20 bytes
@@ -90,15 +87,6 @@ const (
 	EB // 1e18 (10^18)
 	ZB // 1e21 (10^21)
 	YB // 1e24 (10^24)
-
-	// KB = 1e3  // 10^3 bytes
-	// MB = 1e6  // 10^6 bytes
-	// GB = 1e9  // 10^9 bytes
-	// TB = 1e12 // 10^12 bytes
-	// PB = 1e15 // 10^15 bytes
-	// EB = 1e18 // 10^18 bytes
-	// ZB = 1e21 // 10^21 bytes
-	// YB = 1e24 // 10^24 bytes.
 
 	MaxChars255    = 255
 	MaxChars32767  = 32767
@@ -274,8 +262,8 @@ var (
 		{0x00, 0x00},
 		{':', ':'},
 	}
-	// 0x00-0x1f, " * / : < > ? \ |.
 	DisallowedRunesFAT = []RuneRange{
+		// 0x00-0x1f, " * / : < > ? \ |.
 		{0x00, 0x1f},
 		{'"', '"'},
 		{'*', '*'},
@@ -287,8 +275,8 @@ var (
 		{'\\', '\\'},
 		{'|', '|'},
 	}
-	// 0x00-0x1f, " * / : < > ? \ | DEL.
 	DisallowedRunesAndroid = []RuneRange{
+		// 0x00-0x1f, " * / : < > ? \ | DEL.
 		{0x00, 0x1f},
 		{'"', '"'},
 		{'*', '*'},
@@ -304,30 +292,30 @@ var (
 )
 
 func (v DisallowedRunes) String() string {
-	var b strings.Builder
+	var builder strings.Builder
 
 	for i, runeRange := range v {
 		if i > 0 {
-			fmt.Fprint(&b, ",")
+			fmt.Fprint(&builder, ",")
 		}
 
-		fmt.Fprint(&b, addRune(runeRange.Start))
+		fmt.Fprint(&builder, addRune(runeRange.Start))
 
 		if runeRange.Start != runeRange.End {
-			fmt.Fprint(&b, "-")
-			fmt.Fprint(&b, addRune(runeRange.End))
+			fmt.Fprint(&builder, "-")
+			fmt.Fprint(&builder, addRune(runeRange.End))
 		}
 	}
 
-	return b.String()
+	return builder.String()
 }
 
 func addRune(r rune) string {
 	if unicode.IsPrint(r) {
 		return string(r)
-	} else {
-		return fmt.Sprintf("0x%02x", r)
 	}
+
+	return fmt.Sprintf("0x%02x", r)
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -340,11 +328,12 @@ var (
 	ReservedFilenamesNone ReservedFilenames = []string{}
 	// Source: https://learn.microsoft.com/en-us/windows/win32/fileio/naming-a-file
 	// See also https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-createfilea#consoles
+
 	ReservedFilenamesNTFS ReservedFilenames = []string{
 		`^((CON|PRN|AUX|NUL|COM[1-9¹²³]|LPT[1-9¹²³])(\..*)?|CONIN\$|CONOUT\$)$`,
 	}
 	ReservedFilenamesNTFSSuffixes ReservedFilenames = []string{
-		`\.(\. )$`,
+		`(\. )$`,
 	}
 )
 
@@ -381,31 +370,31 @@ func NewFilesystem(name string) Filesystem {
 }
 
 func (a Filesystem) String() string {
-	var b strings.Builder
+	var builder strings.Builder
 
-	fmt.Fprintf(&b, "MaxNameLength       : %v\n", a.MaxNameLength)
-	fmt.Fprintf(&b, "MaxPathLength       : %v\n", a.MaxPathLength)
-	fmt.Fprintf(&b, "CharSize            : %v\n", a.CharSize)
-	fmt.Fprintf(&b, "MaxFileSize         : %10v\n", si(a.MaxFileSize.Float))
-	fmt.Fprintf(&b, "MaxVolumeSize       : %10v\n", si(a.MaxVolumeSize.Float))
-	fmt.Fprintf(&b, "MaxFiles            : %10v\n", si(float64(a.MaxFiles)))
+	fmt.Fprintf(&builder, "MaxNameLength       : %v\n", a.MaxNameLength)
+	fmt.Fprintf(&builder, "MaxPathLength       : %v\n", a.MaxPathLength)
+	fmt.Fprintf(&builder, "CharSize            : %v\n", a.CharSize)
+	fmt.Fprintf(&builder, "MaxFileSize         : %10v\n", si(a.MaxFileSize.Float))
+	fmt.Fprintf(&builder, "MaxVolumeSize       : %10v\n", si(a.MaxVolumeSize.Float))
+	fmt.Fprintf(&builder, "MaxFiles            : %10v\n", si(float64(a.MaxFiles)))
 
-	fmt.Fprintf(&b, "ATimeGranularity    : %v\n", a.ATimeGranularity)
-	fmt.Fprintf(&b, "BTimeGranularity    : %v\n", a.BTimeGranularity)
-	fmt.Fprintf(&b, "CTimeGranularity    : %v\n", a.CTimeGranularity)
-	fmt.Fprintf(&b, "MTimeGranularity    : %v\n", a.MTimeGranularity)
+	fmt.Fprintf(&builder, "ATimeGranularity    : %v\n", a.ATimeGranularity)
+	fmt.Fprintf(&builder, "BTimeGranularity    : %v\n", a.BTimeGranularity)
+	fmt.Fprintf(&builder, "CTimeGranularity    : %v\n", a.CTimeGranularity)
+	fmt.Fprintf(&builder, "MTimeGranularity    : %v\n", a.MTimeGranularity)
 
-	fmt.Fprintf(&b, "CaseMapping         : %v\n", a.CaseMapping)
-	fmt.Fprintf(&b, "UnicodeNormalization: %v\n", a.UnicodeNormalization)
+	fmt.Fprintf(&builder, "CaseMapping         : %v\n", a.CaseMapping)
+	fmt.Fprintf(&builder, "UnicodeNormalization: %v\n", a.UnicodeNormalization)
 
 	// Sort of FAT/NTFS/ReFS specific:
-	fmt.Fprintf(&b, "DisallowedRunes     : %v\n", a.DisallowedRunes)
-	fmt.Fprintf(&b, "ReservedFilenames   : %v\n", a.ReservedFilenames)
+	fmt.Fprintf(&builder, "DisallowedRunes     : %v\n", a.DisallowedRunes)
+	fmt.Fprintf(&builder, "ReservedFilenames   : %v\n", a.ReservedFilenames)
 
-	fmt.Fprintf(&b, "Features            : %v\n", a.Features)
-	fmt.Fprintf(&b, "OSFeatures          : %v\n", a.OSFeatures)
+	fmt.Fprintf(&builder, "Features            : %v\n", a.Features)
+	fmt.Fprintf(&builder, "OSFeatures          : %v\n", a.OSFeatures)
 
-	return b.String()
+	return builder.String()
 }
 
 // @TODO use this mapping

@@ -23,9 +23,9 @@ const (
 var fsTests = []fsTest{
 	{nativeFS, testVars{}},
 	{"Btrfs", testVars{}},
-	{"ext2", testVars{}}, //nolint:goconst
-	{"ext3", testVars{}}, //nolint:goconst
-	{"ext4", testVars{}}, //nolint:goconst
+	{"ext2", testVars{}},
+	{"ext3", testVars{}},
+	{"ext4", testVars{}},
 	{"F2FS", testVars{
 		noACLs:                  false,
 		noSymlinks:              false,
@@ -90,7 +90,7 @@ var fsTests = []fsTest{
 	}}, // requires ntfs-3g/ntfsprogs
 }
 
-func testMain(m *testing.M, fsToTest, nativeFSType, fsPath string) int { //nolint:gocyclo
+func testMain(m *testing.M, fsToTest, nativeFSType, fsPath string) int {
 	if tempPath != "" && !strings.HasSuffix(tempPath, "/") {
 		tempPath += "/"
 	}
@@ -332,7 +332,7 @@ func mkfsSpecFor(fsName string) (mkSpec, bool) {
 	case "xfs":
 		return mkSpec{tool: "mkfs.xfs", args: []string{"-f"}, fstype: "xfs"}, true
 
-	case "exfat": //nolint:goconst
+	case "exfat":
 		return mkSpec{tool: "mkfs.exfat", args: nil, fstype: "exfat"}, true
 	case "fat":
 		return mkSpec{tool: "mkfs.vfat", args: []string{"-F", "16"}, fstype: "vfat"}, true

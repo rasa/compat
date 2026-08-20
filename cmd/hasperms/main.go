@@ -10,13 +10,17 @@ import (
 	"github.com/rasa/compat"
 )
 
+const mode765 = 0o765
+
+var ErrFileUpdatedExternally = errors.New("file updated externally")
+
 func supportsChmod(path string) (bool, error) {
 	// Create a temp file in the target path
 	tmp := path + "/.permtest.tmp"
 
 	f, err := os.Create(tmp) //nolint:gosec
 	if err != nil {
-		return false, err
+		return false, fmt.Errorf("cannot create %q: %w", tmp, err)
 	}
 
 	_ = f.Close()
@@ -24,7 +28,7 @@ func supportsChmod(path string) (bool, error) {
 	defer os.Remove(tmp)
 
 	// Try to chmod
-	perm := os.FileMode(0o765) //nolint:mnd
+	perm := os.FileMode(mode765)
 
 	fi, err := compat.Stat(tmp)
 	if err == nil {
@@ -47,20 +51,20 @@ func supportsChmod(path string) (bool, error) {
 			}
 		}
 
-		return false, err
+		return false, fmt.Errorf("cannot chmod %q: %w", tmp, err)
 	}
 
 	// Some filesystems just silently ignore chmod but don’t fail
 	// If chmod succeeds but stat doesn’t reflect change, also false
 	fi2, err := compat.Stat(tmp)
 	if err != nil {
-		return false, err
+		return false, fmt.Errorf("cannot stat %q: %w", tmp, err)
 	}
 
 	log.Printf("stat:\n%v", fi2)
 
 	if fi.ModTime() != fi2.ModTime() {
-		return false, errors.New("file updated externally") //nolint:err113
+		return false, ErrFileUpdatedExternally
 	}
 
 	if fi2.Mode().Perm() != perm {

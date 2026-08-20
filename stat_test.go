@@ -307,7 +307,7 @@ func TestStatUID(t *testing.T) {
 	want := os.Geteuid()
 	if got != want {
 		partType := partitionType(name)
-		if compat.IsApple && (partType == "exfat" || partType == "msdos") { //nolint:goconst
+		if compat.IsApple && (partType == "exfat" || partType == "msdos") {
 			t.Logf("UID(): got %v, want %v (ignoring: %v on %v)", got, want, partType, runtime.GOOS)
 
 			return

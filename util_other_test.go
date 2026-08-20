@@ -5,7 +5,7 @@
 
 package compat_test
 
-func getOSVersion() (ver semanticVersion, err error) { //nolint:gocyclo
+func getOSVersion() (ver semanticVersion, err error) {
 	return ver, err
 }
 
@@ -13,7 +13,7 @@ func getOSVersion() (ver semanticVersion, err error) { //nolint:gocyclo
 
 import "github.com/shirou/gopsutil/v4/host"
 
-func getOSVersion() (v ver, err error) { //nolint:gocyclo
+func getOSVersion() (v ver, err error) {
 	info, err := host.Info()
 	if err != nil {
 		return v, err

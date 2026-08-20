@@ -11,6 +11,11 @@ import (
 	"golang.org/x/sys/unix"
 )
 
+const (
+	bits32 = 32
+	bits64 = 64
+)
+
 func cpuBits() (int, error) {
 	var uts unix.Utsname
 
@@ -21,21 +26,21 @@ func cpuBits() (int, error) {
 
 	machine := make([]byte, len(uts.Machine))
 
-	for i, v := range uts.Machine {
-		if v == 0 {
-			machine = machine[:i]
+	for idx, val := range uts.Machine {
+		if val == 0 {
+			machine = machine[:idx]
 
 			break
 		}
 
-		machine[i] = v
+		machine[idx] = val
 	}
 
 	arch := strings.TrimSpace(string(machine))
 
 	if strings.HasSuffix(arch, "64") {
-		return 64, nil //nolint:mnd
+		return bits64, nil
 	}
 
-	return 32, nil //nolint:mnd
+	return bits32, nil
 }

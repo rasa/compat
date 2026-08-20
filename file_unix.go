@@ -52,8 +52,8 @@ func createTemp(dir, pattern string, perm os.FileMode, flag int) (*os.File, erro
 	return wrap(f.Name(), flag, f)
 }
 
-func fchmod(f *os.File, mode os.FileMode, opts ...Option) error {
-	if f == nil {
+func fchmod(file *os.File, mode os.FileMode, opts ...Option) error {
+	if file == nil {
 		return chmodError("", os.ErrInvalid)
 	}
 
@@ -64,7 +64,7 @@ func fchmod(f *os.File, mode os.FileMode, opts ...Option) error {
 		opt(&fopts)
 	}
 
-	return f.Chmod(fopts.fileMode)
+	return file.Chmod(fopts.fileMode)
 }
 
 var mkdir = os.Mkdir
@@ -105,18 +105,18 @@ func symlink(oldname, newname string, _ ...Option) error {
 	return os.Symlink(oldname, newname)
 }
 
-func wrap(name string, flag int, f *os.File) (*os.File, error) {
+func wrap(name string, flag int, file *os.File) (*os.File, error) {
 	if flag&O_FILE_FLAG_DELETE_ON_CLOSE == 0 {
-		return f, nil
+		return file, nil
 	}
 
 	err := os.Remove(name)
 	if err == nil || os.IsNotExist(err) {
-		return f, nil
+		return file, nil
 	}
 
-	if f != nil {
-		_ = f.Close()
+	if file != nil {
+		_ = file.Close()
 	}
 
 	_ = os.Remove(name)

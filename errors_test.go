@@ -13,7 +13,7 @@ import (
 )
 
 func TestErrorsIsUsupportedError(t *testing.T) {
-	err := &compat.UnsupportedError{Op: "test"} //nolint:goconst
+	err := &compat.UnsupportedError{Op: "test"}
 	got := compat.IsUnsupportedError(err)
 
 	want := true

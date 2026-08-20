@@ -105,7 +105,7 @@ func TestNiceReniceIfRootInvalid(t *testing.T) {
 }
 
 func TestNiceErrors(t *testing.T) {
-	err := errors.New("Test") //nolint:err113
+	err := errors.New("Test")
 
 	e1 := &compat.NiceError{err}
 	if e1.Error() == "" {

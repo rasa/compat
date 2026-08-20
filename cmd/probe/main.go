@@ -183,17 +183,17 @@ func DetectAccentInsensitivity(dir string) (bool, error) {
 	}
 	defer os.RemoveAll(tmp)
 
-	a := filepath.Join(tmp, "e.txt")
-	b := filepath.Join(tmp, "é.txt")
+	file1 := filepath.Join(tmp, "e.txt")
+	file2 := filepath.Join(tmp, "é.txt")
 
-	fa, err := os.OpenFile(a, os.O_CREATE|os.O_EXCL|os.O_WRONLY, perm600) //nolint:gosec
+	fa, err := os.OpenFile(file1, os.O_CREATE|os.O_EXCL|os.O_WRONLY, perm600) //nolint:gosec
 	if err != nil {
-		return false, fmt.Errorf("create a: %w", err)
+		return false, fmt.Errorf("could not create %q: %w", file1, err)
 	}
 
 	fa.Close()
 
-	fb, err := os.OpenFile(b, os.O_CREATE|os.O_EXCL|os.O_WRONLY, perm600) //nolint:gosec
+	fb, err := os.OpenFile(file2, os.O_CREATE|os.O_EXCL|os.O_WRONLY, perm600) //nolint:gosec
 
 	switch {
 	case err == nil:
@@ -203,7 +203,7 @@ func DetectAccentInsensitivity(dir string) (bool, error) {
 	case os.IsExist(err):
 		return true, nil
 	default:
-		return false, fmt.Errorf("create b: %w", err)
+		return false, fmt.Errorf("could not create %q: %w", file2, err)
 	}
 }
 
@@ -340,7 +340,7 @@ func DetectCaseFoldingMode(dir string) (CaseFoldingMode, error) {
 	// 1. Write lowercase ä.txt
 	lower := filepath.Join(tmp, "ä.txt")
 
-	err = os.WriteFile(lower, []byte("x"), perm600) //nolint:gosec,lll
+	err = os.WriteFile(lower, []byte("x"), perm600) //nolint:gosec
 	if err != nil {
 		return CaseFoldingNone, err
 	}
@@ -362,7 +362,7 @@ func DetectCaseFoldingMode(dir string) (CaseFoldingMode, error) {
 		return CaseFoldingNone, err
 	}
 
-	_, err = os.OpenFile(filepath.Join(tmp, "Z.TXT"), os.O_CREATE|os.O_EXCL|os.O_WRONLY, perm600) //nolint:gosec,lll
+	_, err = os.OpenFile(filepath.Join(tmp, "Z.TXT"), os.O_CREATE|os.O_EXCL|os.O_WRONLY, perm600) //nolint:gosec
 	if err != nil {
 		if os.IsExist(err) {
 			// ASCII folds but ä/Ä did not

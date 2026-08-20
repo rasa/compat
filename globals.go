@@ -6,91 +6,96 @@ package compat
 import (
 	"fmt"
 	"strings"
+	"sync"
 	"sync/atomic"
 )
 
 var (
-	options        atomic.Pointer[Options]
+	optionsPtr     atomic.Pointer[Options]
 	optionDefaults = &Options{}
+	optionsMux     sync.Mutex
 )
 
 func init() {
-	options.Store(optionDefaults)
+	optionsPtr.Store(optionDefaults)
 }
 
 func GetOptions() []Option {
-	o := *options.Load()
+	options := *optionsPtr.Load()
 	opts := make([]Option, 0)
 
-	if o.nonAtomicReplace != optionDefaults.nonAtomicReplace {
-		opts = append(opts, WithNonAtomicReplace(o.nonAtomicReplace))
+	if options.atomically != optionDefaults.atomically {
+		opts = append(opts, WithAtomicity(options.atomically))
 	}
 
-	if o.atomically != optionDefaults.atomically {
-		opts = append(opts, WithAtomicity(o.atomically))
+	if options.defaultFileMode != optionDefaults.defaultFileMode {
+		opts = append(opts, WithDefaultFileMode(options.defaultFileMode))
 	}
 
-	if o.defaultFileMode != optionDefaults.defaultFileMode {
-		opts = append(opts, WithDefaultFileMode(o.defaultFileMode))
+	if options.fileMode != optionDefaults.fileMode {
+		opts = append(opts, WithFileMode(options.fileMode))
 	}
 
-	if o.fileMode != optionDefaults.fileMode {
-		opts = append(opts, WithFileMode(o.fileMode))
+	if options.flags != optionDefaults.flags {
+		opts = append(opts, WithFlags(options.flags))
 	}
 
-	if o.flags != optionDefaults.flags {
-		opts = append(opts, WithFlags(o.flags))
+	if options.keepFileMode != optionDefaults.keepFileMode {
+		opts = append(opts, WithKeepFileMode(options.keepFileMode))
 	}
 
-	if o.keepFileMode != optionDefaults.keepFileMode {
-		opts = append(opts, WithKeepFileMode(o.keepFileMode))
+	if options.nonAtomicReplace != optionDefaults.nonAtomicReplace {
+		opts = append(opts, WithNonAtomicReplace(options.nonAtomicReplace))
 	}
 
-	if o.readOnlyMode != optionDefaults.readOnlyMode {
-		opts = append(opts, WithReadOnlyMode(o.readOnlyMode))
+	if options.readOnlyMode != optionDefaults.readOnlyMode {
+		opts = append(opts, WithReadOnlyMode(options.readOnlyMode))
 	}
 
-	if o.retrySeconds != optionDefaults.retrySeconds {
-		opts = append(opts, WithRetrySeconds(o.retrySeconds))
+	if options.retrySeconds != optionDefaults.retrySeconds {
+		opts = append(opts, WithRetrySeconds(options.retrySeconds))
 	}
 
-	if o.setSymlinkOwner != optionDefaults.setSymlinkOwner {
-		opts = append(opts, WithSetSymlinkOwner(o.setSymlinkOwner))
+	if options.setSymlinkOwner != optionDefaults.setSymlinkOwner {
+		opts = append(opts, WithSetSymlinkOwner(options.setSymlinkOwner))
 	}
 
 	return opts
 }
 
 func SetOptions(opts ...Option) {
-	base := *options.Load()
+	optionsMux.Lock()
+
+	options := *optionsPtr.Load()
 	for _, fn := range opts {
-		fn(&base)
+		fn(&options)
 	}
 
-	options.Store(&base)
+	optionsPtr.Store(&options)
+	optionsMux.Unlock()
 }
 
 func buildOptions(opts ...Option) Options {
-	fopts := *options.Load()
+	options := *optionsPtr.Load()
 	for _, fn := range opts {
-		fn(&fopts)
+		fn(&options)
 	}
 
-	return fopts
+	return options
 }
 
 func (o Options) String() string {
-	var b strings.Builder
+	var builder strings.Builder
 
-	fmt.Fprintf(&b, "nonAtomicReplace:      %v\n", o.nonAtomicReplace)
-	fmt.Fprintf(&b, "atomically:      %v\n", o.atomically)
-	fmt.Fprintf(&b, "defaultFileMode: 0o%03o (%v)\n", o.defaultFileMode, o.defaultFileMode)
-	fmt.Fprintf(&b, "fileMode:        0o%03o (%v)\n", o.fileMode, o.fileMode)
-	fmt.Fprintf(&b, "flags:           0x%x\n", o.flags)
-	fmt.Fprintf(&b, "keepFileMode:    %v\n", o.keepFileMode)
-	fmt.Fprintf(&b, "readOnlyMode:    %v\n", o.readOnlyMode)
-	fmt.Fprintf(&b, "retrySeconds:    %v\n", o.retrySeconds)
-	fmt.Fprintf(&b, "setSymlinkOwner: %v\n", o.setSymlinkOwner)
+	fmt.Fprintf(&builder, "nonAtomicReplace:      %v\n", o.nonAtomicReplace)
+	fmt.Fprintf(&builder, "atomically:      %v\n", o.atomically)
+	fmt.Fprintf(&builder, "defaultFileMode: 0o%03o (%v)\n", o.defaultFileMode, o.defaultFileMode)
+	fmt.Fprintf(&builder, "fileMode:        0o%03o (%v)\n", o.fileMode, o.fileMode)
+	fmt.Fprintf(&builder, "flags:           0x%x\n", o.flags)
+	fmt.Fprintf(&builder, "keepFileMode:    %v\n", o.keepFileMode)
+	fmt.Fprintf(&builder, "readOnlyMode:    %v\n", o.readOnlyMode)
+	fmt.Fprintf(&builder, "retrySeconds:    %v\n", o.retrySeconds)
+	fmt.Fprintf(&builder, "setSymlinkOwner: %v\n", o.setSymlinkOwner)
 
-	return b.String()
+	return builder.String()
 }

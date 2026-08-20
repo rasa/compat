@@ -11,23 +11,23 @@ import (
 	"strconv"
 )
 
-func fstat(f *os.File) (FileInfo, error) {
-	if f == nil {
+func fstat(file *os.File) (FileInfo, error) {
+	if file == nil {
 		return nil, statError("", os.ErrInvalid)
 	}
 
-	fi, err := f.Stat()
+	fi, err := file.Stat()
 	if err != nil {
-		return nil, statError(f.Name(), err)
+		return nil, statError(file.Name(), err)
 	}
 
-	fd := int(f.Fd())
+	fd := int(file.Fd())
 
 	link := "/proc/self/fd/" + strconv.Itoa(fd)
 
 	path, err := os.Readlink(link)
 	if err != nil {
-		return nil, statError(f.Name(), err)
+		return nil, statError(file.Name(), err)
 	}
 
 	path = filepath.Clean(path)

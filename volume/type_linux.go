@@ -102,9 +102,9 @@ func typeOf(mount Mount) (Type, error) {
 
 	magicID := st.Type
 
-	type_, ok := magicMap[magicID]
+	typ, ok := magicMap[magicID]
 	if ok {
-		return type_, nil
+		return typ, nil
 	}
 
 	// Try sysfs to detect fixed/removable

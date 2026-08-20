@@ -62,41 +62,43 @@ const (
 
 var volTypeMap = map[Type]string{
 	TypeUnknown:     "Unknown",     // 0: The drive type cannot be determined.
-	TypeUnavailable: "Unavailable", // 1: The root path is invalid; for example, there is no volume mounted at the specified path.
-	TypeFixed:       "Fixed",       // 2: The drive has removable media; for example, a floppy drive, thumb drive, or flash card reader.
-	TypeRemovable:   "Removable",   // 3: The drive has fixed media; for example, a hard disk drive or flash drive.
-	TypeNetwork:     "Network",     // 4: The drive is a remote (network) drive.
-	TypeOptical:     "Optical",     // 5: The drive is a CD-ROM drive.
-	TypeRamdisk:     "Ramdisk",     // 6: The drive is a RAM disk.
+	TypeUnavailable: "Unavailable", // 1: The root path is invalid; for example, there is no volume mounted at the
+	//    specified path.
+	TypeFixed: "Fixed", // 2: The drive has removable media; for example, a floppy drive, thumb drive, or
+	//    flash card reader.
+	TypeRemovable: "Removable", // 3: The drive has fixed media; for example, a hard disk drive or flash drive.
+	TypeNetwork:   "Network",   // 4: The drive is a remote (network) drive.
+	TypeOptical:   "Optical",   // 5: The drive is a CD-ROM drive.
+	TypeRamdisk:   "Ramdisk",   // 6: The drive is a RAM disk.
 }
 
 func (v Volume) String() string {
-	var b strings.Builder
+	var builder strings.Builder
 
-	fmt.Fprintf(&b, "Device:   %v\n", v.Device)
-	fmt.Fprintf(&b, "Mount:    %v\n", v.Mountpoint)
-	fmt.Fprintf(&b, "ID:       %v\n", v.ID)
-	fmt.Fprintf(&b, "Label:    %v\n", v.Label)
-	fmt.Fprintf(&b, "Serial#:  %v\n", v.SerialNumber)
-	// fmt.Fprintf(&b, "GUID:     %v\n", v.guid)
-	// fmt.Fprintf(&b, "FS:       %v\n", v.Filesystem.Name)
-	fmt.Fprintf(&b, "Type:     %v\n", v.Type)
+	fmt.Fprintf(&builder, "Device:   %v\n", v.Device)
+	fmt.Fprintf(&builder, "Mount:    %v\n", v.Mountpoint)
+	fmt.Fprintf(&builder, "ID:       %v\n", v.ID)
+	fmt.Fprintf(&builder, "Label:    %v\n", v.Label)
+	fmt.Fprintf(&builder, "Serial#:  %v\n", v.SerialNumber)
+	// fmt.Fprintf(&builder, "GUID:     %v\n", v.guid)
+	// fmt.Fprintf(&builder, "FS:       %v\n", v.Filesystem.Name)
+	fmt.Fprintf(&builder, "Type:     %v\n", v.Type)
 
-	fmt.Fprintf(&b, "Total:    %10v\n", si(float64(v.Total)))
-	fmt.Fprintf(&b, "Used:     %10v\n", si(float64(v.Used)))
-	fmt.Fprintf(&b, "Free:     %10v\n", si(float64(v.Free)))
+	fmt.Fprintf(&builder, "Total:    %10v\n", si(float64(v.Total)))
+	fmt.Fprintf(&builder, "Used:     %10v\n", si(float64(v.Used)))
+	fmt.Fprintf(&builder, "Free:     %10v\n", si(float64(v.Free)))
 
 	if v.InodesTotal != 0 {
-		fmt.Fprintf(&b, "ITotal:   %10v\n", v.InodesTotal)
-		fmt.Fprintf(&b, "IUsed:    %19v\n", v.InodesUsed)
-		fmt.Fprintf(&b, "IFree:    %10v\n", v.InodesFree)
+		fmt.Fprintf(&builder, "ITotal:   %10v\n", v.InodesTotal)
+		fmt.Fprintf(&builder, "IUsed:    %19v\n", v.InodesUsed)
+		fmt.Fprintf(&builder, "IFree:    %10v\n", v.InodesFree)
 	}
-	// fmt.Fprintf(&b, "Features:   %v\n", v.Features)
-	// fmt.Fprintf(&b, "OSFeatures: %v\n", v.OSFeatures)
-	fmt.Fprintf(&b, "Options:    %v\n", v.Options)
-	fmt.Fprintf(&b, "Filesystem: %v\n", v.Filesystem)
+	// fmt.Fprintf(&builder, "Features:   %v\n", v.Features)
+	// fmt.Fprintf(&builder, "OSFeatures: %v\n", v.OSFeatures)
+	fmt.Fprintf(&builder, "Options:    %v\n", v.Options)
+	fmt.Fprintf(&builder, "Filesystem: %v\n", v.Filesystem)
 
-	return b.String()
+	return builder.String()
 }
 
 /*

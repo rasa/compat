@@ -65,11 +65,11 @@ func getOSVersion() (ver semanticVersion, err error) {
 
 	rel := unix.ByteSliceToString(u.Release[:])
 
-	return ver, fmt.Errorf("cannot parse '%v'", rel) //nolint:err113
+	return ver, fmt.Errorf("cannot parse '%v'", rel)
 }
 
 /*
-func osVersion() (v ver, err error) { //nolint:gocyclo
+func osVersion() (v ver, err error) {
 	info, err := host.Info()
 	if err != nil {
 		return v, err

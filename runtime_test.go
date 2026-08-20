@@ -49,7 +49,7 @@ var arches = []string{
 	"wasm",
 }
 
-func TestRuntimeConsts(t *testing.T) { //nolint:gocyclo
+func TestRuntimeConsts(t *testing.T) {
 	goExe, err := exec.LookPath("go")
 	if err != nil {
 		if compat.IsAndroid || compat.IsPlan9 || compat.IsTinygo || compat.IsWasm {
@@ -61,7 +61,7 @@ func TestRuntimeConsts(t *testing.T) { //nolint:gocyclo
 		t.Fatal(err)
 	}
 
-	out, err := exec.Command(goExe, "tool", "dist", "list").Output() //nolint:noctx
+	out, err := exec.Command(goExe, "tool", "dist", "list").Output()
 	if err != nil {
 		if compat.IsAndroid || compat.IsPlan9 || compat.IsTinygo || compat.IsWasm {
 			skipf(t, "Skipping test on %v: %v (2)", runtime.GOOS, err)

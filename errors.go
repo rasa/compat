@@ -70,16 +70,16 @@ func openError(path string, err error) error {
 	return &os.PathError{Op: "open", Path: path, Err: err}
 }
 
-func renameError(old_, new_ string, err error) error {
-	return &os.LinkError{Op: "rename", Old: old_, New: new_, Err: err}
+func renameError(old, gnu string, err error) error {
+	return &os.LinkError{Op: "rename", Old: old, New: gnu, Err: err}
 }
 
 func statError(path string, err error) error {
 	return &os.PathError{Op: "stat", Path: path, Err: err}
 }
 
-func symlinkError(old_, new_ string, err error) error {
-	return &os.LinkError{Op: "symlink", Old: old_, New: new_, Err: err}
+func symlinkError(old, gnu string, err error) error {
+	return &os.LinkError{Op: "symlink", Old: old, New: gnu, Err: err}
 }
 
 func writeError(name string, err error) error {

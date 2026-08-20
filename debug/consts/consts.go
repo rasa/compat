@@ -5,6 +5,7 @@ package consts
 
 const (
 	// https://github.com/golang/sys/blob/5e63aa5e0fdbc13e970e0b19c47af41dd3c96f45/windows/types_windows.go#L17
+
 	O_RDONLY    = 0x00000
 	O_WRONLY    = 0x00001
 	O_RDWR      = 0x00002
@@ -20,11 +21,13 @@ const (
 	O_CLOEXEC   = 0x80000
 
 	// https://github.com/golang/go/blob/fc88e18b4a781a8751799a123cdac8b29a92409d/src/syscall/types_windows.go#L52
+
 	O_NOFOLLOW_ANY = 0x200000000
 	O_OPEN_REPARSE = 0x400000000
 	O_WRITE_ATTRS  = 0x800000000
 
 	// https://github.com/golang/sys/blob/5e63aa5e0fdbc13e970e0b19c47af41dd3c96f45/windows/types_windows.go#L105C1-L123C51
+
 	FILE_ATTRIBUTE_READONLY              = 0x00000001
 	FILE_ATTRIBUTE_HIDDEN                = 0x00000002
 	FILE_ATTRIBUTE_SYSTEM                = 0x00000004
@@ -46,6 +49,7 @@ const (
 	FILE_ATTRIBUTE_RECALL_ON_DATA_ACCESS = 0x00400000
 
 	// https://github.com/golang/sys/blob/5e63aa5e0fdbc13e970e0b19c47af41dd3c96f45/windows/types_windows.go#L133C1-L145C46
+
 	FILE_FLAG_OPEN_REQUIRING_OPLOCK = 0x00040000
 	FILE_FLAG_FIRST_PIPE_INSTANCE   = 0x00080000
 	FILE_FLAG_OPEN_NO_RECALL        = 0x00100000
@@ -61,6 +65,7 @@ const (
 	FILE_FLAG_WRITE_THROUGH         = 0x80000000
 
 	// See https://github.com/golang/sys/blob/master/windows/types_windows.go#L68
+
 	O_FILE_FLAG_OPEN_NO_RECALL     = FILE_FLAG_OPEN_NO_RECALL
 	O_FILE_FLAG_OPEN_REPARSE_POINT = FILE_FLAG_OPEN_REPARSE_POINT
 	O_FILE_FLAG_SESSION_AWARE      = FILE_FLAG_SESSION_AWARE

@@ -33,9 +33,9 @@ var GetVolumeInfoByHandle = getVolumeInfoByHandle
 
 var ResolveCanonicalRootFromHandle = resolveCanonicalRootFromHandle
 
-var MultiSZToStrings = multiSZToStrings //nolint:unused
+var MultiSZToStrings = multiSZToStrings
 
-var IsDriveLetterRoot = isDriveLetterRoot //nolint:unused
+var IsDriveLetterRoot = isDriveLetterRoot
 
 var NormalizeRoot = normalizeRoot
 
@@ -55,7 +55,7 @@ var GetUserGroup = getUserGroup
 
 var IsValidSid = isValidSid
 
-var LSAOpenPolicy = lsaOpenPolicy //nolint:unused
+var LSAOpenPolicy = lsaOpenPolicy
 
 var NameFromSID = nameFromSID
 

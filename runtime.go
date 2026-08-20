@@ -119,17 +119,17 @@ func GoVersion() string {
 	return goVersionOnce.goVersion
 }
 
-func goVersion(v string, isTinygo bool) string {
+func goVersion(ver string, isTinygo bool) string {
 	if !isTinygo {
-		return v
+		return ver
 	}
 
-	v = "go" + v
+	ver = "go" + ver
 	// TinyGo: runtime.Version() is like "0.39.1"
 	best := ""
 
 	for _, th := range tinygoThresholds {
-		if version.Compare(v, "go"+th.tinygo) >= 0 {
+		if version.Compare(ver, "go"+th.tinygo) >= 0 {
 			best = th.goMaxVer
 		}
 	}

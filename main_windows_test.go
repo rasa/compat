@@ -48,7 +48,7 @@ var fsTests = []fsTest{
 	{"ReFS", testVars{}},
 }
 
-func testMain(m *testing.M, fsToTest, nativeFSType, fsPath string) int { //nolint:gocyclo
+func testMain(m *testing.M, fsToTest, nativeFSType, fsPath string) int {
 	if tempPath != "" {
 		if len(tempPath) < 2 {
 			tempPath += ":"
