@@ -22,6 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 - Add error return to `SameFiles` **BREAKING CHANGE**
 - Add error return to `SamePartitions` **BREAKING CHANGE**
+- Bump wasmtime to 47.0.3.
 
 ## [0.5.5](https://github.com/rasa/compat/compare/v0.5.4...v0.5.5)
 
