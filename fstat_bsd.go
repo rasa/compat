@@ -3,8 +3,6 @@
 
 //go:build fstat && (dragonfly || netbsd || openbsd)
 
-// was go:build dragonfly || netbsd
-
 package compat
 
 import (

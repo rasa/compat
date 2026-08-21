@@ -234,6 +234,12 @@ func SupportsNice() bool {
 	return supportsNice
 }
 
+// SupportsRelativeFstat returns true if Fstat() will work relative filenames
+// when the current directory is changed.
+func SupportsRelativeFstat() bool {
+	return supportsRelativeFstat
+}
+
 // SupportsSymlinks returns true if the os.Symlinks() function is supported by the OS.
 // Note that the underlying filesystem may not allow symlinks.
 func SupportsSymlinks() bool {

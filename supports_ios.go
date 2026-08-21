@@ -14,6 +14,7 @@ const (
 	supportsFstat         = true
 	supportsLinks         = true
 	supportsNice          = false
+	supportsRelativeFstat = true
 	supportsSymlinks      = true
 	supportsUmask         = true
 )

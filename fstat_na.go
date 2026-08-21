@@ -1,13 +1,9 @@
-// SPDX-FileCopyrightText: Copyright © 2025 Ross Smith II <ross@smithii.com>
+// SPDX-FileCopyrightText: Copyright © 2026 Ross Smith II <ross@smithii.com>
 // SPDX-License-Identifier: MIT
 
-//go:build !(darwin || linux || plan9 || windows) && (!fstat || !(freebsd || dragonfly || netbsd || openbsd))
+//go:build ignore
 
 package compat
-
-import (
-	"os"
-)
 
 func fstat(f *os.File) (FileInfo, error) {
 	if f == nil {

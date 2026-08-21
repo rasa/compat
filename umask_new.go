@@ -1,10 +1,7 @@
 // SPDX-FileCopyrightText: Copyright © 2025 Ross Smith II <ross@smithii.com>
 // SPDX-License-Identifier: MIT
 
-//go:build !(js || plan9 || unix || wasip1 || windows)
-
-// https://github.com/golang/go/blob/8ad27fb6/src/cmd/dist/build.go#L1070
-// unix == aix || android || darwin || dragonfly || freebsd || illumos || ios || linux || netbsd || openbsd || solaris
+//go:build !(aix || android || darwin || dragonfly || freebsd || illumos || ios || js || linux || netbsd || openbsd || plan9 || solaris || wasip1 || windows)
 
 package compat
 

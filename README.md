@@ -373,20 +373,20 @@ for Windows.<br/>
 
 | OS           | Chmod()* | Fstat() | Nice()/<br/>Renice() | PartitionType() | Symlink() | Umask() |
 |--------------|----------|----------|--------|------|-------|------|
-| AIX          | ✅       | ❌      | ✅    | ✅*  | ✅   | ✅   |
+| AIX          | ✅       | ✅‖     | ✅    | ✅*  | ✅   | ✅   |
 | Android      | ✅       | ✅      | ✅    | ✅   | ✅   | ✅   |
-| Dragonfly    | ✅       | ✖️      | ✅    | ✅   | ✅   | ✅   |
-| FreeBSD      | ✅       | ✖️      | ✅    | ✅‡  | ✅   | ✅   |
-| Illumos      | ✅       | ❌      | ✅    | ✅   | ✅   | ✅   |
+| Dragonfly    | ✅       | ✅‖     | ✅    | ✅   | ✅   | ✅   |
+| FreeBSD      | ✅       | ✅      | ✅    | ✅‡  | ✅   | ✅   |
+| Illumos      | ✅       | ✅‖     | ✅    | ✅   | ✅   | ✅   |
 | iOS          | ✅       | ✅      | ☑️    | ✅   | ✅   | ✅   |
-| Js/<br/>WASM | ❌       | ❌      | ☑️    | ✅   | ❌   | ✅   |
+| Js/<br/>WASM | ❌       | ✅‖     | ☑️    | ✅   | ❌   | ✅   |
 | Linux        | ✅       | ✅      | ✅    | ✅   | ✅   | ✅   |
 | macOS        | ✅       | ✅      | ✅    | ✅   | ✅   | ✅   |
-| NetBSD       | ✅       | ✖️      | ✅    | ✅‡  | ✅   | ✅   |
-| OpenBSD      | ✅       | ❌      | ✅    | ✅‡  | ✅   | ✅   |
-| Plan9        | ✅       | ❌      | ✅    | ✅   | ❌   | ❌   |
-| Solaris      | ✅       | ❌      | ✅    | ✅   | ✅   | ✅   |
-| Wasip1/<br/>WASM | ❌   | ❌      | ☑️    | ✅   | ❌   | ✅†  |
+| NetBSD       | ✅       | ✅‖     | ✅    | ✅‡  | ✅   | ✅   |
+| OpenBSD      | ✅       | ✅‖     | ✅    | ✅‡  | ✅   | ✅   |
+| Plan9        | ✅       | ✅‖     | ✅    | ✅   | ❌   | ❌   |
+| Solaris      | ✅       | ✅‖     | ✅    | ✅   | ✅   | ✅   |
+| Wasip1/<br/>WASM | ❌   | ✅‖     | ☑️    | ✅   | ❌   | ✅†  |
 | Windows      | ✅       | ✅      | ✅    | ✅   | ✅   | ✅§  |
 <!--           | Chmod    | Fstat   | Nice  | Part | Symln | Umask | -->
 
@@ -402,6 +402,8 @@ for Windows.<br/>
 ‡ Not supported on `openbsd/ppc64`, `netbsd/386`, `freebsd/riscv64`, or
 `aix/ppc64` with CGO because of compilation limitations.<br/>
 § Implemented through the `UMASK=0NNN` environment variable.
+‖ Will fall on relative filenames where the current directory is changed after
+opening the file.
 
 ## Environment variables
 

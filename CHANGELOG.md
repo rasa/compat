@@ -11,12 +11,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 - Add `NotYetImplementedError` error.
 - Add `SupportsATimeSetting()` function. False on Plan 9 only.
-- Add `SupportsUmask()` function. Fasle on Plan 9 and Wasm/Tinygo.
+- Add `SupportsRelativeFstat()` function. Varies by OS.
+- Add `SupportsUmask()` function. False on Plan 9 and Wasm/Tinygo.
 - Add `UnsupportedError` error.
 - Add `WithNonAtomicReplace()` option.
 - Add running tests on Plan 9 VM.
 
 ### Fixed
+
+- Support `Fstat` on AIX/Dragonfly/FreeBSD/OpenBSD/NetBSD/Plan 9/Solaris/Wasm.
 
 ### Changed
 
