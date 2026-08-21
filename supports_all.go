@@ -16,7 +16,7 @@ const (
 	supportsFstat         = true
 	supportsLinks         = true
 	supportsNice          = true
-	supportsRelativeFstat = true
+	supportsRelativeFstat = false // @TODO FIXME
 	supportsSymlinks      = true
 	supportsUmask         = true
 )
