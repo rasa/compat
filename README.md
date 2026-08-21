@@ -260,6 +260,7 @@ func main() {
 | `SupportsCTime` | Reports operating-system support for metadata-change time |
 | `SupportsFstat` | Reports support for `Fstat` |
 | `SupportsLinks` | Reports support for hard-link counts |
+| `SupportsRelativeFstat` | Reports support for `Fstat` on relative paths |
 | `SupportsSymlinks` | Reports operating-system support for symbolic links |
 | `SupportsUmask` | Reports support for `Umask` |
 | `UserIDSource` | Describes how user IDs are represented on the current platform |
@@ -404,6 +405,7 @@ for Windows.<br/>
 § Implemented through the `UMASK=0NNN` environment variable.
 ‖ Will fall on relative filenames where the current directory is changed after
 opening the file.
+‖ `Fstat` only works no absolute paths.
 
 ## Environment variables
 
