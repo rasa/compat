@@ -9,7 +9,6 @@ on: # yamllint disable-line rule:truthy
 
 env:
   ANYVM_COMMIT: main
-  GOVERSION: '1.25.x'
   # See https://github.com/anyvm-org/anyvm/blob/main/.github/workflows/plan9.yml#L37
   PLAN9_RELEASE: '11554' # works; '11952' failed
   SSH_PORT: '10023'
@@ -36,9 +35,6 @@ jobs:
 
       - uses: actions/setup-go@v7
         with:
-          # go-version overrides go-version-file if a value is present
-          go-version: ${{ env.GOVERSION }}
-          go-version-file: go.mod
           check-latest: true
           cache: true
 

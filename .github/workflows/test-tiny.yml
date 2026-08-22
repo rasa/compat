@@ -21,8 +21,6 @@ jobs:
 
       - uses: actions/setup-go@v7
         with:
-          # go-version overrides go-version-file if a value is present
-          go-version-file : go.mod
           check-latest: true
           cache: true
 

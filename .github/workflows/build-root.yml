@@ -38,9 +38,6 @@ on: # yamllint disable-line rule:truthy
         default: '-v'
         type: string
 
-env:
-  GOVERSION: '1.25.x'
-
 jobs:
   build-root:
     name: build-root
@@ -76,9 +73,6 @@ jobs:
       - uses: actions/setup-go@v7
         if: env.SHOULD_RUN
         with:
-          # go-version overrides go-version-file if a value is present
-          go-version: ${{ env.GOVERSION }}
-          go-version-file: go.mod
           check-latest: true
           cache: true
 

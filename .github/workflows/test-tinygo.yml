@@ -37,7 +37,6 @@ jobs:
 
       - uses: actions/setup-go@v7
         with:
-          # go-version overrides go-version-file if a value is present
           go-version: ${{ matrix.go-version.big }}
           check-latest: true
           cache: true

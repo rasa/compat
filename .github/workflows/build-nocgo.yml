@@ -42,7 +42,6 @@ on: # yamllint disable-line rule:truthy
 env:
   CGO_ENABLED: ${{ inputs.cgo_enabled }}
   GOARCHES: ${{ inputs.goarches }}
-  GOVERSION: '1.25.x'
   TEST_OPTS: ${{ inputs.test_opts }}
 
 jobs:
@@ -57,9 +56,6 @@ jobs:
 
       - uses: actions/setup-go@v7
         with:
-          # go-version overrides go-version-file if a value is present
-          go-version: ${{ env.GOVERSION }}
-          go-version-file: go.mod
           check-latest: true
           cache: true
 
