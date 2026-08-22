@@ -37,7 +37,7 @@ func WithNonAtomicReplace(nonAtomicReplace bool) Option {
 	}
 }
 
-// WithAtomicity creates or renames a file atomicly.
+// WithAtomicity creates or renames a file atomically.
 // Used by the WriteFile and WriteReader functions.
 func WithAtomicity(atomically bool) Option {
 	return func(opts *Options) {
