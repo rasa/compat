@@ -2,7 +2,7 @@
 # SPDX-FileCopyrightText: Copyright © 2025 Ross Smith II <ross@smithii.com>
 # SPDX-License-Identifier: MIT
 
-export GOTOOLCHAIN := go1.26.5+auto
+export GOTOOLCHAIN := go1.26.6+auto
 
 export GOLANGCI_LINT_VER := latest
 export GOFUMPT_VER := latest
