@@ -9,6 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Added
 
+### Fixed
+
+### Changed
+
+## [0.5.6](https://github.com/rasa/compat/compare/v0.5.5...v0.5.6)
+
+### Added
+
 - Add `WithNonAtomicReplace()` option. Useful on Plan9 only.
 - Add `SupportsATimeSetting()` function. False on Plan 9 only.
 - Add `SupportsRelativeFstat()` function. Varies by OS.
