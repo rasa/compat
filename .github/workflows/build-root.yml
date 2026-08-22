@@ -73,6 +73,7 @@ jobs:
       - uses: actions/setup-go@v7
         if: env.SHOULD_RUN
         with:
+          go-version-file : go.mod
           check-latest: true
           cache: true
 
