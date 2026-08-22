@@ -1,6 +1,6 @@
 module github.com/rasa/compat
 
-go 1.25.0
+go 1.26.6
 
 require (
 	github.com/OneOfOne/xxhash v1.2.8
