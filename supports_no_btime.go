@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: Copyright © 2026 Ross Smith II <ross@smithii.com>
 // SPDX-License-Identifier: MIT
 
-//go:build android || ((aix || dragonfly || illumos || openbsd || solaris) && fstat)
+//go:build android || (openbsd && fstat)
 
 package compat
 
@@ -14,7 +14,7 @@ const (
 	supportsFstat         = true
 	supportsLinks         = true
 	supportsNice          = true
-	supportsRelativeFstat = false
+	supportsRelativeFstat = true
 	supportsSymlinks      = true
 	supportsUmask         = true
 )
