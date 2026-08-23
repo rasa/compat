@@ -8,6 +8,7 @@ import (
 	"os/user"
 	"path/filepath"
 	"runtime"
+	"strconv"
 	"testing"
 	"time"
 
@@ -461,7 +462,7 @@ func TestLstatUser(t *testing.T) {
 
 	got := fi.User()
 
-	u, err := user.Current()
+	u, err := currentUser()
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -504,7 +505,7 @@ func TestLstatUserSetOwner(t *testing.T) {
 
 	got := fi.User()
 
-	u, err := user.Current()
+	u, err := currentUser()
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -547,7 +548,7 @@ func TestLstatGroup(t *testing.T) {
 
 	got := fi.Group()
 
-	u, err := user.Current()
+	u, err := currentUser()
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -601,7 +602,7 @@ func TestLstatGroupSetOwner(t *testing.T) {
 
 	got := fi.Group()
 
-	u, err := user.Current()
+	u, err := currentUser()
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -819,3 +820,27 @@ func createTempSymlink(t *testing.T, opts ...compat.Option) (string, string, err
 
 	return target, link, nil
 }
+
+func currentUser() (*user.User, error) {
+    u, err := user.Current()
+    if err == nil {
+        return u, nil
+    }
+
+    if runtime.GOOS != "ios" {
+        return nil, err
+    }
+
+    home, err := os.UserHomeDir()
+    if err != nil {
+        return nil, err
+    }
+
+    return &user.User{
+        Uid:      strconv.Itoa(os.Getuid()),
+        Gid:      strconv.Itoa(os.Getgid()),
+        Username: os.Getenv("USER"),
+        HomeDir:  home,
+    }, nil
+}
+
