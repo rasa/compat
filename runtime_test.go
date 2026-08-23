@@ -50,9 +50,10 @@ var arches = []string{
 }
 
 func TestRuntimeConsts(t *testing.T) {
+	noGo := compat.IsAndroid || compat.IOS || compat.IsPlan9 || compat.IsTinygo || compat.IsWasm
 	goExe, err := exec.LookPath("go")
 	if err != nil {
-		if compat.IsAndroid || compat.IsPlan9 || compat.IsTinygo || compat.IsWasm {
+		if noGo {
 			skipf(t, "Skipping test on %v: %v (1)", runtime.GOOS, err)
 
 			return
@@ -63,7 +64,7 @@ func TestRuntimeConsts(t *testing.T) {
 
 	out, err := exec.Command(goExe, "tool", "dist", "list").Output()
 	if err != nil {
-		if compat.IsAndroid || compat.IsPlan9 || compat.IsTinygo || compat.IsWasm {
+		if noGo {
 			skipf(t, "Skipping test on %v: %v (2)", runtime.GOOS, err)
 
 			return
