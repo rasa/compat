@@ -76,3 +76,7 @@ jobs:
           files: ./coverage.out
           name: coverage-${{ env.GOOS }}
           token: ${{ secrets.CODECOV_TOKEN }}
+
+permissions:
+  contents: read
+
