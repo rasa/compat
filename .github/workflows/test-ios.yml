@@ -1,0 +1,69 @@
+---
+# yaml-language-server: $schema https://json.schemastore.org/github-workflow.json
+
+name: test-ios
+
+on: # yamllint disable-line rule:truthy
+  workflow_call:
+  workflow_dispatch:
+
+env:
+  CGO_ENABLED: '1'
+  GOOS: ios
+  GOARCH: arm64
+
+jobs:
+  test-ios:
+    name: test-ios
+    runs-on: macos-26
+
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 1
+          show-progress: false
+
+      - uses: actions/setup-go@v7
+        with:
+          go-version-file: go.mod
+          check-latest: true
+          cache: true
+  
+      - name: Boot iOS simulator
+        run: |
+          xcodebuild -version
+          xcrun simctl list runtimes
+          xcrun simctl list devices available
+
+          UDID="$(
+            xcrun simctl list devices available -j |
+            jq -r '
+              [.devices[][] |
+              select(.name | startswith("iPhone"))][0].udid
+            '
+          )"
+
+          echo "Booting simulator ${UDID}"
+          xcrun simctl boot "${UDID}"
+          xcrun simctl bootstatus "${UDID}" -b
+
+      - name: Build Go iOS exec wrapper
+        run: |
+          export GOROOT="$(go env GOROOT)"
+
+          go build \
+            -o "${RUNNER_TEMP}/go_ios_arm64_exec" \
+            "${GOROOT}/misc/ios/go_ios_exec.go"
+
+          echo "${RUNNER_TEMP}" >> "${GITHUB_PATH}"
+
+      - name: Test on iOS
+        run: |
+          export CC="$(go env GOROOT)/misc/ios/clangwrap.sh"
+
+          # go_ios_exec currently expects the source tree to be
+          # underneath GOROOT or GOPATH.
+          export GOPATH="$(dirname "${GITHUB_WORKSPACE}")"
+
+          go test -v .
+  
