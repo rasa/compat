@@ -384,7 +384,7 @@ func TestStatUser(t *testing.T) {
 
 	got := fi.User()
 
-	u, err := user.Current()
+	u, err := currentUser()
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -428,7 +428,7 @@ func TestStatGroup(t *testing.T) {
 
 	got := fi.Group()
 
-	u, err := user.Current()
+	u, err := currentUser()
 	if err != nil {
 		t.Fatal(err)
 	}
