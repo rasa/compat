@@ -65,5 +65,14 @@ jobs:
           # underneath GOROOT or GOPATH.
           export GOPATH="$(dirname "${GITHUB_WORKSPACE}")"
 
-          go test -v .
-  
+          go test -covermode=atomic -coverprofile=coverage.out -coverpkg=. -v .
+          sed -i.bak "/compat\/cmd\//d; /compat\/golang\//d;" coverage.out
+          rm -f *.bak
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v7
+        with:
+          # fail_ci_if_error: false
+          files: ./coverage.out
+          name: coverage-${{ env.GOOS }}
+          token: ${{ secrets.CODECOV_TOKEN }}
