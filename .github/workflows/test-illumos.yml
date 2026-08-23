@@ -36,7 +36,7 @@ jobs:
           fetch-depth: 1
           show-progress: false
 
-      - uses: vmactions/omnios-vm@v1.3.4
+      - uses: vmactions/omnios-vm@v1
         with:
           envs: 'GOOS GOARCH GOOPTS CODECOV_SLUG CODECOV_TOKEN' # GITHUB_TOKEN'
           usesh: true
