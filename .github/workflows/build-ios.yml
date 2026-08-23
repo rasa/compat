@@ -34,23 +34,5 @@ jobs:
 
       - run: go build -trimpath -o ./bin/ ./...
 
-      - run: |
-          go test -covermode=atomic -coverprofile=coverage.out -coverpkg=. .
-          sed -i.bak "/compat\/cmd\//d; /compat\/golang\//d;" coverage.out
-          rm -f *.bak
-
-      # - uses: actions/upload-artifact@v3
-      #  with:
-      #     name: ios-build
-      #     path: build/
-
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v7
-        with:
-          fail_ci_if_error: false
-          files: ./coverage.out
-          name: coverage-${{ env.GOOS }}
-          token: ${{ secrets.CODECOV_TOKEN }}
-
 permissions:
   contents: read
