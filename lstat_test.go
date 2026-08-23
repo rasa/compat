@@ -822,25 +822,24 @@ func createTempSymlink(t *testing.T, opts ...compat.Option) (string, string, err
 }
 
 func currentUser() (*user.User, error) {
-    u, err := user.Current()
-    if err == nil {
-        return u, nil
-    }
+	u, err := user.Current()
+	if err == nil {
+		return u, nil
+	}
 
-    if runtime.GOOS != "ios" {
-        return nil, err
-    }
+	if runtime.GOOS != "ios" {
+		return nil, err
+	}
 
-    home, err := os.UserHomeDir()
-    if err != nil {
-        return nil, err
-    }
+	home, err := os.UserHomeDir()
+	if err != nil {
+		return nil, err
+	}
 
-    return &user.User{
-        Uid:      strconv.Itoa(os.Getuid()),
-        Gid:      strconv.Itoa(os.Getgid()),
-        Username: os.Getenv("USER"),
-        HomeDir:  home,
-    }, nil
+	return &user.User{
+		Uid:      strconv.Itoa(os.Getuid()),
+		Gid:      strconv.Itoa(os.Getgid()),
+		Username: os.Getenv("USER"),
+		HomeDir:  home,
+	}, nil
 }
-

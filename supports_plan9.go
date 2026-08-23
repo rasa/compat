@@ -11,10 +11,10 @@ const (
 	supportsAtomicReplace = false
 	supportsBTime         = false
 	supportsCTime         = false
-	supportsFstat         = true
+	supportsFstat         = false
 	supportsLinks         = false
 	supportsNice          = true
-	supportsRelativeFstat = false
+	supportsRelativeFstat = true
 	supportsSymlinks      = false
 	supportsUmask         = false
 )

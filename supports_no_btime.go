@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: Copyright © 2026 Ross Smith II <ross@smithii.com>
 // SPDX-License-Identifier: MIT
 
-//go:build android || (openbsd && fstat)
+//go:build android || ((dragonfly || openbsd) && fstat)
 
 package compat
 
