@@ -368,7 +368,7 @@ depends on both the operating system and the underlying filesystem.
 † Not supported when compiled with TinyGo.<br/>
 ‡ Windows values use the same SID-to-integer mapping as Cygwin, MSYS2, and Git
 for Windows.<br/>
-§ Android 7/API 24 and later appear to disallow hard-link creation by default.
+§ Android 7/API 24 and later appear to disallow hard-link creation by default.<br/>
 ‖ The `UID()` and `GID()` values are 32-bit hashes of the user and group names.
 
 ### Other operations
@@ -405,7 +405,7 @@ for Windows.<br/>
 `aix/ppc64` with CGO because of compilation limitations.<br/>
 § Implemented through the `UMASK=0NNN` environment variable. <br/>
 ‖ Will fail on relative filenames where the current directory is changed after
-opening the file.
+opening the file.<br/>
 ¶ `Nice` always returns `0`, and `Renice` performs no operation.
 
 ## Environment variables
