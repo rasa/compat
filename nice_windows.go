@@ -34,7 +34,7 @@ func Nice() (int, error) {
 
 	nice, ok := niceMap[priorityClass]
 	if !ok {
-		panic(fmt.Sprintf("nice: unknown priority class %v", priorityClass))
+		return 0, &NiceError{fmt.Errorf("unknown priority class %v", priorityClass)}
 	}
 
 	return nice, nil

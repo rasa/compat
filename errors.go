@@ -66,6 +66,10 @@ func mkdirTempError(path string, err error) error {
 	return &os.PathError{Op: "mkdirtemp", Path: path, Err: err}
 }
 
+func niceError(msg string) error {
+	return &NiceError{errors.New(msg)}
+}
+
 func openError(path string, err error) error {
 	return &os.PathError{Op: "open", Path: path, Err: err}
 }

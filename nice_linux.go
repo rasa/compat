@@ -40,14 +40,14 @@ func Renice(nice int) error {
 	pgid, err := unix.Getpgid(0)
 	if err != nil {
 		// This error really shouldn't happen
-		return fmt.Errorf("nice: get process group: %w", err)
+		return &NiceError{fmt.Errorf("get process group: %w", err)}
 	}
 
 	if pgid != os.Getpid() {
 		// We are not process group leader. Elevate!
 		err = unix.Setpgid(0, 0)
 		if err != nil {
-			return fmt.Errorf("nice: set process group: %w", err)
+			return &NiceError{fmt.Errorf("set process group: %w", err)}
 		}
 	}
 

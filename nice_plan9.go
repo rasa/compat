@@ -30,27 +30,19 @@ func Nice() (int, error) {
 
 	fields := strings.Fields(string(data))
 	if len(fields) < 2 {
-		return 0, fmt.Errorf("nice: malformed process status in %v", path)
+		return 0, niceError("malformed process status in %v" + path)
 	}
 
 	// The last two fields are the base and current scheduling priorities.
-	basePriority, err := strconv.Atoi(fields[len(fields)-2])
+	pri := fields[len(fields)-2]
+	basePriority, err := strconv.Atoi(pri)
 	if err != nil {
-		return 0, fmt.Errorf(
-			"nice: invalid base priority %q in %v: %w",
-			fields[len(fields)-2],
-			path,
-			err,
-		)
+		return 0, &NiceError{fmt.Errorf("invalid base priority %q in %v: %w", pri, path, err)}
 	}
 
 	nice, ok := niceMap[basePriority]
 	if !ok {
-		return 0, fmt.Errorf(
-			"nice: invalid Plan 9 priority %d in %v",
-			basePriority,
-			path,
-		)
+		return 0, niceError(fmt.Sprintf("invalid Plan 9 priority %d in %v", basePriority, path))
 	}
 
 	return nice, nil
