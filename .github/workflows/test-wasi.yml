@@ -34,10 +34,10 @@ jobs:
       # Go version from go.mod. See usage in the actions/setup-go step.
       matrix:
         go-version:
+          - big: '1.27.x'
+            tiny: '0.41.1'
           - big: '1.26.x'
             tiny: '0.41.1'
-          - big: '1.25.x'
-            tiny: '0.39.0'
           # - big: '1.25'
           #   tiny: '0.39.0'
           # - big: '1.24'
