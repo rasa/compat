@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: Copyright © 2025 Ross Smith II <ross@smithii.com>
 // SPDX-License-Identifier: MIT
 
-//go:build (darwin && !ios) || ((freebsd || netbsd) && fstat) || (linux && !android) || windows
+//go:build darwin || freebsd || linux || windows
 
 // The darwin build flag includes ios (which doesn't support Nice())
 
@@ -16,7 +16,7 @@ const (
 	supportsFstat         = true
 	supportsLinks         = true
 	supportsNice          = true
-	supportsRelativeFstat = false // @TODO FIXME
+	supportsRelativeFstat = true
 	supportsSymlinks      = true
 	supportsUmask         = true
 )
