@@ -22,10 +22,15 @@ jobs:
     uses: ./.github/workflows/test-android.yml
     needs: test-top3
     secrets: inherit
+  test-ios:
+    # if: success()
+    uses: ./.github/workflows/test-ios.yml
+    needs: test-android
+    secrets: inherit
   test-plan9:
     # if: success()
     uses: ./.github/workflows/test-plan9.yml
-    needs: test-android
+    needs: test-ios
     secrets: inherit
   test-tiny:
     # if: success()
@@ -39,6 +44,6 @@ jobs:
     secrets: inherit
   test-all-vms:
     # if: success()
-    uses: ./.github/workflows/test-all-bsds.yml
+    uses: ./.github/workflows/test-all-vms.yml
     needs: test-all-wasms
     secrets: inherit
