@@ -9,9 +9,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Added
 
+- Add running tests under iOS Simulator.
+
 ### Fixed
 
+- Fix `SupportsRelativeFstat()` to always be true.
+
 ### Changed
+
+- Deprecate `SupportsRelativeFstat()`. Will be removed eventually.
 
 ## [0.5.6](https://github.com/rasa/compat/compare/v0.5.5...v0.5.6)
 
