@@ -350,7 +350,7 @@ depends on both the operating system and the underlying filesystem.
 | macOS        | ✅     | ✅    | ✅   | ✅    | ✅   | ✅   |
 | NetBSD       | ✅     | ✅    | ✅   | ✅    | ✅   | ✅   |
 | OpenBSD      | ✅     | ✅    | ✅   | ✖️    | ✅   | ✅   |
-| Plan9        | ✅     | ❌    | ✅   | ❌    | ❌   | ☑️   |
+| Plan9        | ✅     | ❌    | ✅   | ❌    | ❌   | ☑️‖  |
 | Solaris      | ✅     | ✅    | ✅   | ✖️    | ✅   | ✅   |
 | Wasip1/<br/>WASM | ✅ | ✅    | ✅†  | ❌    | ✅   | ✅   |
 | Windows      | ✅     | ✅    | ✅   | ✅    | ✅   | ✅‡  |
@@ -359,7 +359,7 @@ depends on both the operating system and the underlying filesystem.
 **Key**
 
 - ✅ Fully supported by the operating-system implementation.
-- ☑️ The `UID()` and `GID()` values are 32-bit hashes of the user and group names.
+- ☑️ Partially supported. See footnote.
 - ✖️ Not currently implemented although the operating system may support it.
 - ❌ Not implemented because the operating system appears not to provide it.
 <!-- 🚧 planned to be implemented.<br/> -->
@@ -368,33 +368,34 @@ depends on both the operating system and the underlying filesystem.
 † Not supported when compiled with TinyGo.<br/>
 ‡ Windows values use the same SID-to-integer mapping as Cygwin, MSYS2, and Git
 for Windows.<br/>
-§ Android 7/API 24 and later appear to disallow hard-link creation by default.
+§ Android 7/API 24 and later appear to disallow hard-link creation by default.<br/>
+‖ The `UID()` and `GID()` values are 32-bit hashes of the user and group names.
 
 ### Other operations
 
 | OS           | Chmod()* | Fstat() | Nice()/<br/>Renice() | PartitionType() | Symlink() | Umask() |
 |--------------|----------|----------|--------|------|-------|------|
-| AIX          | ✅       | ✅‖     | ✅    | ✅*  | ✅   | ✅   |
+| AIX          | ✅       | ☑️‖     | ✅    | ✅*  | ✅   | ✅   |
 | Android      | ✅       | ✅      | ✅    | ✅   | ✅   | ✅   |
-| Dragonfly    | ✅       | ✅‖     | ✅    | ✅   | ✅   | ✅   |
+| Dragonfly    | ✅       | ☑️‖     | ✅    | ✅   | ✅   | ✅   |
 | FreeBSD      | ✅       | ✅      | ✅    | ✅‡  | ✅   | ✅   |
-| Illumos      | ✅       | ✅‖     | ✅    | ✅   | ✅   | ✅   |
-| iOS          | ✅       | ✅      | ☑️    | ✅   | ✅   | ✅   |
-| Js/<br/>WASM | ❌       | ✅‖     | ☑️    | ✅   | ❌   | ✅   |
+| Illumos      | ✅       | ☑️‖     | ✅    | ✅   | ✅   | ✅   |
+| iOS          | ✅       | ✅      | ☑️¶   | ✅   | ✅   | ✅   |
+| Js/<br/>WASM | ❌       | ☑️‖     | ☑️¶   | ✅   | ❌   | ✅   |
 | Linux        | ✅       | ✅      | ✅    | ✅   | ✅   | ✅   |
 | macOS        | ✅       | ✅      | ✅    | ✅   | ✅   | ✅   |
-| NetBSD       | ✅       | ✅‖     | ✅    | ✅‡  | ✅   | ✅   |
-| OpenBSD      | ✅       | ✅‖     | ✅    | ✅‡  | ✅   | ✅   |
-| Plan9        | ✅       | ✅‖     | ✅    | ✅   | ❌   | ❌   |
-| Solaris      | ✅       | ✅‖     | ✅    | ✅   | ✅   | ✅   |
-| Wasip1/<br/>WASM | ❌   | ✅‖     | ☑️    | ✅   | ❌   | ✅†  |
+| NetBSD       | ✅       | ☑️‖     | ✅    | ✅‡  | ✅   | ✅   |
+| OpenBSD      | ✅       | ☑️‖     | ✅    | ✅‡  | ✅   | ✅   |
+| Plan9        | ✅       | ☑️‖     | ✅    | ✅   | ❌   | ❌   |
+| Solaris      | ✅       | ☑️‖     | ✅    | ✅   | ✅   | ✅   |
+| Wasip1/<br/>WASM | ❌   | ☑️‖     | ☑️¶    | ✅   | ❌   | ✅†  |
 | Windows      | ✅       | ✅      | ✅    | ✅   | ✅   | ✅§  |
 <!--           | Chmod    | Fstat   | Nice  | Part | Symln | Umask | -->
 
 **Key**
 
 - ✅ Fully supported.
-- ☑️ `Nice` always returns `0`, and `Renice` performs no operation.
+- ☑️ Partially supported. See footnote.
 - ✖️ Not currently implemented although the operating system may support it.
 - ❌ Not implemented because the operating system appears not to provide it.
 
@@ -402,10 +403,10 @@ for Windows.<br/>
 † Not supported when compiled with TinyGo.<br/>
 ‡ Not supported on `openbsd/ppc64`, `netbsd/386`, `freebsd/riscv64`, or
 `aix/ppc64` with CGO because of compilation limitations.<br/>
-§ Implemented through the `UMASK=0NNN` environment variable.
-‖ Will fall on relative filenames where the current directory is changed after
-opening the file.
-‖ `Fstat` only works no absolute paths.
+§ Implemented through the `UMASK=0NNN` environment variable. <br/>
+‖ Will fail on relative filenames where the current directory is changed after
+opening the file.<br/>
+¶ `Nice` always returns `0`, and `Renice` performs no operation.
 
 ## Environment variables
 
