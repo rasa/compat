@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: Copyright © 2025 Ross Smith II <ross@smithii.com>
 // SPDX-License-Identifier: MIT
 
-//go:build (aix || dragonfly || illumos || openbsd || solaris) && !fstat
+//go:build aix || dragonfly || illumos || (openbsd && !fstat) || solaris
 
 package compat
 
