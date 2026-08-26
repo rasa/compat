@@ -1,4 +1,26 @@
 version: "2"
+
+formatters:
+  enable:
+    - gofumpt
+    - goimports
+  settings:
+    goimports:
+      local-prefixes:
+        - github.com/rasa/compat
+  exclusions:
+    generated: lax
+    paths:
+      - third_party$
+      - builtin$
+      - examples$
+      # don't lint upstream code:
+      - format\.go$
+      - walk\.go$
+      - walk_test\.go$
+      - golang
+      - robustio
+      
 linters:
   settings:
     funlen:
@@ -188,23 +210,3 @@ linters:
     # - wsl_v5 # Add or remove empty lines. [auto-fix]
     # - zerologlint # Detects the wrong usage of `zerolog` that a user forgets to dispatch with `Send` or `Msg`.
 
-formatters:
-  enable:
-    - gofumpt
-    - goimports
-  settings:
-    goimports:
-      local-prefixes:
-        - github.com/rasa/compat
-  exclusions:
-    generated: lax
-    paths:
-      - third_party$
-      - builtin$
-      - examples$
-      # don't lint upstream code:
-      - format\.go$
-      - walk\.go$
-      - walk_test\.go$
-      - golang
-      - robustio

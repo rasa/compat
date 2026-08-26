@@ -55,12 +55,6 @@ func TestFstatAbs(t *testing.T) {
 }
 
 func TestFstatRelative(t *testing.T) {
-	if !compat.SupportsRelativeFstat() {
-		skipf(t, "skipping test: relative Fstat() not supported on %v/%v", runtime.GOOS, runtime.GOARCH)
-
-		return
-	}
-
 	name, err := tempFile(t)
 	if err != nil {
 		fatal(t, err)
@@ -100,12 +94,6 @@ func TestFstatRelative(t *testing.T) {
 }
 
 func TestFstatRelativeChdir(t *testing.T) {
-	if !compat.SupportsRelativeFstat() {
-		skipf(t, "skipping test: relative Fstat() not supported on %v/%v", runtime.GOOS, runtime.GOARCH)
-
-		return
-	}
-
 	name1, err := tempFile(t)
 	if err != nil {
 		fatal(t, err)
@@ -154,69 +142,6 @@ func TestFstatRelativeChdir(t *testing.T) {
 
 	if got != want {
 		fatalf(t, "Fstat (Relative): got %v, want %v (for %v and %v)", got, want, name1, name2)
-
-		return
-	}
-}
-
-func TestFstatNoRelativeChdir(t *testing.T) {
-	if compat.SupportsRelativeFstat() {
-		skipf(t, "skipping test: relative Fstat() supported on %v/%v", runtime.GOOS, runtime.GOARCH)
-
-		return
-	}
-
-	name1, err := tempFile(t)
-	if err != nil {
-		fatal(t, err)
-
-		return
-	}
-
-	cleanup(t, name1)
-
-	f1, err := os.Open(name1)
-	if err != nil {
-		fatal(t, err)
-
-		return
-	}
-
-	fi1, err := compat.Fstat(f1)
-	if err != nil {
-		fatalf(t, "Fstat: got %v, want nil", err)
-
-		return
-	}
-
-	_ = f1.Close()
-
-	dir, name2 := filepath.Split(name1)
-	t.Chdir(dir)
-
-	f2, err := os.Open(name2)
-	if err != nil {
-		fatal(t, err)
-
-		return
-	}
-	defer f2.Close()
-
-	dir = filepath.Clean(filepath.Join(dir, ".."))
-	t.Chdir(dir)
-
-	fi2, err := compat.Fstat(f2)
-	if err != nil {
-		fatalf(t, "Fstat: got %v, want nil", err)
-
-		return
-	}
-
-	want := fi1.FileID()
-	got := fi2.FileID()
-
-	if got != want {
-		t.Logf("Fstat (Relative): worked for %v and %v in %v, expected error on %v/%v", name1, name2, dir, runtime.GOOS, runtime.GOARCH)
 
 		return
 	}
