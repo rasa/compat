@@ -296,6 +296,7 @@ Several operations accept functional options:
 | `WithReadOnlyMode` | Controls Windows read-only attribute handling |
 | `WithRetrySeconds` | Retries selected operations for a bounded period |
 | `WithSetSymlinkOwner` | Requests ownership adjustment for Windows symbolic links |
+| `WithSkipACLs` | Skips setting Windows ACLs |
 
 An option may apply only to the operations documented for it. Options that
 control Windows-specific behavior are ignored on other operating systems.

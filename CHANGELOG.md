@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Added
 
+- Add `WithSkipACLs()` option. Useful on Windows only.
 - Add running tests under iOS Simulator.
 
 ### Fixed

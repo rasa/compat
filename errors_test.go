@@ -12,8 +12,16 @@ import (
 	"github.com/rasa/compat"
 )
 
+const (
+	errStr  = "error message"
+	newStr  = "new"
+	oldStr  = "old"
+	opStr   = "test"
+	pathStr = "path"
+)
+
 func TestErrorsIsUsupportedError(t *testing.T) {
-	err := &compat.UnsupportedError{Op: "test"}
+	err := &compat.UnsupportedError{Op: opStr}
 	got := compat.IsUnsupportedError(err)
 
 	want := true
@@ -23,10 +31,10 @@ func TestErrorsIsUsupportedError(t *testing.T) {
 }
 
 func TestErrorsUnsupportedError(t *testing.T) {
-	err := &compat.UnsupportedError{Op: "test"}
+	err := &compat.UnsupportedError{Op: opStr}
 	got := err.Error()
 
-	want := "test: unsupported"
+	want := opStr + ": unsupported"
 	if !strings.HasPrefix(got, want) {
 		t.Fatalf("UnsupportedError: got %q; want %q", got, want)
 	}
@@ -37,10 +45,10 @@ func TestErrorsUnsupportedError(t *testing.T) {
 }
 
 func TestErrorsUnimplementedError(t *testing.T) {
-	err := &compat.UnimplementedError{Op: "test"}
+	err := &compat.UnimplementedError{Op: opStr}
 	got := err.Error()
 
-	want := "test: unimplemented"
+	want := opStr + ": unimplemented"
 	if !strings.HasPrefix(got, want) {
 		t.Fatalf("UnimplementedError: got %q; want %q", got, want)
 	}
@@ -51,117 +59,127 @@ func TestErrorsUnimplementedError(t *testing.T) {
 }
 
 func TestErrorsExportedUnsupportedError(t *testing.T) {
-	got := compat.ExportedUnsupportedError("test").Error()
+	got := compat.ExportedUnsupportedError(opStr).Error()
 
-	want := "test: unsupported"
+	want := opStr + ": unsupported"
 	if !strings.HasPrefix(got, want) {
 		t.Fatalf("ExportedUnsupportedError: got %q; want %q", got, want)
 	}
 }
 
 func TestErrorsExportedUnimplementedError(t *testing.T) {
-	got := compat.ExportedUnimplementedError("test").Error()
+	got := compat.ExportedUnimplementedError(opStr).Error()
 
-	want := "test: unimplemented"
+	want := opStr + ": unimplemented"
 	if !strings.HasPrefix(got, want) {
 		t.Fatalf("ExportedUnimplementedError: got %q; want %q", got, want)
 	}
 }
 
 func TestErrorsChmodError(t *testing.T) {
-	got := compat.ChmodError("path", os.ErrInvalid).Error()
 
-	want := "chmod path:"
+	got := compat.ChmodError(pathStr, os.ErrInvalid).Error()
+
+	want := "chmod " + pathStr + ":"
 	if !strings.HasPrefix(got, want) {
 		t.Fatalf("ChmodError: got %q; want %q", got, want)
 	}
 }
 
 func TestErrorsCreateError(t *testing.T) {
-	got := compat.CreateError("path", os.ErrInvalid).Error()
+	got := compat.CreateError(pathStr, os.ErrInvalid).Error()
 
-	want := "create path:"
+	want := "create " + pathStr + ":"
 	if !strings.HasPrefix(got, want) {
 		t.Fatalf("CreateError: got %q; want %q", got, want)
 	}
 }
 
 func TestErrorsCreateTempError(t *testing.T) {
-	got := compat.CreateTempError("path", os.ErrInvalid).Error()
+	got := compat.CreateTempError(pathStr, os.ErrInvalid).Error()
 
-	want := "createtemp path:"
+	want := "createtemp " + pathStr + ":"
 	if !strings.HasPrefix(got, want) {
 		t.Fatalf("CreateTempError: got %q; want %q", got, want)
 	}
 }
 
 func TestErrorsMkdirError(t *testing.T) {
-	got := compat.MkdirError("path", os.ErrInvalid).Error()
+	got := compat.MkdirError(pathStr, os.ErrInvalid).Error()
 
-	want := "mkdir path:"
+	want := "mkdir " + pathStr + ":"
 	if !strings.HasPrefix(got, want) {
 		t.Fatalf("MkdirError: got %q; want %q", got, want)
 	}
 }
 
 func TestErrorsMkdirallError(t *testing.T) {
-	got := compat.MkdirallError("path", os.ErrInvalid).Error()
+	got := compat.MkdirallError(pathStr, os.ErrInvalid).Error()
 
-	want := "mkdir path:"
+	want := "mkdir " + pathStr + ":"
 	if !strings.HasPrefix(got, want) {
 		t.Fatalf("MkdirallError: got %q; want %q", got, want)
 	}
 }
 
 func TestErrorsMkdirTempError(t *testing.T) {
-	got := compat.MkdirTempError("path", os.ErrInvalid).Error()
+	got := compat.MkdirTempError(pathStr, os.ErrInvalid).Error()
 
-	want := "mkdirtemp path:"
+	want := "mkdirtemp " + pathStr + ":"
 	if !strings.HasPrefix(got, want) {
 		t.Fatalf("MkdirTempError: got %q; want %q", got, want)
 	}
 }
 
-func TestErrorsOpenError(t *testing.T) {
-	got := compat.OpenError("path", os.ErrInvalid).Error()
+func TestErrorsNiceError(t *testing.T) {
+	got := compat.ExportedNiceError(errStr).Error()
 
-	want := "open path:"
+	want := "nice: " + errStr
+	if !strings.HasPrefix(got, want) {
+		t.Fatalf("niceError: got %q; want %q", got, want)
+	}
+}
+
+func TestErrorsOpenError(t *testing.T) {
+	got := compat.OpenError(pathStr, os.ErrInvalid).Error()
+
+	want := "open " + pathStr + ":"
 	if !strings.HasPrefix(got, want) {
 		t.Fatalf("OpenError: got %q; want %q", got, want)
 	}
 }
 
 func TestErrorsRenameError(t *testing.T) {
-	got := compat.RenameError("old", "new", os.ErrInvalid).Error()
+	got := compat.RenameError(oldStr, newStr, os.ErrInvalid).Error()
 
-	want := "rename old new:"
+	want := "rename " + oldStr + " " + newStr + ":"
 	if !strings.HasPrefix(got, want) {
 		t.Fatalf("RenameError: got %q; want %q", got, want)
 	}
 }
 
 func TestErrorsStatError(t *testing.T) {
-	got := compat.StatError("path", os.ErrInvalid).Error()
+	got := compat.StatError(pathStr, os.ErrInvalid).Error()
 
-	want := "stat path:"
+	want := "stat " + pathStr + ":"
 	if !strings.HasPrefix(got, want) {
 		t.Fatalf("StatError: got %q; want %q", got, want)
 	}
 }
 
 func TestErrorsSymlinkError(t *testing.T) {
-	got := compat.SymlinkError("old", "new", os.ErrInvalid).Error()
+	got := compat.SymlinkError(oldStr, newStr, os.ErrInvalid).Error()
 
-	want := "symlink old new:"
+	want := "symlink " + oldStr + " " + newStr + ":"
 	if !strings.HasPrefix(got, want) {
 		t.Fatalf("SymlinkError: got %q; want %q", got, want)
 	}
 }
 
 func TestErrorsWriteError(t *testing.T) {
-	got := compat.WriteError("path", os.ErrInvalid).Error()
+	got := compat.WriteError(pathStr, os.ErrInvalid).Error()
 
-	want := "write path:"
+	want := "write " + pathStr + ":"
 	if !strings.HasPrefix(got, want) {
 		t.Fatalf("WriteError: got %q; want %q", got, want)
 	}

@@ -60,6 +60,10 @@ func GetOptions() []Option {
 		opts = append(opts, WithSetSymlinkOwner(options.setSymlinkOwner))
 	}
 
+	if options.skipACLs != optionDefaults.skipACLs {
+		opts = append(opts, WithSkipACLs(options.skipACLs))
+	}
+
 	return opts
 }
 
@@ -96,6 +100,7 @@ func (o Options) String() string {
 	fmt.Fprintf(&builder, "readOnlyMode:    %v\n", o.readOnlyMode)
 	fmt.Fprintf(&builder, "retrySeconds:    %v\n", o.retrySeconds)
 	fmt.Fprintf(&builder, "setSymlinkOwner: %v\n", o.setSymlinkOwner)
+	fmt.Fprintf(&builder, "skipACLs:        %v\n", o.skipACLs)
 
 	return builder.String()
 }

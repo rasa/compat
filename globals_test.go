@@ -13,8 +13,10 @@ import (
 	"github.com/rasa/compat"
 )
 
+const optionCount = 10
+
 func TestGetOptions(t *testing.T) {
-	opts := make([]compat.Option, 0, 9)
+	opts := make([]compat.Option, 0, optionCount)
 	opts = append(opts, compat.WithNonAtomicReplace(true))
 	opts = append(opts, compat.WithAtomicity(true))
 	opts = append(opts, compat.WithDefaultFileMode(perm777))
@@ -24,6 +26,7 @@ func TestGetOptions(t *testing.T) {
 	opts = append(opts, compat.WithReadOnlyMode(compat.ReadOnlyModeSet))
 	opts = append(opts, compat.WithRetrySeconds(1))
 	opts = append(opts, compat.WithSetSymlinkOwner(true))
+	opts = append(opts, compat.WithSkipACLs(true))
 
 	compat.SetOptions(opts...)
 
@@ -37,7 +40,7 @@ func TestGetOptions(t *testing.T) {
 }
 
 func TestBuildOptions(t *testing.T) {
-	opts := make([]compat.Option, 0)
+	opts := make([]compat.Option, 0, optionCount)
 	compat.SetOptions(opts...)
 	fopts := compat.BuildOptions(opts...)
 	got := fopts.String()
@@ -50,6 +53,7 @@ keepFileMode:    true
 readOnlyMode:    1
 retrySeconds:    1
 setSymlinkOwner: true
+skipACLs:        true
 `
 	flags := fmt.Sprintf("0x%x", os.O_CREATE)
 
@@ -60,7 +64,7 @@ setSymlinkOwner: true
 }
 
 func TestBuildOptions2(t *testing.T) {
-	opts := make([]compat.Option, 0, 9)
+	opts := make([]compat.Option, 0, optionCount)
 	opts = append(opts, compat.WithNonAtomicReplace(true))
 	opts = append(opts, compat.WithAtomicity(true))
 	opts = append(opts, compat.WithDefaultFileMode(perm777))
@@ -70,6 +74,8 @@ func TestBuildOptions2(t *testing.T) {
 	opts = append(opts, compat.WithReadOnlyMode(compat.ReadOnlyModeSet))
 	opts = append(opts, compat.WithRetrySeconds(1))
 	opts = append(opts, compat.WithSetSymlinkOwner(true))
+	opts = append(opts, compat.WithSkipACLs(true))
+
 	compat.SetOptions(opts...)
 	fopts := compat.BuildOptions(opts...)
 	got := fopts.String()
@@ -82,6 +88,7 @@ keepFileMode:    true
 readOnlyMode:    1
 retrySeconds:    1
 setSymlinkOwner: true
+skipACLs:        true
 `
 	flags := fmt.Sprintf("0x%x", os.O_CREATE)
 

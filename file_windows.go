@@ -44,18 +44,20 @@ func chmod(name string, perm os.FileMode, opts ...Option) error {
 		opt(&fopts)
 	}
 
-	// acl.Chmod will panic otherwise
-	_, err := windows.UTF16PtrFromString(name)
-	if err != nil {
-		return chmodError(name, os.ErrInvalid)
-	}
+	if !opts.skipACLs {
+		// acl.Chmod will panic otherwise
+		_, err := windows.UTF16PtrFromString(name)
+		if err != nil {
+			return chmodError(name, os.ErrInvalid)
+		}
 
-	perm = fopts.fileMode.Perm()
+		perm = fopts.fileMode.Perm()
 
-	// set Windows' ACLs
-	err = acl.Chmod(name, perm)
-	if err != nil {
-		return chmodError(name, fmt.Errorf("%w (acl)", err))
+		// set Windows' ACLs
+		err = acl.Chmod(name, perm)
+		if err != nil {
+			return chmodError(name, fmt.Errorf("%w (acl)", err))
+		}
 	}
 
 	if fopts.readOnlyMode == ReadOnlyModeIgnore {

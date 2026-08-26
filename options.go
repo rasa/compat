@@ -21,6 +21,7 @@ type Options struct {
 	readOnlyMode     ReadOnlyMode // default 0
 	retrySeconds     float64      // default 0.0
 	setSymlinkOwner  bool         // default false
+	skipACLs         bool         // default false
 }
 
 // Option functions modify Options.
@@ -114,5 +115,14 @@ func WithRetrySeconds(seconds float64) Option {
 func WithSetSymlinkOwner(setSymlinkOwner bool) Option {
 	return func(opts *Options) {
 		opts.setSymlinkOwner = setSymlinkOwner
+	}
+}
+
+// WithSkipACLs skips setting ACLs (Access Control Lists) on Windows.
+// The option is functional on Windows only. On other OSes, it is ignored.
+// Used by the Chmod function.
+func WithSkipACLs(skipACLs bool) Option {
+	return func(opts *Options) {
+		opts.skipACLs = skipACLs
 	}
 }

@@ -22,6 +22,7 @@ var (
 	MkdirError                 = mkdirError
 	MkdirallError              = mkdirallError
 	MkdirTempError             = mkdirTempError
+	ExportedNiceError          = niceError
 	OpenError                  = openError
 	RenameError                = renameError
 	StatError                  = statError
