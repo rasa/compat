@@ -1,6 +1,6 @@
 module github.com/rasa/compat
 
-go 1.26.5
+go 1.26.7
 
 tool (
 	github.com/client9/misspell/cmd/misspell

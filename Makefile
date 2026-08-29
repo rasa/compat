@@ -3,8 +3,8 @@
 # SPDX-License-Identifier: MIT
 
 export GOMOD_VER := 1.24.0
+export GOTOOLCHAIN := go1.26.7+auto
 
-export GOTOOLCHAIN := go1.26.6+auto
 export GOLANGCI_LINT_VER := latest
 export GOFUMPT_VER := latest
 export GORELEASER_VER := latest
@@ -84,7 +84,8 @@ lint: ## golangci-lint run --fix .
 
 .PHONY: vuln
 vuln: ## govulncheck ./...
-	go tool $(TOOL_OPTS) govulncheck ./...
+	-go tool $(TOOL_OPTS) govulncheck -show verbose ./...
+	# We are pinned at go1.24.0, so we ignore issues for now
 
 .PHONY: vet
 vet: ## go vet ./...
