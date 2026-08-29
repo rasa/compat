@@ -615,7 +615,6 @@ but generally separate from, portable file metadata.
 | [`mattn/go-isatty`](https://github.com/mattn/go-isatty) | Terminal detection | Determines whether a file descriptor refers to a terminal or character device |
 | [`pkg/browser`](https://github.com/pkg/browser) | Open URLs and files | Opens URLs, files, or reader contents through the platform's browser facilities |
 | [`shirou/gopsutil`](https://github.com/shirou/gopsutil) | System and process information | Provides cross-platform CPU, memory, host, disk, network, and process information |
-| [`shirou/gopsutil/process`](https://pkg.go.dev/github.com/shirou/gopsutil/v4/process) | Process information and control | Lists processes and provides operations such as suspend, resume, foreground or background detection, and CPU affinity where supported |
 | [`tklauser/numcpus`](https://github.com/tklauser/numcpus) | Available CPU count | Determines the number of CPUs available to the current process using platform-specific facilities |
 
 ## Contributing
