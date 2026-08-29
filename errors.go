@@ -67,7 +67,7 @@ func mkdirTempError(path string, err error) error {
 }
 
 func niceError(msg string) error {
-	return &NiceError{errors.New(msg)}
+	return &NiceError{errors.New(msg)} //nolint:err113
 }
 
 func openError(path string, err error) error {

@@ -1,6 +1,6 @@
 module github.com/rasa/compat
 
-go 1.26.6
+go 1.24.0
 
 require (
 	github.com/OneOfOne/xxhash v1.2.8
@@ -10,15 +10,15 @@ require (
 	github.com/dustin/go-humanize v1.0.1
 	github.com/mattn/go-colorable v0.1.15
 	github.com/sergi/go-diff v1.4.0
-	github.com/shirou/gopsutil/v4 v4.26.7
-	golang.org/x/sys v0.47.0
-	golang.org/x/text v0.41.0
+	github.com/shirou/gopsutil/v4 v4.25.9
+	golang.org/x/sys v0.36.0
+	golang.org/x/text v0.34.0
 )
 
 require (
 	github.com/ebitengine/purego v0.10.2 // indirect
 	github.com/go-ole/go-ole v1.3.0 // indirect
-	github.com/hectane/go-acl v1.0.0 // indirect
+	github.com/hectane/go-acl v0.0.0-20230122075934-ca0b05cb1adb // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 // indirect
 	github.com/power-devops/perfstat v0.0.0-20260805114148-88456608a4f6 // indirect

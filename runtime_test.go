@@ -51,6 +51,7 @@ var arches = []string{
 
 func TestRuntimeConsts(t *testing.T) {
 	noGo := compat.IsAndroid || compat.IsIOS || compat.IsPlan9 || compat.IsTinygo || compat.IsWasm
+
 	goExe, err := exec.LookPath("go")
 	if err != nil {
 		if noGo {

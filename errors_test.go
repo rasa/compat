@@ -77,7 +77,6 @@ func TestErrorsExportedUnimplementedError(t *testing.T) {
 }
 
 func TestErrorsChmodError(t *testing.T) {
-
 	got := compat.ChmodError(pathStr, os.ErrInvalid).Error()
 
 	want := "chmod " + pathStr + ":"

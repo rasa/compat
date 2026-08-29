@@ -2,8 +2,9 @@
 # SPDX-FileCopyrightText: Copyright © 2025 Ross Smith II <ross@smithii.com>
 # SPDX-License-Identifier: MIT
 
-export GOTOOLCHAIN := go1.26.6+auto
+export GOMOD_VER := 1.24.0
 
+export GOTOOLCHAIN := go1.26.6+auto
 export GOLANGCI_LINT_VER := latest
 export GOFUMPT_VER := latest
 export GORELEASER_VER := latest
@@ -61,7 +62,7 @@ clean: ## remove files created during build pipeline
 
 .PHONY: mod
 mod: ## go mod tidy
-	go mod tidy -v -x
+	go mod tidy -v -x $(GOMOD_VER)
 	test -f go.tool.mod && go mod tidy -v -x $(TOOL_OPTS)
 
 .PHONY: gen
