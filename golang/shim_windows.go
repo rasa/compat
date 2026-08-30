@@ -8,7 +8,6 @@ package golang
 import (
 	"errors"
 	"os"
-	"syscall"
 	"unsafe"
 
 	"github.com/capnspacehook/go-acl"
@@ -28,34 +27,34 @@ const (
 const perm600 = os.FileMode(0o600)
 
 const (
-	CREATE_NEW                   = syscall.CREATE_NEW
-	EISDIR                       = syscall.EISDIR
-	ENOTDIR                      = syscall.ENOTDIR
-	ERROR_ACCESS_DENIED          = syscall.ERROR_ACCESS_DENIED
-	ERROR_ALREADY_EXISTS         = syscall.ERROR_ALREADY_EXISTS
-	ERROR_FILE_NOT_FOUND         = syscall.ERROR_FILE_NOT_FOUND
-	FILE_APPEND_DATA             = syscall.FILE_APPEND_DATA
-	FILE_ATTRIBUTE_DIRECTORY     = syscall.FILE_ATTRIBUTE_DIRECTORY
-	FILE_ATTRIBUTE_NORMAL        = syscall.FILE_ATTRIBUTE_NORMAL
-	FILE_ATTRIBUTE_READONLY      = syscall.FILE_ATTRIBUTE_READONLY
-	FILE_FLAG_BACKUP_SEMANTICS   = syscall.FILE_FLAG_BACKUP_SEMANTICS
-	FILE_FLAG_OPEN_REPARSE_POINT = syscall.FILE_FLAG_OPEN_REPARSE_POINT
-	FILE_SHARE_DELETE            = syscall.FILE_SHARE_DELETE
-	FILE_SHARE_READ              = syscall.FILE_SHARE_READ
-	FILE_SHARE_WRITE             = syscall.FILE_SHARE_WRITE
-	FILE_WRITE_ATTRIBUTES        = syscall.FILE_WRITE_ATTRIBUTES
-	GENERIC_READ                 = syscall.GENERIC_READ
-	GENERIC_WRITE                = syscall.GENERIC_WRITE
-	InvalidHandle                = syscall.InvalidHandle
-	O_CREAT                      = syscall.O_CREAT
-	O_CLOEXEC                    = syscall.O_CLOEXEC
+	CREATE_NEW                   = windows.CREATE_NEW
+	EISDIR                       = windows.EISDIR
+	ENOTDIR                      = windows.ENOTDIR
+	ERROR_ACCESS_DENIED          = windows.ERROR_ACCESS_DENIED
+	ERROR_ALREADY_EXISTS         = windows.ERROR_ALREADY_EXISTS
+	ERROR_FILE_NOT_FOUND         = windows.ERROR_FILE_NOT_FOUND
+	FILE_APPEND_DATA             = windows.FILE_APPEND_DATA
+	FILE_ATTRIBUTE_DIRECTORY     = windows.FILE_ATTRIBUTE_DIRECTORY
+	FILE_ATTRIBUTE_NORMAL        = windows.FILE_ATTRIBUTE_NORMAL
+	FILE_ATTRIBUTE_READONLY      = windows.FILE_ATTRIBUTE_READONLY
+	FILE_FLAG_BACKUP_SEMANTICS   = windows.FILE_FLAG_BACKUP_SEMANTICS
+	FILE_FLAG_OPEN_REPARSE_POINT = windows.FILE_FLAG_OPEN_REPARSE_POINT
+	FILE_SHARE_DELETE            = windows.FILE_SHARE_DELETE
+	FILE_SHARE_READ              = windows.FILE_SHARE_READ
+	FILE_SHARE_WRITE             = windows.FILE_SHARE_WRITE
+	FILE_WRITE_ATTRIBUTES        = windows.FILE_WRITE_ATTRIBUTES
+	GENERIC_READ                 = windows.GENERIC_READ
+	GENERIC_WRITE                = windows.GENERIC_WRITE
+	InvalidHandle                = windows.InvalidHandle
+	O_CREAT                      = windows.O_CREAT
+	O_CLOEXEC                    = windows.O_CLOEXEC
 	// https://github.com/golang/go/blob/ac803b59/src/syscall/types_windows.go#L50
 	o_DIRECTORY           = 0x04000
-	OPEN_ALWAYS           = syscall.OPEN_ALWAYS
-	OPEN_EXISTING         = syscall.OPEN_EXISTING
-	S_IWRITE              = syscall.S_IWRITE
-	STANDARD_RIGHTS_WRITE = syscall.STANDARD_RIGHTS_WRITE
-	SYNCHRONIZE           = syscall.SYNCHRONIZE
+	OPEN_ALWAYS           = windows.OPEN_ALWAYS
+	OPEN_EXISTING         = windows.OPEN_EXISTING
+	S_IWRITE              = windows.S_IWRITE
+	STANDARD_RIGHTS_WRITE = windows.STANDARD_RIGHTS_WRITE
+	SYNCHRONIZE           = windows.SYNCHRONIZE
 	// See https://github.com/golang/go/blob/ac803b59/src/syscall/types_windows.go#L114
 	// and https://github.com/golang/go/blob/ac803b59/src/internal/syscall/windows/types_windows.go#L28
 	_FILE_WRITE_EA = windows.FILE_WRITE_EA
@@ -71,19 +70,19 @@ var (
 )
 
 var (
-	CloseHandle                = syscall.CloseHandle
-	CreateFile                 = syscall.CreateFile
-	Ftruncate                  = syscall.Ftruncate
-	GetFileAttributes          = syscall.GetFileAttributes
-	GetFileInformationByHandle = syscall.GetFileInformationByHandle
-	// Syscall6                   = syscall.Syscall6 //nolint:staticcheck.
-	UTF16PtrFromString = syscall.UTF16PtrFromString
+	CloseHandle                = windows.CloseHandle
+	CreateFile                 = windows.CreateFile
+	Ftruncate                  = windows.Ftruncate
+	GetFileAttributes          = windows.GetFileAttributes
+	GetFileInformationByHandle = windows.GetFileInformationByHandle
+	// Syscall6                   = windows.Syscall6 //nolint:staticcheck.
+	UTF16PtrFromString = windows.UTF16PtrFromString
 )
 
 type (
-	ByHandleFileInformation = syscall.ByHandleFileInformation
-	Handle                  = syscall.Handle
-	SecurityAttributes      = syscall.SecurityAttributes
+	ByHandleFileInformation = windows.ByHandleFileInformation
+	Handle                  = windows.Handle
+	SecurityAttributes      = windows.SecurityAttributes
 )
 
 // See https://github.com/golang/go/blob/ac803b59/src/runtime/os_windows.go#L435
@@ -118,12 +117,12 @@ func fixAttributesAndShareMode(flag int, attrs uint32, sharemode uint32) (uint32
 	return attrs, sharemode
 }
 
-func mkdir(longName string, _ uint32, sa *syscall.SecurityAttributes) error {
-	name, err := syscall.UTF16PtrFromString(longName)
+func mkdir(longName string, _ uint32, sa *windows.SecurityAttributes) error {
+	name, err := windows.UTF16PtrFromString(longName)
 	if err != nil {
 		return err
 	}
-	err = syscall.CreateDirectory(name, sa)
+	err = windows.CreateDirectory(name, sa)
 	if err != nil {
 		_ = Remove(longName)
 
@@ -144,14 +143,14 @@ func setStickyBit(name string) error {
 }
 
 // See https://github.com/golang/go/blob/ac803b59/src/syscall/zsyscall_windows.go#L43
-var modkernel32 = syscall.NewLazyDLL("kernel32.dll")
+var modkernel32 = windows.NewLazyDLL("kernel32.dll")
 
 // procCreateFileW = modkernel32.NewProc("CreateFileW").
 
 // Emulate newFile() as f.cleanup and f.pfd are private.
 // See https://github.com/golang/go/blob/ac803b59/src/os/file_windows.go#L50
-func newFile(h syscall.Handle, name string /*kind*/, _ string /*nonBlocking*/, _ bool) *File {
-	if h == syscall.InvalidHandle {
+func newFile(h windows.Handle, name string /*kind*/, _ string /*nonBlocking*/, _ bool) *File {
+	if h == windows.InvalidHandle {
 		return nil
 	}
 
@@ -200,7 +199,7 @@ var procGetFinalPathNameByHandleW = modkernel32.NewProc("GetFinalPathNameByHandl
 // Source: https://github.com/golang/go/blob/ac803b59/src/syscall/zsyscall_windows.go#L783-L790
 
 func GetFinalPathNameByHandle(file Handle, filePath *uint16, filePathSize uint32, flags uint32) (n uint32, err error) {
-	r0, _, e1 := syscall.Syscall6(procGetFinalPathNameByHandleW.Addr(), 4, uintptr(file), uintptr(unsafe.Pointer(filePath)), uintptr(filePathSize), uintptr(flags), 0, 0) //nolint:gosec,mnd,staticcheck
+	r0, _, e1 := windows.Syscall6(procGetFinalPathNameByHandleW.Addr(), 4, uintptr(file), uintptr(unsafe.Pointer(filePath)), uintptr(filePathSize), uintptr(flags), 0, 0) //nolint:gosec,mnd,staticcheck
 	n = uint32(r0)
 	if n == 0 || n >= filePathSize {
 		err = errnoErr(e1)
@@ -210,7 +209,7 @@ func GetFinalPathNameByHandle(file Handle, filePath *uint16, filePathSize uint32
 
 // Source: https://github.com/golang/go/blob/ac803b59/src/syscall/syscall_windows.go#L1295-L1312
 
-func fdpath(fd syscall.Handle, buf []uint16) ([]uint16, error) {
+func fdpath(fd windows.Handle, buf []uint16) ([]uint16, error) {
 	const (
 		FILE_NAME_NORMALIZED = 0
 		VOLUME_NAME_DOS      = 0
@@ -233,11 +232,11 @@ func Filepath(f *os.File) (string, error) {
 	if f == nil {
 		return "", errors.New("nil file pointer")
 	}
-	fd := syscall.Handle(f.Fd())
+	fd := windows.Handle(f.Fd())
 
 	// Source: https://github.com/golang/go/blob/ac803b59/src/syscall/syscall_windows.go#L1315-L1331
 
-	var buf [syscall.MAX_PATH + 1]uint16
+	var buf [windows.MAX_PATH + 1]uint16
 	path, err := fdpath(fd, buf[:])
 	if err != nil {
 		return "", err
@@ -254,7 +253,7 @@ func Filepath(f *os.File) (string, error) {
 	if len(path) >= 4 && path[0] == '\\' && path[1] == '\\' && path[2] == '?' && path[3] == '\\' {
 		path = path[4:]
 	}
-	pathString := syscall.UTF16ToString(path)
+	pathString := windows.UTF16ToString(path)
 
 	return pathString, nil
 }
