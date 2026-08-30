@@ -7,11 +7,13 @@
 package compat
 
 import (
+	"fmt"
 	"os"
+	"strings"
 )
 
 // Options define the behavior of `WriteFile()`, etc.
-type Options struct {
+type options struct {
 	nonAtomicReplace bool         // default false
 	atomically       bool         // default false
 	defaultFileMode  os.FileMode  // default 0
@@ -25,7 +27,7 @@ type Options struct {
 }
 
 // Option functions modify Options.
-type Option func(*Options)
+type Option func(*options)
 
 // WithNonAtomicReplace permits a non-atomic replacement when the
 // operating system cannot atomically replace an existing destination.
@@ -33,7 +35,7 @@ type Option func(*Options)
 // On Plan 9, this may temporarily leave the destination absent.
 // The default is false.
 func WithNonAtomicReplace(nonAtomicReplace bool) Option {
-	return func(opts *Options) {
+	return func(opts *options) {
 		opts.nonAtomicReplace = nonAtomicReplace
 	}
 }
@@ -41,7 +43,7 @@ func WithNonAtomicReplace(nonAtomicReplace bool) Option {
 // WithAtomicity creates or renames a file atomically.
 // Used by the WriteFile and WriteReader functions.
 func WithAtomicity(atomically bool) Option {
-	return func(opts *Options) {
+	return func(opts *options) {
 		opts.atomically = atomically
 	}
 }
@@ -50,7 +52,7 @@ func WithAtomicity(atomically bool) Option {
 // `os.CreateTemp()` default of `0600`.
 // Used by the WriteFile and WriteReader functions.
 func WithDefaultFileMode(mode os.FileMode) Option {
-	return func(opts *Options) {
+	return func(opts *options) {
 		opts.defaultFileMode = mode
 	}
 }
@@ -60,7 +62,7 @@ func WithDefaultFileMode(mode os.FileMode) Option {
 // Used by the Create, CreateTemp, MkdirTemp, Open, OpenFile, WriteFile, and
 // WriteReader functions.
 func WithFileMode(mode os.FileMode) Option {
-	return func(opts *Options) {
+	return func(opts *options) {
 		opts.fileMode = mode
 	}
 }
@@ -69,7 +71,7 @@ func WithFileMode(mode os.FileMode) Option {
 // Used by the Create, CreateTemp, Open, OpenFile, WriteFile, and WriteReader
 // functions.
 func WithFlags(flags int) Option {
-	return func(opts *Options) {
+	return func(opts *options) {
 		opts.flags |= flags
 	}
 }
@@ -78,7 +80,7 @@ func WithFlags(flags int) Option {
 // default value.
 // Used by the WriteFile and WriteReader functions.
 func WithKeepFileMode(keep bool) Option {
-	return func(opts *Options) {
+	return func(opts *options) {
 		opts.keepFileMode = keep
 	}
 }
@@ -93,7 +95,7 @@ func WithKeepFileMode(keep bool) Option {
 // Used by the Chmod, Create, CreateTemp, Fchmod, Open, OpenFile, WriteFile,
 // and WriteReader functions.
 func WithReadOnlyMode(mode ReadOnlyMode) Option {
-	return func(opts *Options) {
+	return func(opts *options) {
 		opts.readOnlyMode = mode
 	}
 }
@@ -102,7 +104,7 @@ func WithReadOnlyMode(mode ReadOnlyMode) Option {
 // which means to not retry at all.
 // Used by the Rename and RemoveAll functions.
 func WithRetrySeconds(seconds float64) Option {
-	return func(opts *Options) {
+	return func(opts *options) {
 		opts.retrySeconds = seconds
 	}
 }
@@ -113,7 +115,7 @@ func WithRetrySeconds(seconds float64) Option {
 // The option is functional on Windows only. On other OSes, it is ignored.
 // Used by the Symlink function.
 func WithSetSymlinkOwner(setSymlinkOwner bool) Option {
-	return func(opts *Options) {
+	return func(opts *options) {
 		opts.setSymlinkOwner = setSymlinkOwner
 	}
 }
@@ -122,7 +124,24 @@ func WithSetSymlinkOwner(setSymlinkOwner bool) Option {
 // The option is functional on Windows only. On other OSes, it is ignored.
 // Used by the Chmod function.
 func WithSkipACLs(skipACLs bool) Option {
-	return func(opts *Options) {
+	return func(opts *options) {
 		opts.skipACLs = skipACLs
 	}
+}
+
+func (o options) String() string {
+	var builder strings.Builder
+
+	fmt.Fprintf(&builder, "nonAtomicReplace:      %v\n", o.nonAtomicReplace)
+	fmt.Fprintf(&builder, "atomically:      %v\n", o.atomically)
+	fmt.Fprintf(&builder, "defaultFileMode: 0o%03o (%v)\n", o.defaultFileMode, o.defaultFileMode)
+	fmt.Fprintf(&builder, "fileMode:        0o%03o (%v)\n", o.fileMode, o.fileMode)
+	fmt.Fprintf(&builder, "flags:           0x%x\n", o.flags)
+	fmt.Fprintf(&builder, "keepFileMode:    %v\n", o.keepFileMode)
+	fmt.Fprintf(&builder, "readOnlyMode:    %v\n", o.readOnlyMode)
+	fmt.Fprintf(&builder, "retrySeconds:    %v\n", o.retrySeconds)
+	fmt.Fprintf(&builder, "setSymlinkOwner: %v\n", o.setSymlinkOwner)
+	fmt.Fprintf(&builder, "skipACLs:        %v\n", o.skipACLs)
+
+	return builder.String()
 }

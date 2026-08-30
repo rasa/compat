@@ -7,9 +7,24 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"runtime"
 )
 
 var ErrInvalidNice = errors.New("invalid nice value")
+
+func unsupportedError(op string) error { //nolint:unused
+	return fmt.Errorf("%s: %w", op, errors.ErrUnsupported)
+}
+
+func unimplementedError(op string) error { //nolint:unused
+	return fmt.Errorf(
+		"%s: unimplemented on %s/%s: %w",
+		op,
+		runtime.GOOS,
+		runtime.GOARCH,
+		errors.ErrUnsupported,
+	)
+}
 
 func invalidNiceError(nice int) error {
 	return fmt.Errorf(
@@ -21,7 +36,7 @@ func invalidNiceError(nice int) error {
 	)
 }
 
-func unexpectedNiceError(nice int) error { //nolint:unused
+func unexpectedNiceError(nice int) error {
 	return fmt.Errorf(
 		"BUG: value %d is unexpected: %w",
 		nice,

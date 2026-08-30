@@ -36,6 +36,10 @@ var NormalizeUnsupportedError = normalizeUnsupportedError
 
 var BuildOptions = buildOptions
 
+// options.go
+
+type Options = options
+
 // runtime.go
 
 var ExportedGoVersion = goVersion

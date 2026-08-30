@@ -50,7 +50,7 @@ func Create(name string, opts ...Option) (*os.File, error) {
 // The caller can use the file's Name method to find the pathname of the file.
 // It is the caller's responsibility to remove the file when it is no longer needed.
 func CreateTemp(dir, pattern string, opts ...Option) (*os.File, error) {
-	fopts := Options{
+	fopts := options{
 		fileMode: CreateTempPerm,
 		flags:    os.O_CREATE | os.O_TRUNC,
 	}
@@ -116,7 +116,7 @@ func MkdirTemp(dir, pattern string, opts ...Option) (string, error) {
 // methods on the returned File can be used for I/O.
 // If there is an error, it will be of type [*PathError].
 func OpenFile(name string, flag int, perm os.FileMode, opts ...Option) (*os.File, error) {
-	fopts := Options{
+	fopts := options{
 		fileMode: perm,
 		flags:    flag,
 	}

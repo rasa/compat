@@ -39,7 +39,7 @@ import (
 // error matching errors.ErrUnsupported and leaves the destination unchanged.
 // To work around this issue, use the WithNonAtomicReplace option.
 func WriteReader(name string, reader io.Reader, perm os.FileMode, opts ...Option) (err error) { //nolint:funlen,gocyclo
-	fopts := Options{
+	fopts := options{
 		flags:        os.O_CREATE | os.O_WRONLY | os.O_TRUNC,
 		fileMode:     perm,
 		keepFileMode: true,

@@ -36,7 +36,7 @@ type securityInfo struct {
 }
 
 func chmod(name string, perm os.FileMode, opts ...Option) error {
-	fopts := Options{
+	fopts := options{
 		fileMode: perm,
 	}
 
@@ -97,7 +97,7 @@ func chmod(name string, perm os.FileMode, opts ...Option) error {
 }
 
 func create(name string, opts ...Option) (*os.File, error) {
-	fopts := Options{
+	fopts := options{
 		fileMode: CreatePerm,
 		flags:    os.O_CREATE | os.O_TRUNC,
 	}
@@ -177,7 +177,7 @@ func mkdirAll(name string, perm os.FileMode) error {
 }
 
 func mkdirTemp(dir, pattern string, opts ...Option) (string, error) {
-	fopts := Options{
+	fopts := options{
 		fileMode: MkdirTempPerm,
 	}
 
@@ -213,7 +213,7 @@ func remove(name string) error {
 }
 
 func removeAll(path string, opts ...Option) error {
-	fopts := Options{}
+	fopts := options{}
 	for _, opt := range opts {
 		opt(&fopts)
 	}
@@ -229,7 +229,7 @@ func removeAll(path string, opts ...Option) error {
 }
 
 func symlink(oldname, newname string, opts ...Option) error {
-	fopts := Options{}
+	fopts := options{}
 	for _, opt := range opts {
 		opt(&fopts)
 	}

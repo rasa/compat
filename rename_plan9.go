@@ -13,7 +13,7 @@ import (
 )
 
 func rename(source, destination string, opts ...Option) error {
-	var fopts Options
+	var fopts options
 
 	for _, opt := range opts {
 		opt(&fopts)

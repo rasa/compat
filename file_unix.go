@@ -12,7 +12,7 @@ import (
 )
 
 func chmod(name string, mode os.FileMode, opts ...Option) error {
-	fopts := Options{
+	fopts := options{
 		fileMode: mode,
 	}
 	for _, opt := range opts {
@@ -23,7 +23,7 @@ func chmod(name string, mode os.FileMode, opts ...Option) error {
 }
 
 func create(name string, opts ...Option) (*os.File, error) {
-	fopts := Options{
+	fopts := options{
 		fileMode: CreatePerm,
 		flags:    os.O_CREATE | os.O_TRUNC,
 	}
@@ -57,7 +57,7 @@ func fchmod(file *os.File, mode os.FileMode, opts ...Option) error {
 		return chmodError("", os.ErrInvalid)
 	}
 
-	fopts := Options{
+	fopts := options{
 		fileMode: mode,
 	}
 	for _, opt := range opts {
@@ -72,7 +72,7 @@ var mkdir = os.Mkdir
 var mkdirAll = os.MkdirAll
 
 func mkdirTemp(dir, pattern string, opts ...Option) (string, error) {
-	fopts := Options{
+	fopts := options{
 		fileMode: MkdirTempPerm,
 	}
 

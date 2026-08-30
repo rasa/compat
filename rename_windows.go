@@ -16,7 +16,7 @@ import (
 )
 
 func rename(src, dst string, opts ...Option) error {
-	fopts := Options{}
+	fopts := options{}
 
 	for _, opt := range opts {
 		opt(&fopts)

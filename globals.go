@@ -4,15 +4,13 @@
 package compat
 
 import (
-	"fmt"
-	"strings"
 	"sync"
 	"sync/atomic"
 )
 
 var (
-	optionsPtr     atomic.Pointer[Options]
-	optionDefaults = &Options{}
+	optionsPtr     atomic.Pointer[options]
+	optionDefaults = &options{}
 	optionsMux     sync.Mutex
 )
 
@@ -79,28 +77,11 @@ func SetOptions(opts ...Option) {
 	optionsMux.Unlock()
 }
 
-func buildOptions(opts ...Option) Options {
+func buildOptions(opts ...Option) options {
 	options := *optionsPtr.Load()
 	for _, fn := range opts {
 		fn(&options)
 	}
 
 	return options
-}
-
-func (o Options) String() string {
-	var builder strings.Builder
-
-	fmt.Fprintf(&builder, "nonAtomicReplace:      %v\n", o.nonAtomicReplace)
-	fmt.Fprintf(&builder, "atomically:      %v\n", o.atomically)
-	fmt.Fprintf(&builder, "defaultFileMode: 0o%03o (%v)\n", o.defaultFileMode, o.defaultFileMode)
-	fmt.Fprintf(&builder, "fileMode:        0o%03o (%v)\n", o.fileMode, o.fileMode)
-	fmt.Fprintf(&builder, "flags:           0x%x\n", o.flags)
-	fmt.Fprintf(&builder, "keepFileMode:    %v\n", o.keepFileMode)
-	fmt.Fprintf(&builder, "readOnlyMode:    %v\n", o.readOnlyMode)
-	fmt.Fprintf(&builder, "retrySeconds:    %v\n", o.retrySeconds)
-	fmt.Fprintf(&builder, "setSymlinkOwner: %v\n", o.setSymlinkOwner)
-	fmt.Fprintf(&builder, "skipACLs:        %v\n", o.skipACLs)
-
-	return builder.String()
 }
