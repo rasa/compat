@@ -25,24 +25,24 @@ func Nice() (int, error) {
 
 	data, err := os.ReadFile(path)
 	if err != nil {
-		return 0, err
+		return 0, niceError("cannot read "+path, err)
 	}
 
 	fields := strings.Fields(string(data))
 	if len(fields) < 2 {
-		return 0, niceError("malformed process status in %v" + path)
+		return 0, fmt.Errorf("nice: malformed process status in %q", path)
 	}
 
 	// The last two fields are the base and current scheduling priorities.
 	pri := fields[len(fields)-2]
 	basePriority, err := strconv.Atoi(pri)
 	if err != nil {
-		return 0, &NiceError{fmt.Errorf("invalid base priority %q in %v: %w", pri, path, err)}
+		return 0, fmt.Errorf("nice: invalid base priority %q in %q: %w", pri, path, err)
 	}
 
 	nice, ok := niceMap[basePriority]
 	if !ok {
-		return 0, niceError(fmt.Sprintf("invalid Plan 9 priority %d in %v", basePriority, path))
+		return 0, fmt.Errorf("nice: invalid priority %d in %q", basePriority, path)
 	}
 
 	return nice, nil
@@ -132,26 +132,27 @@ var niceMap = map[int]int{
 // Windows, Plan 9, etc. If not supported by the operating system, nil is
 // returned.
 func Renice(nice int) error {
+	err := validateNice(nice)
+	if err != nil {
+		return err
+	}
+
 	priority, ok := priorityMap[nice]
 	if !ok {
-		return &InvalidNiceError{nice}
+		return unexpectedNiceError(nice)
 	}
 
 	path := fmt.Sprintf("/proc/%d/ctl", os.Getpid())
 
 	f, err := os.OpenFile(path, os.O_WRONLY, 0)
 	if err != nil {
-		return &ReniceError{nice, err}
+		return niceError("cannot open process control file", err)
 	}
+	defer f.Close()
 
-	_, writeErr := fmt.Fprintf(f, "pri %d", priority)
-	closeErr := f.Close()
-
-	if writeErr != nil {
-		return &ReniceError{nice, writeErr}
-	}
-	if closeErr != nil {
-		return &ReniceError{nice, closeErr}
+	_, err = fmt.Fprintf(f, "pri %d", priority)
+	if err != nil {
+		return niceError("cannot write to process control file", err)
 	}
 
 	return nil

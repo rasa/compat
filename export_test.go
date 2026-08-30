@@ -5,30 +5,32 @@ package compat
 
 // dir.go
 
-var FSDirEntryToDirEntry = fsDirEntryToDirEntry
-
-var FSFileInfoToDirEntry = fsFileInfoToDirEntry
-
-var OSDirEntryToDirEntry = osDirEntryToDirEntry
+var (
+	FSDirEntryToDirEntry = fsDirEntryToDirEntry
+	FSFileInfoToDirEntry = fsFileInfoToDirEntry
+	OSDirEntryToDirEntry = osDirEntryToDirEntry
+)
 
 // errors.go
 
 var (
-	ExportedUnsupportedError   = unsupportedError
-	ExportedUnimplementedError = unimplementedError
-	ChmodError                 = chmodError
-	CreateError                = createError
-	CreateTempError            = createTempError
-	MkdirError                 = mkdirError
-	MkdirallError              = mkdirallError
-	MkdirTempError             = mkdirTempError
-	ExportedNiceError          = niceError
-	OpenError                  = openError
-	RenameError                = renameError
-	StatError                  = statError
-	SymlinkError               = symlinkError
-	WriteError                 = writeError
+	ChmodError      = chmodError
+	CreateError     = createError
+	CreateTempError = createTempError
+	MkdirError      = mkdirError
+	MkdirallError   = mkdirallError
+	MkdirTempError  = mkdirTempError
+	NiceError       = niceError
+	OpenError       = openError
+	RenameError     = renameError
+	StatError       = statError
+	SymlinkError    = symlinkError
+	WriteError      = writeError
 )
+
+// errors_plan9.go/errors_other.go
+
+var NormalizeUnsupportedError = normalizeUnsupportedError
 
 // globals.go
 

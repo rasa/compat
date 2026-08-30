@@ -4,7 +4,6 @@
 package compat_test
 
 import (
-	"errors"
 	"runtime"
 	"testing"
 
@@ -68,7 +67,7 @@ func TestNiceReniceIfRootValid(t *testing.T) {
 				return
 			}
 
-			// under act, "permission denied" is returned, even though we root.
+			// under act, "permission denied" is returned, even though we are root.
 			t.Skipf("Renice: got %v, want nil", err)
 		}
 	}
@@ -101,24 +100,5 @@ func TestNiceReniceIfRootInvalid(t *testing.T) {
 		}
 
 		t.Fatalf("Renice(%v): got nil, want error", invalidNice)
-	}
-}
-
-func TestNiceErrors(t *testing.T) {
-	err := errors.New("Test")
-
-	e1 := &compat.NiceError{err}
-	if e1.Error() == "" {
-		t.Fatal("NiceError: got '', want non-empty string")
-	}
-
-	e2 := &compat.InvalidNiceError{1024}
-	if e2.Error() == "" {
-		t.Fatal("InvalidNiceError: got '', want non-empty string")
-	}
-
-	e3 := &compat.ReniceError{1024, err}
-	if e3.Error() == "" {
-		t.Fatal("ReniceError: got '', want non-empty string")
 	}
 }

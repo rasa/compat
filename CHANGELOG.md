@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ### Added
 
 - Add `WithSkipACLs()` option. Useful on Windows only.
+- Add `ErrInvalidNice`.
 - Add running tests under iOS Simulator.
 
 ### Fixed
@@ -18,7 +19,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Changed
 
+- Deprecate `IsUnsupportedError()`. Will be removed eventually.
 - Deprecate `SupportsRelativeFstat()`. Will be removed eventually.
+- Remove `NiceError`. **BREAKING CHANGE**
+- Remove `InvalidNiceError`. **BREAKING CHANGE**
+- Remove `ReniceError`. **BREAKING CHANGE**
+- Remove `UnimplementedError`. **BREAKING CHANGE**
+- Remove `UnsupportedError`. **BREAKING CHANGE**
 
 ## [0.5.6](https://github.com/rasa/compat/compare/v0.5.5...v0.5.6)
 

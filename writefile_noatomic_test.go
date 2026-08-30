@@ -5,6 +5,7 @@ package compat_test
 
 import (
 	"bytes"
+	"errors"
 	"os"
 	"testing"
 
@@ -36,7 +37,7 @@ func TestWriteFileNonAtomicReplace(t *testing.T) {
 		compat.WithAtomicity(true),
 	)
 
-	if !compat.IsUnsupportedError(err) {
+	if !errors.Is(err, errors.ErrUnsupported) {
 		t.Fatalf("got %v, want unsupported error", err)
 	}
 

@@ -4,8 +4,19 @@
 package compat
 
 import (
+	"errors"
 	"io"
 )
+
+// IsUnsupportedError returns true if err indicates the function is unsupported.
+// Deprecated.
+//
+// This function will be removed in a future release.
+func IsUnsupportedError(err error) bool {
+	err = normalizeUnsupportedError(err)
+
+	return errors.Is(err, errors.ErrUnsupported)
+}
 
 // WriteFileAtomic atomically writes the contents of data to the specified filename.
 // The target file is guaranteed to be either fully written, or not written at all.

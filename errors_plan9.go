@@ -7,11 +7,14 @@ package compat
 
 import (
 	"errors"
+	"fmt"
 	"syscall"
 )
 
-// IsUnsupportedError returns true if err indicates the function is unsupported.
-func IsUnsupportedError(err error) bool {
-	return errors.Is(err, errors.ErrUnsupported) ||
-		errors.Is(err, syscall.EPLAN9)
+func normalizeUnsupportedError(err error) error {
+	if errors.Is(err, syscall.EPLAN9) {
+		return fmt.Errorf("%w: %w", errors.ErrUnsupported, err)
+	}
+
+	return err
 }

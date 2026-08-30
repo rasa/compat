@@ -43,7 +43,7 @@ func rename(source, destination string, opts ...Option) error {
 			return renameError(
 				source,
 				destination,
-				&UnsupportedError{Op: "rename"},
+				errors.ErrUnsupported,
 			)
 		}
 

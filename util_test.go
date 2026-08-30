@@ -451,9 +451,11 @@ func supportsHardLinks(t *testing.T) bool {
 		return true
 	}
 
+	err = compat.NormalizeUnsupportedError(err)
+
 	if errors.Is(err, syscall.EPERM) ||
 		errors.Is(err, syscall.EACCES) ||
-		compat.IsUnsupportedError(err) {
+		errors.Is(err, errors.ErrUnsupported) {
 		t.Logf("hard links unavailable on %v: %v", runtime.GOOS, err)
 
 		return false

@@ -5,14 +5,6 @@
 
 package compat
 
-import (
-	"errors"
-	"syscall"
-)
-
-// IsUnsupportedError returns true if err indicates the function is unsupported.
-func IsUnsupportedError(err error) bool {
-	return errors.Is(err, errors.ErrUnsupported) ||
-		errors.Is(err, syscall.ENOTSUP) ||
-		errors.Is(err, syscall.EOPNOTSUPP)
+func normalizeUnsupportedError(err error) error {
+	return err
 }

@@ -86,7 +86,7 @@ func (d dirEntry) Info() (FileInfo, error) {
 		d.typ = d.info.Mode().Type() //nolint:staticcheck
 	}
 
-	return d.info, nil
+	return d.info, d.err
 }
 
 func (d dirEntry) Name() string {

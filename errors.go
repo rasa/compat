@@ -7,39 +7,26 @@ import (
 	"errors"
 	"fmt"
 	"os"
-	"runtime"
 )
 
-type UnsupportedError struct {
-	Op string
+var ErrInvalidNice = errors.New("invalid nice value")
+
+func invalidNiceError(nice int) error {
+	return fmt.Errorf(
+		"value %d outside range %d..%d: %w",
+		nice,
+		MinNice,
+		MaxNice,
+		ErrInvalidNice,
+	)
 }
 
-func (e *UnsupportedError) Error() string {
-	return e.Op + ": unsupported"
-}
-
-func (e *UnsupportedError) Unwrap() error {
-	return errors.ErrUnsupported
-}
-
-type UnimplementedError struct {
-	Op string
-}
-
-func (e *UnimplementedError) Error() string {
-	return fmt.Sprintf("%s: unimplemented on %s/%s", e.Op, runtime.GOOS, runtime.GOARCH)
-}
-
-func (e *UnimplementedError) Unwrap() error {
-	return errors.ErrUnsupported
-}
-
-func unsupportedError(prefix string) error {
-	return &UnsupportedError{prefix}
-}
-
-func unimplementedError(prefix string) error {
-	return &UnimplementedError{prefix}
+func unexpectedNiceError(nice int) error { //nolint:unused
+	return fmt.Errorf(
+		"BUG: value %d is unexpected: %w",
+		nice,
+		ErrInvalidNice,
+	)
 }
 
 func chmodError(path string, err error) error {
@@ -66,8 +53,8 @@ func mkdirTempError(path string, err error) error {
 	return &os.PathError{Op: "mkdirtemp", Path: path, Err: err}
 }
 
-func niceError(msg string) error {
-	return &NiceError{errors.New(msg)} //nolint:err113
+func niceError(msg string, err error) error {
+	return fmt.Errorf("nice: %v: %w", msg, err)
 }
 
 func openError(path string, err error) error {

@@ -7,6 +7,7 @@ package compat
 
 import (
 	"fmt"
+	"os"
 
 	"golang.org/x/sys/windows"
 )
@@ -29,12 +30,13 @@ func Nice() (int, error) {
 
 	priorityClass, err := windows.GetPriorityClass(handle)
 	if err != nil {
-		return 0, &NiceError{err}
+		return 0, niceError("failed to get process priority", err)
 	}
 
 	nice, ok := niceMap[priorityClass]
 	if !ok {
-		return 0, &NiceError{fmt.Errorf("unknown priority class %v", priorityClass)}
+		msg := fmt.Sprintf("unknown priority class %v", priorityClass)
+		return 0, niceError(msg, os.ErrInvalid)
 	}
 
 	return nice, nil
@@ -99,16 +101,21 @@ var reniceMap = map[int]uint32{
 // -20 (least nice), to 19 (most nice), even on non-Unix systems such as
 // Windows, plan9, etc. If not supported by the operating system, nil is returned.
 func Renice(nice int) error {
+	err := validateNice(nice)
+	if err != nil {
+		return err
+	}
+
 	priorityClass, ok := reniceMap[nice]
 	if !ok {
-		return &InvalidNiceError{nice}
+		return unexpectedNiceError(nice)
 	}
 
 	handle := windows.CurrentProcess()
 
-	err := windows.SetPriorityClass(handle, priorityClass)
+	err = windows.SetPriorityClass(handle, priorityClass)
 	if err != nil {
-		return &ReniceError{nice, err}
+		return niceError("failed to set process priority", err)
 	}
 
 	return nil

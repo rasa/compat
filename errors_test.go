@@ -20,62 +20,6 @@ const (
 	pathStr = "path"
 )
 
-func TestErrorsIsUsupportedError(t *testing.T) {
-	err := &compat.UnsupportedError{Op: opStr}
-	got := compat.IsUnsupportedError(err)
-
-	want := true
-	if got != want {
-		t.Fatalf("IsUsupportedError: got %v, want %v", got, want)
-	}
-}
-
-func TestErrorsUnsupportedError(t *testing.T) {
-	err := &compat.UnsupportedError{Op: opStr}
-	got := err.Error()
-
-	want := opStr + ": unsupported"
-	if !strings.HasPrefix(got, want) {
-		t.Fatalf("UnsupportedError: got %q; want %q", got, want)
-	}
-
-	if !errors.Is(err, errors.ErrUnsupported) {
-		t.Fatalf("UnsupportedError: got %v, want ErrUnsupported", err)
-	}
-}
-
-func TestErrorsUnimplementedError(t *testing.T) {
-	err := &compat.UnimplementedError{Op: opStr}
-	got := err.Error()
-
-	want := opStr + ": unimplemented"
-	if !strings.HasPrefix(got, want) {
-		t.Fatalf("UnimplementedError: got %q; want %q", got, want)
-	}
-
-	if !errors.Is(err, errors.ErrUnsupported) {
-		t.Fatalf("UnimplementedError: got %v; want ErrUnsupported", err)
-	}
-}
-
-func TestErrorsExportedUnsupportedError(t *testing.T) {
-	got := compat.ExportedUnsupportedError(opStr).Error()
-
-	want := opStr + ": unsupported"
-	if !strings.HasPrefix(got, want) {
-		t.Fatalf("ExportedUnsupportedError: got %q; want %q", got, want)
-	}
-}
-
-func TestErrorsExportedUnimplementedError(t *testing.T) {
-	got := compat.ExportedUnimplementedError(opStr).Error()
-
-	want := opStr + ": unimplemented"
-	if !strings.HasPrefix(got, want) {
-		t.Fatalf("ExportedUnimplementedError: got %q; want %q", got, want)
-	}
-}
-
 func TestErrorsChmodError(t *testing.T) {
 	got := compat.ChmodError(pathStr, os.ErrInvalid).Error()
 
@@ -131,11 +75,11 @@ func TestErrorsMkdirTempError(t *testing.T) {
 }
 
 func TestErrorsNiceError(t *testing.T) {
-	got := compat.ExportedNiceError(errStr).Error()
+	got := compat.NiceError(errStr, errors.ErrUnsupported).Error()
 
 	want := "nice: " + errStr
 	if !strings.HasPrefix(got, want) {
-		t.Fatalf("niceError: got %q; want %q", got, want)
+		t.Fatalf("NiceError: got %q; want %q", got, want)
 	}
 }
 

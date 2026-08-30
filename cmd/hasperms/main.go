@@ -49,7 +49,7 @@ func supportsChmod(path string) (bool, error) {
 
 		ok := errors.As(err, &errno)
 		if ok {
-			if compat.IsUnsupportedError(err) {
+			if errors.Is(err, errors.ErrUnsupported) {
 				return false, nil
 			}
 		}
