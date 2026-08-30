@@ -44,7 +44,7 @@ func chmod(name string, perm os.FileMode, opts ...Option) error {
 		opt(&fopts)
 	}
 
-	if !opts.skipACLs {
+	if !fopts.skipACLs {
 		// acl.Chmod will panic otherwise
 		_, err := windows.UTF16PtrFromString(name)
 		if err != nil {
