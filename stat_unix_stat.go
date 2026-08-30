@@ -53,9 +53,11 @@ func (fs *fileStat) User() string {
 		u, err := user.LookupId(strconv.Itoa(fs.uid))
 		if err != nil {
 			fs.err = err
-		} else {
-			fs.user = u.Username
+
+			return ""
 		}
+
+		fs.user = u.Username
 	}
 
 	return fs.user
@@ -68,9 +70,11 @@ func (fs *fileStat) Group() string {
 		g, err := user.LookupGroupId(strconv.Itoa(fs.gid))
 		if err != nil {
 			fs.err = err
-		} else {
-			fs.group = g.Name
+
+			return ""
 		}
+
+		fs.group = g.Name
 	}
 
 	return fs.group
