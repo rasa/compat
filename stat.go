@@ -113,18 +113,15 @@ func Lstat(name string) (FileInfo, error) {
 // on Unix this means that the partition (device) and inode fields of the two
 // underlying structures are identical; on other systems the decision may be
 // based on the path names.
-// SamePartition only applies to results returned by this package's [Stat].
-// It returns false in other cases.
 func SameFile(fi1, fi2 FileInfo) bool {
-	fs1, ok1 := fi1.(*fileStat)
-
-	fs2, ok2 := fi2.(*fileStat)
-
-	if !ok1 || !ok2 {
+	if fi1 == nil || fi2 == nil {
 		return false
 	}
 
-	return fs1.partID == fs2.partID && fs1.fileID == fs2.fileID
+	return fi1.PartitionID() == fi2.PartitionID() &&
+		fi1.FileID() == fi2.FileID() &&
+		fi1.PartitionID() != 0 &&
+		fi1.FileID() != 0
 }
 
 // SameFiles reports whether name1 and name2 are the same file.
@@ -147,18 +144,12 @@ func SameFiles(name1, name2 string) (bool, error) {
 // partition. For example, on Unix this means that the partition (device) fields
 // of the two underlying structures are identical; on other systems
 // the decision may be based on the path names.
-// SamePartition only applies to results returned by this package's [Stat].
-// It returns false in other cases.
 func SamePartition(fi1, fi2 FileInfo) bool {
-	fs1, ok1 := fi1.(*fileStat)
-
-	fs2, ok2 := fi2.(*fileStat)
-
-	if !ok1 || !ok2 {
+	if fi1 == nil || fi2 == nil {
 		return false
 	}
 
-	return fs1.partID == fs2.partID
+	return fi1.PartitionID() == fi2.PartitionID() && fi1.PartitionID() != 0
 }
 
 // SamePartitions reports whether name1 and name2 are files on the same disk
