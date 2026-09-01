@@ -7,6 +7,7 @@ package compat
 
 import (
 	"os"
+	"sync"
 	"syscall"
 	"time"
 )
@@ -30,10 +31,11 @@ type fileStat struct {
 	user   string
 	group  string
 	path   string
-	btimed bool
-	// ctimed bool // unused
-	usered         bool
-	grouped        bool
 	followSymlinks bool
-	err            error
+	btimeOnce sync.Once
+	userOnce sync.Once
+	groupOnce sync.Once
+	err error
+	// unused:
+	// ctimeOnce sync.Once // unused
 }

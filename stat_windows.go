@@ -40,15 +40,17 @@ type fileStat struct {
 	user   string
 	group  string
 	path   string
-	// btimed bool unused
-	ctimed bool
-	usered bool
-	// grouped bool unused
 	followSymlinks bool
-	err            error
 	mux            sync.Mutex // Windows only
 	path16         []uint16   // Windows only
 	origName       string     // Windows only
+	userGroupOnce sync.Once   // Windows only
+	ctimeOnce sync.Once
+	err error
+	// unused:
+	// btimeOnce.Once sync
+	// userOnce.Once sync
+	// groupOnce.Once sync
 }
 
 // Portions of the following code is:
@@ -138,9 +140,7 @@ func (fs *fileStat) BTime() time.Time {
 }
 
 func (fs *fileStat) CTime() time.Time {
-	if !fs.ctimed {
-		fs.ctimed = true
-
+	fs.ctimeOnce.Do(func() {
 		attrs := uint32(windows.FILE_FLAG_BACKUP_SEMANTICS)
 		if !fs.followSymlinks {
 			attrs |= windows.FILE_FLAG_OPEN_REPARSE_POINT
@@ -154,7 +154,7 @@ func (fs *fileStat) CTime() time.Time {
 		if err != nil {
 			fs.err = statError(fs.origName, err)
 
-			return fs.ctime
+			return
 		}
 		defer windows.CloseHandle(h) //nolint:errcheck
 
@@ -164,12 +164,12 @@ func (fs *fileStat) CTime() time.Time {
 		if err != nil {
 			fs.err = statError(fs.origName, err)
 
-			return fs.ctime
+			return
 		}
 
 		if bi.ChangedTime == 0 {
 			// exFAT returns 0
-			return fs.ctime
+			return
 		}
 
 		// ChangedTime is 100-nanosecond intervals since January 1, 1601.
@@ -179,67 +179,40 @@ func (fs *fileStat) CTime() time.Time {
 		// Convert into nanoseconds.
 		nsec *= 100
 		fs.ctime = time.Unix(0, nsec)
-	}
+	})
 
 	return fs.ctime
 }
 
-func (fs *fileStat) UID() int {
-	if !fs.usered {
-		fs.usered = true
+func (fs *fileStat) getUserGroup() {
+	var err error
 
-		var err error
-
-		fs.uid, fs.gid, fs.user, fs.group, err = getUserGroup(fs.path)
-		if err != nil {
-			fs.err = statError(fs.origName, err)
-		}
+	fs.uid, fs.gid, fs.user, fs.group, err = getUserGroup(fs.path)
+	if err != nil {
+		fs.err = statError(fs.origName, err)
 	}
+}
+
+func (fs *fileStat) UID() int {
+	fs.userGroupOnce.Do(fs.getUserGroup)
 
 	return fs.uid
 }
 
 func (fs *fileStat) GID() int {
-	if !fs.usered {
-		fs.usered = true
-
-		var err error
-
-		fs.uid, fs.gid, fs.user, fs.group, err = getUserGroup(fs.path)
-		if err != nil {
-			fs.err = statError(fs.origName, err)
-		}
-	}
+	fs.userGroupOnce.Do(fs.getUserGroup)
 
 	return fs.gid
 }
 
 func (fs *fileStat) User() string {
-	if !fs.usered {
-		fs.usered = true
-
-		var err error
-
-		fs.uid, fs.gid, fs.user, fs.group, err = getUserGroup(fs.path)
-		if err != nil {
-			fs.err = statError(fs.origName, err)
-		}
-	}
+	fs.userGroupOnce.Do(fs.getUserGroup)
 
 	return fs.user
 }
 
 func (fs *fileStat) Group() string {
-	if !fs.usered {
-		fs.usered = true
-
-		var err error
-
-		fs.uid, fs.gid, fs.user, fs.group, err = getUserGroup(fs.path)
-		if err != nil {
-			fs.err = statError(fs.origName, err)
-		}
-	}
+	fs.userGroupOnce.Do(fs.getUserGroup)
 
 	return fs.group
 }

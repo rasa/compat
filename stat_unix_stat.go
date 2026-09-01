@@ -47,35 +47,31 @@ func (fs *fileStat) UID() int { return fs.uid }
 func (fs *fileStat) GID() int { return fs.gid }
 
 func (fs *fileStat) User() string {
-	if !fs.usered {
-		fs.usered = true
-
+	fs.userOnce.Do(func() {
 		userInfo, err := user.LookupId(strconv.Itoa(fs.uid))
 		if err != nil {
 			fs.err = err
 
-			return ""
+			return
 		}
 
 		fs.user = userInfo.Username
-	}
+	})
 
 	return fs.user
 }
 
 func (fs *fileStat) Group() string {
-	if !fs.grouped {
-		fs.grouped = true
-
+	fs.groupOnce.Do(func() {
 		groupInfo, err := user.LookupGroupId(strconv.Itoa(fs.gid))
 		if err != nil {
 			fs.err = err
 
-			return ""
+			return
 		}
 
 		fs.group = groupInfo.Name
-	}
+	})
 
 	return fs.group
 }

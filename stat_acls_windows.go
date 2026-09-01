@@ -17,6 +17,7 @@ import (
 var initialBufSize uint32 = 1024
 
 func init() {
+	// @TODO Remove testing code before v1.0 release.
 	if testing.Testing() {
 		initialBufSize = 0
 	}

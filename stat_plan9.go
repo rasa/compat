@@ -31,13 +31,14 @@ type fileStat struct {
 	gid    int
 	user   string
 	group  string
-	// path string // unused
-	// btimed bool // unused
-	// ctimed bool // unused
-	usered  bool
-	grouped bool
-	// followSymlinks bool // unused
 	err error
+	// unused:
+	// path string
+	// followSymlinks bool
+	// btimeOnce sync
+	// ctimeOnce sync
+	// userOnce sync
+	// groupOnce sync
 }
 
 func stat(fi os.FileInfo, _ string, _ bool) (FileInfo, error) {
@@ -62,37 +63,27 @@ func stat(fi os.FileInfo, _ string, _ bool) (FileInfo, error) {
 	fs.user = fs.sys.Uid
 	fs.group = fs.sys.Gid
 
+	if fs.user == "" {
+		fs.uid = UnknownID
+	} else {
+		fs.uid = int(xxhash.Checksum32([]byte(fs.user)))
+	}
+
+	if fs.group == "" {
+		fs.gid = UnknownID
+	} else {
+		fs.gid = int(xxhash.Checksum32([]byte(fs.group)))
+	}
+
 	return &fs, nil
 }
 
 func (fs *fileStat) BTime() time.Time { return fs.btime }
 func (fs *fileStat) CTime() time.Time { return fs.ctime }
 
-func (fs *fileStat) UID() int {
-	if !fs.usered {
-		fs.usered = true
-		if fs.user == "" {
-			fs.uid = UnknownID
-		} else {
-			fs.uid = int(xxhash.Checksum32([]byte(fs.user)))
-		}
-	}
+func (fs *fileStat) UID() int { return fs.uid }
 
-	return fs.uid
-}
-
-func (fs *fileStat) GID() int {
-	if !fs.grouped {
-		fs.grouped = true
-		if fs.group == "" {
-			fs.gid = UnknownID
-		} else {
-			fs.gid = int(xxhash.Checksum32([]byte(fs.group)))
-		}
-	}
-
-	return fs.gid
-}
+func (fs *fileStat) GID() int { return fs.gid }
 
 func (fs *fileStat) User() string  { return fs.user }
 func (fs *fileStat) Group() string { return fs.group }

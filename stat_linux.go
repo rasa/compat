@@ -17,9 +17,7 @@ func (fs *fileStat) times() {
 }
 
 func (fs *fileStat) BTime() time.Time {
-	if !fs.btimed {
-		fs.btimed = true
-
+	fs.btimeOnce.Do(func() {
 		var stx unix.Statx_t
 
 		var flags int
@@ -31,15 +29,15 @@ func (fs *fileStat) BTime() time.Time {
 		if err != nil {
 			fs.err = err
 
-			return fs.btime
+			return
 		}
 
 		if stx.Mask&unix.STATX_BTIME == 0 {
-			return fs.btime
+			return
 		}
 
 		fs.btime = time.Unix(int64(stx.Btime.Sec), int64(stx.Btime.Nsec)) //nolint:unconvert // needed conversion
-	}
+	})
 
 	return fs.btime
 }
