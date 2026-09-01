@@ -7,8 +7,6 @@ package volume
 
 import (
 	"fmt"
-
-	"github.com/rasa/compat"
 )
 
 func typeOf(_ Mount) (Type, error) {
