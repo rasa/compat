@@ -194,7 +194,7 @@ nuke: clean
 
 .PHONY: release
 release: ## Cut a new release via goreleaser
-release: ci
+release:
 	# go tool $(TOOL_OPTS) goreleaser release
 	go tool $(TOOL_OPTS) goreleaser release
 
