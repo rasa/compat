@@ -6,6 +6,7 @@
 package volume
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -77,7 +78,7 @@ func typeOf(mount Mount) (Type, error) {
 	device := mount.Device
 	base := filepath.Base(device)
 
-	// Handle special cases first
+	// Handle special cases first.
 	if strings.HasPrefix(base, "loop") {
 		return TypeLoop, nil
 	}
@@ -92,40 +93,56 @@ func typeOf(mount Mount) (Type, error) {
 		}
 	}
 
-	// If it's not a block device, check filesystem type (network, tmpfs, etc.)
+	// Determine the type of the mounted filesystem.
+	//
+	// Use the mountpoint, not mount.Device. Statfs("/dev/sda1") describes the
+	// filesystem containing the device node (/dev), not the filesystem mounted
+	// from /dev/sda1.
 	var st unix.Statfs_t
 
-	err := unix.Statfs(mount.Mountpoint, &st)
-	if err != nil {
-		return TypeUnknown, fmt.Errorf("statfs: %w", err)
+	if err := unix.Statfs(mount.Mountpoint, &st); err != nil {
+		return TypeUnknown, fmt.Errorf("statfs %q: %w", mount.Mountpoint, err)
 	}
 
-	magicID := st.Type
-
-	typ, ok := magicMap[magicID]
-	if ok {
+	if typ, ok := magicMap[st.Type]; ok {
 		return typ, nil
 	}
 
-	// Try sysfs to detect fixed/removable
+	// If the backing device is not a normal Linux block device, there may be
+	// nothing useful to inspect in sysfs.
 	sysPath := filepath.Join("/sys/class/block", base)
 
-	_, err = os.Stat(sysPath)
-	if os.IsNotExist(err) {
+	_, err := os.Stat(sysPath)
+	if errors.Is(err, os.ErrNotExist) {
 		return TypeUnavailable, nil
 	}
-
-	// Partitions: resolve parent
-	path := filepath.Join(sysPath, "partition")
-
-	_, err = os.Stat(path)
 	if err != nil {
-		return TypeUnknown, fmt.Errorf("os.Stat(%v): %w", path, err)
+		return TypeUnknown, fmt.Errorf("stat %q: %w", sysPath, err)
 	}
 
-	sysPath, _ = filepath.EvalSymlinks(filepath.Join(sysPath, ".."))
+	// Resolve /sys/class/block/<device> before looking for its parent.
+	realPath, err := filepath.EvalSymlinks(sysPath)
+	if err != nil {
+		return TypeUnknown, fmt.Errorf("resolve %q: %w", sysPath, err)
+	}
 
-	if readSys(filepath.Join(sysPath, "removable")) == "1" {
+	// If this is a partition, "removable" normally belongs to the parent block
+	// device rather than the partition itself.
+	partitionPath := filepath.Join(sysPath, "partition")
+
+	_, err = os.Stat(partitionPath)
+	switch {
+	case err == nil:
+		realPath = filepath.Dir(realPath)
+
+	case errors.Is(err, os.ErrNotExist):
+		// Whole device, not a partition. Keep realPath as-is.
+
+	default:
+		return TypeUnknown, fmt.Errorf("stat %q: %w", partitionPath, err)
+	}
+
+	if readSys(filepath.Join(realPath, "removable")) == "1" {
 		return TypeRemovable, nil
 	}
 
