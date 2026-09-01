@@ -9,6 +9,7 @@
 package compat
 
 import (
+	"fmt"
 	"sync"
 	"syscall"
 )
@@ -19,7 +20,7 @@ var (
 )
 
 func initUmask() error {
-	_ = GetUmask()
+	_, _ = GetUmask()
 	return nil
 }
 
