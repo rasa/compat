@@ -16,7 +16,7 @@ import (
 	"golang.org/x/sys/unix"
 )
 
-var magicMap = map[int64]Type{
+var magicMap = map[uint64]Type{
 	disk.AFS_SUPER_MAGIC:   TypeNetwork, // Andrew File System (AFS)
 	disk.CEPH_SUPER_MAGIC:  TypeNetwork, // Ceph distributed FS
 	disk.CIFS_MAGIC_NUMBER: TypeNetwork, // CIFS/SMB (Windows shares, Samba)
@@ -104,7 +104,7 @@ func typeOf(mount Mount) (Type, error) {
 		return TypeUnknown, fmt.Errorf("statfs %q: %w", mount.Mountpoint, err)
 	}
 
-	if typ, ok := magicMap[st.Type]; ok {
+	if typ, ok := magicMap[uint64(st.Type)]; ok {
 		return typ, nil
 	}
 

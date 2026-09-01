@@ -29,7 +29,7 @@ type FileFlags int
 
 func (f FileFlags) String() string {
 	type Flag struct {
-		k int
+		k uint64
 		v string
 	}
 
@@ -62,8 +62,8 @@ func (f FileFlags) String() string {
 		k := flag.k
 		v := flag.v
 
-		if int(f)&k == k {
-			if k == os.O_WRONLY || k == os.O_RDWR {
+		if uint64(f)&k == k {
+			if k == uint64(os.O_WRONLY) || k == uint64(os.O_RDWR) {
 				rdonly = false
 			}
 
@@ -81,7 +81,7 @@ func (f FileFlags) String() string {
 	}
 
 	if f != 0 {
-		s += fmt.Sprintf(",%x", int(f))
+		s += fmt.Sprintf(",%x", uint64(f))
 	}
 
 	return s
@@ -91,7 +91,7 @@ type FileAttrs int
 
 func (f FileAttrs) String() string {
 	type Flag struct {
-		k int
+		k uint64
 		v string
 	}
 
@@ -123,7 +123,7 @@ func (f FileAttrs) String() string {
 		k := flag.k
 		v := flag.v
 
-		if int(f)&k == k {
+		if uint64(f)&k == k {
 			if s != "" {
 				s += ","
 			}
@@ -134,7 +134,7 @@ func (f FileAttrs) String() string {
 	}
 
 	if f != 0 {
-		s += fmt.Sprintf(",%x", int(f))
+		s += fmt.Sprintf(",%x", uint64(f))
 	}
 
 	return s

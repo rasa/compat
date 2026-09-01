@@ -112,7 +112,7 @@ type Size struct {
 // CaseMapping
 ///////////////////////////////////////////////////////////////////////////////
 
-type CaseMapping uint
+type CaseMapping uint32
 
 const (
 	CaseMappingUnknown = 0 + iota
@@ -124,7 +124,7 @@ const (
 // UnicodeNormalization
 ///////////////////////////////////////////////////////////////////////////////
 
-type UnicodeNormalization uint
+type UnicodeNormalization uint32
 
 const (
 	UnicodeNormalizationUnknown     = 0 + iota
@@ -146,7 +146,7 @@ func normalizeNFD(s string) string { //nolint:unused
 // Feature
 ///////////////////////////////////////////////////////////////////////////////
 
-type Feature uint
+type Feature uint64
 
 const (
 	// Metadata
@@ -218,7 +218,7 @@ const (
 	FeatureLastArchiveTimestampsUpdateable
 )
 
-type Availability uint
+type Availability uint32
 
 const (
 	AvailabilityNever Availability = 0 + iota
@@ -232,7 +232,7 @@ var FeaturesNone = map[Feature]Availability{}
 // OSFeature
 ///////////////////////////////////////////////////////////////////////////////
 
-type OSFeature uint64
+type OSFeature uint32
 
 var OSFeaturesNone = map[OSFeature]Availability{}
 

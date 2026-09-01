@@ -4,7 +4,12 @@
 
 set +e
 
-mapfile -t targets < <(go tool dist list | grep -E -v '(android|ios)/' || true)
+if test -n "${BUILD_ALL:-}"; then
+  ignore='zzz'
+else
+  ignore='(386|arm)$'
+fi
+mapfile -t targets < <(go tool dist list | grep -E -v '(android|ios)/' | grep -E -v "${ignore}" || true)
 
 declare -A seen
 rv=0
