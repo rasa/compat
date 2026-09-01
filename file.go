@@ -26,8 +26,15 @@ import (
 //
 // On Plan 9, the mode's permission bits, [ModeAppend], [ModeExclusive],
 // and [ModeTemporary] are used.
-func Chmod(name string, mode os.FileMode, opts ...Option) error {
-	return chmod(name, mode, opts...)
+func Chmod(name string, mode os.FileMode, fns ...Option) error {
+	opts := options{
+		fileMode: mode,
+	}
+	for _, fn := range fns {
+		fn(&opts)
+	}
+
+	return chmod(name, mode, opts)
 }
 
 // Create creates or truncates the named file. If the file already exists,
@@ -36,8 +43,21 @@ func Chmod(name string, mode os.FileMode, opts ...Option) error {
 // be used for I/O; the associated file descriptor has mode [O_RDWR].
 // The directory containing the file must already exist.
 // If there is an error, it will be of type [*PathError].
-func Create(name string, opts ...Option) (*os.File, error) {
-	return create(name, opts...)
+func Create(name string, fns ...Option) (*os.File, error) {
+	opts := options{
+		fileMode: CreatePerm,
+		flags:    os.O_CREATE | os.O_TRUNC,
+	}
+
+	for _, fn := range fns {
+		fn(&opts)
+	}
+
+	if opts.flags&os.O_WRONLY != os.O_WRONLY {
+		opts.flags |= os.O_RDWR
+	}
+
+	return create(name, opts)
 }
 
 // CreateTemp creates a new temporary file in the directory dir,
@@ -49,33 +69,34 @@ func Create(name string, opts ...Option) (*os.File, error) {
 // Multiple programs or goroutines calling CreateTemp simultaneously will not choose the same file.
 // The caller can use the file's Name method to find the pathname of the file.
 // It is the caller's responsibility to remove the file when it is no longer needed.
-func CreateTemp(dir, pattern string, opts ...Option) (*os.File, error) {
-	fopts := options{
+func CreateTemp(dir, pattern string, fns ...Option) (*os.File, error) {
+	opts := options{
 		fileMode: CreateTempPerm,
 		flags:    os.O_CREATE | os.O_TRUNC,
 	}
 
-	for _, opt := range opts {
-		opt(&fopts)
+	for _, fn := range fns {
+		fn(&opts)
 	}
 
-	if fopts.flags&os.O_WRONLY != os.O_WRONLY {
-		fopts.flags |= os.O_RDWR
+	if opts.flags&os.O_WRONLY != os.O_WRONLY {
+		opts.flags |= os.O_RDWR
 	}
 
-	if IsWindows {
-		if fopts.readOnlyMode != ReadOnlyModeSet {
-			fopts.flags |= O_FILE_FLAG_NO_RO_ATTR
-		}
-	}
-
-	return createTemp(dir, pattern, fopts.fileMode, fopts.flags)
+	return createTemp(dir, pattern, opts)
 }
 
 // Fchmod changes the mode of the file to mode.
 // If there is an error, it will be of type [*PathError].
-func Fchmod(f *os.File, mode os.FileMode, opts ...Option) error {
-	return fchmod(f, mode, opts...)
+func Fchmod(fp *os.File, mode os.FileMode, fns ...Option) error {
+	opts := options{
+		fileMode: mode,
+	}
+	for _, fn := range fns {
+		fn(&opts)
+	}
+
+	return fchmod(fp, mode, opts)
 }
 
 // Mkdir creates a new directory with the specified name and perm's permission
@@ -104,8 +125,16 @@ func MkdirAll(path string, perm os.FileMode) error {
 // If dir is the empty string, MkdirTemp uses the default directory for temporary files, as returned by TempDir.
 // Multiple programs or goroutines calling MkdirTemp simultaneously will not choose the same directory.
 // It is the caller's responsibility to remove the directory when it is no longer needed.
-func MkdirTemp(dir, pattern string, opts ...Option) (string, error) {
-	return mkdirTemp(dir, pattern, opts...)
+func MkdirTemp(dir, pattern string, fns ...Option) (string, error) {
+	opts := options{
+		fileMode: MkdirTempPerm,
+	}
+
+	for _, fn := range fns {
+		fn(&opts)
+	}
+
+	return mkdirTemp(dir, pattern, opts)
 }
 
 // OpenFile is the generalized open call; most users will use Open
@@ -115,22 +144,16 @@ func MkdirTemp(dir, pattern string, opts ...Option) (string, error) {
 // the containing directory must exist. If successful,
 // methods on the returned File can be used for I/O.
 // If there is an error, it will be of type [*PathError].
-func OpenFile(name string, flag int, perm os.FileMode, opts ...Option) (*os.File, error) {
-	fopts := options{
+func OpenFile(name string, flag int, perm os.FileMode, fns ...Option) (*os.File, error) {
+	opts := options{
 		fileMode: perm,
 		flags:    flag,
 	}
-	for _, opt := range opts {
-		opt(&fopts)
+	for _, fn := range fns {
+		fn(&opts)
 	}
 
-	if IsWindows {
-		if fopts.readOnlyMode != ReadOnlyModeSet {
-			fopts.flags |= O_FILE_FLAG_NO_RO_ATTR
-		}
-	}
-
-	return openFile(name, fopts.flags, fopts.fileMode)
+	return openFile(name, opts)
 }
 
 // Remove removes the named file or directory.
@@ -144,14 +167,24 @@ func Remove(name string) error {
 // it encounters. If the path does not exist, RemoveAll
 // returns nil (no error).
 // If there is an error, it will be of type [*PathError].
-func RemoveAll(path string, opts ...Option) error {
-	return removeAll(path, opts...)
+func RemoveAll(path string, fns ...Option) error {
+	opts := options{}
+	for _, fn := range fns {
+		fn(&opts)
+	}
+
+	return removeAll(path, opts)
 }
 
 // Symlink creates newname as a symbolic link to oldname.
 // On Windows, a symlink to a non-existent oldname creates a file symlink;
 // if oldname is later created as a directory the symlink will not work.
 // If there is an error, it will be of type *LinkError.
-func Symlink(oldname, newname string, opts ...Option) error {
-	return symlink(oldname, newname, opts...)
+func Symlink(oldname, newname string, fns ...Option) error {
+	opts := options{}
+	for _, fn := range fns {
+		fn(&opts)
+	}
+
+	return symlink(oldname, newname, opts)
 }

@@ -11,6 +11,8 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+
+	"github.com/rasa/compat/golang"
 )
 
 // WriteReader writes r to the named file, creating it if necessary.
@@ -38,26 +40,25 @@ import (
 // of an existing file is not. If the destination exists, WriteReader returns an
 // error matching errors.ErrUnsupported and leaves the destination unchanged.
 // To work around this issue, use the WithNonAtomicReplace option.
-func WriteReader(name string, reader io.Reader, perm os.FileMode, opts ...Option) (err error) { //nolint:funlen,gocyclo
-	fopts := options{
+func WriteReader(name string, reader io.Reader, perm os.FileMode, fns ...Option) (err error) { //nolint:funlen,gocyclo
+	opts := options{
 		flags:        os.O_CREATE | os.O_WRONLY | os.O_TRUNC,
 		fileMode:     perm,
 		keepFileMode: true,
 	}
 
-	for _, opt := range opts {
-		opt(&fopts)
+	for _, fn := range fns {
+		fn(&opts)
 	}
 
 	var fileMode os.FileMode
 	// change default file mode for when file does not exist yet.
-	if fopts.defaultFileMode != 0 {
-		fileMode = fopts.defaultFileMode
+	if opts.defaultFileMode != 0 {
+		fileMode = opts.defaultFileMode
 	}
-
 	// get the file mode from the original file and use that for the replacement
 	// file, too.
-	if fopts.keepFileMode {
+	if opts.keepFileMode {
 		var destInfo os.FileInfo
 
 		destInfo, err = Stat(name)
@@ -69,9 +70,10 @@ func WriteReader(name string, reader io.Reader, perm os.FileMode, opts ...Option
 			fileMode = destInfo.Mode()
 		}
 	}
+
 	// given file mode always takes precedence
-	if fopts.fileMode != 0 {
-		fileMode = fopts.fileMode
+	if opts.fileMode != 0 {
+		fileMode = opts.fileMode
 	}
 
 	if fileMode.Perm() == 0 {
@@ -79,13 +81,15 @@ func WriteReader(name string, reader io.Reader, perm os.FileMode, opts ...Option
 	}
 
 	if IsWindows {
-		if fopts.readOnlyMode != ReadOnlyModeSet {
-			fopts.flags |= O_FILE_FLAG_NO_RO_ATTR
+		if opts.readOnlyMode != ReadOnlyModeSet {
+			opts.flags |= golang.O_FILE_FLAG_NO_RO_ATTR
 		}
 	}
 
-	if !fopts.atomically {
-		return writeReader(name, reader, fopts.flags, fileMode)
+	opts.fileMode = fileMode
+
+	if !opts.atomically {
+		return writeReader(name, reader, opts)
 	}
 
 	// write to a temp file first, then we'll atomically replace the target file
@@ -95,7 +99,7 @@ func WriteReader(name string, reader io.Reader, perm os.FileMode, opts ...Option
 		dir = "."
 	}
 
-	file, err := createTemp(dir, "~*.tmp", fileMode, fopts.flags)
+	file, err := createTemp(dir, "~*.tmp", opts)
 	if err != nil {
 		err = fmt.Errorf("cannot create tempfile: %w", err)
 
@@ -136,7 +140,7 @@ func WriteReader(name string, reader io.Reader, perm os.FileMode, opts ...Option
 		return writeError(name, err)
 	}
 
-	err = Rename(tempFileName, name, WithNonAtomicReplace(fopts.nonAtomicReplace))
+	err = Rename(tempFileName, name, fns...)
 	if err != nil {
 		err = fmt.Errorf("cannot rename to '%v': %w", tempFileName, err)
 
@@ -146,8 +150,8 @@ func WriteReader(name string, reader io.Reader, perm os.FileMode, opts ...Option
 	return nil
 }
 
-func writeReader(name string, reader io.Reader, flag int, perm os.FileMode) error {
-	file, err := openFile(name, flag, perm)
+func writeReader(name string, reader io.Reader, opts options) error {
+	file, err := openFile(name, opts)
 	if err != nil {
 		return writeError(name, err)
 	}

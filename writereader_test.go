@@ -508,7 +508,10 @@ func TestWriteReaderWithAtomicityError(t *testing.T) {
 }
 
 func TestWriteReaderExportedFileInvalid(t *testing.T) {
-	err := compat.ExportedWriteReader(invalidName, nilReader{}, 0, perm600)
+	opts := []compat.Option{compat.WithFileMode(perm600)}
+	fopts := compat.BuildOptions(opts...)
+
+	err := compat.ExportedWriteReader(invalidName, nilReader{}, fopts)
 	if err == nil {
 		t.Fatalf("got nil, want an error")
 	}
@@ -519,7 +522,10 @@ func TestWriteReaderExportedReaderInvalid(t *testing.T) {
 
 	cleanup(t, file)
 
-	err := compat.ExportedWriteReader(file, errReader{}, 0, perm600)
+	opts := []compat.Option{compat.WithFileMode(perm600)}
+	fopts := compat.BuildOptions(opts...)
+
+	err := compat.ExportedWriteReader(file, errReader{}, fopts)
 	if err == nil {
 		t.Fatalf("got nil, want an error")
 	}

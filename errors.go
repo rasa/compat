@@ -36,7 +36,7 @@ func invalidNiceError(nice int) error {
 	)
 }
 
-func unexpectedNiceError(nice int) error {
+func unexpectedNiceError(nice int) error { //nolint:unused
 	return fmt.Errorf(
 		"BUG: value %d is unexpected: %w",
 		nice,

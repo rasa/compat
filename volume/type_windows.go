@@ -22,9 +22,11 @@ var driveTypeMap = map[uint32]Type{
 
 func typeOf(mount Mount) (Type, error) {
 	driveTypeId := windows.GetDriveType(windows.StringToUTF16Ptr(mount.Mountpoint))
+
 	volType, ok := driveTypeMap[driveTypeId]
 	if !ok {
 		volType = driveTypeMap[windows.DRIVE_UNKNOWN]
 	}
+
 	return volType, nil
 }

@@ -27,12 +27,14 @@ func init() {
 		umask = strings.TrimLeft(umask, "0")
 		umask = strings.Trim(umask, "o")
 		umask = strings.TrimLeft(umask, "0")
+
 		ui64, err := strconv.ParseInt(umask, 8, 32)
 		if err == nil {
 			// ignore errors
 			startingUmask = uint32(ui64) & permMask //nolint:gosec
 		}
 	}
+
 	currentUmask.Store(startingUmask)
 }
 
@@ -43,6 +45,7 @@ func init() {
 // On Plan9 and Wasip1, the function does nothing, and always returns zero.
 func Umask(newMask int) int {
 	old := currentUmask.Swap(uint32(newMask) & permMask) //nolint:gosec
+
 	return int(old)
 }
 

@@ -16,8 +16,8 @@ import (
 
 	"golang.org/x/sys/windows"
 
-	compat_consts "github.com/rasa/compat/consts"
 	"github.com/rasa/compat/debug/consts"
+	"github.com/rasa/compat/golang"
 )
 
 func init() {
@@ -51,32 +51,39 @@ func (f FileFlags) String() string {
 		{consts.O_OPEN_REPARSE, "o_OPEN_REPARSE"}, // 0x400000000
 		{consts.O_WRITE_ATTRS, "o_WRITE_ATTRS"},   // 0x800000000
 
-		{consts.O_FILE_FLAG_DELETE_ON_CLOSE, "O_FILE_FLAG_DELETE_ON_CLOSE"}, // 0x04000000
-		{compat_consts.O_FILE_FLAG_NO_RO_ATTR, "O_FILE_FLAG_NO_RO_ATTR"},    // 0x00010000
+		{windows.FILE_FLAG_DELETE_ON_CLOSE, "FILE_FLAG_DELETE_ON_CLOSE"}, // 0x04000000
+		{golang.O_FILE_FLAG_NO_RO_ATTR, "O_FILE_FLAG_NO_RO_ATTR"},        // 0x00010000
 	}
 
 	s := ""
 	rdonly := true
+
 	for _, flag := range flags {
 		k := flag.k
 		v := flag.v
+
 		if int(f)&k == k {
 			if k == os.O_WRONLY || k == os.O_RDWR {
 				rdonly = false
 			}
+
 			if s != "" {
 				s += ","
 			}
+
 			s += v
 			f &^= FileFlags(k)
 		}
 	}
+
 	if rdonly {
 		s = "O_RDONLY," + s
 	}
+
 	if f != 0 {
 		s += fmt.Sprintf(",%x", int(f))
 	}
+
 	return s
 }
 
@@ -111,20 +118,25 @@ func (f FileAttrs) String() string {
 	}
 
 	s := ""
+
 	for _, flag := range flags {
 		k := flag.k
 		v := flag.v
+
 		if int(f)&k == k {
 			if s != "" {
 				s += ","
 			}
+
 			s += v
 			f &^= FileAttrs(k)
 		}
 	}
+
 	if f != 0 {
 		s += fmt.Sprintf(",%x", int(f))
 	}
+
 	return s
 }
 
@@ -202,7 +214,7 @@ var icalcsMap = map[uint32]string{ //nolint:unused
 }
 
 // https://github.com/golang/sys/blob/3d9a6b80/windows/security_windows.go#L992
-var maskMap = map[uint32]string{ //nolint:unused
+var maskMap = map[uint32]string{
 	// https://learn.microsoft.com/en-us/windows/win32/secauthz/access-mask?source=recommendations
 	windows.DELETE:       "DELETE",       // 0x00010000
 	windows.READ_CONTROL: "READ_CONTROL", // 0x00020000
@@ -238,21 +250,24 @@ var maskMap = map[uint32]string{ //nolint:unused
 	windows.FILE_WRITE_EA:         "FILE_WRITE_EA",         // 16 (0x10)
 }
 
-type AccessMask uint32 //nolint:unused
+type AccessMask uint32
 
-func (a AccessMask) String() string { //nolint:unused
+func (a AccessMask) String() string {
 	mask := uint32(a)
 	rv := ""
 	rights := map[string]uint32{}
+
 	for k, v := range maskMap {
 		if mask&k == k {
 			rights[v] = k
 			mask &^= k
 		}
 	}
+
 	if len(rights) == 0 {
 		return "NO ACCESS"
 	}
+
 	keys := slices.Collect(maps.Keys(rights))
 	slices.Sort(keys)
 	rv += strings.Join(keys, ",")
@@ -264,10 +279,11 @@ func (a AccessMask) String() string { //nolint:unused
 	return rv
 }
 
-func DumpMasks(perm os.FileMode, ownerMask uint32, groupMask uint32, worldMask uint32) { //nolint:unused
+func DumpMasks(perm os.FileMode, ownerMask uint32, groupMask uint32, worldMask uint32) {
 	if !strings.Contains(os.Getenv("COMPAT_DEBUG"), "DUMP") {
 		return
 	}
+
 	omask := AccessMask(ownerMask)
 	gmask := AccessMask(groupMask)
 	wmask := AccessMask(worldMask)
@@ -277,7 +293,7 @@ func DumpMasks(perm os.FileMode, ownerMask uint32, groupMask uint32, worldMask u
 
 // https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-createfilea
 
-var createModeMap = map[uint32]string{ //nolint:unused
+var createModeMap = map[uint32]string{
 	windows.CREATE_ALWAYS:     "CREATE_ALWAYS",     // 2
 	windows.CREATE_NEW:        "CREATE_NEW",        // 1
 	windows.OPEN_ALWAYS:       "OPEN_ALWAYS",       // 4
@@ -285,10 +301,11 @@ var createModeMap = map[uint32]string{ //nolint:unused
 	windows.TRUNCATE_EXISTING: "TRUNCATE_EXISTING", // 5
 }
 
-type CreateMode uint32 //nolint:unused
+type CreateMode uint32
 
-func (c CreateMode) String() string { //nolint:unused
+func (c CreateMode) String() string {
 	u := uint32(c)
+
 	v, ok := createModeMap[u]
 	if ok {
 		return v
@@ -297,16 +314,16 @@ func (c CreateMode) String() string { //nolint:unused
 	return fmt.Sprintf("Unknown create mode 0x%x", u)
 }
 
-var shareModeMap = map[uint32]string{ //nolint:unused
+var shareModeMap = map[uint32]string{
 	// windows.FILE_SHARE_NONE = 0
 	windows.FILE_SHARE_READ:   "FILE_SHARE_READ",   // 0x00000001
 	windows.FILE_SHARE_WRITE:  "FILE_SHARE_WRITE",  // 0x00000002
 	windows.FILE_SHARE_DELETE: "FILE_SHARE_DELETE", // 0x00000004
 }
 
-type ShareMode uint32 //nolint:unused
+type ShareMode uint32
 
-func (s ShareMode) String() string { //nolint:unused
+func (s ShareMode) String() string {
 	mask := uint32(s)
 	if mask == 0 {
 		return "FILE_SHARE_NONE"
@@ -314,12 +331,14 @@ func (s ShareMode) String() string { //nolint:unused
 
 	rv := ""
 	rights := map[string]uint32{}
+
 	for k, v := range shareModeMap {
 		if mask&k == k {
 			rights[v] = k
 			mask &^= k
 		}
 	}
+
 	keys := slices.Collect(maps.Keys(rights))
 	slices.Sort(keys)
 	rv += strings.Join(keys, ",")

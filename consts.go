@@ -5,8 +5,6 @@ package compat
 
 import (
 	"os"
-
-	"github.com/rasa/compat/consts"
 )
 
 const (
@@ -54,11 +52,6 @@ const (
 
 	// Verify we don't conflict with any of the values listed at
 	// https://github.com/golang/go/blob/ac803b59/src/syscall/types_windows.go#L37-L55
-
-	// O_FILE_FLAG_DELETE_ON_CLOSE deletes the file when closed.
-	O_FILE_FLAG_DELETE_ON_CLOSE = consts.O_FILE_FLAG_DELETE_ON_CLOSE
-	// O_FILE_FLAG_NO_RO_ATTR skips setting a file's read-only attribute on Windows.
-	O_FILE_FLAG_NO_RO_ATTR = consts.O_FILE_FLAG_NO_RO_ATTR
 )
 
 // A FileMode represents a file's mode and permission bits.

@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Added
 
+- Add `WithDeleteOnClose()` option.
 - Add `WithSkipACLs()` option. Useful on Windows only.
 - Add `ErrInvalidNice`.
 - Add running tests under iOS Simulator.
@@ -21,11 +22,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 - Deprecate `IsUnsupportedError()`. Will be removed eventually.
 - Deprecate `SupportsRelativeFstat()`. Will be removed eventually.
+- Move O_FILE_FLAG_DELETE_ON_CLOSE to golang package. **BREAKING CHANGE**
+- Move O_FILE_FLAG_NO_RO_ATTR to golang package. **BREAKING CHANGE**
 - Remove `NiceError`. **BREAKING CHANGE**
 - Remove `InvalidNiceError`. **BREAKING CHANGE**
 - Remove `ReniceError`. **BREAKING CHANGE**
 - Remove `UnimplementedError`. **BREAKING CHANGE**
 - Remove `UnsupportedError`. **BREAKING CHANGE**
+- Remove consts package as unneeded. **BREAKING CHANGE**
+- Remove O_* and Mode* constants. **BREAKING CHANGE**
 
 ## [0.5.6](https://github.com/rasa/compat/compare/v0.5.5...v0.5.6)
 

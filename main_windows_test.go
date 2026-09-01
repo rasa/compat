@@ -53,10 +53,12 @@ func testMain(m *testing.M, fsToTest, nativeFSType, fsPath string) int {
 		if len(tempPath) < 2 {
 			tempPath += ":"
 		}
+
 		if len(tempPath) < 3 {
 			tempPath += `\`
 		}
 	}
+
 	fsSize := os.Getenv("COMPAT_DEBUG_FS_SIZE")
 	if fsSize != "" {
 		tempSize = fsSize
@@ -67,21 +69,26 @@ func testMain(m *testing.M, fsToTest, nativeFSType, fsPath string) int {
 
 	fsToTestUpper := strings.ToUpper(fsToTest)
 	testsToRun := 0
+
 	for _, fsTest := range fsTests {
 		supported = append(supported, fsTest.fsName)
+
 		fsNameUpper := strings.ToUpper(fsTest.fsName)
 		if fsToTest != "" && fsToTestUpper != strings.ToUpper(allFS) && fsToTestUpper != fsNameUpper {
 			continue
 		}
+
 		testsToRun++
 	}
 
 	n := 0
+
 	for _, fsTest := range fsTests {
 		fsNameUpper := strings.ToUpper(fsTest.fsName)
 		if fsToTest != "" && fsToTestUpper != strings.ToUpper(allFS) && fsToTestUpper != fsNameUpper {
 			continue
 		}
+
 		n++
 
 		fsName := fsTest.fsName
@@ -120,14 +127,17 @@ func testMain(m *testing.M, fsToTest, nativeFSType, fsPath string) int {
 		tempDrive := string(tempPath[0])
 
 		exe := "powershell.exe"
+
 		exe, _ = exec.LookPath(exe)
 		if exe == "" {
 			exe, _ = exec.LookPath("pwsh.exe")
 		}
+
 		if exe == "" {
 			fmt.Printf("Cannot find powershell or pwsh in the PATH\n")
 			os.Exit(1)
 		}
+
 		args := []string{
 			"-file",
 			"create-vhdx.ps1",
@@ -137,9 +147,11 @@ func testMain(m *testing.M, fsToTest, nativeFSType, fsPath string) int {
 		}
 		out, err := runCapture(exe, args...)
 		log(out)
+
 		if err == nil {
 			code = m.Run()
 		}
+
 		if !strings.Contains(compatDebug, "NODEL") {
 			args = []string{
 				"-file",
@@ -148,12 +160,16 @@ func testMain(m *testing.M, fsToTest, nativeFSType, fsPath string) int {
 			out2, _ := runCapture(exe, args...)
 			log(out2)
 		}
+
 		if err != nil {
 			fmt.Printf("Skipping testing on %v: %v\n", fsTest.fsName, err)
+
 			if !testing.Verbose() {
 				fmt.Println(out)
 			}
+
 			code = 0
+
 			continue
 		}
 
@@ -161,9 +177,11 @@ func testMain(m *testing.M, fsToTest, nativeFSType, fsPath string) int {
 			return code
 		}
 	}
+
 	if code == 0 {
 		return 0
 	}
+
 	fmt.Printf("Unsupported filesystem: %q; use one of %v\n", fsToTest, strings.Join(supported, ","))
 
 	return 1

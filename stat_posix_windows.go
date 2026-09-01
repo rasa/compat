@@ -47,7 +47,7 @@ var (
 	procCopySid                   = modadvapi32.NewProc("CopySid")
 	procEqualDomainSid            = modadvapi32.NewProc("EqualDomainSid")
 	procGetNamedSecurityInfoW     = modadvapi32.NewProc("GetNamedSecurityInfoW")
-	procIsValidSid                = modadvapi32.NewProc("IsValidSid") //nolint:unused
+	procIsValidSid                = modadvapi32.NewProc("IsValidSid")
 	procLsaOpenPolicy             = modadvapi32.NewProc("LsaOpenPolicy")
 	procLsaQueryInformationPolicy = modadvapi32.NewProc("LsaQueryInformationPolicy")
 	procLsaFreeMemory             = modadvapi32.NewProc("LsaFreeMemory")
@@ -56,10 +56,12 @@ var (
 
 func getFileOwnerAndGroupSIDs(name string) (*windows.SID, *windows.SID, error) {
 	var owner, group *windows.SID
+
 	name16, err := windows.UTF16PtrFromString(name)
 	if err != nil {
 		return nil, nil, fmt.Errorf("invalid file path: %w", err)
 	}
+
 	r0, _, _ := procGetNamedSecurityInfoW.Call(
 		uintptr(unsafe.Pointer(name16)),
 		1, // SE_FILE_OBJECT
@@ -83,6 +85,7 @@ func getPrimaryDomainSID() (*windows.SID, error) {
 	defer procLsaClose.Call(uintptr(handle)) //nolint:errcheck
 
 	var buffer unsafe.Pointer
+
 	r0, _, _ := procLsaQueryInformationPolicy.Call(
 		uintptr(handle),
 		uintptr(PolicyAccountDomainInformation),
@@ -144,16 +147,19 @@ func sidToPOSIXID(sid *windows.SID, primaryDomainSid *windows.SID) (int, error) 
 		if err != nil {
 			return UnknownID, err
 		}
+
 		return 0x20000 + rid, nil //nolint:mnd
 	case strings.HasPrefix(sidStr, "S-1-5-21-"):
 		rid, err := getRID(sid)
 		if err != nil {
 			return UnknownID, err
 		}
+
 		b, err := equalDomainSid(sid, primaryDomainSid)
 		if err != nil {
 			return UnknownID, err
 		}
+
 		if b {
 			return 0x40000 + rid, nil //nolint:mnd
 		}
@@ -179,11 +185,15 @@ func nameFromSID(sid *windows.SID) (string, error) {
 
 	// See https://learn.microsoft.com/en-us/windows/win32/secauthz/searching-for-a-sid-in-an-access-token-in-c--
 	const MAX_NAME = 256
-	var nameLen uint32 = MAX_NAME
-	var domainLen uint32 = MAX_NAME
+
+	var (
+		nameLen   uint32 = MAX_NAME
+		domainLen uint32 = MAX_NAME
+	)
 
 	name16 := make([]uint16, nameLen)
 	domain16 := make([]uint16, domainLen)
+
 	var sidUse uint32
 
 	err := windows.LookupAccountSid(
@@ -249,6 +259,7 @@ func equalDomainSid(sid1, sid2 *windows.SID) (bool, error) {
 	}
 
 	var equal int32
+
 	r1, _, e1 := syscall.SyscallN(
 		procEqualDomainSid.Addr(),
 		uintptr(unsafe.Pointer(sid1)),
@@ -267,10 +278,11 @@ func equalDomainSid(sid1, sid2 *windows.SID) (bool, error) {
 }
 
 // Used only in the tests, for now.
-func isValidSid(sid *windows.SID) bool { //nolint:unused
+func isValidSid(sid *windows.SID) bool {
 	if sid == nil {
 		return false
 	}
+
 	r1, _, _ := syscall.SyscallN(
 		procIsValidSid.Addr(),
 		uintptr(unsafe.Pointer(sid)),
@@ -281,6 +293,7 @@ func isValidSid(sid *windows.SID) bool { //nolint:unused
 
 func lsaOpenPolicy(systemName *uint16, access uint32) (handle windows.Handle, err error) {
 	var objectAttrs LSA_OBJECT_ATTRIBUTES
+
 	r0, _, _ := procLsaOpenPolicy.Call(
 		uintptr(unsafe.Pointer(systemName)),
 		uintptr(unsafe.Pointer(&objectAttrs)),
@@ -310,5 +323,6 @@ func copySid(src *windows.SID) (*windows.SID, error) {
 	if ret == 0 {
 		return nil, err
 	}
+
 	return (*windows.SID)(unsafe.Pointer(&dst[0])), nil
 }

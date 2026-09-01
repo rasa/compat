@@ -19,6 +19,7 @@ var (
 
 func cpuBits() (int, error) {
 	var isWow64 uint32
+
 	handle := windows.CurrentProcess()
 	r1, _, err := procIsWow64Process.Call(uintptr(handle), uintptr(unsafe.Pointer(&isWow64)))
 
@@ -29,6 +30,7 @@ func cpuBits() (int, error) {
 
 		return 0, errors.New("IsWow64Process call failed")
 	}
+
 	if isWow64 != 0 {
 		return 64, nil //nolint:mnd
 	}

@@ -292,7 +292,7 @@ func TestFilePosixOpenFile(t *testing.T) {
 func TestFilePosixOpenFileDelete(t *testing.T) {
 	name := tempName(t)
 
-	fh, err := compat.OpenFile(name, os.O_RDWR|os.O_CREATE|compat.O_FILE_FLAG_DELETE_ON_CLOSE, os.FileMode(0o666))
+	fh, err := compat.OpenFile(name, os.O_RDWR|os.O_CREATE, os.FileMode(0o666), compat.WithDeleteOnClose(true))
 	if err != nil {
 		// workaround:
 		// https://github.com/rasa/compat/actions/runs/16542086538/job/46784707170#step:6:48
@@ -312,7 +312,7 @@ func TestFilePosixOpenFileDelete(t *testing.T) {
 
 	_, err = os.Stat(name)
 	if !errors.Is(err, os.ErrNotExist) {
-		t.Fatal("File exists, should not")
+		t.Fatalf("File exists, should not, err=%v", err)
 	}
 }
 

@@ -18,6 +18,12 @@ const (
 	O_EXCL   = os.O_EXCL   // used with O_CREATE, file must not exist.
 	O_SYNC   = os.O_SYNC   // open for synchronous I/O.
 	O_TRUNC  = os.O_TRUNC  // truncate regular writable file when opened.
+
+	// O_FILE_FLAG_NO_RO_ATTR skips setting a file's read-only attribute on Windows.
+	// We set this data empirically, based on the values listed at
+	// https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-createfilea and
+	// https://learn.microsoft.com/en-us/windows/win32/fileio/file-attribute-constants
+	O_FILE_FLAG_NO_RO_ATTR = 0x00010000
 )
 
 var (

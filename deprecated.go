@@ -28,10 +28,10 @@ func IsUnsupportedError(err error) bool {
 // Deprecated: Use WriteFile() with WithAtomicity(true) instead.
 //
 // This function will be removed in a future release.
-func WriteFileAtomic(filename string, data []byte, opts ...Option) error {
-	opts = append(opts, WithAtomicity(true))
+func WriteFileAtomic(filename string, data []byte, fns ...Option) error {
+	fns = append(fns, WithAtomicity(true))
 
-	return WriteFile(filename, data, CreatePerm, opts...)
+	return WriteFile(filename, data, CreatePerm, fns...)
 }
 
 // WriteReaderAtomic atomically writes the contents of r to the specified filename.
@@ -44,10 +44,10 @@ func WriteFileAtomic(filename string, data []byte, opts ...Option) error {
 // Deprecated: Use WriteReader() with WithAtomicity(true) instead.
 //
 // This function will be removed in a future release.
-func WriteReaderAtomic(filename string, r io.Reader, opts ...Option) error {
-	opts = append(opts, WithAtomicity(true))
+func WriteReaderAtomic(filename string, r io.Reader, fns ...Option) error {
+	fns = append(fns, WithAtomicity(true))
 
-	return WriteReader(filename, r, CreatePerm, opts...)
+	return WriteReader(filename, r, CreatePerm, fns...)
 }
 
 // Deprecated: Use GoVersion() instead.

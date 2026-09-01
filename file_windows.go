@@ -35,23 +35,15 @@ type securityInfo struct {
 	perm     os.FileMode
 }
 
-func chmod(name string, perm os.FileMode, opts ...Option) error {
-	fopts := options{
-		fileMode: perm,
-	}
-
-	for _, opt := range opts {
-		opt(&fopts)
-	}
-
-	if !fopts.skipACLs {
+func chmod(name string, perm os.FileMode, opts options) error {
+	if !opts.skipACLs {
 		// acl.Chmod will panic otherwise
 		_, err := windows.UTF16PtrFromString(name)
 		if err != nil {
 			return chmodError(name, os.ErrInvalid)
 		}
 
-		perm = fopts.fileMode.Perm()
+		perm = opts.fileMode.Perm()
 
 		// set Windows' ACLs
 		err = acl.Chmod(name, perm)
@@ -60,7 +52,7 @@ func chmod(name string, perm os.FileMode, opts ...Option) error {
 		}
 	}
 
-	if fopts.readOnlyMode == ReadOnlyModeIgnore {
+	if opts.readOnlyMode == ReadOnlyModeIgnore {
 		return nil
 	}
 
@@ -71,11 +63,13 @@ func chmod(name string, perm os.FileMode, opts ...Option) error {
 
 	// Set or clear Windows' read-only attribute
 	want := perm&windows.S_IWRITE != 0 // 0x80 (0o200)
+
 	got := fi.Mode().Perm()&windows.S_IWRITE != 0
-	if fopts.readOnlyMode == ReadOnlyModeReset {
+	if opts.readOnlyMode == ReadOnlyModeReset {
 		if !got {
 			return nil
 		}
+
 		want = false
 	}
 
@@ -88,6 +82,7 @@ func chmod(name string, perm os.FileMode, opts ...Option) error {
 	} else {
 		perm &^= os.FileMode(windows.S_IWRITE)
 	}
+
 	err = os.Chmod(name, perm)
 	if err != nil {
 		return chmodError(name, fmt.Errorf("%w (chmod)", err))
@@ -96,39 +91,35 @@ func chmod(name string, perm os.FileMode, opts ...Option) error {
 	return nil
 }
 
-func create(name string, opts ...Option) (*os.File, error) {
-	fopts := options{
-		fileMode: CreatePerm,
-		flags:    os.O_CREATE | os.O_TRUNC,
+func create(name string, opts options) (*os.File, error) {
+	if opts.readOnlyMode != ReadOnlyModeSet {
+		opts.flags |= golang.O_FILE_FLAG_NO_RO_ATTR
 	}
 
-	for _, opt := range opts {
-		opt(&fopts)
+	if opts.deleteOnClose {
+		opts.flags |= golang.FILE_FLAG_DELETE_ON_CLOSE
 	}
 
-	if fopts.flags&os.O_WRONLY != os.O_WRONLY {
-		fopts.flags |= os.O_RDWR
-	}
-
-	if fopts.readOnlyMode != ReadOnlyModeSet {
-		fopts.flags |= O_FILE_FLAG_NO_RO_ATTR
-	}
-
-	sa, err := saFromPerm(fopts.fileMode, true)
+	sa, err := saFromPerm(opts.fileMode, true)
 	if err != nil {
 		return nil, createError(name, err)
 	}
 
-	return golang.OpenFileNolog(name, fopts.flags, fopts.fileMode, sa)
+	return golang.OpenFileNolog(name, opts.flags, opts.fileMode, sa)
 }
 
-func createTemp(dir, pattern string, perm os.FileMode, flag int) (*os.File, error) {
-	if perm == 0 {
-		perm = CreateTempPerm // 0o600
+func createTemp(dir, pattern string, opts options) (*os.File, error) {
+	if opts.deleteOnClose {
+		opts.flags |= golang.FILE_FLAG_DELETE_ON_CLOSE
 	}
-	sa, err := saFromPerm(perm, true)
+
+	if opts.readOnlyMode != ReadOnlyModeSet {
+		opts.flags |= golang.O_FILE_FLAG_NO_RO_ATTR
+	}
+
+	sa, err := saFromPerm(opts.fileMode, true)
 	if err == nil {
-		f, err := golang.CreateTemp(dir, pattern, flag, perm, sa)
+		f, err := golang.CreateTemp(dir, pattern, opts.flags, opts.fileMode, sa)
 		if err == nil {
 			return f, nil
 		}
@@ -137,13 +128,14 @@ func createTemp(dir, pattern string, perm os.FileMode, flag int) (*os.File, erro
 	return nil, createTempError(dir, err)
 }
 
-func fchmod(f *os.File, mode os.FileMode, opts ...Option) error {
+func fchmod(f *os.File, mode os.FileMode, opts options) error {
 	if f == nil {
 		return chmodError("", os.ErrInvalid)
 	}
+
 	path, err := golang.Filepath(f)
 	if err == nil {
-		err = chmod(path, mode, opts...)
+		err = chmod(path, mode, opts)
 		if err == nil {
 			return nil
 		}
@@ -155,7 +147,7 @@ func fchmod(f *os.File, mode os.FileMode, opts ...Option) error {
 func mkdir(name string, perm os.FileMode) error {
 	sa, err := saFromPerm(perm, true)
 	if err == nil {
-		err = golang.Mkdir(name, MkdirTempPerm, sa)
+		err = golang.Mkdir(name, perm, sa)
 		if err == nil {
 			return nil
 		}
@@ -167,7 +159,7 @@ func mkdir(name string, perm os.FileMode) error {
 func mkdirAll(name string, perm os.FileMode) error {
 	sa, err := saFromPerm(perm, true)
 	if err == nil {
-		err = golang.MkdirAll(name, MkdirTempPerm, sa)
+		err = golang.MkdirAll(name, perm, sa)
 		if err == nil {
 			return nil
 		}
@@ -176,16 +168,9 @@ func mkdirAll(name string, perm os.FileMode) error {
 	return mkdirTempError(name, err)
 }
 
-func mkdirTemp(dir, pattern string, opts ...Option) (string, error) {
-	fopts := options{
-		fileMode: MkdirTempPerm,
-	}
+func mkdirTemp(dir, pattern string, opts options) (string, error) {
+	sa, err := saFromPerm(opts.fileMode, true)
 
-	for _, opt := range opts {
-		opt(&fopts)
-	}
-
-	sa, err := saFromPerm(fopts.fileMode, true)
 	var path string
 	if err == nil {
 		path, err = golang.MkdirTemp(dir, pattern, sa)
@@ -199,47 +184,42 @@ func mkdirTemp(dir, pattern string, opts ...Option) (string, error) {
 	return "", mkdirTempError(dir+string(os.PathSeparator)+prefix+"*"+suffix, err)
 }
 
-func openFile(name string, flag int, perm os.FileMode) (*os.File, error) {
-	sa, err := saFromPerm(perm, (flag&os.O_CREATE) == os.O_CREATE)
+func openFile(name string, opts options) (*os.File, error) {
+	if opts.deleteOnClose {
+		opts.flags |= golang.FILE_FLAG_DELETE_ON_CLOSE
+	}
+
+	sa, err := saFromPerm(opts.fileMode, (opts.flags&os.O_CREATE) == os.O_CREATE)
 	if err != nil {
 		return nil, openError(name, err)
 	}
 
-	return golang.OpenFileNolog(name, flag, perm, sa)
+	return golang.OpenFileNolog(name, opts.flags, opts.fileMode, sa)
 }
 
 func remove(name string) error {
 	return golang.Remove(name)
 }
 
-func removeAll(path string, opts ...Option) error {
-	fopts := options{}
-	for _, opt := range opts {
-		opt(&fopts)
-	}
-
-	if fopts.retrySeconds <= 0 {
+func removeAll(path string, opts options) error {
+	if opts.retrySeconds <= 0 {
 		return golang.RemoveAll(path)
 	}
 
 	return robustio.Retry(func() (err error, mayRetry bool) {
 		err = golang.RemoveAll(path)
+
 		return err, robustio.IsEphemeralError(err)
-	}, fopts.retrySeconds)
+	}, opts.retrySeconds)
 }
 
-func symlink(oldname, newname string, opts ...Option) error {
-	fopts := options{}
-	for _, opt := range opts {
-		opt(&fopts)
-	}
-
+func symlink(oldname, newname string, opts options) error {
 	err := os.Symlink(oldname, newname)
 	if err != nil {
 		return err
 	}
 
-	if fopts.setSymlinkOwner {
+	if opts.setSymlinkOwner {
 		err = setOwnerToCurrentUser(newname)
 		if err != nil {
 			return symlinkError(oldname, newname, err)
@@ -253,6 +233,7 @@ func symlink(oldname, newname string, opts ...Option) error {
 // @TODO return a *windows.SecurityAttributes.
 func saFromPerm(perm os.FileMode, create bool) (*syscall.SecurityAttributes, error) {
 	var sa syscall.SecurityAttributes
+
 	sa.Length = uint32(unsafe.Sizeof(sa))
 
 	if !create {
@@ -260,6 +241,7 @@ func saFromPerm(perm os.FileMode, create bool) (*syscall.SecurityAttributes, err
 	}
 
 	perm &^= os.FileMode(GetUmask()) //nolint:gosec
+
 	sd, err := sdFromPerm(perm)
 	if err != nil {
 		return nil, err
@@ -305,6 +287,7 @@ func siFromPerm(perm os.FileMode) (*securityInfo, error) {
 
 var getSIDsOnce struct {
 	sync.Once
+
 	ownerSID *windows.SID
 	groupSID *windows.SID
 	worldSID *windows.SID
@@ -315,12 +298,14 @@ func getSIDs() (*windows.SID, *windows.SID, *windows.SID, error) {
 	getSIDsOnce.Do(func() {
 		getSIDsOnce.ownerSID, getSIDsOnce.groupSID, getSIDsOnce.worldSID, getSIDsOnce.err = _getSIDs()
 	})
+
 	return getSIDsOnce.ownerSID, getSIDsOnce.groupSID, getSIDsOnce.worldSID, getSIDsOnce.err
 }
 
 func _getSIDs() (*windows.SID, *windows.SID, *windows.SID, error) {
 	// // Get current user's SID
 	token := windows.Token(0)
+
 	err := windows.OpenProcessToken(windows.CurrentProcess(), windows.TOKEN_QUERY, &token)
 	if err != nil {
 		return nil, nil, nil, fmt.Errorf("failed to get process token for %s: %w", currentUsername(), err)
@@ -331,6 +316,7 @@ func _getSIDs() (*windows.SID, *windows.SID, *windows.SID, error) {
 	if err != nil {
 		return nil, nil, nil, err
 	}
+
 	groupSID, err := getPrimaryGroupSID(token) // works: getGroupSID(token)
 	if err != nil {
 		return nil, nil, nil, err
@@ -346,14 +332,19 @@ func _getSIDs() (*windows.SID, *windows.SID, *windows.SID, error) {
 
 func getOwnerSID(token windows.Token) (*windows.SID, error) {
 	var err error
+
 	bufSize := initialBufSize
+
 	var buf0 *byte
+
 	for {
 		var newBufSize uint32
+
 		buf := make([]byte, bufSize)
 		if bufSize > 0 {
 			buf0 = &buf[0]
 		}
+
 		err = windows.GetTokenInformation(
 			token,
 			windows.TokenUser,
@@ -363,11 +354,14 @@ func getOwnerSID(token windows.Token) (*windows.SID, error) {
 		)
 		if err == nil {
 			tu := (*windows.Tokenuser)(unsafe.Pointer(&buf[0]))
+
 			return tu.User.Sid, nil
 		}
+
 		if !errors.Is(err, windows.ERROR_INSUFFICIENT_BUFFER) {
 			return nil, fmt.Errorf("failed to get token information: %w", err)
 		}
+
 		if newBufSize > bufSize {
 			bufSize = newBufSize
 		} else {
@@ -380,16 +374,20 @@ func getOwnerSID(token windows.Token) (*windows.SID, error) {
 // https://github.com/golang/go/blob/cc8a6780/src/os/user/lookup_windows.go#L351
 func getPrimaryGroupSID(token windows.Token) (*windows.SID, error) {
 	// @TODO TEST IF  windows.GetTokenPrimaryGroup() can replace.
-
 	var err error
+
 	bufSize := initialBufSize
+
 	var buf0 *byte
+
 	for {
 		var newBufSize uint32
+
 		buf := make([]byte, bufSize)
 		if bufSize > 0 {
 			buf0 = &buf[0]
 		}
+
 		err = windows.GetTokenInformation(
 			token,
 			windows.TokenPrimaryGroup,
@@ -399,11 +397,14 @@ func getPrimaryGroupSID(token windows.Token) (*windows.SID, error) {
 		)
 		if err == nil {
 			pg := (*windows.Tokenprimarygroup)(unsafe.Pointer(&buf[0]))
+
 			return pg.PrimaryGroup, nil
 		}
+
 		if !errors.Is(err, windows.ERROR_INSUFFICIENT_BUFFER) {
 			return nil, fmt.Errorf("failed to get token information: %w", err)
 		}
+
 		if newBufSize > bufSize {
 			bufSize = newBufSize
 		} else {
@@ -438,14 +439,17 @@ func sdFromSi(si securityInfo) (*windows.SECURITY_DESCRIPTOR, error) {
 	if err != nil {
 		return nil, fmt.Errorf("failed to set ACL owner in security descriptor: %w", err)
 	}
+
 	err = sd.SetGroup(si.groupSid, false)
 	if err != nil {
 		return nil, fmt.Errorf("failed to set ACL group in security descriptor: %w", err)
 	}
+
 	err = sd.SetDACL(si.acl, true, false)
 	if err != nil {
 		return nil, fmt.Errorf("failed to set ACL in security descriptor: %w", err)
 	}
+
 	err = sd.SetControl(
 		windows.SE_DACL_PROTECTED,
 		windows.SE_DACL_PROTECTED,
@@ -474,9 +478,11 @@ func accessMask(mode os.FileMode, shift int) uint32 {
 	if perm&(0o4<<shift) == (0o4 << shift) { //nolint:mnd
 		mask |= windows.GENERIC_READ
 	}
+
 	if perm&(0o2<<shift) == (0o2 << shift) { //nolint:mnd
 		mask |= windows.GENERIC_WRITE | windows.DELETE
 	}
+
 	if perm&(0o1<<shift) == (0o1 << shift) { //nolint:mnd
 		mask |= windows.GENERIC_EXECUTE
 	}
@@ -500,6 +506,7 @@ var (
 
 func setOwnerToCurrentUser(path string) error {
 	var tok windows.Token
+
 	err := windows.OpenProcessToken(
 		windows.CurrentProcess(),
 		windows.TOKEN_ADJUST_PRIVILEGES|windows.TOKEN_QUERY,
@@ -515,6 +522,7 @@ func setOwnerToCurrentUser(path string) error {
 	if err != nil {
 		return fmt.Errorf("failed to get token user: %w", err)
 	}
+
 	userSID := tu.User.Sid
 
 	// Enable SeTakeOwnershipPrivilege (required to take ownership when you don't own it)
@@ -544,6 +552,7 @@ func setOwnerToCurrentUser(path string) error {
 
 func enablePrivilege(tok windows.Token, name *uint16) error {
 	var luid windows.LUID
+
 	err := windows.LookupPrivilegeValue(nil, name, &luid)
 	if err != nil {
 		return fmt.Errorf("failed to lookup privilege: %w", err)
@@ -563,7 +572,8 @@ func enablePrivilege(tok windows.Token, name *uint16) error {
 		return fmt.Errorf("failed to adjust token privileges: %w", err)
 	}
 	// AdjustTokenPrivileges can "succeed" but not assign; check last error.
-	if le := windows.GetLastError(); errors.Is(le, windows.ERROR_NOT_ALL_ASSIGNED) {
+	le := windows.GetLastError()
+	if errors.Is(le, windows.ERROR_NOT_ALL_ASSIGNED) {
 		return fmt.Errorf("failed to hold privilege: %w", le)
 	}
 

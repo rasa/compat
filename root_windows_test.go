@@ -23,10 +23,12 @@ func TestRootIsRoot(t *testing.T) {
 	defer cancel()
 
 	exe := "whoami.exe"
+
 	system32, _ := windows.GetSystemDirectory()
 	if system32 != "" {
 		exe = filepath.Join(system32, exe)
 	}
+
 	cmd := exec.CommandContext(ctx, exe, "/all")
 
 	stdoutStderr, err := cmd.CombinedOutput()
@@ -39,11 +41,14 @@ func TestRootIsRoot(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Unable to create well known sid for administrators: %v", err)
 	}
+
 	isRoot := strings.Contains(string(stdoutStderr), sid.String()) // "S-1-5-32-544"
+
 	got, err := compat.IsRoot()
 	if err != nil {
 		t.Fatalf("IsRoot() returned: %v", err)
 	}
+
 	if got != isRoot {
 		// Report result, but don't fail, as the user may not be an administrator.
 		t.Skipf("IsRoot(): got %v, want %v", got, isRoot)

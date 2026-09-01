@@ -13,6 +13,7 @@ import (
 
 var isRootOnce struct {
 	sync.Once
+
 	isRoot bool
 	err    error
 }

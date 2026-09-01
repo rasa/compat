@@ -39,7 +39,6 @@ func TestACLWindowsSupportsACLsHandleInvalid(t *testing.T) {
 
 func TestACLWindowsOpenForQueryInvalid(t *testing.T) {
 	_, err := compat.OpenForQuery(invalidName)
-
 	if err == nil {
 		t.Fatal("got nil, want an error")
 	}
@@ -47,7 +46,6 @@ func TestACLWindowsOpenForQueryInvalid(t *testing.T) {
 
 func TestACLWindowsGetFinalPathNameByHandleGUIDInvalid(t *testing.T) {
 	_, err := compat.GetFinalPathNameByHandleGUID(windows.InvalidHandle)
-
 	if err == nil {
 		t.Fatal("got nil, want an error")
 	}
@@ -55,13 +53,11 @@ func TestACLWindowsGetFinalPathNameByHandleGUIDInvalid(t *testing.T) {
 
 func TestACLWindowsGetVolumePathNamesForVolumeNameInvalid(t *testing.T) {
 	_, err := compat.GetVolumePathNamesForVolumeName("")
-
 	if err == nil {
 		t.Fatal("got nil, want an error")
 	}
 
 	_, err = compat.GetVolumePathNamesForVolumeName(invalidName)
-
 	if err == nil {
 		t.Fatal("got nil, want an error")
 	}
@@ -69,7 +65,6 @@ func TestACLWindowsGetVolumePathNamesForVolumeNameInvalid(t *testing.T) {
 
 func TestACLWindowsGetVolumeInfoByHandleInvalid(t *testing.T) {
 	_, _, err := compat.GetVolumeInfoByHandle(windows.InvalidHandle)
-
 	if err == nil {
 		t.Fatal("got nil, want an error")
 	}
@@ -77,7 +72,6 @@ func TestACLWindowsGetVolumeInfoByHandleInvalid(t *testing.T) {
 
 func TestACLWindowsResolveCanonicalRootFromHandleInvalid(t *testing.T) {
 	_, _, err := compat.ResolveCanonicalRootFromHandle(windows.InvalidHandle)
-
 	if err == nil {
 		t.Fatal("got nil, want an error")
 	}
@@ -93,6 +87,7 @@ func TestACLWindowsResolveCanonicalRootFromHandleUNC(t *testing.T) {
 	ctx := context.Background()
 	sharename := randomBase36String(8)
 	args := []string{"share", sharename + "=" + dir, "/grant:" + usr.Username + ",READ"}
+
 	err = exec.CommandContext(ctx, "net.exe", args...).Run()
 	if err != nil {
 		t.Fatal(err)
@@ -100,6 +95,7 @@ func TestACLWindowsResolveCanonicalRootFromHandleUNC(t *testing.T) {
 
 	defer func() {
 		args := []string{"share", sharename, "/del", "/yes"}
+
 		err = exec.CommandContext(ctx, "net.exe", args...).Run()
 		if err != nil {
 			t.Fatal(err)
@@ -110,6 +106,7 @@ func TestACLWindowsResolveCanonicalRootFromHandleUNC(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+
 	path := `\\?\UNC\127.0.0.1\` + sharename + `\` + filepath.Base(fh.Name())
 	_ = fh.Close()
 
@@ -146,12 +143,14 @@ func TestACLWindowsIsDriveLetterRoot(t *testing.T) {
 
 func TestACLWindowsNormalizeRoot(t *testing.T) {
 	got := compat.NormalizeRoot("")
+
 	want := ""
 	if got != want {
 		t.Fatalf("got %q, want %q", got, want)
 	}
 
 	got = compat.NormalizeRoot("c:")
+
 	want = `C:\`
 	if got != want {
 		t.Fatalf("got %q, want %q", got, want)

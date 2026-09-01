@@ -6,6 +6,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"unsafe"
@@ -75,6 +76,7 @@ func getPhysicalDrivesFromVolume(volume string) ([]uint32, error) {
 	defer windows.CloseHandle(h)
 
 	buf := make([]byte, 1024)
+
 	var bytesReturned uint32
 
 	err = windows.DeviceIoControl(
@@ -92,15 +94,18 @@ func getPhysicalDrivesFromVolume(volume string) ([]uint32, error) {
 	}
 
 	extents := (*VOLUME_DISK_EXTENTS)(unsafe.Pointer(&buf[0]))
+
 	drives := make([]uint32, extents.NumberOfExtents)
-	for i := uint32(0); i < extents.NumberOfExtents; i++ {
+	for i := range uint32(extents.NumberOfExtents) {
 		drives[i] = extents.Extents[i].DiskNumber
 	}
+
 	return drives, nil
 }
 
 func getDiskSerial(diskNum uint32) (string, error) {
 	path := fmt.Sprintf(`\\.\PhysicalDrive%d`, diskNum)
+
 	p16, err := windows.UTF16PtrFromString(path)
 	if err != nil {
 		return "", err
@@ -126,6 +131,7 @@ func getDiskSerial(diskNum uint32) (string, error) {
 	}
 
 	buf := make([]byte, 1024)
+
 	var returned uint32
 
 	err = windows.DeviceIoControl(
@@ -148,12 +154,15 @@ func getDiskSerial(diskNum uint32) (string, error) {
 		for i, b := range serial {
 			if b == 0 {
 				serial = serial[:i]
+
 				break
 			}
 		}
+
 		return string(serial), nil
 	}
-	return "", fmt.Errorf("serial number not available")
+
+	return "", errors.New("serial number not available")
 }
 
 func main() {
@@ -162,10 +171,12 @@ func main() {
 	if len(os.Args) > 1 {
 		vol = os.Args[1]
 	}
+
 	drives, err := getPhysicalDrivesFromVolume(vol)
 	if err != nil {
 		panic(err)
 	}
+
 	fmt.Printf("Volume %s maps to PhysicalDrives: %v\n", vol, drives)
 
 	for _, d := range drives {

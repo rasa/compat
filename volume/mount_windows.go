@@ -15,7 +15,9 @@ import (
 
 func Mounts() ([]Mount, error) {
 	mounts := []Mount{}
+
 	const bufSize = 1024
+
 	var volNameBuf [bufSize]uint16
 
 	// Start volume enumeration
@@ -53,6 +55,7 @@ func Mounts() ([]Mount, error) {
 
 func getVolumePaths(volName string) ([]string, error) {
 	const bufSize = 1024
+
 	var (
 		mountBuf  [bufSize]uint16
 		returnLen uint32
@@ -76,13 +79,16 @@ func getVolumePaths(volName string) ([]string, error) {
 
 	// Parse MULTI_SZ (series of null-terminated UTF-16 strings)
 	start := 0
+
 	for i, c := range mountBuf {
 		if c == 0 {
 			if i > start {
 				paths = append(paths, syscall.UTF16ToString(mountBuf[start:i]))
 			}
+
 			start = i + 1
 		}
 	}
+
 	return paths, nil
 }

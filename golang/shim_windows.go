@@ -13,71 +13,64 @@ import (
 
 	"github.com/capnspacehook/go-acl"
 	"golang.org/x/sys/windows"
-
-	"github.com/rasa/compat/consts"
 )
 
 const (
-	// Redefining here to avoid a circular dependency.
-	// O_FILE_FLAG_DELETE_ON_CLOSE deletes the file when closed.
-	O_FILE_FLAG_DELETE_ON_CLOSE = consts.O_FILE_FLAG_DELETE_ON_CLOSE
-	// O_FILE_FLAG_NO_RO_ATTR skips setting a file's read-only attribute on Windows.
-	O_FILE_FLAG_NO_RO_ATTR = consts.O_FILE_FLAG_NO_RO_ATTR
-)
+	perm600 = os.FileMode(0o600)
 
-const perm600 = os.FileMode(0o600)
-
-const (
-	CREATE_NEW                   = syscall.CREATE_NEW
-	EISDIR                       = syscall.EISDIR
-	ENOTDIR                      = syscall.ENOTDIR
-	ERROR_ACCESS_DENIED          = syscall.ERROR_ACCESS_DENIED
-	ERROR_ALREADY_EXISTS         = syscall.ERROR_ALREADY_EXISTS
-	ERROR_FILE_NOT_FOUND         = syscall.ERROR_FILE_NOT_FOUND
-	FILE_APPEND_DATA             = syscall.FILE_APPEND_DATA
-	FILE_ATTRIBUTE_DIRECTORY     = syscall.FILE_ATTRIBUTE_DIRECTORY
-	FILE_ATTRIBUTE_NORMAL        = syscall.FILE_ATTRIBUTE_NORMAL
-	FILE_ATTRIBUTE_READONLY      = syscall.FILE_ATTRIBUTE_READONLY
-	FILE_FLAG_BACKUP_SEMANTICS   = syscall.FILE_FLAG_BACKUP_SEMANTICS
-	FILE_FLAG_OPEN_REPARSE_POINT = syscall.FILE_FLAG_OPEN_REPARSE_POINT
-	FILE_SHARE_DELETE            = syscall.FILE_SHARE_DELETE
-	FILE_SHARE_READ              = syscall.FILE_SHARE_READ
-	FILE_SHARE_WRITE             = syscall.FILE_SHARE_WRITE
-	FILE_WRITE_ATTRIBUTES        = syscall.FILE_WRITE_ATTRIBUTES
-	GENERIC_READ                 = syscall.GENERIC_READ
-	GENERIC_WRITE                = syscall.GENERIC_WRITE
-	InvalidHandle                = syscall.InvalidHandle
-	O_CREAT                      = syscall.O_CREAT
-	O_CLOEXEC                    = syscall.O_CLOEXEC
-	// https://github.com/golang/go/blob/ac803b59/src/syscall/types_windows.go#L50
+	CREATE_NEW                   = windows.CREATE_NEW
+	ERROR_ACCESS_DENIED          = windows.ERROR_ACCESS_DENIED
+	ERROR_ALREADY_EXISTS         = windows.ERROR_ALREADY_EXISTS
+	ERROR_FILE_NOT_FOUND         = windows.ERROR_FILE_NOT_FOUND
+	FILE_APPEND_DATA             = windows.FILE_APPEND_DATA
+	FILE_ATTRIBUTE_DIRECTORY     = windows.FILE_ATTRIBUTE_DIRECTORY
+	FILE_ATTRIBUTE_NORMAL        = windows.FILE_ATTRIBUTE_NORMAL
+	FILE_ATTRIBUTE_READONLY      = windows.FILE_ATTRIBUTE_READONLY
+	FILE_FLAG_BACKUP_SEMANTICS   = windows.FILE_FLAG_BACKUP_SEMANTICS
+	FILE_FLAG_DELETE_ON_CLOSE    = windows.FILE_FLAG_DELETE_ON_CLOSE // 0x04000000
+	FILE_FLAG_OPEN_REPARSE_POINT = windows.FILE_FLAG_OPEN_REPARSE_POINT
+	FILE_SHARE_DELETE            = windows.FILE_SHARE_DELETE
+	FILE_SHARE_READ              = windows.FILE_SHARE_READ
+	FILE_SHARE_WRITE             = windows.FILE_SHARE_WRITE
+	FILE_WRITE_ATTRIBUTES        = windows.FILE_WRITE_ATTRIBUTES
+	GENERIC_READ                 = windows.GENERIC_READ
+	GENERIC_WRITE                = windows.GENERIC_WRITE
+	O_CREAT                      = windows.O_CREAT
+	O_CLOEXEC                    = windows.O_CLOEXEC
+	// https://github.com/golang/go/blob/ac803b59/src/windows.types_windows.go#L50
 	o_DIRECTORY           = 0x04000
-	OPEN_ALWAYS           = syscall.OPEN_ALWAYS
-	OPEN_EXISTING         = syscall.OPEN_EXISTING
-	S_IWRITE              = syscall.S_IWRITE
-	STANDARD_RIGHTS_WRITE = syscall.STANDARD_RIGHTS_WRITE
-	SYNCHRONIZE           = syscall.SYNCHRONIZE
+	OPEN_ALWAYS           = windows.OPEN_ALWAYS
+	OPEN_EXISTING         = windows.OPEN_EXISTING
+	S_IWRITE              = windows.S_IWRITE
+	STANDARD_RIGHTS_WRITE = windows.STANDARD_RIGHTS_WRITE
+	SYNCHRONIZE           = windows.SYNCHRONIZE
 	// See https://github.com/golang/go/blob/ac803b59/src/syscall/types_windows.go#L114
 	// and https://github.com/golang/go/blob/ac803b59/src/internal/syscall/windows/types_windows.go#L28
 	_FILE_WRITE_EA = windows.FILE_WRITE_EA
 	// See https://github.com/golang/go/blob/ac803b59/src/internal/syscall/windows/types_windows.go#L180
 	O_FILE_FLAG_OVERLAPPED = windows.FILE_FLAG_OVERLAPPED
+
+	EISDIR        = syscall.EISDIR
+	ENOTDIR       = syscall.ENOTDIR
+	InvalidHandle = syscall.InvalidHandle
 )
 
 var (
+	// See https://github.com/golang/go/blob/ac803b59/src/runtime/os_windows.go#L435
+	canUseLongPaths bool
+
 	FixLongPath   = fixLongPath
 	OpenFile      = openFileNolog
 	OpenFileNolog = openFileNolog
 	RemoveAll     = removeAll
-)
 
-var (
+	UTF16PtrFromString = windows.UTF16PtrFromString
+
 	CloseHandle                = syscall.CloseHandle
 	CreateFile                 = syscall.CreateFile
 	Ftruncate                  = syscall.Ftruncate
 	GetFileAttributes          = syscall.GetFileAttributes
 	GetFileInformationByHandle = syscall.GetFileInformationByHandle
-	// Syscall6                   = syscall.Syscall6 //nolint:staticcheck.
-	UTF16PtrFromString = syscall.UTF16PtrFromString
 )
 
 type (
@@ -85,9 +78,6 @@ type (
 	Handle                  = syscall.Handle
 	SecurityAttributes      = syscall.SecurityAttributes
 )
-
-// See https://github.com/golang/go/blob/ac803b59/src/runtime/os_windows.go#L435
-var canUseLongPaths bool
 
 func isWindowsAtLeast(major, minor, build uint32) bool {
 	mg, mn, bl := windows.RtlGetNtVersionNumbers()
@@ -105,14 +95,13 @@ func init() {
 }
 
 func fixAttributesAndShareMode(flag int, attrs uint32, sharemode uint32) (uint32, uint32) {
-	if flag&O_FILE_FLAG_DELETE_ON_CLOSE == O_FILE_FLAG_DELETE_ON_CLOSE {
-		attrs &^= uint32(windows.FILE_ATTRIBUTE_READONLY)
-		attrs |= (windows.FILE_FLAG_DELETE_ON_CLOSE | windows.FILE_ATTRIBUTE_TEMPORARY)
+	if flag&FILE_FLAG_DELETE_ON_CLOSE == FILE_FLAG_DELETE_ON_CLOSE {
+		attrs &^= uint32(FILE_ATTRIBUTE_READONLY)
+		attrs |= (FILE_FLAG_DELETE_ON_CLOSE | windows.FILE_ATTRIBUTE_TEMPORARY)
 		sharemode |= FILE_SHARE_DELETE
-	}
-
-	if flag&O_FILE_FLAG_NO_RO_ATTR == O_FILE_FLAG_NO_RO_ATTR {
-		attrs &^= uint32(windows.FILE_ATTRIBUTE_READONLY)
+	} else if flag&O_FILE_FLAG_NO_RO_ATTR == O_FILE_FLAG_NO_RO_ATTR {
+		// already done above
+		attrs &^= uint32(FILE_ATTRIBUTE_READONLY)
 	}
 
 	return attrs, sharemode

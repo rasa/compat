@@ -11,6 +11,6 @@ package compat
 // destination exists, WriteReader returns an error matching
 // errors.ErrUnsupported and leaves the destination unchanged.
 // To work around this issue, use the WithNonAtomicReplace option.
-func Rename(source, destination string, opts ...Option) error {
-	return rename(source, destination, opts...)
+func Rename(source, destination string, fns ...Option) error {
+	return rename(source, destination, fns...)
 }

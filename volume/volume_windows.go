@@ -33,8 +33,10 @@ func Volumes(Mounts []Mount) ([]Volume, error) {
 		volume, err := getVolume(mount)
 		if err != nil {
 			log.Printf("getVolume(%v): %v", mount.Mountpoint, err)
+
 			continue
 		}
+
 		volumes = append(volumes, volume)
 	}
 
@@ -91,6 +93,7 @@ func getVolume(mount Mount) (Volume, error) {
 	)
 	if err != nil {
 		err := fmt.Errorf("GetVolumeInformationByHandleW failed: %w", err)
+
 		return volume, err
 	}
 
@@ -109,12 +112,16 @@ func getVolume(mount Mount) (Volume, error) {
 
 	for k := range osFeatureMap {
 		u := uint32(k)
+
 		f := OSFeature(k)
 		if fileSystemFlags&u != u {
 			osFeatures[f] = AvailabilityNever
+
 			continue
 		}
+
 		osFeatures[f] = AvailabilityAlways
+
 		feature, ok := featureMap[f]
 		if ok {
 			features[feature] = AvailabilityAlways
@@ -127,10 +134,12 @@ func getVolume(mount Mount) (Volume, error) {
 	if ok {
 		volume.Filesystem = filesystem
 		volume.Filesystem.MaxNameLength = maxComponentLen
+
 		log.Printf("Unknown filesystem %s", fsName)
 	} else {
 		volume.Filesystem = NewFilesystem(fsName)
 	}
+
 	volume.KnownFilesystem = ok
 
 	volume.Filesystem.Name = fsName

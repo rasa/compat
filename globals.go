@@ -30,6 +30,10 @@ func GetOptions() []Option {
 		opts = append(opts, WithDefaultFileMode(options.defaultFileMode))
 	}
 
+	if options.deleteOnClose != optionDefaults.deleteOnClose {
+		opts = append(opts, WithDeleteOnClose(options.deleteOnClose))
+	}
+
 	if options.fileMode != optionDefaults.fileMode {
 		opts = append(opts, WithFileMode(options.fileMode))
 	}
@@ -65,11 +69,11 @@ func GetOptions() []Option {
 	return opts
 }
 
-func SetOptions(opts ...Option) {
+func SetOptions(fns ...Option) {
 	optionsMux.Lock()
 
 	options := *optionsPtr.Load()
-	for _, fn := range opts {
+	for _, fn := range fns {
 		fn(&options)
 	}
 
@@ -77,9 +81,9 @@ func SetOptions(opts ...Option) {
 	optionsMux.Unlock()
 }
 
-func buildOptions(opts ...Option) options {
+func buildOptions(fns ...Option) options {
 	options := *optionsPtr.Load()
-	for _, fn := range opts {
+	for _, fn := range fns {
 		fn(&options)
 	}
 

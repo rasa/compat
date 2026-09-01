@@ -14,7 +14,7 @@ import (
 func TestFileOptionsCreateDelete(t *testing.T) {
 	name := tempName(t)
 
-	fh, err := compat.Create(name, compat.WithFlags(compat.O_FILE_FLAG_DELETE_ON_CLOSE))
+	fh, err := compat.Create(name, compat.WithDeleteOnClose(true))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -47,7 +47,7 @@ func TestFileOptionsCreateExcl(t *testing.T) {
 func TestFileOptionsCreateTempDelete(t *testing.T) {
 	dir := tempDir(t)
 
-	fh, err := compat.CreateTemp(dir, "", compat.WithFlags(compat.O_FILE_FLAG_DELETE_ON_CLOSE))
+	fh, err := compat.CreateTemp(dir, "", compat.WithDeleteOnClose(true))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -125,7 +125,7 @@ func TestFileOptionsMkdirTempFileMode(t *testing.T) {
 func TestFileOptionsOpenFileDelete(t *testing.T) {
 	name := tempName(t)
 
-	fh, err := compat.OpenFile(name, os.O_RDWR|os.O_CREATE, os.FileMode(0o666), compat.WithFlags(compat.O_FILE_FLAG_DELETE_ON_CLOSE))
+	fh, err := compat.OpenFile(name, os.O_RDWR|os.O_CREATE, os.FileMode(0o666), compat.WithDeleteOnClose(true))
 	if err != nil {
 		// workaround:
 		// https://github.com/rasa/compat/actions/runs/16542086538/job/46784707170#step:6:48

@@ -14,6 +14,7 @@ import (
 
 var getuidOnce struct {
 	sync.Once
+
 	uid int
 	err error
 }
@@ -26,11 +27,13 @@ func Getuid() (int, error) {
 	getuidOnce.Do(func() {
 		getuidOnce.uid, getuidOnce.err = getuid()
 	})
+
 	return getuidOnce.uid, getuidOnce.err
 }
 
 func getuid() (int, error) {
 	var token windows.Token
+
 	err := windows.OpenProcessToken(windows.CurrentProcess(), windows.TOKEN_QUERY, &token)
 	if err != nil {
 		return UnknownID, fmt.Errorf("failed to open process token: %w", err)
@@ -58,6 +61,7 @@ func getuid() (int, error) {
 
 var getgidOnce struct {
 	sync.Once
+
 	gid int
 	err error
 }
@@ -71,11 +75,13 @@ func Getgid() (int, error) {
 	getgidOnce.Do(func() {
 		getgidOnce.gid, getgidOnce.err = getgid()
 	})
+
 	return getgidOnce.gid, getgidOnce.err
 }
 
 func getgid() (int, error) {
 	var token windows.Token
+
 	err := windows.OpenProcessToken(windows.CurrentProcess(), windows.TOKEN_QUERY, &token)
 	if err != nil {
 		return UnknownID, fmt.Errorf("failed to open process token: %w", err)

@@ -15,21 +15,22 @@ import (
 	"github.com/rasa/compat/robustio"
 )
 
-func rename(src, dst string, opts ...Option) error {
-	fopts := options{}
+func rename(src, dst string, fns ...Option) error {
+	opts := options{}
 
-	for _, opt := range opts {
-		opt(&fopts)
+	for _, fn := range fns {
+		fn(&opts)
 	}
 
-	if fopts.retrySeconds <= 0 {
+	if opts.retrySeconds <= 0 {
 		return moveFile(src, dst)
 	}
 
 	return robustio.Retry(func() (err error, mayRetry bool) {
 		err = moveFile(src, dst)
+
 		return err, robustio.IsEphemeralError(err)
-	}, fopts.retrySeconds)
+	}, opts.retrySeconds)
 }
 
 func moveFile(src, dst string) error {
@@ -39,7 +40,9 @@ func moveFile(src, dst string) error {
 	if err != nil {
 		return renameError(src, dst, err)
 	}
+
 	longdst := golang.FixLongPath(dst)
+
 	dst16, err := windows.UTF16PtrFromString(longdst)
 	if err != nil {
 		return renameError(src, dst, err)

@@ -13,16 +13,17 @@ import (
 	"github.com/rasa/compat"
 )
 
-const optionCount = 10
+const optionCount = 11
 
 func TestGetOptions(t *testing.T) {
 	opts := make([]compat.Option, 0, optionCount)
-	opts = append(opts, compat.WithNonAtomicReplace(true))
 	opts = append(opts, compat.WithAtomicity(true))
 	opts = append(opts, compat.WithDefaultFileMode(perm777))
+	opts = append(opts, compat.WithDeleteOnClose(true))
 	opts = append(opts, compat.WithFileMode(perm777))
 	opts = append(opts, compat.WithFlags(os.O_CREATE))
 	opts = append(opts, compat.WithKeepFileMode(true))
+	opts = append(opts, compat.WithNonAtomicReplace(true))
 	opts = append(opts, compat.WithReadOnlyMode(compat.ReadOnlyModeSet))
 	opts = append(opts, compat.WithRetrySeconds(1))
 	opts = append(opts, compat.WithSetSymlinkOwner(true))
@@ -44,16 +45,17 @@ func TestBuildOptions(t *testing.T) {
 	compat.SetOptions(opts...)
 	fopts := compat.BuildOptions(opts...)
 	got := fopts.String()
-	want := `nonAtomicReplace:      true
-atomically:      true
-defaultFileMode: 0o777 (-rwxrwxrwx)
-fileMode:        0o777 (-rwxrwxrwx)
-flags:           $flags
-keepFileMode:    true
-readOnlyMode:    1
-retrySeconds:    1
-setSymlinkOwner: true
-skipACLs:        true
+	want := `atomically:       true
+defaultFileMode:  0o777 (-rwxrwxrwx)
+deleteOnClose:    true
+fileMode:         0o777 (-rwxrwxrwx)
+flags:            $flags
+keepFileMode:     true
+nonAtomicReplace: true
+readOnlyMode:     1
+retrySeconds:     1
+setSymlinkOwner:  true
+skipACLs:         true
 `
 	flags := fmt.Sprintf("0x%x", os.O_CREATE)
 
@@ -65,12 +67,13 @@ skipACLs:        true
 
 func TestBuildOptions2(t *testing.T) {
 	opts := make([]compat.Option, 0, optionCount)
-	opts = append(opts, compat.WithNonAtomicReplace(true))
 	opts = append(opts, compat.WithAtomicity(true))
 	opts = append(opts, compat.WithDefaultFileMode(perm777))
+	opts = append(opts, compat.WithDeleteOnClose(true))
 	opts = append(opts, compat.WithFileMode(perm777))
 	opts = append(opts, compat.WithFlags(os.O_CREATE))
 	opts = append(opts, compat.WithKeepFileMode(true))
+	opts = append(opts, compat.WithNonAtomicReplace(true))
 	opts = append(opts, compat.WithReadOnlyMode(compat.ReadOnlyModeSet))
 	opts = append(opts, compat.WithRetrySeconds(1))
 	opts = append(opts, compat.WithSetSymlinkOwner(true))
@@ -79,16 +82,17 @@ func TestBuildOptions2(t *testing.T) {
 	compat.SetOptions(opts...)
 	fopts := compat.BuildOptions(opts...)
 	got := fopts.String()
-	want := `nonAtomicReplace:      true
-atomically:      true
-defaultFileMode: 0o777 (-rwxrwxrwx)
-fileMode:        0o777 (-rwxrwxrwx)
-flags:           $flags
-keepFileMode:    true
-readOnlyMode:    1
-retrySeconds:    1
-setSymlinkOwner: true
-skipACLs:        true
+	want := `atomically:       true
+defaultFileMode:  0o777 (-rwxrwxrwx)
+deleteOnClose:    true
+fileMode:         0o777 (-rwxrwxrwx)
+flags:            $flags
+keepFileMode:     true
+nonAtomicReplace: true
+readOnlyMode:     1
+retrySeconds:     1
+setSymlinkOwner:  true
+skipACLs:         true
 `
 	flags := fmt.Sprintf("0x%x", os.O_CREATE)
 

@@ -17,6 +17,7 @@ type options struct {
 	nonAtomicReplace bool         // default false
 	atomically       bool         // default false
 	defaultFileMode  os.FileMode  // default 0
+	deleteOnClose    bool         // default 0
 	fileMode         os.FileMode  // default 0
 	flags            int          // default 0
 	keepFileMode     bool         // default false
@@ -28,17 +29,6 @@ type options struct {
 
 // Option functions modify Options.
 type Option func(*options)
-
-// WithNonAtomicReplace permits a non-atomic replacement when the
-// operating system cannot atomically replace an existing destination.
-//
-// On Plan 9, this may temporarily leave the destination absent.
-// The default is false.
-func WithNonAtomicReplace(nonAtomicReplace bool) Option {
-	return func(opts *options) {
-		opts.nonAtomicReplace = nonAtomicReplace
-	}
-}
 
 // WithAtomicity creates or renames a file atomically.
 // Used by the WriteFile and WriteReader functions.
@@ -54,6 +44,14 @@ func WithAtomicity(atomically bool) Option {
 func WithDefaultFileMode(mode os.FileMode) Option {
 	return func(opts *options) {
 		opts.defaultFileMode = mode
+	}
+}
+
+// WithDeleteOnClose deletes the file when the file is closed.
+// Used by the Create, CreateTemp, Open, OpenFile, WriteFile and WriteReader functions.
+func WithDeleteOnClose(deleteOnClose bool) Option {
+	return func(opts *options) {
+		opts.deleteOnClose = deleteOnClose
 	}
 }
 
@@ -82,6 +80,17 @@ func WithFlags(flags int) Option {
 func WithKeepFileMode(keep bool) Option {
 	return func(opts *options) {
 		opts.keepFileMode = keep
+	}
+}
+
+// WithNonAtomicReplace permits a non-atomic replacement when the
+// operating system cannot atomically replace an existing destination.
+//
+// On Plan 9, this may temporarily leave the destination absent.
+// The default is false.
+func WithNonAtomicReplace(nonAtomicReplace bool) Option {
+	return func(opts *options) {
+		opts.nonAtomicReplace = nonAtomicReplace
 	}
 }
 
@@ -132,16 +141,17 @@ func WithSkipACLs(skipACLs bool) Option {
 func (o options) String() string {
 	var builder strings.Builder
 
-	fmt.Fprintf(&builder, "nonAtomicReplace:      %v\n", o.nonAtomicReplace)
-	fmt.Fprintf(&builder, "atomically:      %v\n", o.atomically)
-	fmt.Fprintf(&builder, "defaultFileMode: 0o%03o (%v)\n", o.defaultFileMode, o.defaultFileMode)
-	fmt.Fprintf(&builder, "fileMode:        0o%03o (%v)\n", o.fileMode, o.fileMode)
-	fmt.Fprintf(&builder, "flags:           0x%x\n", o.flags)
-	fmt.Fprintf(&builder, "keepFileMode:    %v\n", o.keepFileMode)
-	fmt.Fprintf(&builder, "readOnlyMode:    %v\n", o.readOnlyMode)
-	fmt.Fprintf(&builder, "retrySeconds:    %v\n", o.retrySeconds)
-	fmt.Fprintf(&builder, "setSymlinkOwner: %v\n", o.setSymlinkOwner)
-	fmt.Fprintf(&builder, "skipACLs:        %v\n", o.skipACLs)
+	fmt.Fprintf(&builder, "atomically:       %v\n", o.atomically)
+	fmt.Fprintf(&builder, "defaultFileMode:  0o%03o (%v)\n", o.defaultFileMode, o.defaultFileMode)
+	fmt.Fprintf(&builder, "deleteOnClose:    %v\n", o.deleteOnClose)
+	fmt.Fprintf(&builder, "fileMode:         0o%03o (%v)\n", o.fileMode, o.fileMode)
+	fmt.Fprintf(&builder, "flags:            0x%x\n", o.flags)
+	fmt.Fprintf(&builder, "keepFileMode:     %v\n", o.keepFileMode)
+	fmt.Fprintf(&builder, "nonAtomicReplace: %v\n", o.nonAtomicReplace)
+	fmt.Fprintf(&builder, "readOnlyMode:     %v\n", o.readOnlyMode)
+	fmt.Fprintf(&builder, "retrySeconds:     %v\n", o.retrySeconds)
+	fmt.Fprintf(&builder, "setSymlinkOwner:  %v\n", o.setSymlinkOwner)
+	fmt.Fprintf(&builder, "skipACLs:         %v\n", o.skipACLs)
 
 	return builder.String()
 }

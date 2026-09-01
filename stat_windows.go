@@ -63,6 +63,7 @@ type fileStat struct {
 
 func stat(fi os.FileInfo, name string, followSymlinks bool) (FileInfo, error) {
 	var err error
+
 	if fi == nil {
 		return nil, statError(name, os.ErrInvalid)
 	}
@@ -76,15 +77,16 @@ func stat(fi os.FileInfo, name string, followSymlinks bool) (FileInfo, error) {
 	fs.origName = name
 	fs.name = fi.Name()
 	fs.size = fi.Size()
-	fs.mode = fi.Mode() &^ ModePerm // os.FileMode(^uint32(0o777)) //nolint:mnd // quiet
+	fs.mode = fi.Mode() &^ os.ModePerm // os.FileMode(^uint32(0o777)) //nolint:mnd // quiet
 	fs.mtime = fi.ModTime()
 	// See https://github.com/golang/go/blob/3cf1aaf8/src/os/types_windows.go#L367
-	fs.sys = *fi.Sys().(*syscall.Win32FileAttributeData) //nolint:staticcheck
+	fs.sys = *fi.Sys().(*syscall.Win32FileAttributeData)
 	fs.atime = time.Unix(0, fs.sys.LastAccessTime.Nanoseconds())
 	fs.btime = time.Unix(0, fs.sys.CreationTime.Nanoseconds())
 	fs.followSymlinks = followSymlinks
 
 	fs.path = golang.FixLongPath(name)
+
 	fs.path16, err = windows.UTF16FromString(fs.path)
 	if err != nil {
 		return nil, statError(name, err)
@@ -101,7 +103,9 @@ func stat(fi os.FileInfo, name string, followSymlinks bool) (FileInfo, error) {
 		return nil, statError(name, err)
 	}
 	defer windows.CloseHandle(h) //nolint:errcheck
+
 	var info windows.ByHandleFileInformation
+
 	err = windows.GetFileInformationByHandle(h, &info)
 	if err != nil {
 		return nil, statError(name, err)
@@ -116,6 +120,7 @@ func stat(fi os.FileInfo, name string, followSymlinks bool) (FileInfo, error) {
 	if err != nil {
 		return nil, statError(name, err)
 	}
+
 	fs.mode |= perm.Perm()
 
 	return &fs, nil
@@ -175,7 +180,9 @@ func (fs *fileStat) CTime() time.Time {
 func (fs *fileStat) UID() int {
 	if !fs.usered {
 		fs.usered = true
+
 		var err error
+
 		fs.uid, fs.gid, fs.user, fs.group, err = getUserGroup(fs.path)
 		if err != nil {
 			fs.err = statError(fs.origName, err)
@@ -188,7 +195,9 @@ func (fs *fileStat) UID() int {
 func (fs *fileStat) GID() int {
 	if !fs.usered {
 		fs.usered = true
+
 		var err error
+
 		fs.uid, fs.gid, fs.user, fs.group, err = getUserGroup(fs.path)
 		if err != nil {
 			fs.err = statError(fs.origName, err)
@@ -201,7 +210,9 @@ func (fs *fileStat) GID() int {
 func (fs *fileStat) User() string {
 	if !fs.usered {
 		fs.usered = true
+
 		var err error
+
 		fs.uid, fs.gid, fs.user, fs.group, err = getUserGroup(fs.path)
 		if err != nil {
 			fs.err = statError(fs.origName, err)
@@ -214,7 +225,9 @@ func (fs *fileStat) User() string {
 func (fs *fileStat) Group() string {
 	if !fs.usered {
 		fs.usered = true
+
 		var err error
+
 		fs.uid, fs.gid, fs.user, fs.group, err = getUserGroup(fs.path)
 		if err != nil {
 			fs.err = statError(fs.origName, err)
@@ -237,14 +250,18 @@ func (fs *fileStat) stat() (os.FileMode, error) {
 	perm, err := acl.GetExplicitFileAccessMode(fs.path)
 	if err != nil {
 		fs.err = statError(fs.origName, err)
+
 		return perm, fs.err
 	}
+
 	if perm == perm000 {
 		b, err = supportsACLs(fs.path)
 		if err != nil {
 			fs.err = statError(fs.origName, err)
+
 			return perm, fs.err
 		}
+
 		if !b {
 			if fs.mode.IsDir() {
 				return DefaultWindowsDirPerm, nil
