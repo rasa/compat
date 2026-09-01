@@ -292,7 +292,7 @@ Several operations accept functional options:
 | `WithFileMode` | Sets the requested file mode |
 | `WithDefaultFileMode` | Changes the default mode used when no explicit mode is supplied |
 | `WithKeepFileMode` | Preserves the mode of an existing destination |
-| `WithFlags` | Adds file-open flags |
+| `WithOpenFlags` | Adds file-open flags |
 | `WithReadOnlyMode` | Controls Windows read-only attribute handling |
 | `WithRetrySeconds` | Retries selected operations for a bounded period |
 | `WithSetSymlinkOwner` | Requests ownership adjustment for Windows symbolic links |

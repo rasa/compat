@@ -230,7 +230,7 @@ func TestStatCTime(t *testing.T) {
 	}
 }
 
-func TestStatMTime(t *testing.T) {
+func TestStatModTime(t *testing.T) {
 	now := time.Now()
 
 	name, err := createTempFile(t)
@@ -247,8 +247,8 @@ func TestStatMTime(t *testing.T) {
 		return
 	}
 
-	if got := fi.MTime(); !compareTimes(got, now, testEnv.mtimeGranularity) {
-		fatalTimes(t, "MTime()", got, now, testEnv.mtimeGranularity)
+	if got := fi.ModTime(); !compareTimes(got, now, testEnv.mtimeGranularity) {
+		fatalTimes(t, "ModTime()", got, now, testEnv.mtimeGranularity)
 	}
 
 	if compat.IsTinygo {
@@ -268,8 +268,8 @@ func TestStatMTime(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if got := fi.MTime(); !compareTimes(got, mtime, testEnv.mtimeGranularity) {
-		fatalTimes(t, "MTime()", got, mtime, testEnv.mtimeGranularity)
+	if got := fi.ModTime(); !compareTimes(got, mtime, testEnv.mtimeGranularity) {
+		fatalTimes(t, "ModTime()", got, mtime, testEnv.mtimeGranularity)
 	}
 }
 
@@ -560,7 +560,7 @@ func TestStatString(t *testing.T) {
 	}
 }
 
-func TestStatInfo(t *testing.T) {
+func TestStatFileInfo(t *testing.T) {
 	name, err := createTempFile(t)
 	if err != nil {
 		fatal(t, err)
@@ -575,13 +575,24 @@ func TestStatInfo(t *testing.T) {
 		return
 	}
 
-	got, err := fi.Info()
-	if err != nil {
-		t.Fatal(err)
+	ofi := os.FileInfo(fi)
+	if ofi.Name() != fi.Name() {
+		t.Fatalf("Name(): got %v, expected %v", ofi.Name(), fi.Name())
 	}
-
-	if got == nil {
-		t.Fatal("got nil, want a value")
+	if ofi.Size() != fi.Size() {
+		t.Fatalf("Size(): got %v, expected %v", ofi.Size(), fi.Size())
+	}
+	if ofi.Mode() != fi.Mode() {
+		t.Fatalf("Mode(): got %v, expected %v", ofi.Mode(), fi.Mode())
+	}
+	if ofi.ModTime() != fi.ModTime() {
+		t.Fatalf("ModTime(): got %v, expected %v", ofi.ModTime(), fi.ModTime())
+	}
+	if ofi.IsDir() != fi.IsDir() {
+		t.Fatalf("IsDir(): got %v, expected %v", ofi.IsDir(), fi.IsDir())
+	}
+	if ofi.Sys() != fi.Sys() {
+		t.Fatalf("Sys(): got %v, expected %v", ofi.Sys(), fi.Sys())
 	}
 }
 
@@ -749,7 +760,7 @@ func TestStatDiffFiles(t *testing.T) {
 }
 
 const (
-	userIDSourceMin = compat.UserIDSourceIsInt
+	userIDSourceMin = compat.UserIDSourceIsInteger
 	userIDSourceMax = compat.UserIDSourceIsNone
 )
 

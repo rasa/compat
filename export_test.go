@@ -18,7 +18,6 @@ var (
 	CreateError     = createError
 	CreateTempError = createTempError
 	MkdirError      = mkdirError
-	MkdirallError   = mkdirallError
 	MkdirTempError  = mkdirTempError
 	NiceError       = niceError
 	OpenError       = openError

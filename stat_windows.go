@@ -98,7 +98,14 @@ func stat(fi os.FileInfo, name string, followSymlinks bool) (FileInfo, error) {
 		attrs |= windows.FILE_FLAG_OPEN_REPARSE_POINT
 	}
 
-	h, err := windows.CreateFile(&fs.path16[0], 0, 0, nil, windows.OPEN_EXISTING, attrs, 0)
+	h, err := windows.CreateFile(
+		&fs.path16[0],
+		0,
+		windows.FILE_SHARE_READ, //share mode
+		nil,
+		windows.OPEN_EXISTING,
+		attrs,
+		0)
 	if err != nil {
 		return nil, statError(name, err)
 	}
@@ -238,8 +245,12 @@ func (fs *fileStat) Group() string {
 }
 
 func (fs *fileStat) stat() (os.FileMode, error) {
-	b, err := supportsACLsCached(fs)
-	if err == nil && !b {
+	if fs == nil {
+		return 0, os.ErrInvalid
+	}
+
+	supported, found := supportsACLsCached(fs)
+	if found && !supported {
 		if fs.mode.IsDir() {
 			return DefaultWindowsDirPerm, nil
 		} else {
@@ -262,7 +273,7 @@ func (fs *fileStat) stat() (os.FileMode, error) {
 			return perm, fs.err
 		}
 
-		if !b {
+		if !supported {
 			if fs.mode.IsDir() {
 				return DefaultWindowsDirPerm, nil
 			} else {

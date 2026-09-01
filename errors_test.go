@@ -56,15 +56,6 @@ func TestErrorsMkdirError(t *testing.T) {
 	}
 }
 
-func TestErrorsMkdirallError(t *testing.T) {
-	got := compat.MkdirallError(pathStr, os.ErrInvalid).Error()
-
-	want := "mkdir " + pathStr + ":"
-	if !strings.HasPrefix(got, want) {
-		t.Fatalf("MkdirallError: got %q; want %q", got, want)
-	}
-}
-
 func TestErrorsMkdirTempError(t *testing.T) {
 	got := compat.MkdirTempError(pathStr, os.ErrInvalid).Error()
 

@@ -5,6 +5,7 @@ package compat
 
 import (
 	"fmt"
+	"io/fs"
 	"os"
 	"strings"
 	"time"
@@ -19,7 +20,9 @@ type UserIDSourceType uint
 
 const (
 	// UserIDSourceIsInt defines if the OS uses an int to identify the user.
-	UserIDSourceIsInt UserIDSourceType = 1 << iota
+	UserIDSourceUnknown UserIDSourceType = iota
+	// UserIDSourceIsInteger defines if the OS uses an int to identify the user.
+	UserIDSourceIsInteger
 	// UserIDSourceIsString defines if the OS uses a string to identify the
 	// user.
 	UserIDSourceIsString
@@ -33,17 +36,12 @@ const (
 // A FileInfo describes a file and is returned by [Stat].
 // See https://github.com/golang/go/blob/ad7a6f81/src/io/fs/fs.go#L158
 type FileInfo interface { //nolang:interfacebloat
-	Name() string       // base name of the file
-	Size() int64        // length in bytes for regular files; system-dependent for others
-	Mode() os.FileMode  // file mode bits
-	ModTime() time.Time // last modified time
-	IsDir() bool        // abbreviation for Mode().IsDir()
-	Sys() any           // underlying data source
-	// Added by compat library:
-	ATime() time.Time    // last accessed time, or 0 if unsupported
-	BTime() time.Time    // created (birthed) time, or 0 if unsupported
-	CTime() time.Time    // status/metadata changed time, or 0 if unsupported
-	MTime() time.Time    // last modified time (alias)
+	fs.FileInfo
+
+	ATime() time.Time // last accessed time, or 0 if unsupported
+	BTime() time.Time // created (birthed) time, or 0 if unsupported
+	CTime() time.Time // status/metadata changed time, or 0 if unsupported
+	// MTime() time.Time    // last modified time (alias)
 	Links() uint         // number of hard links, or 0 if unsupported
 	UID() int            // user ID, or -1 if an error or unsupported
 	GID() int            // group ID, or -1 if an error or unsupported
@@ -53,7 +51,6 @@ type FileInfo interface { //nolang:interfacebloat
 	FileID() uint64      // unique file ID (on a specific partition)
 	Error() error        // error result of the last system call that failed
 	String() string
-	Info() (os.FileInfo, error)
 }
 
 func (fs *fileStat) Name() string       { return fs.name }
@@ -64,7 +61,6 @@ func (fs *fileStat) IsDir() bool        { return fs.mode.IsDir() }
 func (fs *fileStat) Sys() any           { return &fs.sys }
 
 func (fs *fileStat) ATime() time.Time    { return fs.atime }
-func (fs *fileStat) MTime() time.Time    { return fs.mtime } // duplicates ModTime
 func (fs *fileStat) Links() uint         { return fs.links }
 func (fs *fileStat) PartitionID() uint64 { return fs.partID }
 func (fs *fileStat) FileID() uint64      { return fs.fileID }
@@ -88,10 +84,6 @@ func (fs *fileStat) String() string {
 	fmt.Fprintf(&builder, "FileID: %v\n", fs.FileID())
 
 	return builder.String()
-}
-
-func (fs *fileStat) Info() (os.FileInfo, error) {
-	return os.FileInfo(fs), fs.Error()
 }
 
 // Fstat returns a [FileInfo] structure describing file.

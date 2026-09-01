@@ -22,7 +22,7 @@ func rename(src, dst string, fns ...Option) error {
 		fn(&opts)
 	}
 
-	if opts.retrySeconds <= 0 {
+	if opts.retryTimeout <= 0 {
 		return moveFile(src, dst)
 	}
 
@@ -30,7 +30,7 @@ func rename(src, dst string, fns ...Option) error {
 		err = moveFile(src, dst)
 
 		return err, robustio.IsEphemeralError(err)
-	}, opts.retrySeconds)
+	}, opts.retryTimeout.Seconds())
 }
 
 func moveFile(src, dst string) error {

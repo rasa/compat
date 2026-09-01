@@ -10,21 +10,22 @@ import (
 	"fmt"
 	"os"
 	"strings"
+	"time"
 )
 
 // Options define the behavior of `WriteFile()`, etc.
 type options struct {
-	nonAtomicReplace bool         // default false
-	atomically       bool         // default false
-	defaultFileMode  os.FileMode  // default 0
-	deleteOnClose    bool         // default 0
-	fileMode         os.FileMode  // default 0
-	flags            int          // default 0
-	keepFileMode     bool         // default false
-	readOnlyMode     ReadOnlyMode // default 0
-	retrySeconds     float64      // default 0.0
-	setSymlinkOwner  bool         // default false
-	skipACLs         bool         // default false
+	nonAtomicReplace bool          // default false
+	atomically       bool          // default false
+	defaultFileMode  os.FileMode   // default 0
+	deleteOnClose    bool          // default 0
+	fileMode         os.FileMode   // default 0
+	keepFileMode     bool          // default false
+	openFlags        int           // default 0
+	readOnlyMode     ReadOnlyMode  // default 0
+	retryTimeout     time.Duration // default 0
+	setSymlinkOwner  bool          // default false
+	skipACLs         bool          // default false
 }
 
 // Option functions modify Options.
@@ -48,7 +49,7 @@ func WithDefaultFileMode(mode os.FileMode) Option {
 }
 
 // WithDeleteOnClose deletes the file when the file is closed.
-// Used by the Create, CreateTemp, Open, OpenFile, WriteFile and WriteReader functions.
+// Used by the Create, CreateTemp, Open and OpenFile functions.
 func WithDeleteOnClose(deleteOnClose bool) Option {
 	return func(opts *options) {
 		opts.deleteOnClose = deleteOnClose
@@ -65,12 +66,11 @@ func WithFileMode(mode os.FileMode) Option {
 	}
 }
 
-// WithFlags sets the flag option.
-// Used by the Create, CreateTemp, Open, OpenFile, WriteFile, and WriteReader
-// functions.
-func WithFlags(flags int) Option {
+// WithOpenFlags sets the openFlags option.
+// Used by the Create, Open, OpenFile, WriteFile, and WriteReader functions.
+func WithOpenFlags(openFlags int) Option {
 	return func(opts *options) {
-		opts.flags |= flags
+		opts.openFlags |= openFlags
 	}
 }
 
@@ -97,9 +97,9 @@ func WithNonAtomicReplace(nonAtomicReplace bool) Option {
 // WithReadOnlyMode is used to determine if/when to set a file's read-only
 // (RO) attribute. The following values are supported:
 // ReadOnlyModeIgnore do not set a file's RO attribute, and ignore if it's set.
-// ReadOnlyModeSet set a file's RO attribute if the file's FileMode has the
+// ReadOnlyModeFromPermissions set a file's RO attribute if the file's FileMode has the
 // user writable bit set.
-// ReadOnlyModeReset  do not set a file's RO attribute, and if it's set, reset it.
+// ReadOnlyModeClear  do not set a file's RO attribute, and if it's set, reset it.
 // The option is functional on Windows only. On other OSes, it is ignored.
 // Used by the Chmod, Create, CreateTemp, Fchmod, Open, OpenFile, WriteFile,
 // and WriteReader functions.
@@ -109,12 +109,12 @@ func WithReadOnlyMode(mode ReadOnlyMode) Option {
 	}
 }
 
-// WithRetrySeconds sets the retry timeout option in seconds. The default is 0
-// which means to not retry at all.
+// WithRetryTimeout sets the retry timeout option in seconds. The default is
+// time.Zero() which means to not retry at all.
 // Used by the Rename and RemoveAll functions.
-func WithRetrySeconds(seconds float64) Option {
+func WithRetryTimeout(timeout time.Duration) Option {
 	return func(opts *options) {
-		opts.retrySeconds = seconds
+		opts.retryTimeout = timeout
 	}
 }
 
@@ -145,11 +145,11 @@ func (o options) String() string {
 	fmt.Fprintf(&builder, "defaultFileMode:  0o%03o (%v)\n", o.defaultFileMode, o.defaultFileMode)
 	fmt.Fprintf(&builder, "deleteOnClose:    %v\n", o.deleteOnClose)
 	fmt.Fprintf(&builder, "fileMode:         0o%03o (%v)\n", o.fileMode, o.fileMode)
-	fmt.Fprintf(&builder, "flags:            0x%x\n", o.flags)
+	fmt.Fprintf(&builder, "openFlags:        0x%x\n", o.openFlags)
 	fmt.Fprintf(&builder, "keepFileMode:     %v\n", o.keepFileMode)
 	fmt.Fprintf(&builder, "nonAtomicReplace: %v\n", o.nonAtomicReplace)
 	fmt.Fprintf(&builder, "readOnlyMode:     %v\n", o.readOnlyMode)
-	fmt.Fprintf(&builder, "retrySeconds:     %v\n", o.retrySeconds)
+	fmt.Fprintf(&builder, "retryTimeout:     %v\n", o.retryTimeout)
 	fmt.Fprintf(&builder, "setSymlinkOwner:  %v\n", o.setSymlinkOwner)
 	fmt.Fprintf(&builder, "skipACLs:         %v\n", o.skipACLs)
 

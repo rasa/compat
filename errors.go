@@ -37,11 +37,7 @@ func invalidNiceError(nice int) error {
 }
 
 func unexpectedNiceError(nice int) error { //nolint:unused
-	return fmt.Errorf(
-		"BUG: value %d is unexpected: %w",
-		nice,
-		ErrInvalidNice,
-	)
+	return fmt.Errorf("compat: internal error: unmapped nice value %d", nice)
 }
 
 func chmodError(path string, err error) error {
@@ -57,10 +53,6 @@ func createTempError(path string, err error) error {
 }
 
 func mkdirError(path string, err error) error {
-	return &os.PathError{Op: "mkdir", Path: path, Err: err}
-}
-
-func mkdirallError(path string, err error) error {
 	return &os.PathError{Op: "mkdir", Path: path, Err: err}
 }
 

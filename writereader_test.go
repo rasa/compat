@@ -323,7 +323,7 @@ func TestWriteReaderWithAtomicityWithFileMode(t *testing.T) {
 	}
 }
 
-func TestWriteReaderWithAtomicityWithReadOnlyModeReset(t *testing.T) {
+func TestWriteReaderWithAtomicityWithReadOnlyModeClear(t *testing.T) {
 	if !compat.IsWindows {
 		skip(t, "Skipping test: requires Windows")
 
@@ -337,7 +337,7 @@ func TestWriteReaderWithAtomicityWithReadOnlyModeReset(t *testing.T) {
 	opts := []compat.Option{
 		compat.WithAtomicity(true),
 		compat.WithFileMode(perm400),
-		compat.WithReadOnlyMode(compat.ReadOnlyModeReset),
+		compat.WithReadOnlyMode(compat.ReadOnlyModeClear),
 	}
 
 	err := compat.WriteReader(file, helloBuf, 0, opts...)
@@ -455,7 +455,7 @@ func TestWriteReaderWithAtomicityInvalidReadOnlyDirectory(t *testing.T) {
 	perm := perm400
 	opts := []compat.Option{
 		compat.WithFileMode(perm),
-		compat.WithReadOnlyMode(compat.ReadOnlyModeSet),
+		compat.WithReadOnlyMode(compat.ReadOnlyModeFromPermissions),
 	}
 
 	dir, err := compat.MkdirTemp(dir, "~*.tmp", opts...)

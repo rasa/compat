@@ -331,7 +331,7 @@ func removeIt(name string) {
 				return nil //nolint:nilerr
 			}
 
-			_ = compat.Chmod(path, 0o777, compat.WithReadOnlyMode(compat.ReadOnlyModeReset))
+			_ = compat.Chmod(path, 0o777, compat.WithReadOnlyMode(compat.ReadOnlyModeClear))
 
 			return nil
 		})

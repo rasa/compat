@@ -7,6 +7,7 @@
 package compat
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"os"
@@ -42,13 +43,18 @@ import (
 // To work around this issue, use the WithNonAtomicReplace option.
 func WriteReader(name string, reader io.Reader, perm os.FileMode, fns ...Option) (err error) { //nolint:funlen,gocyclo
 	opts := options{
-		flags:        os.O_CREATE | os.O_WRONLY | os.O_TRUNC,
+		openFlags:    os.O_CREATE | os.O_WRONLY | os.O_TRUNC,
 		fileMode:     perm,
 		keepFileMode: true,
 	}
 
 	for _, fn := range fns {
 		fn(&opts)
+	}
+
+	if opts.deleteOnClose {
+		return fmt.Errorf("write %q: delete-on-close: %w",
+			name, errors.ErrUnsupported)
 	}
 
 	var fileMode os.FileMode
@@ -81,8 +87,8 @@ func WriteReader(name string, reader io.Reader, perm os.FileMode, fns ...Option)
 	}
 
 	if IsWindows {
-		if opts.readOnlyMode != ReadOnlyModeSet {
-			opts.flags |= golang.O_FILE_FLAG_NO_RO_ATTR
+		if opts.readOnlyMode != ReadOnlyModeFromPermissions {
+			opts.openFlags |= golang.O_FILE_FLAG_NO_RO_ATTR
 		}
 	}
 
@@ -140,9 +146,14 @@ func WriteReader(name string, reader io.Reader, perm os.FileMode, fns ...Option)
 		return writeError(name, err)
 	}
 
-	err = Rename(tempFileName, name, fns...)
+	renameFns := []Option{
+		WithNonAtomicReplace(opts.nonAtomicReplace),
+		WithRetryTimeout(opts.retryTimeout),
+	}
+
+	err = Rename(tempFileName, name, renameFns...)
 	if err != nil {
-		err = fmt.Errorf("cannot rename to '%v': %w", tempFileName, err)
+		err = fmt.Errorf("rename %q to %q: %w", tempFileName, name, err)
 
 		return writeError(name, err)
 	}
@@ -155,14 +166,20 @@ func writeReader(name string, reader io.Reader, opts options) error {
 	if err != nil {
 		return writeError(name, err)
 	}
-	defer file.Close()
 
 	_, err = io.Copy(file, reader)
 	if err != nil {
+		_ = file.Close()
 		return writeError(name, err)
 	}
 
 	err = file.Sync()
+	if err != nil {
+		_ = file.Close()
+		return writeError(name, err)
+	}
+
+	err = file.Close()
 	if err != nil {
 		return writeError(name, err)
 	}

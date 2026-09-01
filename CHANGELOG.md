@@ -9,9 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Added
 
+- Add `Options` to `Rename()`.
+- Add `ErrInvalidNice`.
 - Add `WithDeleteOnClose()` option.
 - Add `WithSkipACLs()` option. Useful on Windows only.
-- Add `ErrInvalidNice`.
+
 - Add running tests under iOS Simulator.
 
 ### Fixed
@@ -20,8 +22,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Changed
 
-- Deprecate `IsUnsupportedError()`. Will be removed eventually.
-- Deprecate `SupportsRelativeFstat()`. Will be removed eventually.
+- Rename `ReadOnlyModeSet` to `ReadOnlyModeFromPermissions` **BREAKING CHANGE**
+- Rename `ReadOnlyModeReset` to `ReadOnlyModeClear` **BREAKING CHANGE**
+- Rename `UserIDSourceIsInt` to `UserIDSourceIsInteger` **BREAKING CHANGE**
+- Rename `WithFlags()` to `WithOpenFlags()`. **BREAKING CHANGE**
 - Move O_FILE_FLAG_DELETE_ON_CLOSE to golang package. **BREAKING CHANGE**
 - Move O_FILE_FLAG_NO_RO_ATTR to golang package. **BREAKING CHANGE**
 - Remove `NiceError`. **BREAKING CHANGE**
@@ -29,8 +33,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Remove `ReniceError`. **BREAKING CHANGE**
 - Remove `UnimplementedError`. **BREAKING CHANGE**
 - Remove `UnsupportedError`. **BREAKING CHANGE**
+- Remove `FileInfo`'s `MTime()` as it duplicated `ModTime()`. **BREAKING CHANGE**
+- Remove `FileInfo`'s `Info()` as it's provided now. **BREAKING CHANGE**
 - Remove consts package as unneeded. **BREAKING CHANGE**
 - Remove O_* and Mode* constants. **BREAKING CHANGE**
+- Deprecate `IsUnsupportedError()`. Will be removed eventually.
+- Deprecate `SupportsRelativeFstat()`. Will be removed eventually.
 
 ## [0.5.6](https://github.com/rasa/compat/compare/v0.5.5...v0.5.6)
 
@@ -145,7 +153,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Add optional `Option` param to `OpenFile()`.
 - Add optional `Option` param to `Chmod()`.
 - Add `WithReadOnlyMode()` function.
-- Add `ReadOnlyModeIgnore`, `ReadOnlyModeSet` and `ReadOnlyModeReset` constants.
+- Add `ReadOnlyModeIgnore`, `ReadOnlyModeFromPermissions` and `ReadOnlyModeClear` constants.
 - Add optional `Option` param to `CreateTemp()`.
 - Add optional `Option` param to `MkdirTemp()`.
 - Add `Symlink()` function.
@@ -163,7 +171,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ### Changed
 
 - Rename `DefaultFileMode()` to  `WithDefaultFileMode()`.
-- Rename `Flag()` to  `WithFlags()`.
+- Rename `Flag()` to  `WithOpenFlags()`.
 - Rename `KeepFileMode()` to  `WithKeepFileMode()`.
 - Renamed `FileMode()` to  `WithFileMode()`. ***BREAKING CHANGE***
 - Rename `FileOptions` to `Options`.

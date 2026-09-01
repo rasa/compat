@@ -47,9 +47,9 @@ func supportsACLs(path string) (bool, error) {
 	return supportsACLsHandle(h)
 }
 
-func supportsACLsCached(fi FileInfo) (bool, error) {
+func supportsACLsCached(fi FileInfo) (bool, bool) {
 	if fi == nil {
-		return false, errors.New("fi is nil")
+		return false, false
 	}
 
 	if fi.PartitionID() != 0 {
@@ -60,11 +60,11 @@ func supportsACLsCached(fi FileInfo) (bool, error) {
 		volCache.mu.RUnlock()
 
 		if ok {
-			return flagsIndicatePersistentACLs(fsFlags), nil
+			return flagsIndicatePersistentACLs(fsFlags), true
 		}
 	}
 
-	return false, errors.New("not cached")
+	return false, false
 }
 
 // supportsACLsHandle checks the volume for an already-open file/dir handle.

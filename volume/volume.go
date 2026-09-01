@@ -49,7 +49,7 @@ type Volume struct {
 type Type uint
 
 const (
-	TypeUnknown Type = 1 << iota
+	TypeUnknown Type = iota
 	TypeUnavailable
 	TypeFixed
 	TypeRemovable
@@ -64,12 +64,14 @@ var volTypeMap = map[Type]string{
 	TypeUnknown:     "Unknown",     // 0: The drive type cannot be determined.
 	TypeUnavailable: "Unavailable", // 1: The root path is invalid; for example, there is no volume mounted at the
 	//    specified path.
-	TypeFixed: "Fixed", // 2: The drive has removable media; for example, a floppy drive, thumb drive, or
+	TypeFixed: "Fixed", // 2: The drive has fixed media; for example, a hard disk drive or flash drive.
 	//    flash card reader.
-	TypeRemovable: "Removable", // 3: The drive has fixed media; for example, a hard disk drive or flash drive.
+	TypeRemovable: "Removable", // 3: The drive has removable media; for example, a floppy drive, thumb drive, or
 	TypeNetwork:   "Network",   // 4: The drive is a remote (network) drive.
 	TypeOptical:   "Optical",   // 5: The drive is a CD-ROM drive.
 	TypeRamdisk:   "Ramdisk",   // 6: The drive is a RAM disk.
+	TypeLoop:      "Loop",
+	TypePseudo:    "Pseudo",
 }
 
 func (v Volume) String() string {

@@ -134,9 +134,8 @@ func getVolume(mount Mount) (Volume, error) {
 	if ok {
 		volume.Filesystem = filesystem
 		volume.Filesystem.MaxNameLength = maxComponentLen
-
-		log.Printf("Unknown filesystem %s", fsName)
 	} else {
+		log.Printf("Unknown filesystem %s", fsName)
 		volume.Filesystem = NewFilesystem(fsName)
 	}
 

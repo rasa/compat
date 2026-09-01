@@ -49,7 +49,7 @@ func mkdirTemp(dir, pattern string, opts options) (string, error) {
 }
 
 func openFile(name string, opts options) (*os.File, error) {
-	fp, err := os.OpenFile(name, opts.flags, opts.fileMode)
+	fp, err := os.OpenFile(name, opts.openFlags, opts.fileMode)
 	if err != nil {
 		return nil, err
 	}
@@ -61,7 +61,9 @@ func openFile(name string, opts options) (*os.File, error) {
 	return fp, nil
 }
 
-var remove = os.Remove
+func remove(path string, _ options) error {
+	return os.Remove(path)
+}
 
 func removeAll(path string, _ options) error {
 	return os.RemoveAll(path)

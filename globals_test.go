@@ -9,6 +9,7 @@ import (
 	"reflect"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/rasa/compat"
 )
@@ -21,11 +22,11 @@ func TestGetOptions(t *testing.T) {
 	opts = append(opts, compat.WithDefaultFileMode(perm777))
 	opts = append(opts, compat.WithDeleteOnClose(true))
 	opts = append(opts, compat.WithFileMode(perm777))
-	opts = append(opts, compat.WithFlags(os.O_CREATE))
+	opts = append(opts, compat.WithOpenFlags(os.O_CREATE))
 	opts = append(opts, compat.WithKeepFileMode(true))
 	opts = append(opts, compat.WithNonAtomicReplace(true))
-	opts = append(opts, compat.WithReadOnlyMode(compat.ReadOnlyModeSet))
-	opts = append(opts, compat.WithRetrySeconds(1))
+	opts = append(opts, compat.WithReadOnlyMode(compat.ReadOnlyModeFromPermissions))
+	opts = append(opts, compat.WithRetryTimeout(time.Duration(1*time.Second)))
 	opts = append(opts, compat.WithSetSymlinkOwner(true))
 	opts = append(opts, compat.WithSkipACLs(true))
 
@@ -49,11 +50,11 @@ func TestBuildOptions(t *testing.T) {
 defaultFileMode:  0o777 (-rwxrwxrwx)
 deleteOnClose:    true
 fileMode:         0o777 (-rwxrwxrwx)
-flags:            $flags
+openFlags:        $flags
 keepFileMode:     true
 nonAtomicReplace: true
 readOnlyMode:     1
-retrySeconds:     1
+retryTimeout:     1s
 setSymlinkOwner:  true
 skipACLs:         true
 `
@@ -71,11 +72,11 @@ func TestBuildOptions2(t *testing.T) {
 	opts = append(opts, compat.WithDefaultFileMode(perm777))
 	opts = append(opts, compat.WithDeleteOnClose(true))
 	opts = append(opts, compat.WithFileMode(perm777))
-	opts = append(opts, compat.WithFlags(os.O_CREATE))
+	opts = append(opts, compat.WithOpenFlags(os.O_CREATE))
 	opts = append(opts, compat.WithKeepFileMode(true))
 	opts = append(opts, compat.WithNonAtomicReplace(true))
-	opts = append(opts, compat.WithReadOnlyMode(compat.ReadOnlyModeSet))
-	opts = append(opts, compat.WithRetrySeconds(1))
+	opts = append(opts, compat.WithReadOnlyMode(compat.ReadOnlyModeFromPermissions))
+	opts = append(opts, compat.WithRetryTimeout(time.Duration(1*time.Second)))
 	opts = append(opts, compat.WithSetSymlinkOwner(true))
 	opts = append(opts, compat.WithSkipACLs(true))
 
@@ -86,11 +87,11 @@ func TestBuildOptions2(t *testing.T) {
 defaultFileMode:  0o777 (-rwxrwxrwx)
 deleteOnClose:    true
 fileMode:         0o777 (-rwxrwxrwx)
-flags:            $flags
+openFlags:        $flags
 keepFileMode:     true
 nonAtomicReplace: true
 readOnlyMode:     1
-retrySeconds:     1
+retryTimeout:     1s
 setSymlinkOwner:  true
 skipACLs:         true
 `

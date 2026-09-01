@@ -38,8 +38,8 @@ func GetOptions() []Option {
 		opts = append(opts, WithFileMode(options.fileMode))
 	}
 
-	if options.flags != optionDefaults.flags {
-		opts = append(opts, WithFlags(options.flags))
+	if options.openFlags != optionDefaults.openFlags {
+		opts = append(opts, WithOpenFlags(options.openFlags))
 	}
 
 	if options.keepFileMode != optionDefaults.keepFileMode {
@@ -54,8 +54,8 @@ func GetOptions() []Option {
 		opts = append(opts, WithReadOnlyMode(options.readOnlyMode))
 	}
 
-	if options.retrySeconds != optionDefaults.retrySeconds {
-		opts = append(opts, WithRetrySeconds(options.retrySeconds))
+	if options.retryTimeout != optionDefaults.retryTimeout {
+		opts = append(opts, WithRetryTimeout(options.retryTimeout))
 	}
 
 	if options.setSymlinkOwner != optionDefaults.setSymlinkOwner {

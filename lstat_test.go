@@ -310,7 +310,7 @@ func TestLstatCTime(t *testing.T) {
 	}
 }
 
-func TestLstatMTime(t *testing.T) {
+func TestLstatModTime(t *testing.T) {
 	if !supportsSymlinks(t) {
 		skip(t, "Skipping test: Symlinks not supported on "+runtime.GOOS)
 
@@ -329,8 +329,8 @@ func TestLstatMTime(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if got := fi.MTime(); !compareTimes(got, now, testEnv.mtimeGranularity) {
-		fatalTimes(t, "MTime()", got, now, testEnv.mtimeGranularity)
+	if got := fi.ModTime(); !compareTimes(got, now, testEnv.mtimeGranularity) {
+		fatalTimes(t, "ModTime()", got, now, testEnv.mtimeGranularity)
 	}
 
 	if compat.IsTinygo {
@@ -350,8 +350,8 @@ func TestLstatMTime(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if got := fi.MTime(); !compareTimes(got, now, testEnv.mtimeGranularity) {
-		fatalTimes(t, "MTime()", got, now, testEnv.mtimeGranularity)
+	if got := fi.ModTime(); !compareTimes(got, now, testEnv.mtimeGranularity) {
+		fatalTimes(t, "ModTime()", got, now, testEnv.mtimeGranularity)
 	}
 
 	fi, err = compat.Lstat(target)
@@ -359,8 +359,8 @@ func TestLstatMTime(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if got := fi.MTime(); !compareTimes(got, mtime, testEnv.mtimeGranularity) {
-		fatalTimes(t, "MTime()", got, mtime, testEnv.mtimeGranularity)
+	if got := fi.ModTime(); !compareTimes(got, mtime, testEnv.mtimeGranularity) {
+		fatalTimes(t, "ModTime()", got, mtime, testEnv.mtimeGranularity)
 	}
 }
 

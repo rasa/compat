@@ -45,16 +45,16 @@ func Chmod(name string, mode os.FileMode, fns ...Option) error {
 // If there is an error, it will be of type [*PathError].
 func Create(name string, fns ...Option) (*os.File, error) {
 	opts := options{
-		fileMode: CreatePerm,
-		flags:    os.O_CREATE | os.O_TRUNC,
+		fileMode:  CreatePerm,
+		openFlags: os.O_CREATE | os.O_TRUNC,
 	}
 
 	for _, fn := range fns {
 		fn(&opts)
 	}
 
-	if opts.flags&os.O_WRONLY != os.O_WRONLY {
-		opts.flags |= os.O_RDWR
+	if opts.openFlags&os.O_WRONLY != os.O_WRONLY {
+		opts.openFlags |= os.O_RDWR
 	}
 
 	return create(name, opts)
@@ -71,16 +71,16 @@ func Create(name string, fns ...Option) (*os.File, error) {
 // It is the caller's responsibility to remove the file when it is no longer needed.
 func CreateTemp(dir, pattern string, fns ...Option) (*os.File, error) {
 	opts := options{
-		fileMode: CreateTempPerm,
-		flags:    os.O_CREATE | os.O_TRUNC,
+		fileMode:  CreateTempPerm,
+		openFlags: os.O_CREATE | os.O_TRUNC,
 	}
 
 	for _, fn := range fns {
 		fn(&opts)
 	}
 
-	if opts.flags&os.O_WRONLY != os.O_WRONLY {
-		opts.flags |= os.O_RDWR
+	if opts.openFlags&os.O_WRONLY != os.O_WRONLY {
+		opts.openFlags |= os.O_RDWR
 	}
 
 	return createTemp(dir, pattern, opts)
@@ -146,8 +146,8 @@ func MkdirTemp(dir, pattern string, fns ...Option) (string, error) {
 // If there is an error, it will be of type [*PathError].
 func OpenFile(name string, flag int, perm os.FileMode, fns ...Option) (*os.File, error) {
 	opts := options{
-		fileMode: perm,
-		flags:    flag,
+		fileMode:  perm,
+		openFlags: flag,
 	}
 	for _, fn := range fns {
 		fn(&opts)
@@ -158,8 +158,13 @@ func OpenFile(name string, flag int, perm os.FileMode, fns ...Option) (*os.File,
 
 // Remove removes the named file or directory.
 // If there is an error, it will be of type [*PathError].
-func Remove(name string) error {
-	return remove(name)
+func Remove(name string, fns ...Option) error {
+	opts := options{}
+	for _, fn := range fns {
+		fn(&opts)
+	}
+
+	return remove(name, opts)
 }
 
 // RemoveAll removes path and any children it contains.

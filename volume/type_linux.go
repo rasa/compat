@@ -95,7 +95,7 @@ func typeOf(mount Mount) (Type, error) {
 	// If it's not a block device, check filesystem type (network, tmpfs, etc.)
 	var st unix.Statfs_t
 
-	err := unix.Statfs(device, &st)
+	err := unix.Statfs(mount.Mountpoint, &st)
 	if err != nil {
 		return TypeUnknown, fmt.Errorf("statfs: %w", err)
 	}

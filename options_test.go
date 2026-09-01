@@ -36,7 +36,7 @@ func TestFileOptionsCreateExcl(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	fh, err := compat.Create(name, compat.WithFlags(os.O_EXCL))
+	fh, err := compat.Create(name, compat.WithOpenFlags(os.O_EXCL))
 	if err == nil {
 		_ = fh.Close()
 

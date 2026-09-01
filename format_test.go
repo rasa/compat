@@ -63,7 +63,6 @@ func (fs *formatTest) Info() (os.FileInfo, error) {
 func (fs *formatTest) ATime() time.Time    { return time.Time{} }
 func (fs *formatTest) BTime() time.Time    { return time.Time{} }
 func (fs *formatTest) CTime() time.Time    { return time.Time{} }
-func (fs *formatTest) MTime() time.Time    { return fs.modTime }
 func (fs *formatTest) Links() uint         { return 1 }
 func (fs *formatTest) UID() int            { return 0 }
 func (fs *formatTest) GID() int            { return 0 }

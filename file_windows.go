@@ -62,25 +62,24 @@ func chmod(name string, perm os.FileMode, opts options) error {
 	}
 
 	// Set or clear Windows' read-only attribute
-	want := perm&windows.S_IWRITE != 0 // 0x80 (0o200)
+	writable := fi.Mode().Perm()&windows.S_IWRITE != 0
 
-	got := fi.Mode().Perm()&windows.S_IWRITE != 0
-	if opts.readOnlyMode == ReadOnlyModeReset {
-		if !got {
+	switch opts.readOnlyMode {
+	case ReadOnlyModeIgnore:
+		return nil
+
+	case ReadOnlyModeFromPermissions:
+		if writable {
 			return nil
 		}
-
-		want = false
-	}
-
-	if want == got {
-		return nil
-	}
-
-	if want {
 		perm |= windows.S_IWRITE
-	} else {
-		perm &^= os.FileMode(windows.S_IWRITE)
+
+	case ReadOnlyModeClear:
+		if perm&windows.S_IWRITE != 0 {
+			perm |= windows.S_IWRITE
+		} else {
+			perm &^= windows.S_IWRITE
+		}
 	}
 
 	err = os.Chmod(name, perm)
@@ -92,12 +91,12 @@ func chmod(name string, perm os.FileMode, opts options) error {
 }
 
 func create(name string, opts options) (*os.File, error) {
-	if opts.readOnlyMode != ReadOnlyModeSet {
-		opts.flags |= golang.O_FILE_FLAG_NO_RO_ATTR
+	if opts.readOnlyMode != ReadOnlyModeFromPermissions {
+		opts.openFlags |= golang.O_FILE_FLAG_NO_RO_ATTR
 	}
 
 	if opts.deleteOnClose {
-		opts.flags |= golang.FILE_FLAG_DELETE_ON_CLOSE
+		opts.openFlags |= golang.FILE_FLAG_DELETE_ON_CLOSE
 	}
 
 	sa, err := saFromPerm(opts.fileMode, true)
@@ -105,35 +104,37 @@ func create(name string, opts options) (*os.File, error) {
 		return nil, createError(name, err)
 	}
 
-	return golang.OpenFileNolog(name, opts.flags, opts.fileMode, sa)
+	return golang.OpenFileNolog(name, opts.openFlags, opts.fileMode, sa)
 }
 
 func createTemp(dir, pattern string, opts options) (*os.File, error) {
 	if opts.deleteOnClose {
-		opts.flags |= golang.FILE_FLAG_DELETE_ON_CLOSE
+		opts.openFlags |= golang.FILE_FLAG_DELETE_ON_CLOSE
 	}
 
-	if opts.readOnlyMode != ReadOnlyModeSet {
-		opts.flags |= golang.O_FILE_FLAG_NO_RO_ATTR
+	if opts.readOnlyMode != ReadOnlyModeFromPermissions {
+		opts.openFlags |= golang.O_FILE_FLAG_NO_RO_ATTR
 	}
 
 	sa, err := saFromPerm(opts.fileMode, true)
-	if err == nil {
-		f, err := golang.CreateTemp(dir, pattern, opts.flags, opts.fileMode, sa)
-		if err == nil {
-			return f, nil
-		}
+	if err != nil {
+		return nil, createTempError(dir, err)
 	}
 
-	return nil, createTempError(dir, err)
+	fp, err := golang.CreateTemp(dir, pattern, opts.openFlags, opts.fileMode, sa)
+	if err != nil {
+		return nil, createTempError(dir, err)
+	}
+
+	return fp, nil
 }
 
-func fchmod(f *os.File, mode os.FileMode, opts options) error {
-	if f == nil {
+func fchmod(fp *os.File, mode os.FileMode, opts options) error {
+	if fp == nil {
 		return chmodError("", os.ErrInvalid)
 	}
 
-	path, err := golang.Filepath(f)
+	path, err := golang.Filepath(fp)
 	if err == nil {
 		err = chmod(path, mode, opts)
 		if err == nil {
@@ -181,28 +182,36 @@ func mkdirTemp(dir, pattern string, opts options) (string, error) {
 
 	prefix, suffix, _ := golang.PrefixAndSuffix(pattern)
 
-	return "", mkdirTempError(dir+string(os.PathSeparator)+prefix+"*"+suffix, err)
+	return "", mkdirError(dir+string(os.PathSeparator)+prefix+"*"+suffix, err)
 }
 
 func openFile(name string, opts options) (*os.File, error) {
 	if opts.deleteOnClose {
-		opts.flags |= golang.FILE_FLAG_DELETE_ON_CLOSE
+		opts.openFlags |= golang.FILE_FLAG_DELETE_ON_CLOSE
 	}
 
-	sa, err := saFromPerm(opts.fileMode, (opts.flags&os.O_CREATE) == os.O_CREATE)
+	sa, err := saFromPerm(opts.fileMode, (opts.openFlags&os.O_CREATE) == os.O_CREATE)
 	if err != nil {
 		return nil, openError(name, err)
 	}
 
-	return golang.OpenFileNolog(name, opts.flags, opts.fileMode, sa)
+	return golang.OpenFileNolog(name, opts.openFlags, opts.fileMode, sa)
 }
 
-func remove(name string) error {
-	return golang.Remove(name)
+func remove(path string, opts options) error {
+	if opts.retryTimeout == 0 {
+		return golang.Remove(path)
+	}
+
+	return robustio.Retry(func() (err error, mayRetry bool) {
+		err = golang.Remove(path)
+
+		return err, robustio.IsEphemeralError(err)
+	}, opts.retryTimeout.Seconds())
 }
 
 func removeAll(path string, opts options) error {
-	if opts.retrySeconds <= 0 {
+	if opts.retryTimeout == 0 {
 		return golang.RemoveAll(path)
 	}
 
@@ -210,7 +219,7 @@ func removeAll(path string, opts options) error {
 		err = golang.RemoveAll(path)
 
 		return err, robustio.IsEphemeralError(err)
-	}, opts.retrySeconds)
+	}, opts.retryTimeout.Seconds())
 }
 
 func symlink(oldname, newname string, opts options) error {
