@@ -67,6 +67,7 @@ var tinygoThresholds = []struct {
 	goMinVer string
 	goMaxVer string
 }{
+	// See https://tinygo.org/docs/reference/go-compat-matrix/
 	// https://github.com/tinygo-org/tinygo/blob/v0.12.0/builder/config.go#L28
 	{"0.12.0", "go1.11", "go1.13"}, //nolint:goconst
 	// https://github.com/tinygo-org/tinygo/blob/v0.14.0/builder/config.go#L28
