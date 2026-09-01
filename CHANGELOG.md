@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Added
 
-- Add `Options` to `Rename()`.
+- Add `Options` param to `Rename()`.
 - Add `ErrInvalidNice`.
 - Add `WithDeleteOnClose()` option.
 - Add `WithSkipACLs()` option. Useful on Windows only.
@@ -17,10 +17,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Fixed
 
-- Fix `SupportsRelativeFstat()` to always be true.
-
 ### Changed
 
+- Downgraded the minimum go version to 1.24.
 - Rename `ReadOnlyModeSet` to `ReadOnlyModeFromPermissions` **BREAKING CHANGE**
 - Rename `ReadOnlyModeReset` to `ReadOnlyModeClear` **BREAKING CHANGE**
 - Rename `UserIDSourceIsInt` to `UserIDSourceIsInteger` **BREAKING CHANGE**
