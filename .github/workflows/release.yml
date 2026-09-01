@@ -40,11 +40,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - run: |
-          # go tool goreleaser release
-          if [[ -f go.tool.mod ]]; then
-            export GOFLAGS="${GOFLAGS:-} -modfile=go.tool.mod"
-          fi
-          go tool goreleaser release
+          make release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
