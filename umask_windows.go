@@ -63,7 +63,7 @@ func Umask(newMask int) int {
 // serialized, but compat cannot synchronize direct syscall.Umask calls or file
 // creation performed concurrently by other code in the process.
 //
-// On Plan9 and Wasip1, the function always returns zero, and ErrUnimplemented.
+// On Plan9 and Wasip1, the function always returns zero, and ErrUnsupported.
 func GetUmask() (int, error) {
 	return int(currentUmask.Load()), nil
 }
