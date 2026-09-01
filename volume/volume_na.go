@@ -6,9 +6,8 @@
 package volume
 
 import (
+	"errors"
 	"fmt"
-
-	"github.com/rasa/compat"
 )
 
 var osFeatureMap = map[OSFeature]string{}

@@ -85,8 +85,9 @@ printf "Running: "
 # shellcheck disable=SC2086 # (info): Double quote to prevent globbing and word splitting.
 echo go build -buildvcs=false -trimpath ${GOOPTS} ./...
 # shellcheck disable=SC2086 # (info): Double quote to prevent globbing and word splitting.
-if ! go build -buildvcs=false -trimpath ${GOOPTS} ./...; then
-  rv=$?
+rv=0
+go build -buildvcs=false -trimpath ${GOOPTS} ./... || rv=$?
+if [ "${rv}" != "0" ]; then
   printf '::error ::build failed: %s (error %s)\n' "${GOVERSION}" "${rv}"
   exit "${rv}"
 fi
