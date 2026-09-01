@@ -266,7 +266,7 @@ func (fs *fileStat) stat() (os.FileMode, error) {
 	}
 
 	if perm == perm000 {
-		b, err = supportsACLs(fs.path)
+		supported, err = supportsACLs(fs.path)
 		if err != nil {
 			fs.err = statError(fs.origName, err)
 

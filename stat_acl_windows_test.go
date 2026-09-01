@@ -24,9 +24,9 @@ func TestACLWindowsSupportsACLsInvalid(t *testing.T) {
 }
 
 func TestACLWindowsSupportsACLsCachedInvalid(t *testing.T) {
-	_, err := compat.SupportsACLsCached(nil)
-	if err == nil {
-		t.Fatal("got nil, want an error")
+	_, found := compat.SupportsACLsCached(nil)
+	if found {
+		t.Fatal("got found, want not found")
 	}
 }
 

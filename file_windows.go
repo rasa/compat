@@ -62,24 +62,21 @@ func chmod(name string, perm os.FileMode, opts options) error {
 	}
 
 	// Set or clear Windows' read-only attribute
-	writable := fi.Mode().Perm()&windows.S_IWRITE != 0
+	want := perm&windows.S_IWRITE != 0 // 0x80 (0o200)
 
-	switch opts.readOnlyMode {
-	case ReadOnlyModeIgnore:
+	got := fi.Mode().Perm()&windows.S_IWRITE != 0
+	if opts.readOnlyMode == ReadOnlyModeClear {
+		want = false
+	}
+
+	if want == got {
 		return nil
+	}
 
-	case ReadOnlyModeFromPermissions:
-		if writable {
-			return nil
-		}
+	if want {
 		perm |= windows.S_IWRITE
-
-	case ReadOnlyModeClear:
-		if perm&windows.S_IWRITE != 0 {
-			perm |= windows.S_IWRITE
-		} else {
-			perm &^= windows.S_IWRITE
-		}
+	} else {
+		perm &^= os.FileMode(windows.S_IWRITE)
 	}
 
 	err = os.Chmod(name, perm)
