@@ -7,14 +7,14 @@ package compat
 
 // Nice gets the CPU process priority. The return value is in a range from
 // -20 (least nice), to 19 (most nice), even on non-Unix systems such as
-// Windows, plan9, etc. If not supported by the operating system, 0 is returned.
+// Windows, plan9, etc.
 func Nice() (int, error) {
 	return 0, unsupportedError("nice")
 }
 
 // Renice sets the CPU process priority. The nice parameter can range from
 // -20 (least nice), to 19 (most nice), even on non-Unix systems such as
-// Windows, plan9, etc. If not supported by the operating system, nil is returned.
+// Windows, plan9, etc.
 func Renice(_ int) error {
 	return unsupportedError("renice")
 }

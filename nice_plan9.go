@@ -12,15 +12,94 @@ import (
 	"strings"
 )
 
+var (
+	// See https://9p.io/magic/man2html/3/proc
+	//
+	// Plan 9 priorities range from 0 to 19, with larger values representing
+	// higher priorities. Unix nice values range from -20 to 19, with smaller
+	// values representing higher priorities.
+	//
+	// Because Unix has 40 nice values and Plan 9 has only 20 priority values,
+	// conversion is necessarily lossy.
+
+	// priorityMap maps Unix nice levels (-20 to 19) to Plan 9 priorities (0 to 19).
+	priorityMap = map[int]uint32{
+		-20: 19,
+		-19: 18,
+		-18: 18,
+		-17: 17,
+		-16: 17,
+		-15: 16,
+		-14: 16,
+		-13: 15,
+		-12: 15,
+		-11: 14,
+		-10: 14,
+		-9:  13,
+		-8:  13,
+		-7:  13,
+		-6:  12,
+		-5:  12,
+		-4:  12,
+		-3:  11,
+		-2:  11,
+		-1:  11,
+		0:   10,
+		1:   9,
+		2:   9,
+		3:   8,
+		4:   8,
+		5:   7,
+		6:   7,
+		7:   6,
+		8:   6,
+		9:   5,
+		10:  5,
+		11:  4,
+		12:  4,
+		13:  3,
+		14:  3,
+		15:  2,
+		16:  2,
+		17:  1,
+		18:  1,
+		19:  0,
+	}
+
+	// niceMap maps each Plan 9 priority to a representative Unix nice value.
+	// Where multiple Unix nice values map to the same Plan 9 priority, one
+	// canonical value is returned.
+	niceMap = map[int]int{
+		19: -20,
+		18: -18,
+		17: -16,
+		16: -14,
+		15: -12,
+		14: -10,
+		13: -8,
+		12: -5,
+		11: -2,
+		10: 0,
+		9:  1,
+		8:  3,
+		7:  5,
+		6:  7,
+		5:  9,
+		4:  11,
+		3:  13,
+		2:  15,
+		1:  17,
+		0:  19,
+	}
+)
+
 // Nice gets the CPU process priority. The return value is in a range from
 // -20 (least nice), to 19 (most nice), even on non-Unix systems such as
-// Windows, Plan 9, etc. If not supported by the operating system, 0 is
-// returned.
-//
-// Plan 9 exposes the base and current scheduling priorities as the final two
-// fields of /proc/pid/status. This function reports the base priority because
-// that is the value changed by Renice.
+// Windows, Plan 9, etc.
 func Nice() (int, error) {
+	// Plan 9 exposes the base and current scheduling priorities as the final two
+	// fields of /proc/pid/status. This function reports the base priority because
+	// that is the value changed by Renice.
 	path := fmt.Sprintf("/proc/%d/status", os.Getpid())
 
 	data, err := os.ReadFile(path)
@@ -50,89 +129,9 @@ func Nice() (int, error) {
 	return nice, nil
 }
 
-// See https://9p.io/magic/man2html/3/proc
-//
-// Plan 9 priorities range from 0 to 19, with larger values representing
-// higher priorities. Unix nice values range from -20 to 19, with smaller
-// values representing higher priorities.
-//
-// Because Unix has 40 nice values and Plan 9 has only 20 priority values,
-// conversion is necessarily lossy.
-
-// priorityMap maps Unix nice levels (-20 to 19) to Plan 9 priorities (0 to 19).
-var priorityMap = map[int]uint32{
-	-20: 19,
-	-19: 18,
-	-18: 18,
-	-17: 17,
-	-16: 17,
-	-15: 16,
-	-14: 16,
-	-13: 15,
-	-12: 15,
-	-11: 14,
-	-10: 14,
-	-9:  13,
-	-8:  13,
-	-7:  13,
-	-6:  12,
-	-5:  12,
-	-4:  12,
-	-3:  11,
-	-2:  11,
-	-1:  11,
-	0:   10,
-	1:   9,
-	2:   9,
-	3:   8,
-	4:   8,
-	5:   7,
-	6:   7,
-	7:   6,
-	8:   6,
-	9:   5,
-	10:  5,
-	11:  4,
-	12:  4,
-	13:  3,
-	14:  3,
-	15:  2,
-	16:  2,
-	17:  1,
-	18:  1,
-	19:  0,
-}
-
-// niceMap maps each Plan 9 priority to a representative Unix nice value.
-// Where multiple Unix nice values map to the same Plan 9 priority, one
-// canonical value is returned.
-var niceMap = map[int]int{
-	19: -20,
-	18: -18,
-	17: -16,
-	16: -14,
-	15: -12,
-	14: -10,
-	13: -8,
-	12: -5,
-	11: -2,
-	10: 0,
-	9:  1,
-	8:  3,
-	7:  5,
-	6:  7,
-	5:  9,
-	4:  11,
-	3:  13,
-	2:  15,
-	1:  17,
-	0:  19,
-}
-
 // Renice sets the CPU process priority. The nice parameter can range from
 // -20 (least nice) to 19 (most nice), even on non-Unix systems such as
-// Windows, Plan 9, etc. If not supported by the operating system, nil is
-// returned.
+// Windows, Plan 9, etc.
 func Renice(nice int) error {
 	err := validateNice(nice)
 	if err != nil {

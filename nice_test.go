@@ -14,12 +14,16 @@ func TestNice(t *testing.T) {
 	_, err := compat.Nice()
 	if err != nil {
 		if !compat.SupportsNice() {
-			skipf(t, "Skipping test: Nice() is not supported on %v/%v", runtime.GOOS, runtime.GOARCH)
-
 			return
 		}
 
 		t.Fatalf("Nice; got %v, want nil", err)
+
+		return
+	}
+
+	if !compat.SupportsNice() {
+		t.Fatalf("Nice; got nil, want error")
 	}
 }
 
@@ -27,13 +31,21 @@ func TestNiceRenice(t *testing.T) {
 	err := compat.Renice(compat.MaxNice)
 	if err != nil {
 		if !compat.SupportsNice() {
-			skipf(t, "Skipping test: Renice() is not supported on %v/%v", runtime.GOOS, runtime.GOARCH)
-
 			return
 		}
 
 		// Don't fail on "permission denied" on Linux
+		if compat.IsLinux {
+			t.Fatalf("Renice: got %v, want nil", err)
+
+			return
+		}
+
 		t.Skipf("Renice: got %v, want nil", err)
+	}
+
+	if !compat.SupportsNice() {
+		t.Fatalf("Renice; got nil, want error")
 	}
 }
 
