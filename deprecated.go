@@ -6,6 +6,7 @@ package compat
 import (
 	"errors"
 	"io"
+	"os"
 	"time"
 )
 
@@ -33,6 +34,17 @@ const (
 	// This constant will be removed in a future release.
 	UserIDSourceIsInt = UserIDSourceIsInteger
 )
+
+// A FileMode represents a file's mode and permission bits.
+// The bits have the same definition on all systems, so that
+// information about files can be moved from one system
+// to another portably. Not all bits apply to all systems.
+// The only required bit is [ModeDir] for directories.
+//
+// Deprecated: Use os.FileMode instead.
+//
+// This type will be removed in a future release.
+type FileMode = os.FileMode
 
 // IsUnsupportedError returns true if err indicates the function is unsupported.
 //

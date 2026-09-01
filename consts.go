@@ -54,13 +54,6 @@ const (
 	// https://github.com/golang/go/blob/ac803b59/src/syscall/types_windows.go#L37-L55
 )
 
-// A FileMode represents a file's mode and permission bits.
-// The bits have the same definition on all systems, so that
-// information about files can be moved from one system
-// to another portably. Not all bits apply to all systems.
-// The only required bit is [ModeDir] for directories.
-type FileMode = os.FileMode
-
 // ReadOnlyMode defines how to handle a file's read-only attribute on Windows.
 type ReadOnlyMode int
 
