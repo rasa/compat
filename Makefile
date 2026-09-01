@@ -143,7 +143,6 @@ bldtest:         bld test
 check: ## make fmt fumpt lint modernize spell vet restore diffx
 check:         fmt fumpt lint modernize spell vet restore diffx
 
-
 .PHONY: diffx
 diffx: ## git diff -uw
 	-git --no-pager diff -uw
@@ -192,6 +191,12 @@ nuke: ## make clean and go clean -i -cache -testcache -modcache -fuzzcache
 nuke: clean
 	rm -rf "$(shell go env GOCACHE)/../golangci-lint"
 	go clean -i -cache -testcache -modcache -fuzzcache
+
+.PHONY: release
+release: ## Cut a new release via goreleaser
+release: ci
+	# go tool $(TOOL_OPTS) goreleaser release
+	go tool $(TOOL_OPTS) goreleaser release
 
 .PHONY: restore
 restore: ##	git restore format.go walk.go walk_test.go golang/*.go robustio/robustio*.go
