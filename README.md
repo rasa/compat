@@ -279,7 +279,7 @@ including:
 - `Rename`
 - `Remove`, and `RemoveAll`
 - `Stat`, `Fstat` and `LStat`
-- `Umask`
+- `Umask` and `GetUmask`
 - `WriteFile` and `WriteReader`
 
 Several operations accept functional options:
