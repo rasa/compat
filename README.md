@@ -260,7 +260,6 @@ func main() {
 | `SupportsCTime` | Reports operating-system support for metadata-change time |
 | `SupportsFstat` | Reports support for `Fstat` |
 | `SupportsLinks` | Reports support for hard-link counts |
-| `SupportsRelativeFstat` | Reports support for `Fstat` on relative paths |
 | `SupportsSymlinks` | Reports operating-system support for symbolic links |
 | `SupportsUmask` | Reports support for `Umask` |
 | `UserIDSource` | Describes how user IDs are represented on the current platform |
@@ -285,18 +284,19 @@ including:
 
 Several operations accept functional options:
 
-| Option | Purpose |
-|---|---|
-| `WithAtomicity` | Requests atomic file creation or replacement |
-| `WithNonAtomicReplace` | Allows a non-atomic replacement where atomic replacement is unavailable |
-| `WithFileMode` | Sets the requested file mode |
-| `WithDefaultFileMode` | Changes the default mode used when no explicit mode is supplied |
-| `WithKeepFileMode` | Preserves the mode of an existing destination |
-| `WithOpenFlags` | Adds file-open flags |
-| `WithReadOnlyMode` | Controls Windows read-only attribute handling |
-| `WithRetrySeconds` | Retries selected operations for a bounded period |
-| `WithSetSymlinkOwner` | Requests ownership adjustment for Windows symbolic links |
-| `WithSkipACLs` | Skips setting Windows ACLs |
+| Option | Purpose | Used by |
+|---|---|---|
+| `WithAtomicity` | Requests atomic file creation or replacement | `WriteFile`, `WriteReader` |
+| `WithFileMode` | Sets the requested file mode | `Create`, `CreateTemp`, `MkdirTemp`, `Open`, `OpenFile`, `WriteFile`, `WriteReader` |
+| `WithDefaultFileMode` | Changes the default mode used when no explicit mode is supplied | `Create`, `CreateTemp`, `Open`, `OpenFile`, `WriteFile`, `WriteReader` |
+| `WithDeleteOnClose` | Deletes file when closed | `Create`, `CreateTemp`, `Open`, `OpenFile` |
+| `WithKeepFileMode` | Preserves the mode of an existing destination | `WriteFile`, `WriteReader` |
+| `WithNonAtomicReplace` | Allows a non-atomic replacement where atomic replacement is unavailable | `WriteFile`, `WriteReader` |
+| `WithOpenFlags` | Adds file-open flags | `Create`, `CreateTemp`, `Open`, `OpenFile` |
+| `WithReadOnlyMode` | Controls Windows read-only attribute handling | `Chmod`, `Create`, `CreateTemp`, `Fchmod`, `Open`, `OpenFile`, `WriteFile`, `WriteReader` |
+| `WithRetrySeconds` | Retries selected operations for a bounded period | `Rename`, `Remove`, `RemoveAll` |
+| `WithSetSymlinkOwner` | Requests ownership adjustment for Windows symbolic links | `Symlink` |
+| `WithSkipACLs` | Skips setting Windows ACLs | `Chmod`, `Fchmod` |
 
 An option may apply only to the operations documented for it. Options that
 control Windows-specific behavior are ignored on other operating systems.
