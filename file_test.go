@@ -355,16 +355,16 @@ func TestFilePosixSymlink(t *testing.T) {
 		return
 	}
 
-	old, err := tempFile(t)
+	src, err := tempFile(t)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	gnu := old + ".link"
+	dst := src + ".link"
 
-	err = compat.Symlink(old, gnu)
+	err = compat.Symlink(src, dst)
 	if err != nil {
-		t.Fatalf("Symlink: %q to %q: %v", old, gnu, err)
+		t.Fatalf("Symlink: %q to %q: %v", src, dst, err)
 	}
 }
 
@@ -450,15 +450,15 @@ func TestFilePosixOpenFileInvalid(t *testing.T) {
 	}
 }
 
-func TestFilePosixSymlinkInvalidOld(t *testing.T) {
+func TestFilePosixSymlinkInvalidsrc(t *testing.T) {
 	if !supportsSymlinks(t) {
 		return
 	}
 
-	old := invalidName
-	gnu := old + ".link"
+	src := invalidName
+	dst := src + ".link"
 
-	err := compat.Symlink(old, gnu)
+	err := compat.Symlink(src, dst)
 	if err == nil {
 		t.Fatal("got nil, want an error")
 	}
@@ -469,12 +469,12 @@ func TestFilePosixSymlinkInvalidNew(t *testing.T) {
 		return
 	}
 
-	old, err := tempFile(t)
+	src, err := tempFile(t)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	err = compat.Symlink(old, invalidName)
+	err = compat.Symlink(src, invalidName)
 	if err == nil {
 		t.Fatal("got nil, want an error")
 	}

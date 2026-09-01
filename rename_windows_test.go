@@ -20,6 +20,6 @@ func TestRenameWindowsRetry(t *testing.T) {
 
 	err = compat.Rename(old, new, compat.WithRetrySeconds(2))
 	if err != nil {
-		t.Fatalf("renaming '%v' to '%v': %v", old, new, err)
+		t.Fatalf("renaming %q to %q: %v", old, new, err)
 	}
 }

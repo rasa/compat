@@ -65,7 +65,7 @@ func getOSVersion() (ver semanticVersion, err error) {
 
 	rel := unix.ByteSliceToString(u.Release[:])
 
-	return ver, fmt.Errorf("cannot parse '%v'", rel)
+	return ver, fmt.Errorf("cannot parse %q", rel)
 }
 
 /*

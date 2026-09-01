@@ -11,97 +11,97 @@ import (
 )
 
 func TestRename(t *testing.T) {
-	old, err := tempFile(t)
+	src, err := tempFile(t)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	gnu := old + ".new"
-	cleanup(t, old, gnu)
+	dst := src + ".new"
+	cleanup(t, src, dst)
 
-	err = compat.Rename(old, gnu)
+	err = compat.Rename(src, dst)
 	if err != nil {
-		t.Fatalf("renaming '%v' to '%v': %v", old, gnu, err)
+		t.Fatalf("renaming %q to %q: %v", src, dst, err)
 	}
 }
 
-func TestRenameEmptyOld(t *testing.T) {
-	old := ""
-	gnu := tempName(t)
+func TestRenameEmptysrc(t *testing.T) {
+	src := ""
+	dst := tempName(t)
 
-	err := compat.Rename(old, gnu)
+	err := compat.Rename(src, dst)
 	if err == nil {
-		t.Fatalf("got no error renaming '%v' to '%v'", old, gnu)
+		t.Fatalf("got no error renaming %q to %q", src, dst)
 	}
 }
 
 func TestRenameEmptyNew(t *testing.T) {
-	old, err := tempFile(t)
+	src, err := tempFile(t)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	cleanup(t, old)
+	cleanup(t, src)
 
-	gnu := ""
+	dst := ""
 
-	err = compat.Rename(old, gnu)
+	err = compat.Rename(src, dst)
 	if err == nil {
-		t.Fatalf("got no error renaming '%v' to '%v'", old, gnu)
+		t.Fatalf("got no error renaming %q to %q", src, dst)
 	}
 }
 
-func TestRenameInvalidOld(t *testing.T) {
-	old := invalidName
-	gnu := tempName(t)
+func TestRenameInvalidsrc(t *testing.T) {
+	src := invalidName
+	dst := tempName(t)
 
-	err := compat.Rename(old, gnu)
+	err := compat.Rename(src, dst)
 	if err == nil {
-		t.Fatalf("got no error renaming '%v' to '%v'", old, gnu)
+		t.Fatalf("got no error renaming %q to %q", src, dst)
 	}
 }
 
 func TestRenameInvalidNew(t *testing.T) {
-	old, err := tempFile(t)
+	src, err := tempFile(t)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	cleanup(t, old)
+	cleanup(t, src)
 
-	gnu := invalidName
+	dst := invalidName
 
-	err = compat.Rename(old, gnu)
+	err = compat.Rename(src, dst)
 	if err == nil {
-		t.Fatalf("got no error renaming '%v' to '%v'", old, gnu)
+		t.Fatalf("got no error renaming %q to %q", src, dst)
 	}
 }
 
 func TestRenameCantRead(t *testing.T) {
-	old, err := tempFile(t)
+	src, err := tempFile(t)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	cleanup(t, old)
+	cleanup(t, src)
 
 	perm := fixPerms(perm100, false)
 	if perm != perm100 {
-		partType := partitionType(old)
+		partType := partitionType(src)
 		t.Skipf("Skipping test: permissions are not supported on a %v filesystem", partType)
 	}
 
-	err = compat.Chmod(old, perm)
+	err = compat.Chmod(src, perm)
 	if err != nil {
 		t.Fatalf("Chmod: %v", err)
 	}
 
-	gnu := old + ".new"
-	cleanup(t, gnu)
+	dst := src + ".new"
+	cleanup(t, dst)
 
-	err = compat.Rename(old, gnu)
+	err = compat.Rename(src, dst)
 	if err != nil {
-		t.Fatalf("renaming '%v' to '%v': %v", old, gnu, err)
+		t.Fatalf("renaming %q to %q: %v", src, dst, err)
 	}
 }
 
@@ -112,31 +112,31 @@ func TestRenameWithAtomicity(t *testing.T) {
 		return
 	}
 
-	old, err := tempFile(t)
+	src, err := tempFile(t)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	gnu := old + ".new"
-	cleanup(t, old, gnu)
+	dst := src + ".new"
+	cleanup(t, src, dst)
 
-	err = compat.Rename(old, gnu, compat.WithAtomicity(true))
+	err = compat.Rename(src, dst, compat.WithAtomicity(true))
 	if err != nil {
-		t.Fatalf("renaming '%v' to '%v': %v", old, gnu, err)
+		t.Fatalf("renaming %q to %q: %v", src, dst, err)
 	}
 }
 
 func TestRenameWithNonAtomicReplace(t *testing.T) {
-	old, err := tempFile(t)
+	src, err := tempFile(t)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	gnu := old + ".new"
-	cleanup(t, old, gnu)
+	dst := src + ".new"
+	cleanup(t, src, dst)
 
-	err = compat.Rename(old, gnu, compat.WithNonAtomicReplace(true))
+	err = compat.Rename(src, dst, compat.WithNonAtomicReplace(true))
 	if err != nil {
-		t.Fatalf("renaming '%v' to '%v': %v", old, gnu, err)
+		t.Fatalf("renaming %q to %q: %v", src, dst, err)
 	}
 }

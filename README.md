@@ -27,8 +27,7 @@
 - filesystem and operating-system compatibility helpers.
 
 The package supports Linux, macOS, Windows, BSD systems, Android, iOS, Plan 9,
-Solaris, illumos, JavaScript/WebAssembly, WASI, TinyGo, and other targets
-supported by Go.
+Solaris, illumos, JavaScript/WebAssembly, WASI and TinyGo. Newly introduced Go targets are evaluated explicitly before support is claimed.
 
 ## Contents
 

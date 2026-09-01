@@ -72,6 +72,7 @@ func TestUmaskInitUmasK(t *testing.T) {
 
 		return
 	}
+
 	type test struct {
 		umask string
 		want  bool
@@ -87,13 +88,17 @@ func TestUmaskInitUmasK(t *testing.T) {
 		{"18446744073709551617", false},
 	}
 	savedUmask := os.Getenv("UMASK")
+
 	for _, tst := range tests {
 		os.Setenv("UMASK", tst.umask)
+
 		err := compat.InitUmask()
+
 		got := err == nil
 		if got != tst.want {
 			t.Errorf("%v: got %v, want %v", tst.umask, got, tst.want)
 		}
 	}
+
 	os.Setenv("UMASK", savedUmask)
 }

@@ -36,7 +36,7 @@ func invalidNiceError(nice int) error {
 	)
 }
 
-func unexpectedNiceError(nice int) error { //nolint:unused
+func unexpectedNiceError(nice int) error {
 	return fmt.Errorf("compat: internal error: unmapped nice value %d", nice) //nolint:err113
 }
 
@@ -68,16 +68,16 @@ func openError(path string, err error) error {
 	return &os.PathError{Op: "open", Path: path, Err: err}
 }
 
-func renameError(old, gnu string, err error) error {
-	return &os.LinkError{Op: "rename", Old: old, New: gnu, Err: err}
+func renameError(src, dst string, err error) error {
+	return &os.LinkError{Op: "rename", Old: src, New: dst, Err: err}
 }
 
 func statError(path string, err error) error {
 	return &os.PathError{Op: "stat", Path: path, Err: err}
 }
 
-func symlinkError(old, gnu string, err error) error {
-	return &os.LinkError{Op: "symlink", Old: old, New: gnu, Err: err}
+func symlinkError(src, dst string, err error) error {
+	return &os.LinkError{Op: "symlink", Old: src, New: dst, Err: err}
 }
 
 func writeError(name string, err error) error {

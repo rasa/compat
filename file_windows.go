@@ -65,6 +65,7 @@ func chmod(name string, perm os.FileMode, opts options) error {
 	want := perm&windows.S_IWRITE != 0 // 0x80 (0o200)
 
 	got := fi.Mode().Perm()&windows.S_IWRITE != 0
+
 	if opts.readOnlyMode == ReadOnlyModeClear {
 		want = false
 	}

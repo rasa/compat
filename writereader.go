@@ -127,21 +127,21 @@ func WriteReader(name string, reader io.Reader, perm os.FileMode, fns ...Option)
 
 	_, err = io.Copy(file, reader)
 	if err != nil {
-		err = fmt.Errorf("cannot write to '%v': %w", tempFileName, err)
+		err = fmt.Errorf("cannot write to %q: %w", tempFileName, err)
 
 		return writeError(name, err)
 	}
 	// fsync is important, otherwise os.Rename could rename a zero-length file
 	err = file.Sync()
 	if err != nil {
-		err = fmt.Errorf("cannot sync '%v': %w", tempFileName, err)
+		err = fmt.Errorf("cannot sync %q: %w", tempFileName, err)
 
 		return writeError(name, err)
 	}
 
 	err = file.Close()
 	if err != nil {
-		err = fmt.Errorf("cannot close '%v': %w", tempFileName, err)
+		err = fmt.Errorf("cannot close %q: %w", tempFileName, err)
 
 		return writeError(name, err)
 	}

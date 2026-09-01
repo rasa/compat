@@ -9,13 +9,13 @@ import (
 
 // Chmod changes the mode of the named file to mode.
 // If the file is a symbolic link, it changes the mode of the link's target.
-// If there is an error, it will be of type [*PathError].
+// If there is an error, it will be of type [*os.PathError].
 //
 // A different subset of the mode bits are used, depending on the
 // operating system.
 //
-// On Unix, the mode's permission bits, [ModeSetuid], [ModeSetgid], and
-// [ModeSticky] are used.
+// On Unix, the mode's permission bits, [os.ModeSetuid], [os.ModeSetgid], and
+// [os.ModeSticky] are used.
 //
 // On Windows, the mode's permission bits are used to set the appropriate
 // ACL entries.
@@ -24,8 +24,8 @@ import (
 // control whether the file's read-only attribute is set or cleared.
 // For compatibility with Go 1.12 and earlier, use a non-zero mode.
 //
-// On Plan 9, the mode's permission bits, [ModeAppend], [ModeExclusive],
-// and [ModeTemporary] are used.
+// On Plan 9, the mode's permission bits, [os.ModeAppend], [os.ModeExclusive],
+// and [os.ModeTemporary] are used.
 func Chmod(name string, mode os.FileMode, fns ...Option) error {
 	opts := options{
 		fileMode: mode,
@@ -40,9 +40,9 @@ func Chmod(name string, mode os.FileMode, fns ...Option) error {
 // Create creates or truncates the named file. If the file already exists,
 // it is truncated. If the file does not exist, it is created with mode 0o666
 // (before umask). If successful, methods on the returned File can
-// be used for I/O; the associated file descriptor has mode [O_RDWR].
+// be used for I/O; the associated file descriptor has mode [os.O_RDWR].
 // The directory containing the file must already exist.
-// If there is an error, it will be of type [*PathError].
+// If there is an error, it will be of type [*os.PathError].
 func Create(name string, fns ...Option) (*os.File, error) {
 	opts := options{
 		fileMode:  CreatePerm,
@@ -87,7 +87,7 @@ func CreateTemp(dir, pattern string, fns ...Option) (*os.File, error) {
 }
 
 // Fchmod changes the mode of the file to mode.
-// If there is an error, it will be of type [*PathError].
+// If there is an error, it will be of type [*os.PathError].
 func Fchmod(fp *os.File, mode os.FileMode, fns ...Option) error {
 	opts := options{
 		fileMode: mode,
@@ -101,7 +101,7 @@ func Fchmod(fp *os.File, mode os.FileMode, fns ...Option) error {
 
 // Mkdir creates a new directory with the specified name and perm's permission
 // bits (before umask).
-// If there is an error, it will be of type [*PathError].
+// If there is an error, it will be of type [*os.PathError].
 func Mkdir(name string, perm os.FileMode) error {
 	return mkdir(name, perm)
 }
@@ -139,11 +139,11 @@ func MkdirTemp(dir, pattern string, fns ...Option) (string, error) {
 
 // OpenFile is the generalized open call; most users will use Open
 // or Create instead. It opens the named file with specified flag
-// ([O_RDONLY] etc.). If the file does not exist, and the [O_CREATE] flag
+// ([os.O_RDONLY] etc.). If the file does not exist, and the [os.O_CREATE] flag
 // is passed, it is created with perm's permission bits (before umask);
 // the containing directory must exist. If successful,
 // methods on the returned File can be used for I/O.
-// If there is an error, it will be of type [*PathError].
+// If there is an error, it will be of type [*os.PathError].
 func OpenFile(name string, flag int, perm os.FileMode, fns ...Option) (*os.File, error) {
 	opts := options{
 		fileMode:  perm,
@@ -157,7 +157,7 @@ func OpenFile(name string, flag int, perm os.FileMode, fns ...Option) (*os.File,
 }
 
 // Remove removes the named file or directory.
-// If there is an error, it will be of type [*PathError].
+// If there is an error, it will be of type [*os.PathError].
 func Remove(name string, fns ...Option) error {
 	opts := options{}
 	for _, fn := range fns {
@@ -171,7 +171,7 @@ func Remove(name string, fns ...Option) error {
 // It removes everything it can but returns the first error
 // it encounters. If the path does not exist, RemoveAll
 // returns nil (no error).
-// If there is an error, it will be of type [*PathError].
+// If there is an error, it will be of type [*os.PathError].
 func RemoveAll(path string, fns ...Option) error {
 	opts := options{}
 	for _, fn := range fns {

@@ -22,12 +22,14 @@ var (
 
 func initUmask() error {
 	umask := strings.TrimSpace(os.Getenv("UMASK"))
+
 	umask = strings.TrimPrefix(strings.ToLower(umask), "0o")
 	if umask != "" {
 		n, err := strconv.ParseUint(umask, 8, 32)
 		if err != nil {
 			return err
 		}
+
 		startingUmask = uint32(n) & permMask
 	}
 
