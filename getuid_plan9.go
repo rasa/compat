@@ -10,7 +10,6 @@ import (
 	"sync"
 
 	"github.com/OneOfOne/xxhash"
-	// was "github.com/cespare/xxhash"
 )
 
 var getuidOnce struct {
@@ -33,6 +32,7 @@ func Getuid() (int, error) {
 func getuid() (int, error) {
 	u, err := user.Current()
 	if err != nil {
+		err = normalizeUnsupportedError(err)
 		return UnknownID, err
 	}
 
@@ -62,6 +62,7 @@ func Getgid() (int, error) {
 func getgid() (int, error) {
 	u, err := user.Current()
 	if err != nil {
+		err = normalizeUnsupportedError(err)
 		return UnknownID, err
 	}
 

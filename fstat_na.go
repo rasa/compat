@@ -10,5 +10,5 @@ func fstat(f *os.File) (FileInfo, error) {
 		return nil, statError("", os.ErrInvalid)
 	}
 
-	return nil, statError(f.Name(), &UnimplementedError{Op: "fstat"})
+	return nil, statError(f.Name(), unimplementedError("fstat"))
 }

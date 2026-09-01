@@ -25,6 +25,7 @@ func Nice() (int, error) {
 
 	data, err := os.ReadFile(path)
 	if err != nil {
+		err = normalizeUnsupportedError(err)
 		return 0, niceError("cannot read "+path, err)
 	}
 
@@ -37,6 +38,7 @@ func Nice() (int, error) {
 	pri := fields[len(fields)-2]
 	basePriority, err := strconv.Atoi(pri)
 	if err != nil {
+		err = normalizeUnsupportedError(err)
 		return 0, fmt.Errorf("nice: invalid base priority %q in %q: %w", pri, path, err)
 	}
 

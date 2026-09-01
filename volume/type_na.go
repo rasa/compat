@@ -6,9 +6,11 @@
 package volume
 
 import (
+	"fmt"
+
 	"github.com/rasa/compat"
 )
 
 func typeOf(_ Mount) (Type, error) {
-	return TypeUnknown, &compat.UnimplementedError{Op: "typeOf"}
+	return TypeUnknown, fmt.Errorf("typeOf: %w", errors.ErrUnsupported)
 }

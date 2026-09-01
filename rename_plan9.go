@@ -35,6 +35,7 @@ func rename(source, destination string, opts ...Option) error {
 	}
 
 	_, err = os.Stat(destinationAbs)
+	err = normalizeUnsupportedError(err)
 
 	switch {
 	case err == nil:
@@ -71,7 +72,9 @@ func rename(source, destination string, opts ...Option) error {
 		return renameError(source, destination, err)
 	}
 
-	if err := syscall.Wstat(sourceAbs, buf[:n]); err != nil {
+	err = syscall.Wstat(sourceAbs, buf[:n])
+	if err != nil {
+		err = normalizeUnsupportedError(err)
 		return renameError(source, destination, err)
 	}
 

@@ -6,11 +6,13 @@
 package volume
 
 import (
+	"fmt"
+
 	"github.com/rasa/compat"
 )
 
 func Mounts() ([]Mount, error) {
 	mounts := []Mount{}
 
-	return mounts, &compat.UnimplementedError{Op: "mounts"}
+	return mounts, fmt.Errorf("mounts: %w", errors.ErrUnsupported)
 }
