@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Changed
 
+- Change `GetUmask()` signature to return an error. **BREAKING CHANGE**
 - Deprecate `FileInfo`. Will be removed eventually.
 - Deprecate `IsAct`. Will be removed eventually.
 

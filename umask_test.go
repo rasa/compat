@@ -11,7 +11,10 @@ import (
 )
 
 func TestUmask(t *testing.T) {
-	original := compat.GetUmask()
+	original, err := compat.GetUmask()
+	if err != nil {
+		t.Errorf("GetUmask: %v", err)
+	}
 
 	t.Cleanup(func() {
 		compat.Umask(original)
@@ -33,7 +36,11 @@ func TestUmask(t *testing.T) {
 				t.Errorf("Umask(0o%03o): got previous mask 0o%03o, want 0", mask, got)
 			}
 
-			if got := compat.GetUmask(); got != 0 {
+			got, err := compat.GetUmask()
+			if err != nil {
+				t.Errorf("GetUmask: %v", err)
+			}
+			if got != 0 {
 				t.Errorf("GetUmask() after Umask(0o%03o): got 0o%03o, want 0", mask, got)
 			}
 		}
@@ -53,7 +60,11 @@ func TestUmask(t *testing.T) {
 			)
 		}
 
-		if got := compat.GetUmask(); got != mask {
+		got, err := compat.GetUmask()
+		if err != nil {
+			t.Errorf("GetUmask: %v", err)
+		}
+		if got != mask {
 			t.Errorf(
 				"GetUmask() after Umask(0o%03o): got 0o%03o, want 0o%03o",
 				mask,

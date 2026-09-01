@@ -247,7 +247,11 @@ func saFromPerm(perm os.FileMode, create bool) (*syscall.SecurityAttributes, err
 		return &sa, nil
 	}
 
-	perm &^= os.FileMode(GetUmask()) //nolint:gosec
+	umask, err := GetUmask()
+	if err != nil {
+		return nil, err
+	}
+	perm &^= os.FileMode(umask) //nolint:gosec
 
 	sd, err := sdFromPerm(perm)
 	if err != nil {
@@ -262,7 +266,11 @@ func saFromPerm(perm os.FileMode, create bool) (*syscall.SecurityAttributes, err
 
 // siFromPerm converts a perm (FileMode) to an *si (*securityInfo).
 func siFromPerm(perm os.FileMode) (*securityInfo, error) {
-	perm &^= os.FileMode(GetUmask()) //nolint:gosec
+	umask, err := GetUmask()
+	if err != nil {
+		return nil, err
+	}
+	perm &^= os.FileMode(umask) //nolint:gosec
 
 	ownerSid, groupSid, worldSid, err := getSIDs()
 	if err != nil {
