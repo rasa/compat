@@ -5,13 +5,9 @@ package compat
 
 import (
 	"go/version"
-	"os"
 	"runtime"
 	"sync"
 )
-
-// IsAct is true when running github actions locally using the act command.
-var IsAct = os.Getenv("ACT") == "true"
 
 const (
 	IsAIX       = runtime.GOOS == "aix"
@@ -63,43 +59,43 @@ const (
 )
 
 var tinygoThresholds = []struct {
-	tinygo   string
-//	goMinVer string // unneeded
+	tinygo string
+	//	goMinVer string // unneeded
 	goMaxVer string
 }{
 	// See https://tinygo.org/docs/reference/go-compat-matrix/
 	// https://github.com/tinygo-org/tinygo/blob/v0.12.0/builder/config.go#L28
-	{"0.12.0", /*"go1.11",*/ "go1.13"},
+	{"0.12.0" /*"go1.11",*/, "go1.13"},
 	// https://github.com/tinygo-org/tinygo/blob/v0.14.0/builder/config.go#L28
-	{"0.14.0", /*"go1.11",*/ "go1.14"},
+	{"0.14.0" /*"go1.11",*/, "go1.14"},
 	// https://github.com/tinygo-org/tinygo/blob/v0.16.0/builder/config.go#L28
-	{"0.16.0", /*"go1.11",*/ "go1.15"},
+	{"0.16.0" /*"go1.11",*/, "go1.15"},
 	// https://github.com/tinygo-org/tinygo/blob/v0.17.0/builder/config.go#L28
-	{"0.17.0", /*"go1.11",*/ "go1.16"},
+	{"0.17.0" /*"go1.11",*/, "go1.16"},
 	// https://github.com/tinygo-org/tinygo/blob/v0.19.0/builder/config.go#L36
-	{"0.19.0", /*"go1.13",*/ "go1.16"},
+	{"0.19.0" /*"go1.13",*/, "go1.16"},
 	// https://github.com/tinygo-org/tinygo/blob/v0.22.0/builder/config.go#L36
-	{"0.22.0", /*"go1.15",*/ "go1.17"},
+	{"0.22.0" /*"go1.15",*/, "go1.17"},
 	// https://github.com/tinygo-org/tinygo/blob/v0.23.0/builder/config.go#L36
-	{"0.23.0", /*"go1.15",*/ "go1.18"},
+	{"0.23.0" /*"go1.15",*/, "go1.18"},
 	// https://github.com/tinygo-org/tinygo/blob/v0.25.0/builder/config.go#L36
-	{"0.25.0", /*"go1.16",*/ "go1.19"},
+	{"0.25.0" /*"go1.16",*/, "go1.19"},
 	// https://github.com/tinygo-org/tinygo/blob/v0.26.0/builder/config.go#L36
-	{"0.26.0", /*"go1.18",*/ "go1.19"},
+	{"0.26.0" /*"go1.18",*/, "go1.19"},
 	// https://github.com/tinygo-org/tinygo/blob/v0.27.0/builder/config.go#L36
-	{"0.27.0", /*"go1.18",*/ "go1.20"},
+	{"0.27.0" /*"go1.18",*/, "go1.20"},
 	// https://github.com/tinygo-org/tinygo/blob/v0.29.0/builder/config.go#L30
-	{"0.29.0", /*"go1.18",*/ "go1.21"},
+	{"0.29.0" /*"go1.18",*/, "go1.21"},
 	// https://github.com/tinygo-org/tinygo/blob/v0.31.0/builder/config.go#L30
-	{"0.31.0", /*"go1.18",*/ "go1.22"},
+	{"0.31.0" /*"go1.18",*/, "go1.22"},
 	// https://github.com/tinygo-org/tinygo/blob/v0.33.0/builder/config.go#L30
-	{"0.33.0", /*"go1.19",*/ "go1.23"},
+	{"0.33.0" /*"go1.19",*/, "go1.23"},
 	// https://github.com/tinygo-org/tinygo/blob/v0.36.0/builder/config.go#L28
-	{"0.36.0", /*"go1.19",*/ "go1.24"},
+	{"0.36.0" /*"go1.19",*/, "go1.24"},
 	// https://github.com/tinygo-org/tinygo/blob/v0.39.0/builder/config.go#L28
-	{"0.39.0", /*"go1.19",*/ "go1.25"},
+	{"0.39.0" /*"go1.19",*/, "go1.25"},
 	// https://github.com/tinygo-org/tinygo/blob/v0.41.0/builder/config.go#L28
-	{"0.41.0", /*"go1.19",*/ "go1.26"},
+	{"0.41.0" /*"go1.19",*/, "go1.26"},
 }
 
 var goVersionOnce struct {

@@ -35,11 +35,18 @@ const (
 	UserIDSourceIsInt = UserIDSourceIsInteger
 )
 
+// IsAct is true when running github actions locally using the act command.
+//
+// Deprecated: Do not use.
+//
+// This var will be removed in a future release.
+var IsAct = os.Getenv("ACT") == "true"
+
 // A FileMode represents a file's mode and permission bits.
 // The bits have the same definition on all systems, so that
 // information about files can be moved from one system
 // to another portably. Not all bits apply to all systems.
-// The only required bit is [ModeDir] for directories.
+// The only required bit is [os.ModeDir] for directories.
 //
 // Deprecated: Use os.FileMode instead.
 //
