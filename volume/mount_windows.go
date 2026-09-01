@@ -7,6 +7,7 @@ package volume
 
 import (
 	"cmp"
+	"errors"
 	"slices"
 	"syscall"
 
@@ -41,7 +42,11 @@ func Mounts() ([]Mount, error) {
 		// Next volume
 		err = windows.FindNextVolume(h, &volNameBuf[0], bufSize)
 		if err != nil {
-			break // no more volumes
+			if errors.Is(err, windows.ERROR_NO_MORE_FILES) {
+				break
+			}
+
+			return mounts, fmt.Errorf("FindNextVolume: %w", err)
 		}
 	}
 
