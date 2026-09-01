@@ -50,3 +50,7 @@ var ExportedStat = stat
 // writereader.go
 
 var ExportedWriteReader = writeReader
+
+// umask.go
+
+var InitUmask = initUmask

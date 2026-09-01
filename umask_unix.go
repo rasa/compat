@@ -18,8 +18,9 @@ var (
 	umaskMutex   sync.Mutex
 )
 
-func init() {
+func initUmask() error {
 	_ = GetUmask()
+	return nil
 }
 
 // Umask sets the umask to umask, and returns the previous value.

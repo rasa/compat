@@ -5,6 +5,10 @@
 
 package compat
 
+func initUmask() error {
+	return nil
+}
+
 // Umask sets the umask to umask, and returns the previous value.
 // On Windows, the initial umask value is 022 octal, and can be changed by
 // setting environmental variable UMASK, to an octal value. For example:

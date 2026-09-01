@@ -4,6 +4,7 @@
 package compat_test
 
 import (
+	"os"
 	"testing"
 
 	"github.com/rasa/compat"
@@ -63,4 +64,36 @@ func TestUmask(t *testing.T) {
 
 		previous = mask
 	}
+}
+
+func TestUmaskInitUmasK(t *testing.T) {
+	if !compat.IsWindows {
+		skip(t, "Skipping test: requires Windows")
+
+		return
+	}
+	type test struct {
+		umask string
+		want  bool
+	}
+
+	tests := []test{
+		{"", true},
+		{"0", true},
+		{"0o", true},
+		{"o", false},
+		{"9", false},
+		{"-1", false},
+		{"18446744073709551617", false},
+	}
+	savedUmask := os.Getenv("UMASK")
+	for _, tst := range tests {
+		os.Setenv("UMASK", tst.umask)
+		err := compat.InitUmask()
+		got := err == nil
+		if got != tst.want {
+			t.Errorf("%v: got %v, want %v", tst.umask, got, tst.want)
+		}
+	}
+	os.Setenv("UMASK", savedUmask)
 }

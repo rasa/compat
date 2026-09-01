@@ -20,22 +20,20 @@ var (
 	permMask uint32 = 0o777
 )
 
-func init() {
-	umask := os.Getenv("UMASK")
+func initUmask() error {
+	umask := strings.TrimSpace(os.Getenv("UMASK"))
+	umask = strings.TrimPrefix(strings.ToLower(umask), "0o")
 	if umask != "" {
-		umask = strings.Trim(umask, " \t")
-		umask = strings.TrimLeft(umask, "0")
-		umask = strings.Trim(umask, "o")
-		umask = strings.TrimLeft(umask, "0")
-
-		ui64, err := strconv.ParseInt(umask, 8, 32)
-		if err == nil {
-			// ignore errors
-			startingUmask = uint32(ui64) & permMask //nolint:gosec
+		n, err := strconv.ParseUint(umask, 8, 32)
+		if err != nil {
+			return err
 		}
+		startingUmask = uint32(n) & permMask
 	}
 
 	currentUmask.Store(startingUmask)
+
+	return nil
 }
 
 // Umask sets the umask to umask, and returns the previous value.
@@ -50,6 +48,7 @@ func Umask(newMask int) int {
 }
 
 // GetUmask returns the current umask value.
+//
 // On Plan9 and Wasip1, the function always returns zero.
 func GetUmask() int {
 	return int(currentUmask.Load())
