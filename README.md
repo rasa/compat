@@ -286,20 +286,21 @@ Several operations accept functional options:
 
 | Option | Purpose | Used by |
 |---|---|---|
-| `WithAtomicity` | Requests atomic file creation or replacement | `WriteFile`, `WriteReader` |
+| `WithAtomicity` | Requests atomic file creation or replacement (other than Plan 9) | `WriteFile`, `WriteReader` |
 | `WithFileMode` | Sets the requested file mode | `Create`, `CreateTemp`, `MkdirTemp`, `Open`, `OpenFile`, `WriteFile`, `WriteReader` |
 | `WithDefaultFileMode` | Changes the default mode used when no explicit mode is supplied | `Create`, `CreateTemp`, `Open`, `OpenFile`, `WriteFile`, `WriteReader` |
 | `WithDeleteOnClose` | Deletes file when closed | `Create`, `CreateTemp`, `Open`, `OpenFile` |
 | `WithKeepFileMode` | Preserves the mode of an existing destination | `WriteFile`, `WriteReader` |
-| `WithNonAtomicReplace` | Allows a non-atomic replacement where atomic replacement is unavailable | `WriteFile`, `WriteReader` |
 | `WithOpenFlags` | Adds file-open flags | `Create`, `CreateTemp`, `Open`, `OpenFile` |
-| `WithReadOnlyMode` | Controls Windows read-only attribute handling | `Chmod`, `Create`, `CreateTemp`, `Fchmod`, `Open`, `OpenFile`, `WriteFile`, `WriteReader` |
-| `WithRetrySeconds` | Retries selected operations for a bounded period | `Rename`, `Remove`, `RemoveAll` |
-| `WithSetSymlinkOwner` | Requests ownership adjustment for Windows symbolic links | `Symlink` |
-| `WithSkipACLs` | Skips setting Windows ACLs | `Chmod`, `Fchmod` |
+| **System specific** | |
+| `WithNonAtomicReplace` | Allows a non-atomic replacement where atomic replacement is unavailable (Plan 9 only) | `WriteFile`, `WriteReader` |
+| `WithRetryTimeout` | Retries selected operations for a bounded period (Windows/macOS only) | `Rename`, `Remove`, `RemoveAll` |
+| `WithReadOnlyMode` | Controls Windows read-only attribute handling (Windows only) | `Chmod`, `Create`, `CreateTemp`, `Fchmod`, `Open`, `OpenFile`, `WriteFile`, `WriteReader` |
+| `WithSetSymlinkOwner` | Requests ownership adjustment for symbolic links  (Windows only) | `Symlink` |
+| `WithSkipACLs` |  Skips setting ACLs (Windows only) | `Chmod`, `Fchmod` |
 
 An option may apply only to the operations documented for it. Options that
-control Windows-specific behavior are ignored on other operating systems.
+control OS-specific behavior are ignored on other operating systems.
 
 ## Behavior and limitations
 
