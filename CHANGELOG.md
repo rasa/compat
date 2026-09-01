@@ -5,7 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
-## [Unreleased](https://github.com/rasa/compat/compare/v0.5.5...HEAD)
+## [Unreleased](https://github.com/rasa/compat/compare/v0.5.6...HEAD)
+
+### Added
+
+### Fixed
+
+### Changed
+
+## [v0.5.7](https://github.com/rasa/compat/compare/v0.5.6...v0.5.7)
 
 ### Added
 
@@ -38,7 +46,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Deprecate `IsUnsupportedError()`. Will be removed eventually.
 - Deprecate `SupportsRelativeFstat()`. Will be removed eventually.
 
-## [0.5.6](https://github.com/rasa/compat/compare/v0.5.5...v0.5.6)
+## [v0.5.6](https://github.com/rasa/compat/compare/v0.5.5...v0.5.6)
 
 ### Added
 
@@ -62,7 +70,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Bump binaryen to 132.
 - Bump wasmtime to 47.0.3.
 
-## [0.5.5](https://github.com/rasa/compat/compare/v0.5.4...v0.5.5)
+## [v0.5.5](https://github.com/rasa/compat/compare/v0.5.4...v0.5.5)
 
 ### Added
 
@@ -86,7 +94,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Bump wasmtime to 47.0.2.
 - Update go dependencies.
 
-## [0.5.4](https://github.com/rasa/compat/compare/v0.5.3...v0.5.4)
+## [v0.5.4](https://github.com/rasa/compat/compare/v0.5.3...v0.5.4)
 
 ### Added
 
@@ -177,7 +185,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   functions.
 - Deprecate `CreateEx()`, `CreateTempEx()` and `WriteFileEx()` functions.
 
-## [0.5.1](https://github.com/rasa/compat/compare/v0.5.0...v0.5.1)
+## [v0.5.1](https://github.com/rasa/compat/compare/v0.5.0...v0.5.1)
 
 ### Added
 
@@ -197,7 +205,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Deprecate `Links`, `ATime`, `BTime`, `CTime`, `UID` and `GID` constants.
 - Simplify `Stat()` call example in cmd/demo.
 
-## [0.5.0](https://github.com/rasa/compat/compare/v0.4.4...v0.5.0)
+## [v0.5.0](https://github.com/rasa/compat/compare/v0.4.4...v0.5.0)
 
 ### Added
 
@@ -225,7 +233,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   first time `BTime()`, `CTime()`, `UID()`, `GID()`, `User()`, or `Group()` is
   called.
 
-## [0.4.4](https://github.com/rasa/compat/compare/v0.4.3...v0.4.4)
+## [v0.4.4](https://github.com/rasa/compat/compare/v0.4.3...v0.4.4)
 
 ### Added
 
@@ -248,7 +256,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Rework demo to create hello.txt, instead of using .exe.
 - Rework test framework's setting the expected `Mode()` result for selected OSes.
 
-## [0.4.3](https://github.com/rasa/compat/compare/v0.4.2...v0.4.3)
+## [v0.4.3](https://github.com/rasa/compat/compare/v0.4.2...v0.4.3)
 
 ### Added
 
@@ -274,7 +282,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Change `Stat()`'s `GID()` to return the value `os.Getgid()` returns (1), on wasip1.
 - Bump tinygo to 0.38.0.
 
-## [0.4.2](https://github.com/rasa/compat/compare/v0.4.1...v0.4.2)
+## [v0.4.2](https://github.com/rasa/compat/compare/v0.4.1...v0.4.2)
 
 ### Added
 
@@ -299,7 +307,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Various code refactorings.
 - Improve code comments.
 
-## [0.4.1](https://github.com/rasa/compat/compare/v0.4.0...v0.4.1)
+## [v0.4.1](https://github.com/rasa/compat/compare/v0.4.0...v0.4.1)
 
 ### Added
 
@@ -317,25 +325,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Add `Umask()` and `GetUmask()` functions.
 - Add running tests on all BSD variants, Illumos, Solaris, and JS/Wasm.
 
-## [0.4.0](https://github.com/rasa/compat/compare/v0.3.0...v0.4.0)
+## [v0.4.0](https://github.com/rasa/compat/compare/v0.3.0...v0.4.0)
 
 ### Changed
 
 - Rename Device* functions to Partition* to be more user friendly.
 
-## [0.3.0](https://github.com/rasa/compat/compare/v0.2.0...v0.3.0)
+## [v0.3.0](https://github.com/rasa/compat/compare/v0.2.0...v0.3.0)
 
 ### Added
 
 - Add `IsAdmin()` and `IsWSL()` functions.
 
-## [0.2.0](https://github.com/rasa/compat/compare/v0.1.0...v0.2.0)
+## [v0.2.0](https://github.com/rasa/compat/compare/v0.1.0...v0.2.0)
 
 ### Added
 
 - Add `Nice()` and `Renice()` functions.
 
-## [0.1.0](https://github.com/rasa/compat/compare/bcf970117c696f70992faaa061148a206a3c4b8e...v0.1.0)
+## [v0.1.0](https://github.com/rasa/compat/compare/bcf970117c696f70992faaa061148a206a3c4b8e...v0.1.0)
 
 ### Added
 
