@@ -28,7 +28,7 @@ func PartitionType(ctx context.Context, path string) (string, error) {
 	if !filepath.IsAbs(path) {
 		absPath, err = filepath.Abs(path)
 		if err != nil {
-			return "", fmt.Errorf("cannot convert '%v' to an absolute path: %w", path, err)
+			return "", fmt.Errorf("cannot convert %q to an absolute path: %w", path, err)
 		}
 	}
 
@@ -39,10 +39,20 @@ func PartitionType(ctx context.Context, path string) (string, error) {
 		return "", err
 	}
 
+	target, err := Stat(normalizedPath)
+	if err != nil {
+		return "", err
+	}
+
 	for _, p := range parts {
 		normalizedMountpoint := normalizePath(p.Mountpoint)
 
-		same, _ := SamePartitions(normalizedPath, normalizedMountpoint)
+		mountInfo, err := Stat(normalizedMountpoint)
+		if err != nil {
+			return "", err
+		}
+
+		same := SamePartition(target, mountInfo)
 		if same {
 			return strings.ToLower(p.Fstype), nil
 		}
