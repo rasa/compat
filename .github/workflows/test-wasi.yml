@@ -60,11 +60,11 @@ jobs:
 
       - uses: actions/setup-go@v7
         with:
-          go-version: ${{ matrix.go-version.big }} 
+          go-version: ${{ matrix.go-version.big }}
           check-latest: true
           cache: true
 
-      - run: printf '::notice ::%s\n' "$(go version)"    
+      - run: printf '::notice ::%s\n' "$(go version)"
 
       - run: go mod download
 
@@ -90,7 +90,7 @@ jobs:
 
       # https://go.dev/blog/wasi#running-go-tests-with-wasip1
       - run: |
-          go test -covermode=atomic -coverprofile=coverage.out -coverpkg=. -v .
+          go test -covermode=atomic -coverprofile=coverage.out -coverpkg=. -v ./...
           sed -i.bak "/compat\/cmd\//d; /compat\/golang\//d;" coverage.out
           rm -f *.bak
 

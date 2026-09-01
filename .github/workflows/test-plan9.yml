@@ -72,12 +72,12 @@ jobs:
           # instrumentation.
           go test \
             -c \
-            -mod=readonly \
-            -tags debug \
             -covermode=atomic \
             -coverpkg=. \
+            -mod=readonly \
+            -tags debug \
             -o "${stage}/compat.test" \
-            .
+            ./...
 
           # Preserve the test's expected relative working directory.
           if [[ -d testdata ]]; then

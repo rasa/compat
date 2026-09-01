@@ -39,7 +39,7 @@ jobs:
           printf '::notice ::%s\n' "$(go version)"
           GOROOT=$(go env GOROOT)
           cp "${GOROOT}/lib/wasm/wasm_exec.js" .
-          go test -exec="${GOROOT}/lib/wasm/go_js_wasm_exec" -covermode=atomic -coverprofile=coverage.out -coverpkg=. -v .
+          go test -exec="${GOROOT}/lib/wasm/go_js_wasm_exec" -covermode=atomic -coverprofile=coverage.out -coverpkg=. -v ./...
           sed -i.bak "/compat\/cmd\//d; /compat\/golang\//d;" coverage.out
           rm -f *.bak
 

@@ -147,7 +147,7 @@ jobs:
 
           go version
 
-          go test "${TEST_OPTS}" .
+          go test "${TEST_OPTS}" ./...
 
 permissions:
   contents: read

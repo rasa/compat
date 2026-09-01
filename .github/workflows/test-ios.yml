@@ -28,7 +28,7 @@ jobs:
           go-version-file: go.mod
           check-latest: true
           cache: true
-  
+
       - name: Boot iOS simulator
         run: |
           xcodebuild -version
@@ -65,7 +65,7 @@ jobs:
           # underneath GOROOT or GOPATH.
           export GOPATH="$(dirname "${GITHUB_WORKSPACE}")"
 
-          go test -covermode=atomic -coverprofile=coverage.out -coverpkg=. -v .
+          go test -covermode=atomic -coverprofile=coverage.out -coverpkg=. -v ./...
           sed -i.bak "/compat\/cmd\//d; /compat\/golang\//d;" coverage.out
           rm -f *.bak
 

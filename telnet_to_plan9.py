@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 """
 SPDX-FileCopyrightText: Copyright (c) 2026 Ross Smith II <ross@smithii.com>
-
 SPDX-License-Identifier: MIT
 """
 
@@ -140,9 +139,9 @@ _, pending = read_for(1, pending)
 TEST_CMD = (
     "./compat.test "
     "-test.count 1 "
+    "-test.coverprofile /tmp/coverage.out "
     "-test.timeout 20m "
-    "-test.v "
-    "-test.coverprofile /tmp/coverage.out; "
+    "-test.v; "
     "teststatus=$status; "
     "ls -l /tmp; "
     "cp /tmp/coverage.out /usr/glenda/work/coverage.out; "

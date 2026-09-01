@@ -94,11 +94,11 @@ jobs:
           fi
           exit "${fails}"
 
-      - name: go test .
+      - name: go test ./...
         run: |
-          # go test ${TEST_OPTS} .
+          # go test ${TEST_OPTS} ./...
           : "${TEST_OPTS:=}"
-          go test ${TEST_OPTS} .
+          go test ${TEST_OPTS} ./...
 
 permissions:
   contents: read
