@@ -28,25 +28,25 @@ type fileStat struct {
 	mode  os.FileMode
 	mtime time.Time
 	// See https://github.com/golang/go/blob/cad1fc52/src/os/types_windows.go#L276
-	sys    syscall.Win32FileAttributeData
-	partID uint64
-	fileID uint64
-	links  uint
-	atime  time.Time
-	btime  time.Time
-	ctime  time.Time
-	uid    int
-	gid    int
-	user   string
-	group  string
-	path   string
+	sys            syscall.Win32FileAttributeData
+	partID         uint64
+	fileID         uint64
+	links          uint
+	atime          time.Time
+	btime          time.Time
+	ctime          time.Time
+	uid            int
+	gid            int
+	user           string
+	group          string
+	path           string
 	followSymlinks bool
 	mux            sync.Mutex // Windows only
 	path16         []uint16   // Windows only
 	origName       string     // Windows only
-	userGroupOnce sync.Once   // Windows only
-	ctimeOnce sync.Once
-	err error
+	userGroupOnce  sync.Once  // Windows only
+	ctimeOnce      sync.Once
+	err            error
 	// unused:
 	// btimeOnce.Once sync
 	// userOnce.Once sync
@@ -103,7 +103,7 @@ func stat(fi os.FileInfo, name string, followSymlinks bool) (FileInfo, error) {
 	h, err := windows.CreateFile(
 		&fs.path16[0],
 		0,
-		windows.FILE_SHARE_READ | windows.FILE_SHARE_WRITE | windows.FILE_SHARE_DELETE,
+		windows.FILE_SHARE_READ|windows.FILE_SHARE_WRITE|windows.FILE_SHARE_DELETE,
 		nil,
 		windows.OPEN_EXISTING,
 		attrs,

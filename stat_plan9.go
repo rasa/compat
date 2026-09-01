@@ -31,7 +31,7 @@ type fileStat struct {
 	gid    int
 	user   string
 	group  string
-	err error
+	err    error
 	// unused:
 	// path string
 	// followSymlinks bool
