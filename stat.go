@@ -19,7 +19,7 @@ const UnknownID = int(-1)
 type UserIDSourceType uint
 
 const (
-	// UserIDSourceIsInt defines if the OS uses an int to identify the user.
+	// UserIDSourceUnknown is unused.
 	UserIDSourceUnknown UserIDSourceType = iota
 	// UserIDSourceIsInteger defines if the OS uses an int to identify the user.
 	UserIDSourceIsInteger

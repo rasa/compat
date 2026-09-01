@@ -579,18 +579,23 @@ func TestStatFileInfo(t *testing.T) {
 	if ofi.Name() != fi.Name() {
 		t.Fatalf("Name(): got %v, expected %v", ofi.Name(), fi.Name())
 	}
+
 	if ofi.Size() != fi.Size() {
 		t.Fatalf("Size(): got %v, expected %v", ofi.Size(), fi.Size())
 	}
+
 	if ofi.Mode() != fi.Mode() {
 		t.Fatalf("Mode(): got %v, expected %v", ofi.Mode(), fi.Mode())
 	}
+
 	if ofi.ModTime() != fi.ModTime() {
 		t.Fatalf("ModTime(): got %v, expected %v", ofi.ModTime(), fi.ModTime())
 	}
+
 	if ofi.IsDir() != fi.IsDir() {
 		t.Fatalf("IsDir(): got %v, expected %v", ofi.IsDir(), fi.IsDir())
 	}
+
 	if ofi.Sys() != fi.Sys() {
 		t.Fatalf("Sys(): got %v, expected %v", ofi.Sys(), fi.Sys())
 	}

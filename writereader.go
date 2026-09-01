@@ -170,12 +170,14 @@ func writeReader(name string, reader io.Reader, opts options) error {
 	_, err = io.Copy(file, reader)
 	if err != nil {
 		_ = file.Close()
+
 		return writeError(name, err)
 	}
 
 	err = file.Sync()
 	if err != nil {
 		_ = file.Close()
+
 		return writeError(name, err)
 	}
 

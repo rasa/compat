@@ -26,7 +26,7 @@ func TestGetOptions(t *testing.T) {
 	opts = append(opts, compat.WithKeepFileMode(true))
 	opts = append(opts, compat.WithNonAtomicReplace(true))
 	opts = append(opts, compat.WithReadOnlyMode(compat.ReadOnlyModeFromPermissions))
-	opts = append(opts, compat.WithRetryTimeout(time.Duration(1*time.Second)))
+	opts = append(opts, compat.WithRetryTimeout(1*time.Second))
 	opts = append(opts, compat.WithSetSymlinkOwner(true))
 	opts = append(opts, compat.WithSkipACLs(true))
 
@@ -76,7 +76,7 @@ func TestBuildOptions2(t *testing.T) {
 	opts = append(opts, compat.WithKeepFileMode(true))
 	opts = append(opts, compat.WithNonAtomicReplace(true))
 	opts = append(opts, compat.WithReadOnlyMode(compat.ReadOnlyModeFromPermissions))
-	opts = append(opts, compat.WithRetryTimeout(time.Duration(1*time.Second)))
+	opts = append(opts, compat.WithRetryTimeout(1*time.Second))
 	opts = append(opts, compat.WithSetSymlinkOwner(true))
 	opts = append(opts, compat.WithSkipACLs(true))
 

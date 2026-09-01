@@ -101,7 +101,7 @@ func stat(fi os.FileInfo, name string, followSymlinks bool) (FileInfo, error) {
 	h, err := windows.CreateFile(
 		&fs.path16[0],
 		0,
-		windows.FILE_SHARE_READ, //share mode
+		windows.FILE_SHARE_READ, // share mode
 		nil,
 		windows.OPEN_EXISTING,
 		attrs,

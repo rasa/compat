@@ -13,26 +13,30 @@ const (
 	// ReadOnlyModeSet set a file's read-only attribute, if the specified
 	// perm FileMode has the user writable bit (0o200) set. Otherwise, it will
 	// resets (clears) it. (Windows only).
-	// Deprecated.
+	//
+	// Deprecated: Ues ReadOnlyModeFromPermissions instead.
 	//
 	// This constant will be removed in a future release.
 	ReadOnlyModeSet = ReadOnlyModeFromPermissions
 	// ReadOnlyModeReset does not set a file's read-only attribute, and if it's
 	// set, it resets (clears) it. (Windows only).
-	// Deprecated.
+	//
+	// Deprecated: Use ReadOnlyModeClear instead.
 	//
 	// This constant will be removed in a future release.
 	ReadOnlyModeReset = ReadOnlyModeClear
 
 	// UserIDSourceIsInt defines if the OS uses an int to identify the user.
-	// Deprecated.
+	//
+	// Deprecated: Use UserIDSourceIsInteger instead.
 	//
 	// This constant will be removed in a future release.
 	UserIDSourceIsInt = UserIDSourceIsInteger
 )
 
 // IsUnsupportedError returns true if err indicates the function is unsupported.
-// Deprecated.
+//
+// Deprecated: Do not use.
 //
 // This function will be removed in a future release.
 func IsUnsupportedError(err error) bool {
@@ -43,6 +47,7 @@ func IsUnsupportedError(err error) bool {
 
 // WithFlags sets the flag option.
 // Used by the Create, Open, OpenFile, WriteFile, and WriteReader functions.
+//
 // Deprecated: Use WithOpenFlags() instead.
 //
 // This function will be removed in a future release.
@@ -53,6 +58,7 @@ func WithFlags(flags int) Option {
 // WithRetrySeconds sets the retry timeout option in seconds. The default is 0
 // which means to not retry at all.
 // Used by the Rename and RemoveAll functions.
+//
 // Deprecated: Use WithRetryTimeout() instead.
 //
 // This function will be removed in a future release.

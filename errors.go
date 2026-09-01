@@ -37,7 +37,7 @@ func invalidNiceError(nice int) error {
 }
 
 func unexpectedNiceError(nice int) error { //nolint:unused
-	return fmt.Errorf("compat: internal error: unmapped nice value %d", nice)
+	return fmt.Errorf("compat: internal error: unmapped nice value %d", nice) //nolint:err113
 }
 
 func chmodError(path string, err error) error {

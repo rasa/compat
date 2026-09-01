@@ -33,18 +33,21 @@ func Volumes(mounts []Mount) ([]Volume, error) {
 		if err != nil {
 			return []Volume{}, err
 		}
+
 		volume.Label = label
 
 		serialNumber, err := disk.SerialNumberWithContext(ctx, mount.Device)
 		if err != nil {
 			return []Volume{}, err
 		}
+
 		volume.SerialNumber = serialNumber
 
 		usage, err := disk.UsageWithContext(ctx, mount.Mountpoint)
 		if err != nil {
 			return []Volume{}, err
 		}
+
 		volume.Total = usage.Total
 		volume.Used = usage.Used
 		volume.Free = usage.Free
@@ -62,6 +65,7 @@ func Volumes(mounts []Mount) ([]Volume, error) {
 		if err != nil {
 			return []Volume{}, err
 		}
+
 		volume.ID = fi.PartitionID()
 
 		volType, _ := typeOf(mount)
