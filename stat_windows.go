@@ -150,7 +150,14 @@ func (fs *fileStat) CTime() time.Time {
 		fs.mux.Lock()
 		defer fs.mux.Unlock()
 
-		h, err := windows.CreateFile(&fs.path16[0], 0, 0, nil, windows.OPEN_EXISTING, attrs, 0)
+		h, err := windows.CreateFile(
+			&fs.path16[0],
+			0,
+			windows.FILE_SHARE_READ|windows.FILE_SHARE_WRITE|windows.FILE_SHARE_DELETE,
+			nil,
+			windows.OPEN_EXISTING,
+			attrs,
+			0)
 		if err != nil {
 			fs.err = statError(fs.origName, err)
 
@@ -160,7 +167,11 @@ func (fs *fileStat) CTime() time.Time {
 
 		var bi golang.FILE_BASIC_INFO
 
-		err = windows.GetFileInformationByHandleEx(h, windows.FileBasicInfo, (*byte)(unsafe.Pointer(&bi)), uint32(unsafe.Sizeof(bi)))
+		err = windows.GetFileInformationByHandleEx(
+			h,
+			windows.FileBasicInfo,
+			(*byte)(unsafe.Pointer(&bi)),
+			uint32(unsafe.Sizeof(bi)))
 		if err != nil {
 			fs.err = statError(fs.origName, err)
 

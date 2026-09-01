@@ -64,7 +64,7 @@ func getPhysicalDrivesFromVolume(volume string) ([]uint32, error) {
 	h, err := windows.CreateFile(
 		p16,
 		0,
-		windows.FILE_SHARE_READ|windows.FILE_SHARE_WRITE,
+		windows.FILE_SHARE_READ|windows.FILE_SHARE_WRITE||windows.FILE_SHARE_DELETE,
 		nil,
 		windows.OPEN_EXISTING,
 		0,
