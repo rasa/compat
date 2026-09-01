@@ -1,6 +1,6 @@
 module github.com/rasa/compat
 
-go 1.24.0
+go 1.25.0
 
 require (
 	github.com/OneOfOne/xxhash v1.2.8
@@ -11,7 +11,7 @@ require (
 	github.com/mattn/go-colorable v0.1.15
 	github.com/sergi/go-diff v1.4.0
 	github.com/shirou/gopsutil/v4 v4.25.9
-	golang.org/x/sys v0.36.0
+	golang.org/x/sys v0.47.0
 	golang.org/x/text v0.34.0
 )
 
