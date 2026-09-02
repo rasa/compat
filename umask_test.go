@@ -4,7 +4,6 @@
 package compat_test
 
 import (
-	"os"
 	"testing"
 
 	"github.com/rasa/compat"
@@ -40,6 +39,7 @@ func TestUmask(t *testing.T) {
 			if err != nil {
 				t.Errorf("GetUmask: %v", err)
 			}
+
 			if got != 0 {
 				t.Errorf("GetUmask() after Umask(0o%03o): got 0o%03o, want 0", mask, got)
 			}
@@ -64,6 +64,7 @@ func TestUmask(t *testing.T) {
 		if err != nil {
 			t.Errorf("GetUmask: %v", err)
 		}
+
 		if got != mask {
 			t.Errorf(
 				"GetUmask() after Umask(0o%03o): got 0o%03o, want 0o%03o",
@@ -98,10 +99,9 @@ func TestUmaskInitUmasK(t *testing.T) {
 		{"-1", false},
 		{"18446744073709551617", false},
 	}
-	savedUmask := os.Getenv("UMASK")
 
 	for _, tst := range tests {
-		os.Setenv("UMASK", tst.umask)
+		t.Setenv("UMASK", tst.umask)
 
 		err := compat.InitUmask()
 
@@ -110,6 +110,4 @@ func TestUmaskInitUmasK(t *testing.T) {
 			t.Errorf("%v: got %v, want %v", tst.umask, got, tst.want)
 		}
 	}
-
-	os.Setenv("UMASK", savedUmask)
 }

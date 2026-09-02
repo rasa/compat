@@ -100,11 +100,13 @@ func typeOf(mount Mount) (Type, error) {
 	// from /dev/sda1.
 	var st unix.Statfs_t
 
-	if err := unix.Statfs(mount.Mountpoint, &st); err != nil {
+	err := unix.Statfs(mount.Mountpoint, &st)
+	if err != nil {
 		return TypeUnknown, fmt.Errorf("statfs %q: %w", mount.Mountpoint, err)
 	}
 
-	if typ, ok := magicMap[uint64(st.Type)]; ok {
+	typ, ok := magicMap[uint64(st.Type)] //nolint:gosec
+	if ok {
 		return typ, nil
 	}
 
@@ -112,10 +114,11 @@ func typeOf(mount Mount) (Type, error) {
 	// nothing useful to inspect in sysfs.
 	sysPath := filepath.Join("/sys/class/block", base)
 
-	_, err := os.Stat(sysPath)
+	_, err = os.Stat(sysPath)
 	if errors.Is(err, os.ErrNotExist) {
 		return TypeUnavailable, nil
 	}
+
 	if err != nil {
 		return TypeUnknown, fmt.Errorf("stat %q: %w", sysPath, err)
 	}

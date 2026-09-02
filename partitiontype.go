@@ -44,8 +44,8 @@ func PartitionType(ctx context.Context, path string) (string, error) {
 		return "", err
 	}
 
-	for _, p := range parts {
-		normalizedMountpoint := normalizePath(p.Mountpoint)
+	for _, part := range parts {
+		normalizedMountpoint := normalizePath(part.Mountpoint)
 
 		mountInfo, err := Stat(normalizedMountpoint)
 		if err != nil {
@@ -54,7 +54,7 @@ func PartitionType(ctx context.Context, path string) (string, error) {
 
 		same := SamePartition(target, mountInfo)
 		if same {
-			return strings.ToLower(p.Fstype), nil
+			return strings.ToLower(part.Fstype), nil
 		}
 	}
 

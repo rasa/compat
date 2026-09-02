@@ -21,6 +21,7 @@ var (
 
 func initUmask() error {
 	_, _ = GetUmask()
+
 	return nil
 }
 
