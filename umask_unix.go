@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: Copyright © 2025 Ross Smith II <ross@smithii.com>
 // SPDX-License-Identifier: MIT
 
-//go:build js || unix || (wasip1 && !tinygo)
+//go:build js || unix
 
 // https://github.com/golang/go/blob/8ad27fb6/src/cmd/dist/build.go#L1070
 // unix == aix || android || darwin || dragonfly || freebsd || illumos || ios || linux || netbsd || openbsd || solaris
