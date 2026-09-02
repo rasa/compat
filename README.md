@@ -407,7 +407,7 @@ for Windows.<br/>
 § Implemented through the `UMASK=0NNN` environment variable. <br/>
 ‖ Will fail on relative filenames where the current directory is changed after
 opening the file.<br/>
-¶ `Nice` always returns `0`, and `Renice` performs no operation.
+¶ `Nice` and `Renice` do nothing and return `ErrUnsupported`.
 
 ## Environment variables
 
