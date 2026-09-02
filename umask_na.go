@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: Copyright © 2025 Ross Smith II <ross@smithii.com>
 // SPDX-License-Identifier: MIT
 
-//go:build plan9 || (wasip1 && tinygo)
+//go:build plan9 || wasip1
 
 package compat
 
