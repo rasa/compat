@@ -47,6 +47,8 @@ jobs:
         target: [default]
 
     steps:
+      # - uses: crazy-max/ghaction-dump-context@v3.1.0
+
       - uses: actions/checkout@v7
         with:
           fetch-depth: 1
@@ -183,8 +185,6 @@ jobs:
           exit "${exit_code}"
           EOF
 
-      - uses: crazy-max/ghaction-dump-context@v3.1.0
-
       - name: Run tests on android emulator
         uses: reactivecircus/android-emulator-runner@v2
         env:
@@ -198,20 +198,17 @@ jobs:
           ndk: ${{ env.NDK_VER }}
           target: ${{ matrix.target }}
           arch: ${{ env.ARCH }}
-
-          # default: true
-          # disable-animations: true
-
-          # The default:
-          # emulator-options: -no-window -gpu swiftshader_indirect
-          #                   -no-snapshot -noaudio -no-boot-anim
-
           script: >
             test_bin="${RUNNER_TEMP}/compat-android.test" ;
             CC="${ANDROID_NDK}/${CC_SUFFIX}" go test -c -covermode=atomic -coverpkg=. -o "${test_bin}" . ;
             COVERAGE_OUT="${GITHUB_WORKSPACE}/coverage.out" "${RUNNER_TEMP}/run-on-android" "${test_bin}" -test.count=1 -test.v
+          # default: true
+          # disable-animations: true
+          # The default:
+          # emulator-options: -no-window -gpu swiftshader_indirect
+          #                   -no-snapshot -noaudio -no-boot-anim
 
-      - name: Verify coverage
+      - name: Verify coverage.out
         shell: bash
         run: |
           test -s ./coverage.out
