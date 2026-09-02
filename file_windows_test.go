@@ -6,7 +6,6 @@
 package compat_test
 
 import (
-	"errors"
 	"flag"
 	"fmt"
 	"os"
@@ -748,6 +747,52 @@ func TestFileWindowsSetOwnerToCurrentUserInvalid(t *testing.T) {
 	}
 }
 
+func checkChmod(t *testing.T, name string, perm, want os.FileMode, ignore bool, err error) {
+	t.Helper()
+
+	if err != nil {
+		if perm&userWritableMask != userWritableMask {
+			debugf(t, "perm=%03o (%v): %v (ignoring: we can't set RO bit if u-w)", perm, perm, err)
+
+			return
+		}
+
+		t.Fatalf("perm=%03o (%v): %v", perm, perm, err)
+	}
+
+	fi, err := os.Stat(name)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	got := fi.Mode().Perm()
+
+	// Mask all bits but the user's write bits
+	if (want & userWritableMask) != (got & userWritableMask) {
+		if ignore && perm&userWritableMask != userWritableMask {
+			debugf(t, "perm=%03o (%v): got %03o (%v), want %03o (%v) (ignoring: we can't set RO bit if u-w)", perm, perm, got, got, want, want)
+
+			return
+		}
+		t.Fatalf("perm=%03o (%v): got %03o (%v), want %03o (%v)", perm, perm, got, got, want, want)
+	}
+}
+
+func checkDeleted(t *testing.T, name string, perm os.FileMode, err error) {
+	t.Helper()
+
+	if name == "" || err == nil {
+		return
+	}
+
+	_, err = compat.Stat(name)
+	if err != nil {
+		t.Fatalf("Stat() failed: perm=%03o (%v): error %x: %v", perm, perm, errno(err), err)
+	}
+
+	logACLs(t, name, false)
+}
+
 func checkPerm(t *testing.T, name string, perm os.FileMode, isDir bool) {
 	t.Helper()
 
@@ -767,21 +812,6 @@ func checkPerm(t *testing.T, name string, perm os.FileMode, isDir bool) {
 		logACLs(t, name, false)
 		t.Fatalf("got 0o%03o (%v), want 0o%03o (%v): %v", got, got, want, want, name)
 	}
-}
-
-func checkDeleted(t *testing.T, name string, perm os.FileMode, err error) {
-	t.Helper()
-
-	if name == "" || err == nil {
-		return
-	}
-
-	_, err = compat.Stat(name)
-	if err != nil {
-		t.Fatalf("Stat() failed: perm=%03o (%v): error %x: %v", perm, perm, errno(err), err)
-	}
-
-	logACLs(t, name, false)
 }
 
 func logACLs(t *testing.T, name string, doDir bool) {
@@ -838,48 +868,4 @@ func logOutput(t *testing.T, exe string, args []string) error {
 	t.Log(s)
 
 	return nil
-}
-
-func errno(err error) uint32 {
-	if err == nil {
-		return 0
-	}
-
-	var errno windows.Errno
-	if errors.As(err, &errno) {
-		return uint32(errno)
-	}
-
-	return ^uint32(0)
-}
-
-func checkChmod(t *testing.T, name string, perm, want os.FileMode, ignore bool, err error) {
-	t.Helper()
-
-	if err != nil {
-		if perm&userWritableMask != userWritableMask {
-			debugf(t, "perm=%03o (%v): %v (ignoring: we can't set RO bit if u-w)", perm, perm, err)
-
-			return
-		}
-
-		t.Fatalf("perm=%03o (%v): %v", perm, perm, err)
-	}
-
-	fi, err := os.Stat(name)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	got := fi.Mode().Perm()
-
-	// Mask all bits but the user's write bits
-	if (want & userWritableMask) != (got & userWritableMask) {
-		if ignore && perm&userWritableMask != userWritableMask {
-			debugf(t, "perm=%03o (%v): got %03o (%v), want %03o (%v) (ignoring: we can't set RO bit if u-w)", perm, perm, got, got, want, want)
-
-			return
-		}
-		t.Fatalf("perm=%03o (%v): got %03o (%v), want %03o (%v)", perm, perm, got, got, want, want)
-	}
 }

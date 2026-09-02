@@ -108,7 +108,6 @@ func TestUmaskUnsupported(t *testing.T) {
 	}
 
 	_, err := compat.GetUmask()
-
 	if err == nil {
 		t.Error("GetUmask: got nil, want err")
 	}

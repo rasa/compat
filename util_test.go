@@ -25,16 +25,17 @@ import (
 )
 
 const (
-	perm000     = os.FileMode(0)
-	perm100     = os.FileMode(0o100)
-	perm200     = os.FileMode(0o200)
-	perm400     = os.FileMode(0o400)
-	perm555     = os.FileMode(0o555)
-	perm644     = os.FileMode(0o644)
-	perm600     = os.FileMode(0o600)
-	perm700     = os.FileMode(0o700)
-	perm777     = os.FileMode(0o777)
-	invalidName = "\x00/a/name/with/an/embedded/\x00/byte"
+	perm000      = os.FileMode(0)
+	perm100      = os.FileMode(0o100)
+	perm200      = os.FileMode(0o200)
+	perm400      = os.FileMode(0o400)
+	perm555      = os.FileMode(0o555)
+	perm644      = os.FileMode(0o644)
+	perm600      = os.FileMode(0o600)
+	perm700      = os.FileMode(0o700)
+	perm777      = os.FileMode(0o777)
+	invalidName  = "\x00/a/name/with/an/embedded/\x00/byte"
+	macOSVentura = 13
 )
 
 var (
@@ -178,6 +179,19 @@ func init() {
 	osVersion, _ = getOSVersion()
 }
 
+func errno(err error) uint32 {
+	if err == nil {
+		return 0
+	}
+
+	var errno syscall.Errno
+	if errors.As(err, &errno) {
+		return uint32(errno)
+	}
+
+	return ^uint32(0)
+}
+
 func fixPerms(perm os.FileMode, isDir bool) os.FileMode {
 	if compat.IsWasip1 {
 		if compat.IsTinygo {
@@ -200,7 +214,7 @@ func fixPerms(perm os.FileMode, isDir bool) os.FileMode {
 		case compat.IsWindows:
 			return compat.DefaultWindowsDirPerm
 		case compat.IsApple:
-			if osVersion.major != 13 {
+			if osVersion.major != macOSVentura {
 				return compat.DefaultAppleDirPerm
 			}
 
@@ -214,7 +228,7 @@ func fixPerms(perm os.FileMode, isDir bool) os.FileMode {
 	case compat.IsWindows:
 		return compat.DefaultWindowsFilePerm
 	case compat.IsApple:
-		if osVersion.major != 13 {
+		if osVersion.major != macOSVentura {
 			return compat.DefaultAppleFilePerm
 		}
 
