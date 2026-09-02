@@ -2,6 +2,7 @@ ignore:
   - "cmd"
   - "golang"
   - "robustio"
+  - "deprecated.go"
   - "file_debug.go"
   - "file_debug_windows.go"
   # - "fstat_na.go"

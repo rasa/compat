@@ -38,9 +38,9 @@ jobs:
             tiny: '0.41.1'
           - big: '1.26.x'
             tiny: '0.41.1'
-          - big: '1.25'
+          - big: '1.25.x'
             tiny: '0.39.0'
-          - big: '1.24'
+          - big: '1.24.0'
             tiny: '0.38.0'
           # - big: '1.23.11'
           #   tiny: '0.36.0'
@@ -91,12 +91,6 @@ jobs:
           go test -covermode=atomic -coverprofile=coverage.out -coverpkg=. -v ./...
           sed -i.bak "/compat\/cmd\//d; /compat\/golang\//d;" coverage.out
           find -name '*.bak' -delete
-
-      # - run: tinygo test -v -target=${{ env.GOOS }} -tags tinygo .
-      #  # used to work, now it's crashing, so:
-      #  continue-on-error: true
-
-      # - run: tinygo test -bench -target=${{ env.GOOS }} -tags tinygo ./
 
       - uses: codecov/codecov-action@v7
         with:
