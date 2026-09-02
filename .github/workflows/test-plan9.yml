@@ -74,7 +74,7 @@ jobs:
             -mod=readonly \
             -tags debug \
             -o "${stage}/compat.test" \
-            ./...
+            .
 
           # Preserve the test's expected relative working directory.
           if [[ -d testdata ]]; then
