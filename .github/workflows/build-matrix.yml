@@ -3,7 +3,7 @@
 
 name: build-matrix
 
-on:
+"on":
   workflow_call:
     inputs:
       compat_debug:

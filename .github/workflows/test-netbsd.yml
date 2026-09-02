@@ -3,7 +3,7 @@
 
 name: test-netbsd
 
-on: # yamllint disable-line rule:truthy
+"on":
   workflow_call:
     inputs:
       GOOPTS:

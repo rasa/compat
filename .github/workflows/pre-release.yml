@@ -3,15 +3,9 @@
 
 name: pre-release
 
-on:
+"on:"
   workflow_call:
   workflow_dispatch:
-
-# mega-linter needs:
-permissions:
-  contents: write
-  issues: write
-  pull-requests: write
 
 jobs:
   mega-linter:
@@ -27,3 +21,9 @@ jobs:
     if: success()
     needs: build-most
     secrets: inherit
+
+# mega-linter needs:
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write

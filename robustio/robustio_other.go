@@ -22,6 +22,6 @@ func removeAll(path string) error {
 	return os.RemoveAll(path)
 }
 
-func isEphemeralError(err error) bool {
+func isEphemeralError(_ error) bool {
 	return false
 }

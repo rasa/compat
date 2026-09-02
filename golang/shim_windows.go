@@ -128,7 +128,7 @@ const supportsCreateWithStickyBit = true
 
 // See https://github.com/golang/go/blob/ac803b59/src/os/file.go#L351-L357
 
-func setStickyBit(name string) error {
+func setStickyBit(_ string) error {
 	return nil
 }
 

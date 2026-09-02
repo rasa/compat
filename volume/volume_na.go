@@ -12,7 +12,7 @@ import (
 
 var osFeatureMap = map[OSFeature]string{}
 
-func Volumes(mounts []Mount) ([]Volume, error) {
+func Volumes(_ []Mount) ([]Volume, error) {
 	volumes := []Volume{}
 
 	return volumes, fmt.Errorf("volumes: %w", errors.ErrUnsupported)

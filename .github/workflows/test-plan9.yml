@@ -3,7 +3,7 @@
 
 name: test-plan9
 
-on: # yamllint disable-line rule:truthy
+"on":
   workflow_call:
   workflow_dispatch:
 

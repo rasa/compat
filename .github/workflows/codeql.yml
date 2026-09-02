@@ -3,7 +3,9 @@
 
 name: "CodeQL"
 
-on: # yamllint disable-line rule:truthy
+"on":
+  workflow_call:
+  workflow_dispatch:
   # push:
   #   branches: [ main ]
   # pull_request:
@@ -11,8 +13,6 @@ on: # yamllint disable-line rule:truthy
   #   branches: [ main ]
   # schedule:
   #   - cron: '11 0 * * 5'
-  workflow_call:
-  workflow_dispatch:
 
 jobs:
   analyze:

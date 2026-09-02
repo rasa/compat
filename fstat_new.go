@@ -5,6 +5,6 @@
 
 package compat
 
-func fstat(f *os.File) (FileInfo, error) {
+func fstat(_ *os.File) (FileInfo, error) {
 	// this will intentionally not compile to alert us to a new build platform.
 }

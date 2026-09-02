@@ -3,7 +3,7 @@
 
 name: build
 
-on: # yamllint disable-line rule:truthy
+"on":
   push:
     branches: [ main ]
     paths:

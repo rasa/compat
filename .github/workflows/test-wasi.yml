@@ -7,7 +7,7 @@ name: test-wasi
 # https://github.com/zonedb/zonedb/blob/main/.github/workflows/go.yaml
 # MIT Licensed
 
-on: # yamllint disable-line rule:truthy
+"on":
   workflow_call:
   workflow_dispatch:
 
@@ -90,7 +90,7 @@ jobs:
       - run: |
           go test -covermode=atomic -coverprofile=coverage.out -coverpkg=. -v ./...
           sed -i.bak "/compat\/cmd\//d; /compat\/golang\//d;" coverage.out
-          rm -f *.bak
+          find -name '*.bak' -delete
 
       # - run: tinygo test -v -target=${{ env.GOOS }} -tags tinygo .
       #  # used to work, now it's crashing, so:

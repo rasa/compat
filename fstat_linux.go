@@ -21,7 +21,7 @@ func fstat(file *os.File) (FileInfo, error) {
 		return nil, statError(file.Name(), err)
 	}
 
-	fd := int(file.Fd())
+	fd := int(file.Fd()) //nolint:gosec
 
 	link := "/proc/self/fd/" + strconv.Itoa(fd)
 

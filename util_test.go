@@ -400,7 +400,7 @@ func skip(t *testing.T, msg any) {
 		return
 	}
 
-	if compat.IsAct {
+	if os.Getenv("ACT") != "" {
 		s += " (" + runtime.GOOS + "/act" + ")"
 	}
 

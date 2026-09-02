@@ -5,7 +5,7 @@
 
 package compat
 
-func Umask(newMask int) int {
+func Umask(_ int) int {
 	// this will intentionally not compile to alert us to a new build platform.
 }
 

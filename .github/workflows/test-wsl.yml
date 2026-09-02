@@ -3,7 +3,7 @@
 
 name: test-wsl
 
-on: # yamllint disable-line rule:truthy
+"on":
   workflow_call:
   workflow_dispatch:
 

@@ -3,7 +3,7 @@
 
 name: build-nocgo
 
-on: # yamllint disable-line rule:truthy
+"on":
   workflow_call: # Required so this workflow can be called from another workflow
     inputs:
       cgo_enabled:

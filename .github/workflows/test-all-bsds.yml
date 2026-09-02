@@ -3,7 +3,7 @@
 
 name: test-all-bsds
 
-on:
+"on":
   workflow_call:
     inputs:
       GOOPTS:

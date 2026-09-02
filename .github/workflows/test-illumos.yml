@@ -3,7 +3,7 @@
 
 name: test-illumos
 
-on: # yamllint disable-line rule:truthy
+"on":
   workflow_call:
     inputs:
       GOOPTS:

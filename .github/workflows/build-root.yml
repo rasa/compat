@@ -3,7 +3,7 @@
 
 name: build-root
 
-on: # yamllint disable-line rule:truthy
+"on":
   workflow_call: # Required so this workflow can be called from another workflow
     inputs:
       compat_debug:
