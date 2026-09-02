@@ -88,9 +88,6 @@ on:
         default: "-v"
         type: string
 
-permissions:
-  contents: read
-
 jobs:
   build-matrix:
     strategy:
@@ -139,3 +136,6 @@ jobs:
       test_opts: ${{ inputs.test_opts }}
     secrets:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+
+permissions:
+  contents: read

@@ -43,13 +43,12 @@ jobs:
           sed -i.bak "/compat\/cmd\//d; /compat\/golang\//d;" coverage.out
           rm -f *.bak
 
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v7
+      - uses: codecov/codecov-action@v7
         with:
-          # fail_ci_if_error: false
           files: ./coverage.out
           name: coverage-${{ env.GOOS }}
           token: ${{ secrets.CODECOV_TOKEN }}
+          # fail_ci_if_error: false
 
 permissions:
   contents: read

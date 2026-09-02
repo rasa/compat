@@ -42,25 +42,25 @@ jobs:
     
       - uses: vmactions/freebsd-vm@v1
         with:
-          # arch: aarch64
-          # copyback: false
           envs: 'GOOS GOARCH GOOPTS CODECOV_SLUG CODECOV_TOKEN' # GITHUB_TOKEN'
           prepare: |
             pkg update -f
             pkg install -y bash curl git gzip gtar jq
             # pkg install -y go
-          # release: '15.0'
           run: |
             ./download-build-test.sh
           sync: scp
           usesh: true
+          # arch: aarch64
+          # copyback: false
+          # release: '15.0'
 
       - uses: codecov/codecov-action@v7
         with:
-          # fail_ci_if_error: false
           files: ./coverage.out
           name: coverage-${{ env.GOOS }}
           token: ${{ secrets.CODECOV_TOKEN }}
+          # fail_ci_if_error: false
 
 permissions:
   contents: read

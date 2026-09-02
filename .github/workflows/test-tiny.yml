@@ -31,13 +31,12 @@ jobs:
 
       - run: go test -covermode=atomic -coverprofile=coverage.out -coverpkg=. -tags tinygo -v ./...
 
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v7
+      - uses: codecov/codecov-action@v7
         with:
-          # fail_ci_if_error: false
           files: ./coverage.out
           name: coverage-tinygo
           token: ${{ secrets.CODECOV_TOKEN }}
+          # fail_ci_if_error: false
 
 permissions:
   contents: read

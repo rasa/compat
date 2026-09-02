@@ -52,12 +52,12 @@ jobs:
           export GOROOT="$(go env GOROOT)"
 
           go build \
-            -o "${RUNNER_TEMP}/go_ios_arm64_exec" \
+            -o "${RUNNER_TEMP}/go_ios_${GOARCH}_exec" \
             "${GOROOT}/misc/ios/go_ios_exec.go"
 
           echo "${RUNNER_TEMP}" >> "${GITHUB_PATH}"
 
-      - name: Test on iOS
+      - name: Run tests on iOS simulator
         run: |
           export CC="$(go env GOROOT)/misc/ios/clangwrap.sh"
 
@@ -69,14 +69,12 @@ jobs:
           sed -i.bak "/compat\/cmd\//d; /compat\/golang\//d;" coverage.out
           rm -f *.bak
 
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v7
+      - uses: codecov/codecov-action@v7
         with:
-          # fail_ci_if_error: false
           files: ./coverage.out
           name: coverage-${{ env.GOOS }}
           token: ${{ secrets.CODECOV_TOKEN }}
+          # fail_ci_if_error: false
 
 permissions:
   contents: read
-

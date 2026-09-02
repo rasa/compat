@@ -7,15 +7,15 @@ on:
   workflow_call:
   workflow_dispatch:
 
-permissions:
-  contents: read
-
 jobs:
   test-js:
     uses: ./.github/workflows/test-js.yml
     secrets: inherit
   test-wasi:
     uses: ./.github/workflows/test-wasi.yml
-    # needs: test-js
-    # if: success()
     secrets: inherit
+    # if: success()
+    # needs: test-js
+
+permissions:
+  contents: read

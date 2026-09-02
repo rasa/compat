@@ -41,7 +41,6 @@ jobs:
           envs: 'GOOS GOARCH GOOPTS CODECOV_SLUG CODECOV_TOKEN' # GITHUB_TOKEN'
           usesh: true
           sync: scp
-          # copyback: false
           prepare: |
             set +e
             # ignore error 4, which is returned when there's nothing to do
@@ -56,13 +55,14 @@ jobs:
             # pkg install --accept developer/go || true
           run: |
             ./download-build-test.sh
+          # copyback: false
 
       - uses: codecov/codecov-action@v7
         with:
-          # fail_ci_if_error: false
           files: ./coverage.out
           name: coverage-${{ env.GOOS }}
           token: ${{ secrets.CODECOV_TOKEN }}
+          # fail_ci_if_error: false
 
 permissions:
   contents: read

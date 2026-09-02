@@ -39,7 +39,6 @@ jobs:
         with:
           envs: 'GOOS GOARCH GOOPTS CODECOV_SLUG CODECOV_TOKEN' # GITHUB_TOKEN'
           usesh: true
-          # copyback: false
           # See https://github.com/fsnotify/fsnotify/blob/main/.github/workflows/test.yml
           # default PATH:
           # /usr/bin
@@ -76,13 +75,14 @@ jobs:
           run: |
             ./download-build-test.sh
           sync: scp
+          # copyback: false
 
       - uses: codecov/codecov-action@v7
         with:
-          # fail_ci_if_error: false
           files: ./coverage.out
           name: coverage-${{ env.GOOS }}
           token: ${{ secrets.CODECOV_TOKEN }}
+          # fail_ci_if_error: false
 
 permissions:
   contents: read

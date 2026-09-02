@@ -9,6 +9,10 @@ on: # yamllint disable-line rule:truthy
 
 env:
   ANYVM_COMMIT: main
+  CGO_ENABLED: 0
+  GH_TOKEN: ${{ github.token }}
+  GOOS: plan9
+  GOARCH: amd64
   # See https://github.com/anyvm-org/anyvm/blob/main/.github/workflows/plan9.yml#L37
   PLAN9_RELEASE: '11554' # works; '11952' failed
   SSH_PORT: '10023'
@@ -16,7 +20,7 @@ env:
 jobs:
   test-plan9:
     runs-on: ubuntu-latest
-    timeout-minutes: 40
+    timeout-minutes: 15
 
     steps:
       - uses: actions/checkout@v7
@@ -35,24 +39,17 @@ jobs:
 
       - uses: actions/setup-go@v7
         with:
-          # go 1.24 panics
-          # go-version-file : go.mod
           go-version: "~1.27.0"
           check-latest: true
           cache: true
+          # go 1.24 panics
+          # go-version-file : go.mod
 
       - run: printf '::notice ::%s\n' "$(go version)"
 
-      - name: Run tests on Plan9
+      - name: Run tests
         shell: bash
-        env:
-          CGO_ENABLED: 0
-          GH_TOKEN: ${{ github.token }}
-          GOOS: plan9
-          GOARCH: amd64
         run: |
-          set -euxo pipefail
-
           sudo apt-get update
           sudo apt-get --no-install-recommends -y install \
             ca-certificates \
@@ -168,10 +165,10 @@ jobs:
 
       - uses: codecov/codecov-action@v7
         with:
-          # fail_ci_if_error: false
           files: ./coverage.out
-          name: coverage-plan9
+          name: coverage-${{ env.GOOS }}
           token: ${{ secrets.CODECOV_TOKEN }}
+          # fail_ci_if_error: false
 
 permissions:
   contents: read

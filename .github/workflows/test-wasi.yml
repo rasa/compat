@@ -68,8 +68,6 @@ jobs:
 
       - run: go mod download
 
-      # - run: printf '::notice ::%s\n' "$(go version)"
-
       - run: |
           # Add wasm to PATH
           echo "$(go env GOROOT)/misc/wasm" >> "${GITHUB_PATH}"
@@ -100,13 +98,12 @@ jobs:
 
       # - run: tinygo test -bench -target=${{ env.GOOS }} -tags tinygo ./
 
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v7
+      - uses: codecov/codecov-action@v7
         with:
-          # fail_ci_if_error: false
           files: ./coverage.out
           name: coverage-${{ env.GOOS }}-${{ matrix.go-version.big }}
           token: ${{ secrets.CODECOV_TOKEN }}
+          # fail_ci_if_error: false
 
 permissions:
   contents: read

@@ -7,9 +7,6 @@ on:
   workflow_call:
   workflow_dispatch:
 
-permissions:
-  contents: read
-
 jobs:
   test-top3:
     uses: ./.github/workflows/build-matrix.yml
@@ -18,32 +15,35 @@ jobs:
       make_cmd: test
     secrets: inherit
   test-android:
-    # if: success()
     uses: ./.github/workflows/test-android.yml
-    needs: test-top3
     secrets: inherit
+    # if: success()
+    # needs: test-top3
   test-ios:
-    # if: success()
     uses: ./.github/workflows/test-ios.yml
-    needs: test-android
     secrets: inherit
+    # if: success()
+    # needs: test-android
   test-plan9:
-    # if: success()
     uses: ./.github/workflows/test-plan9.yml
-    needs: test-ios
     secrets: inherit
+    # if: success()
+    # needs: test-ios
   test-tiny:
-    # if: success()
     uses: ./.github/workflows/test-tiny.yml
-    needs: test-plan9
     secrets: inherit
+    # if: success()
+    # needs: test-plan9
   test-all-wasms:
-    # if: success()
     uses: ./.github/workflows/test-all-wasms.yml
-    needs: test-tiny
     secrets: inherit
-  test-all-vms:
     # if: success()
+    # needs: test-tiny
+  test-all-vms:
     uses: ./.github/workflows/test-all-vms.yml
-    needs: test-all-wasms
     secrets: inherit
+    # if: success()
+    # needs: test-all-wasms
+
+permissions:
+  contents: read

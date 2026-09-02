@@ -7,9 +7,6 @@ on:
   workflow_call:
   workflow_dispatch:
 
-permissions:
-  contents: read
-
 jobs:
   build-matrix:
     uses: ./.github/workflows/build-matrix.yml
@@ -20,16 +17,19 @@ jobs:
     uses: ./.github/workflows/build-nocgo.yml
     with:
       goarches: all
-    needs: build-matrix
-    if: success()
     secrets: inherit
+    # if: success()
+    # needs: build-matrix
   build-android:
     uses: ./.github/workflows/build-android.yml
-    needs: build-nocgo
-    if: success()
     secrets: inherit
+    # if: success()
+    # needs: build-nocgo
   build-ios:
     uses: ./.github/workflows/build-ios.yml
-    needs: build-android
-    if: success()
     secrets: inherit
+    # if: success()
+    # needs: build-android
+
+permissions:
+  contents: read

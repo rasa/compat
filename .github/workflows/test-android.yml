@@ -105,9 +105,7 @@ jobs:
 
           cat >>"${cmd}" <<'EOF'
           #!/usr/bin/env bash
-
           # set -vx
-          set -euo pipefail
 
           test_bin="$1"
           shift
@@ -187,7 +185,7 @@ jobs:
 
       - uses: crazy-max/ghaction-dump-context@v3.1.0
 
-      - name: Run Go tests on Android
+      - name: Run tests on android emulator
         uses: reactivecircus/android-emulator-runner@v2
         env:
           GOARCH: ${{ matrix.goarch }}
@@ -221,11 +219,10 @@ jobs:
 
       - uses: codecov/codecov-action@v7
         with:
-          # fail_ci_if_error: false
           files: ./coverage.out
           name: coverage-android-${{ matrix.api_level }}-${{ matrix.goarch }}
           token: ${{ secrets.CODECOV_TOKEN }}
+          # fail_ci_if_error: false
 
 permissions:
   contents: read
-

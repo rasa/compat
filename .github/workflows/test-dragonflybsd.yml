@@ -22,6 +22,7 @@ env:
   GOOS: dragonfly
   GOARCH: amd64
   GOOPTS: ${{ inputs.GOOPTS }}
+
 jobs:
   test-dragonflybsd:
     name: test-dragonflybsd
@@ -39,7 +40,6 @@ jobs:
           envs: 'GOOS GOARCH GOOPTS CODECOV_SLUG CODECOV_TOKEN' # GITHUB_TOKEN'
           usesh: true
           sync: scp
-          # copyback: false
           prepare: |
             pkg update -f
             pkg install -y bash coreutils curl git gzip gtar jq
@@ -47,13 +47,14 @@ jobs:
             # pkg install -y go
           run: |
             ./download-build-test.sh
+          # copyback: false
 
       - uses: codecov/codecov-action@v7
         with:
-          # fail_ci_if_error: false
           files: ./coverage.out
           name: coverage-${{ env.GOOS }}
           token: ${{ secrets.CODECOV_TOKEN }}
+          # fail_ci_if_error: false
 
 permissions:
   contents: read
