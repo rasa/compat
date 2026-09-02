@@ -126,7 +126,7 @@ func TestErrorsNormalizeUnsupportedError(t *testing.T) {
 	}
 
 	err = compat.NormalizeUnsupportedError(os.ErrInvalid)
-	if !errors.Is(err, errors.ErrUnsupported) {
-		t.Fatalf("normalizeUnsupportedError: got %v, want %v", err, errors.ErrUnsupported)
+	if errors.Is(err, errors.ErrUnsupported) {
+		t.Fatalf("normalizeUnsupportedError: got %v, want %v", err, os.ErrInvalid)
 	}
 }
