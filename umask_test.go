@@ -12,7 +12,7 @@ import (
 
 func TestUmask(t *testing.T) {
 	if !compat.SupportsUmask() {
-		skipf(t, "Skipping test: not supported on %v/%v", runtime.GOOS, runtime.GOARCH)
+		skipf(t, "Skipping test: Umask() not supported on %v/%v", runtime.GOOS, runtime.GOARCH)
 
 		return
 	}
@@ -97,5 +97,26 @@ func TestUmaskInitUmasK(t *testing.T) {
 		if got != tst.want {
 			t.Errorf("%v: got %v, want %v", tst.umask, got, tst.want)
 		}
+	}
+}
+
+func TestUmaskUnsupported(t *testing.T) {
+	if compat.SupportsUmask() {
+		skipf(t, "Skipping test: Umask() supported on %v/%v", runtime.GOOS, runtime.GOARCH)
+
+		return
+	}
+
+	_, err := compat.GetUmask()
+
+	if err == nil {
+		t.Error("GetUmask: got nil, want err")
+	}
+
+	want := 0
+	got := compat.Umask(0)
+
+	if got != want {
+		t.Errorf("Umask: got %v, want %v", got, want)
 	}
 }
