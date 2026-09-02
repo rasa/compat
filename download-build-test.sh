@@ -8,9 +8,6 @@
 # to run script locally
 goos=$(uname | tr '[:upper:]' '[:lower:]' || true)
 goarch=$(uname -m || true)
-
-set -xv
-
 goversion=$(grep '^go [1-9]\.' go.mod | cut -d' ' -f 2 || true)
 
 : "${GITHUB_REPOSITORY:=rasa/$(basename "${PWD}")}"
@@ -19,6 +16,7 @@ goversion=$(grep '^go [1-9]\.' go.mod | cut -d' ' -f 2 || true)
 : "${GOARCH:=${goarch}}"
 : "${GOOPTS:=}"
 : "${GOVERSION:=${goversion}}"
+
 case "${GOARCH}" in
   386|amd64|arm|arm64|loong64|mips|mips64|mips64le|mipsle|ppc64|ppc64le|riscv64|s390x)
     ;;
