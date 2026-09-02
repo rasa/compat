@@ -381,15 +381,15 @@ for Windows.<br/>
 | Dragonfly    | ✅       | ☑️‖     | ✅    | ✅   | ✅   | ✅   |
 | FreeBSD      | ✅       | ✅      | ✅    | ✅‡  | ✅   | ✅   |
 | Illumos      | ✅       | ☑️‖     | ✅    | ✅   | ✅   | ✅   |
-| iOS          | ✅       | ✅      | ☑️¶   | ✅   | ✅   | ✅   |
-| Js/<br/>WASM | ❌       | ☑️‖     | ☑️¶   | ✅   | ❌   | ✅   |
+| iOS          | ✅       | ✅      | ❌¶   | ✅   | ✅   | ❌† |
+| Js/<br/>WASM | ❌       | ☑️‖     | ❌¶   | ✅   | ❌   | ❌† |
 | Linux        | ✅       | ✅      | ✅    | ✅   | ✅   | ✅   |
 | macOS        | ✅       | ✅      | ✅    | ✅   | ✅   | ✅   |
 | NetBSD       | ✅       | ☑️‖     | ✅    | ✅‡  | ✅   | ✅   |
 | OpenBSD      | ✅       | ☑️‖     | ✅    | ✅‡  | ✅   | ✅   |
 | Plan9        | ✅       | ☑️‖     | ✅    | ✅   | ❌   | ❌   |
 | Solaris      | ✅       | ☑️‖     | ✅    | ✅   | ✅   | ✅   |
-| Wasip1/<br/>WASM | ❌   | ☑️‖     | ☑️¶    | ✅   | ❌   | ✅†  |
+| Wasip1/<br/>WASM | ❌   | ☑️‖     | ❌¶    | ✅   | ❌   | ❌† |
 | Windows      | ✅       | ✅      | ✅    | ✅   | ✅   | ✅§  |
 <!--           | Chmod    | Fstat   | Nice  | Part | Symln | Umask | -->
 
@@ -401,7 +401,7 @@ for Windows.<br/>
 - ❌ Not implemented because the operating system appears not to provide it.
 
 \* Actual support depends on the underlying filesystem. See [Comparison of file systems](https://wikipedia.org/wiki/Comparison_of_file_systems#Metadata) for details.<br/>
-† Not supported when compiled with TinyGo.<br/>
+† `GetUmask` and `Umask` do nothing and return `ErrUnsupported`.
 ‡ Not supported on `openbsd/ppc64`, `netbsd/386`, `freebsd/riscv64`, or
 `aix/ppc64` with CGO because of compilation limitations.<br/>
 § Implemented through the `UMASK=0NNN` environment variable. <br/>
