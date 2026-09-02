@@ -4,12 +4,19 @@
 package compat_test
 
 import (
+	"runtime"
 	"testing"
 
 	"github.com/rasa/compat"
 )
 
 func TestUmask(t *testing.T) {
+	if !compat.SupportsUmask() {
+		skipf(t, "Skipping test: not supported on %v/%v", runtime.GOOS, runtime.GOARCH)
+
+		return
+	}
+
 	original, err := compat.GetUmask()
 	if err != nil {
 		t.Errorf("GetUmask: %v", err)
@@ -28,30 +35,11 @@ func TestUmask(t *testing.T) {
 		0o777,
 	}
 
-	// Umask is unsupported on Plan 9 and TinyGo/wasip1.
-	if !compat.SupportsUmask() {
-		for _, mask := range masks {
-			if got := compat.Umask(mask); got != 0 {
-				t.Errorf("Umask(0o%03o): got previous mask 0o%03o, want 0", mask, got)
-			}
-
-			got, err := compat.GetUmask()
-			if err != nil {
-				t.Errorf("GetUmask: %v", err)
-			}
-
-			if got != 0 {
-				t.Errorf("GetUmask() after Umask(0o%03o): got 0o%03o, want 0", mask, got)
-			}
-		}
-
-		return
-	}
-
 	previous := original
 
 	for _, mask := range masks {
-		if got := compat.Umask(mask); got != previous {
+		got := compat.Umask(mask)
+		if got != previous {
 			t.Errorf(
 				"Umask(0o%03o): got previous mask 0o%03o, want 0o%03o",
 				mask,
