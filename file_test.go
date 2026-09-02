@@ -450,7 +450,7 @@ func TestFilePosixOpenFileInvalid(t *testing.T) {
 	}
 }
 
-func TestFilePosixSymlinkInvalidsrc(t *testing.T) {
+func TestFilePosixSymlinkInvalidOld(t *testing.T) {
 	if !supportsSymlinks(t) {
 		return
 	}

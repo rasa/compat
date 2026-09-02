@@ -25,7 +25,7 @@ func TestRename(t *testing.T) {
 	}
 }
 
-func TestRenameEmptysrc(t *testing.T) {
+func TestRenameEmptyOld(t *testing.T) {
 	src := ""
 	dst := tempName(t)
 
@@ -51,7 +51,7 @@ func TestRenameEmptyNew(t *testing.T) {
 	}
 }
 
-func TestRenameInvalidsrc(t *testing.T) {
+func TestRenameInvalidOld(t *testing.T) {
 	src := invalidName
 	dst := tempName(t)
 
