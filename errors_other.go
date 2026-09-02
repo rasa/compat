@@ -5,11 +5,6 @@
 
 package compat
 
-import (
-	"errors"
-	"fmt"
-)
-
 func normalizeUnsupportedError(err error) error {
 	return err
 }
