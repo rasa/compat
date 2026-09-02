@@ -11,9 +11,5 @@ import (
 )
 
 func normalizeUnsupportedError(err error) error {
-	if !errors.Is(err, errors.ErrUnsupported) {
-		return fmt.Errorf("%w: %w", errors.ErrUnsupported, err)
-	}
-
 	return err
 }
