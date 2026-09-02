@@ -139,19 +139,19 @@ func testPartitionType(t *testing.T, name string) {
 		var errno syscall.Errno
 		errorNo := ""
 		if errors.As(err, &errno) {
-			errorNo = fmt.Sprintf(" (error 0x%x)", errno)
+			errorNo = fmt.Sprintf("(error 0x%x) ", uint32(errno))
 		}
 		if errors.Is(err, errors.ErrUnsupported) {
-			t.Skipf("Skipping test on %v/%v: %v %v", runtime.GOOS, runtime.GOARCH, err, errorNo)
+			t.Skipf("Skipping test on %v/%v: %v %v(ErrUnsupported)", runtime.GOOS, runtime.GOARCH, err, errorNo)
 		}
 		if errors.Is(err, syscall.EACCES) {
-			t.Skipf("Skipping test on %v/%v: %v %v", runtime.GOOS, runtime.GOARCH, err, errorNo)
+			t.Skipf("Skipping test on %v/%v: %v %v(EACCES)", runtime.GOOS, runtime.GOARCH, err, errorNo)
 		}
 		if strings.Contains(err.Error(), "not implemented") {
-			t.Skipf("Skipping test on %v/%v: %v %v", runtime.GOOS, runtime.GOARCH, err, errorNo)
+			t.Skipf("Skipping test on %v/%v: %v %v(not implemented)", runtime.GOOS, runtime.GOARCH, err, errorNo)
 		}
 		if strings.Contains(err.Error(), "permission denied") {
-			t.Skipf("Skipping test on %v/%v: %v %v", runtime.GOOS, runtime.GOARCH, err, errorNo)
+			t.Skipf("Skipping test on %v/%v: %v %v(permission denied)", runtime.GOOS, runtime.GOARCH, err, errorNo)
 		}
 
 		t.Fatal(err)
