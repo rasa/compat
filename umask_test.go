@@ -90,27 +90,28 @@ func TestUmaskInitUmasK(t *testing.T) {
 	}
 
 	tests := []test{
-		{"", true},
-		{"0", true},
-		{"0o", true},
 		{"o", false},
 		{"9", false}, // not octal
 		{"-1", false},
 		{"18446744073709551617", false}, // 2^64 + 1
+		{"0", true},
+		{"00", true},
+		{"002", true},
+		{"0002", true},
+		{"0o", true}, // evaluates to ""
+		{"", true},
 	}
 
 	for _, tst := range tests {
 		t.Setenv("UMASK", tst.umask)
-
 		err := compat.InitUmask()
+		t.Setenv("UMASK", "")
 
 		got := err == nil
 		if got != tst.want {
 			t.Errorf("%v: got %v, want %v", tst.umask, got, tst.want)
 		}
 	}
-
-	t.Setenv("UMASK", "")
 
 	_ = compat.InitUmask()
 }
