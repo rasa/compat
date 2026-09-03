@@ -6,7 +6,7 @@
 package compat_test
 
 import (
-  "errors"
+	"errors"
 	"runtime"
 	"syscall"
 	"testing"
