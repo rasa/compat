@@ -23,7 +23,7 @@ for target in "${targets[@]}"; do
   echo "*** Building for ${GOOS}/${GOARCH}: build args: $*"
   go test -c "$@" ./...
   ((rv |= $?))
-  if ((rv>0)); then
+  if ((rv > 0)); then
     exit "${rv}"
   fi
 done

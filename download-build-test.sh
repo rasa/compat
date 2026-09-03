@@ -20,8 +20,7 @@ goversion=$(grep '^go [1-9]\.' go.mod | cut -d' ' -f 2 || true)
 # See go tool dist list | cut -d/ -f2 | sort -u
 # See also https://github.com/golang/go/blob/HEAD/src/internal/syslist/syslist.go#L58
 case "${GOARCH}" in
-  386|amd64|arm|arm64|loong64|mips|mips64|mips64le|mipsle|ppc64|ppc64le|riscv64|s390x)
-    ;;
+  386 | amd64 | arm | arm64 | loong64 | mips | mips64 | mips64le | mipsle | ppc64 | ppc64le | riscv64 | s390x) ;;
   x86_64)
     GOARCH=amd64
     ;;
