@@ -22,6 +22,7 @@ func TestUmask(t *testing.T) {
 
 	umaskMux.Lock()
 	defer umaskMux.Unlock()
+	_ = compat.InitUmask()
 
 	original, err := compat.GetUmask()
 	if err != nil {
