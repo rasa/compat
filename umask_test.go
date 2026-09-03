@@ -108,6 +108,9 @@ func TestUmaskInitUmasK(t *testing.T) {
 			t.Errorf("%v: got %v, want %v", tst.umask, got, tst.want)
 		}
 	}
+
+	t.Setenv("UMASK", "")
+	_ = compat.InitUmask()
 }
 
 func TestUmaskUnsupported(t *testing.T) {

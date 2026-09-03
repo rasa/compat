@@ -14,3 +14,7 @@ import (
 func PartitionType(_ context.Context, _ string) (string, error) {
 	return "", unimplementedError("partitionType")
 }
+
+func normalizePath(path string) string {
+	return path
+}
