@@ -22,6 +22,7 @@ func TestUmask(t *testing.T) {
 
 	umaskMux.Lock()
 	defer umaskMux.Unlock()
+
 	_ = compat.InitUmask()
 
 	original, err := compat.GetUmask()
@@ -110,6 +111,7 @@ func TestUmaskInitUmasK(t *testing.T) {
 	}
 
 	t.Setenv("UMASK", "")
+
 	_ = compat.InitUmask()
 }
 
