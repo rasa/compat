@@ -119,6 +119,10 @@ func testMain(m *testing.M, fsToTest, nativeFSType, fsPath string) int {
 		testsToRun++
 	}
 
+	if testsToRun == 0 {
+		fmt.Printf("Unsupported filesystem: %q; use one of %v\n", fsToTest, strings.Join(supported, ","))
+	}
+
 	n := 0
 	code := -1
 
@@ -134,8 +138,6 @@ func testMain(m *testing.M, fsToTest, nativeFSType, fsPath string) int {
 	if code == 0 {
 		return 0
 	}
-
-	fmt.Printf("Unsupported filesystem: %q; use one of %v\n", fsToTest, strings.Join(supported, ","))
 
 	return 1
 }
