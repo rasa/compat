@@ -5,10 +5,13 @@ package compat_test
 
 import (
 	"runtime"
+	"sync"
 	"testing"
 
 	"github.com/rasa/compat"
 )
+
+var umaskMux sync.Mutex
 
 func TestUmask(t *testing.T) {
 	if !compat.SupportsUmask() {
@@ -16,6 +19,9 @@ func TestUmask(t *testing.T) {
 
 		return
 	}
+
+	umaskMux.Lock()
+	defer umaskMux.Unlock()
 
 	original, err := compat.GetUmask()
 	if err != nil {
@@ -73,6 +79,9 @@ func TestUmaskInitUmasK(t *testing.T) {
 		return
 	}
 
+	umaskMux.Lock()
+	defer umaskMux.Unlock()
+
 	type test struct {
 		umask string
 		want  bool
@@ -83,9 +92,9 @@ func TestUmaskInitUmasK(t *testing.T) {
 		{"0", true},
 		{"0o", true},
 		{"o", false},
-		{"9", false},
+		{"9", false}, // not octal
 		{"-1", false},
-		{"18446744073709551617", false},
+		{"18446744073709551617", false}, // 2^64 + 1
 	}
 
 	for _, tst := range tests {
@@ -113,7 +122,7 @@ func TestUmaskUnsupported(t *testing.T) {
 	}
 
 	want := 0
-	got := compat.Umask(0)
+	got := compat.Umask(1)
 
 	if got != want {
 		t.Errorf("Umask: got %v, want %v", got, want)

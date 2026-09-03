@@ -21,6 +21,9 @@ func TestUmaskChanged(t *testing.T) {
 		return
 	}
 
+	umaskMux.Lock()
+	defer umaskMux.Unlock()
+
 	umask, err := compat.GetUmask()
 	if err != nil {
 		t.Errorf("GetUmask: %s", err)

@@ -10,33 +10,34 @@ package compat
 
 import (
 	"fmt"
-	"sync"
 	"syscall"
 )
 
-var (
-	currentUmask = initialUmask
-	umaskMutex   sync.Mutex
-)
-
 func initUmask() error {
-	_, _ = GetUmask()
+	umaskMutex.Lock()
+	umask := syscall.Umask(int(initialUmask))
+	_ = syscall.Umask(umask)
+	umaskMutex.Unlock()
+	savedUmask.Store(uint64(umask))
 
 	return nil
 }
 
-// Umask sets the umask to umask, and returns the previous value.
-// On Windows, the initial umask value is 022 octal, and can be changed by
-// setting environmental variable UMASK, to an octal value. For example:
-// `set UMASK=002`. A leading '0 and an 'o' are allowed, and ignored.
+// Umask sets the umask to mask, and returns the previous value.
+//
+// On Windows, the initial umask value is 0o022 octal, and can be changed by
+// setting the environmental variable UMASK, to an octal value. For example:
+// `set UMASK=002` or `set UMASK=0o002`. A leading '0 and an 'o' are allowed,
+// and ignored. If the value is greater than 0o777, only the lower 9 bits will
+// be used.
+//
 // On Plan9 and Wasip1, the function does nothing, and always returns zero.
-func Umask(newMask int) int {
+func Umask(mask int) int {
+	savedUmask.Store(uint64(mask) & umaskMask)
 	umaskMutex.Lock()
 	defer umaskMutex.Unlock()
 
-	currentUmask = newMask
-
-	return syscall.Umask(currentUmask)
+	return syscall.Umask(mask)
 }
 
 // GetUmask returns the current process umask.
@@ -53,26 +54,33 @@ func Umask(newMask int) int {
 // serialized, but compat cannot synchronize direct syscall.Umask calls or file
 // creation performed concurrently by other code in the process.
 //
-// On Plan9 and Wasip1, the function always returns zero, and ErrUnsupported.
+// On Unix-like systems, if GetMask finds that the system's umask value was
+// changed outside of compat, GetMask will return the current umask value, and
+// [ErrUmaskChanged].
+//
+// On Windows, if the UMASK environment variable is not a valid octal number,
+// or greater than 0o777, GetUmask will return the current umask value, and
+// [ErrInvalidUmask].
+//
+// On Plan9 and Wasip1, the function always returns zero, and [os.ErrUnsupported].
 func GetUmask() (int, error) {
+	saved := int(savedUmask.Load())
+
 	umaskMutex.Lock()
-	defer umaskMutex.Unlock()
+	current := syscall.Umask(saved)
+	last := syscall.Umask(current)
+	umaskMutex.Unlock()
+	savedUmask.Store(uint64(current))
 
-	actual := syscall.Umask(currentUmask)
+	var err error
 
-	if actual != currentUmask {
-		expected := currentUmask
-
-		_ = syscall.Umask(actual)
-		currentUmask = actual
-
-		return actual, fmt.Errorf(
+	if current != saved || last != saved {
+		err = fmt.Errorf(
 			"umask changed from 0o%03o to 0o%03o outside compat: %w",
-			expected,
-			actual,
+			saved,
+			current,
 			ErrUmaskChanged,
 		)
 	}
-
-	return actual, nil
+	return current, err
 }

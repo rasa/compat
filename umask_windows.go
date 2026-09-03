@@ -9,33 +9,25 @@ import (
 	"os"
 	"strconv"
 	"strings"
-	"sync/atomic"
-)
-
-var (
-	// Default umask on *nix: remove write for group and others.
-	startingUmask uint32 = initialUmask
-	currentUmask  atomic.Uint32
-	// These are all the bits we care about on Windows (for now?).
-	permMask uint32 = 0o777
 )
 
 func initUmask() error {
+	var startingUmask uint64 = initialUmask
 	umask := strings.TrimSpace(os.Getenv("UMASK"))
-
 	umask = strings.TrimPrefix(strings.ToLower(umask), "0o")
-	if umask != "" {
-		n, err := strconv.ParseUint(umask, 8, 32)
-		if err != nil {
-			return err
-		}
 
-		startingUmask = uint32(n) & permMask
+	if umask != "" {
+		intVal, err := strconv.ParseUint(umask, 8, 32)
+		if err != nil {
+			umaskErr = err
+		} else {
+			startingUmask = intVal & umaskMask
+			validateUmask(intVal)
+		}
 	}
 
-	currentUmask.Store(startingUmask)
-
-	return nil
+	savedUmask.Store(startingUmask)
+	return umaskErr
 }
 
 // Umask sets the umask to umask, and returns the previous value.
@@ -43,10 +35,13 @@ func initUmask() error {
 // setting environmental variable UMASK, to an octal value. For example:
 // `set UMASK=002`. A leading '0 and an 'o' are allowed, and ignored.
 // On Plan9 and Wasip1, the function does nothing, and always returns zero.
-func Umask(newMask int) int {
-	old := currentUmask.Swap(uint32(newMask) & permMask) //nolint:gosec
+func Umask(mask int) int {
+	umaskMutex.Lock()
+	defer umaskMutex.Unlock()
 
-	return int(old)
+	umaskErr = nil
+	oldUmask := savedUmask.Swap(uint64(mask) & umaskMask) //nolint:gosec
+	return int(oldUmask)
 }
 
 // GetUmask returns the current process umask.
@@ -65,5 +60,8 @@ func Umask(newMask int) int {
 //
 // On Plan9 and Wasip1, the function always returns zero, and ErrUnsupported.
 func GetUmask() (int, error) {
-	return int(currentUmask.Load()), nil
+	umaskMutex.Lock()
+	defer umaskMutex.Unlock()
+
+	return int(savedUmask.Load()), umaskErr
 }
