@@ -119,6 +119,15 @@ func TestErrorsWriteError(t *testing.T) {
 	}
 }
 
+func TestErrorsUnsupportedError(t *testing.T) {
+	got := compat.UnsupportedError(opStr).Error()
+
+	want := opStr + ":"
+	if !strings.HasPrefix(got, want) {
+		t.Fatalf("UnsupportedError: got %q; want %q", got, want)
+	}
+}
+
 func TestErrorsNormalizeUnsupportedError(t *testing.T) {
 	err := compat.NormalizeUnsupportedError(errors.ErrUnsupported)
 	if !errors.Is(err, errors.ErrUnsupported) {

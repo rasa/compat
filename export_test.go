@@ -14,17 +14,18 @@ var (
 // errors.go
 
 var (
-	ChmodError      = chmodError
-	CreateError     = createError
-	CreateTempError = createTempError
-	MkdirError      = mkdirError
-	MkdirTempError  = mkdirTempError
-	NiceError       = niceError
-	OpenError       = openError
-	RenameError     = renameError
-	StatError       = statError
-	SymlinkError    = symlinkError
-	WriteError      = writeError
+	ChmodError       = chmodError
+	CreateError      = createError
+	CreateTempError  = createTempError
+	MkdirError       = mkdirError
+	MkdirTempError   = mkdirTempError
+	NiceError        = niceError
+	OpenError        = openError
+	RenameError      = renameError
+	StatError        = statError
+	SymlinkError     = symlinkError
+	WriteError       = writeError
+	UnsupportedError = unsupportedError
 )
 
 // errors_plan9.go/errors_other.go
@@ -38,6 +39,10 @@ var BuildOptions = buildOptions
 // options.go
 
 type Options = options
+
+// partitiontype.go
+
+var NormalizePath = normalizePath
 
 // runtime.go
 

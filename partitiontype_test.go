@@ -165,3 +165,27 @@ func testPartitionType(t *testing.T, name string) {
 		t.Logf("PartitionType(): got %v, want %v", partitionType, fsType)
 	}
 }
+
+func TestPartitionTypeNormalizePath(t *testing.T) {
+	if !compat.IsWindows {
+		skip(t, "Skipping test: requires Windows")
+
+		return
+	}
+	type test struct {
+		want  string
+		input string
+	}
+	tests := []test{
+		{`\\?\c:`, `c:\`},
+		{`c:`, `c:\`},
+		{`c:.`, `c:\`},
+		{`\\?\UNC\server\share`, `\\server\share`},
+	}
+	for _, test := range tests {
+		got := compat.NormalizePath(test.input)
+		if got != test.want {
+			t.Errorf("got %v, want %v", got, test.want)
+		}
+	}
+}
