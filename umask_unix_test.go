@@ -20,19 +20,15 @@ func TestUmaskChanged(t *testing.T) {
 
 		return
 	}
-	if !compat.IsUnix {
-		skipf(t, "Skipping test: Not supported on %v/%v", runtime.GOOS, runtime.GOARCH)
-
-		return
-	}
 
 	umask, err := compat.GetUmask()
 	if err != nil {
 		t.Errorf("GetUmask: %s", err)
 	}
 	umask++
-	_ = syscall.Umask(umask)
+	old := syscall.Umask(umask)
 	newUmask, err := compat.GetUmask()
+	_ = syscall.Umask(old)
 	if !errors.Is(err, compat.ErrUmaskChanged) {
 		t.Fatalf("got %v, want %v", err, compat.ErrUmaskChanged)
 	}
