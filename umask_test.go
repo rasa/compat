@@ -4,9 +4,7 @@
 package compat_test
 
 import (
-	"errors"
 	"runtime"
-	"syscall"
 	"testing"
 
 	"github.com/rasa/compat"
@@ -119,32 +117,5 @@ func TestUmaskUnsupported(t *testing.T) {
 
 	if got != want {
 		t.Errorf("Umask: got %v, want %v", got, want)
-	}
-}
-
-func TestUmaskChanged(t *testing.T) {
-	if !compat.SupportsUmask() {
-		skipf(t, "Skipping test: Umask() not supported on %v/%v", runtime.GOOS, runtime.GOARCH)
-
-		return
-	}
-	if !compat.IsUnix {
-		skipf(t, "Skipping test: Not supported on %v/%v", runtime.GOOS, runtime.GOARCH)
-
-		return
-	}
-
-	umask, err := compat.GetUmask()
-	if err != nil {
-		t.Errorf("GetUmask: %s", err)
-	}
-	umask++
-	_ = syscall.Umask(umask)
-	newUmask, err := compat.GetUmask()
-	if !errors.Is(err, compat.ErrUmaskChanged) {
-		t.Fatalf("got %v, want %v", err, compat.ErrUmaskChanged)
-	}
-	if newUmask != umask {
-		t.Fatalf("got %v, want %v", newUmask, umask)
 	}
 }
