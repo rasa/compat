@@ -28,13 +28,16 @@ func TestUmaskChanged(t *testing.T) {
 	if err != nil {
 		t.Errorf("GetUmask: %s", err)
 	}
+
 	umask++
 	old := syscall.Umask(umask)
 	newUmask, err := compat.GetUmask()
 	_ = syscall.Umask(old)
+
 	if !errors.Is(err, compat.ErrUmaskChanged) {
 		t.Fatalf("got %v, want %v", err, compat.ErrUmaskChanged)
 	}
+
 	if newUmask != umask {
 		t.Fatalf("got %v, want %v", newUmask, umask)
 	}

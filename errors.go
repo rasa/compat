@@ -12,7 +12,7 @@ import (
 
 var ErrInvalidNice = errors.New("invalid nice value")
 
-func unsupportedError(op string) error { //nolint:unused
+func unsupportedError(op string) error {
 	return fmt.Errorf("%s: %w", op, errors.ErrUnsupported)
 }
 

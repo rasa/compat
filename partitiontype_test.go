@@ -172,10 +172,12 @@ func TestPartitionTypeNormalizePath(t *testing.T) {
 
 		return
 	}
+
 	type test struct {
 		input string
 		want  string
 	}
+
 	tests := []test{
 		{`\\?\c:`, `c:\`},
 		{`c:`, `c:\`},

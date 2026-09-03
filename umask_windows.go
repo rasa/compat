@@ -11,6 +11,8 @@ import (
 	"strings"
 )
 
+var umaskErr error
+
 func initUmask() error {
 	var startingUmask uint64 = initialUmask
 	umask := strings.TrimSpace(os.Getenv("UMASK"))
@@ -64,4 +66,15 @@ func GetUmask() (int, error) {
 	defer umaskMutex.Unlock()
 
 	return int(savedUmask.Load()), umaskErr
+}
+
+func validateUmask(umask uint64) {
+	umaskMutex.Lock()
+	defer umaskMutex.Unlock()
+
+	if umask > umaskMask {
+		umaskErr = ErrInvalidUmask
+	} else {
+		umaskErr = nil
+	}
 }

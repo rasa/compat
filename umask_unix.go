@@ -18,7 +18,7 @@ func initUmask() error {
 	umask := syscall.Umask(int(initialUmask))
 	_ = syscall.Umask(umask)
 	umaskMutex.Unlock()
-	savedUmask.Store(uint64(umask))
+	savedUmask.Store(uint64(umask)) //nolint:gosec
 
 	return nil
 }
@@ -33,7 +33,7 @@ func initUmask() error {
 //
 // On Plan9 and Wasip1, the function does nothing, and always returns zero.
 func Umask(mask int) int {
-	savedUmask.Store(uint64(mask) & umaskMask)
+	savedUmask.Store(uint64(mask) & umaskMask) //nolint:gosec
 	umaskMutex.Lock()
 	defer umaskMutex.Unlock()
 
@@ -64,13 +64,13 @@ func Umask(mask int) int {
 //
 // On Plan9 and Wasip1, the function always returns zero, and [os.ErrUnsupported].
 func GetUmask() (int, error) {
-	saved := int(savedUmask.Load())
+	saved := int(savedUmask.Load()) //nolint:gosec
 
 	umaskMutex.Lock()
 	current := syscall.Umask(saved)
 	last := syscall.Umask(current)
 	umaskMutex.Unlock()
-	savedUmask.Store(uint64(current))
+	savedUmask.Store(uint64(current)) //nolint:gosec
 
 	var err error
 
@@ -82,5 +82,6 @@ func GetUmask() (int, error) {
 			ErrUmaskChanged,
 		)
 	}
+
 	return current, err
 }

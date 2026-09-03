@@ -23,20 +23,8 @@ var (
 
 	savedUmask atomic.Uint64
 	umaskMutex sync.Mutex
-	umaskErr   error
 )
 
 func init() {
 	_ = initUmask()
-}
-
-func validateUmask(umask uint64) {
-	umaskMutex.Lock()
-	defer umaskMutex.Unlock()
-
-	if umask > uint64(umaskMask) {
-		umaskErr = ErrInvalidUmask
-	} else {
-		umaskErr = nil
-	}
 }
