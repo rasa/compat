@@ -20,7 +20,7 @@ for target in "${targets[@]}"; do
   fi
   test -n "${BUILD_ALL:-}" || seen[${GOOS}]=1
   export GOARCH="${target#*/}"
-  echo "*** Building for ${GOOS}/${GOARCH}: build args: $*"
+  echo "*** Running: go test $* on ${GOOS}/${GOARCH}"
   go test -c "$@" ./...
   ((rv |= $?))
   if ((rv > 0)); then
