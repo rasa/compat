@@ -99,7 +99,7 @@ var tinygoThresholds = []struct {
 	// https://github.com/tinygo-org/tinygo/blob/v0.42.0/builder/config.go#L28
 	{"0.42.0" /*"go1.25",*/, "go1.27"},
 	// Moved to:
-	// https://github.com/tinygo-org/tinygo/blob/v0.44.0/compileopts/config.go#L22	
+	// https://github.com/tinygo-org/tinygo/blob/v0.44.0/compileopts/config.go#L22
 }
 
 var goVersionOnce struct {
