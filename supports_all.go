@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: Copyright © 2025 Ross Smith II <ross@smithii.com>
 // SPDX-License-Identifier: MIT
 
-//go:build (darwin && !ios) || freebsd || (linux && !android) || (netbsd && fstat) || windows
+//go:build (darwin && !ios) || freebsd || (linux && !android) || (netbsd && fstat)
 
 // The darwin build flag includes ios (which doesn't support Nice())
 // The linux build flag includes android (which doesn't support BTime())

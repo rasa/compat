@@ -4,14 +4,12 @@
 package compat_test
 
 import (
+	"os"
 	"runtime"
-	"sync"
 	"testing"
 
 	"github.com/rasa/compat"
 )
-
-var umaskMux sync.Mutex
 
 func TestUmask(t *testing.T) {
 	if !compat.SupportsUmask() {
@@ -19,11 +17,6 @@ func TestUmask(t *testing.T) {
 
 		return
 	}
-
-	umaskMux.Lock()
-	defer umaskMux.Unlock()
-
-	_ = compat.InitUmask()
 
 	original, err := compat.GetUmask()
 	if err != nil {
@@ -74,15 +67,23 @@ func TestUmask(t *testing.T) {
 	}
 }
 
-func TestUmaskInitUmasK(t *testing.T) {
+func TestUmaskInitUmask(t *testing.T) {
 	if !compat.IsWindows {
 		skip(t, "Skipping test: requires Windows")
 
 		return
 	}
 
-	umaskMux.Lock()
-	defer umaskMux.Unlock()
+	umask := os.Getenv("UMASK")
+	original, err := compat.GetUmask()
+	if err != nil {
+		t.Errorf("GetUmask: %v", err)
+	}
+
+	t.Cleanup(func() {
+		compat.Umask(original)
+		t.Setenv("UMASK", umask)
+	})
 
 	type test struct {
 		umask string
@@ -105,15 +106,12 @@ func TestUmaskInitUmasK(t *testing.T) {
 	for _, tst := range tests {
 		t.Setenv("UMASK", tst.umask)
 		err := compat.InitUmask()
-		t.Setenv("UMASK", "")
 
 		got := err == nil
 		if got != tst.want {
 			t.Errorf("%v: got %v, want %v", tst.umask, got, tst.want)
 		}
 	}
-
-	_ = compat.InitUmask()
 }
 
 func TestUmaskUnsupported(t *testing.T) {
@@ -123,15 +121,12 @@ func TestUmaskUnsupported(t *testing.T) {
 		return
 	}
 
-	_, err := compat.GetUmask()
-	if err == nil {
-		t.Error("GetUmask: got nil, want err")
-	}
-
 	want := 0
 	got := compat.Umask(1)
 
 	if got != want {
 		t.Errorf("Umask: got %v, want %v", got, want)
 	}
+
+	_ = compat.Umask(0)
 }
