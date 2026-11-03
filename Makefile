@@ -62,7 +62,7 @@ clean: ## remove files created during build pipeline
 
 .PHONY: mod
 mod: ## go mod tidy
-	go mod tidy -v -x $(TOOL_OPTS)
+	go mod tidy -v -x
 	test -f go.tool.mod && go mod tidy -v -x $(TOOL_OPTS)
 
 .PHONY: gen
