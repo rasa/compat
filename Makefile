@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: MIT
 
 export GOMOD_VER := 1.24.0
-export GOTOOLCHAIN := go1.26.7+auto
+export GOTOOLCHAIN := go1.27.3+auto
 
 export GOLANGCI_LINT_VER := latest
 export GOFUMPT_VER := latest
