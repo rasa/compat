@@ -30,6 +30,7 @@ func TestUmaskChanged(t *testing.T) {
 	if umask > 0o777 {
 		umask = 0
 	}
+
 	old := syscall.Umask(umask)
 
 	t.Cleanup(func() {

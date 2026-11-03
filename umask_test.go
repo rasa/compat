@@ -75,6 +75,7 @@ func TestUmaskInitUmask(t *testing.T) {
 	}
 
 	umask := os.Getenv("UMASK")
+
 	original, err := compat.GetUmask()
 	if err != nil {
 		t.Errorf("GetUmask: %v", err)
@@ -106,6 +107,7 @@ func TestUmaskInitUmask(t *testing.T) {
 
 	for _, tst := range tests {
 		t.Setenv("UMASK", tst.umask)
+
 		err := compat.InitUmask()
 
 		got := err == nil
