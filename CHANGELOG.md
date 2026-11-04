@@ -5,7 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
-## [Unreleased](https://github.com/rasa/compat/compare/v0.5.6...HEAD)
+## [Unreleased](https://github.com/rasa/compat/compare/v0.5.8...HEAD)
+
+### Added
+
+### Fixed
+
+### Changed
+
+## [v0.5.8](https://github.com/rasa/compat/compare/v0.5.7...v0.5.8)
 
 ### Added
 
@@ -14,11 +22,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Fixed
 
+- Fixed umask related test failure on Windows.
+
 ### Changed
 
 - Change `GetUmask()` signature to return an error. **BREAKING CHANGE**
-- Deprecate `FileInfo`. Will be removed eventually.
+- Deprecate `FileMode`. Use `os.FileInfo` instead. Will be removed eventually.
 - Deprecate `IsAct`. Will be removed eventually.
+- Update go to version 1.27.3 (tools only).
 
 ## [v0.5.7](https://github.com/rasa/compat/compare/v0.5.6...v0.5.7)
 
