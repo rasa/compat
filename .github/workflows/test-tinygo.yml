@@ -26,8 +26,10 @@ jobs:
           - big: '1.27.x'
             # https://github.com/tinygo-org/tinygo/releases
             tiny: '0.44.0'
+            opts: '-parallel=1'
           - big: '1.26.x'
             tiny: '0.41.0'
+            opts: ''
 
     steps:
       - uses: actions/checkout@v7
@@ -50,7 +52,7 @@ jobs:
           tinygo-version: ${{ matrix.go-version.tiny }}
           binaryen-version: ${{ env.BINARYEN_VERSION }}
 
-      - run: tinygo test -tags tinygo -v -parallel=1 ./...
+      - run: tinygo test -tags tinygo -v ${{ matrix.opts }} ./...
 
 permissions:
   contents: read
