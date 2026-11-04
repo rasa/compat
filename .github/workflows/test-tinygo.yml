@@ -52,7 +52,7 @@ jobs:
           tinygo-version: ${{ matrix.go-version.tiny }}
           binaryen-version: ${{ env.BINARYEN_VERSION }}
 
-      - run: tinygo test -tags tinygo -v ${{ matrix.opts }} ./...
+      - run: tinygo test -tags tinygo -v ${{ matrix.go-version.opts }} ./...
 
 permissions:
   contents: read
