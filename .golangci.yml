@@ -93,6 +93,7 @@ linters:
     - depguard # Go linter that checks if package imports are in a list of acceptable packages. [fast]
     - dupl # Detects duplicate fragments of code. [fast]
     - exhaustruct # Checks if all structure fields are initialized.
+    - exhaustruct_v5 # Checks if all structure fields are initialized.
     - forbidigo # Forbids identifiers.
     - gochecknoglobals # Check that no global variables exist.
     - gochecknoinits # Checks that no init functions are present in Go code. [fast]

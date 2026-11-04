@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: MIT
 
 export GOMOD_VER := 1.24.0
-export GOTOOLCHAIN := go1.26.7+auto
+export GOTOOLCHAIN := go1.27.3+auto
 
 export GOLANGCI_LINT_VER := latest
 export GOFUMPT_VER := latest
@@ -62,7 +62,7 @@ clean: ## remove files created during build pipeline
 
 .PHONY: mod
 mod: ## go mod tidy
-	go mod tidy -v -x $(GOMOD_VER)
+	go mod tidy -v -x
 	test -f go.tool.mod && go mod tidy -v -x $(TOOL_OPTS)
 
 .PHONY: gen
@@ -79,7 +79,7 @@ spell: ## misspell -error -locale=US -w **.md
 	go tool $(TOOL_OPTS) misspell -error -locale=US -w **.md
 
 .PHONY: lint
-lint: ## golangci-lint run --fix .
+lint: ## golangci-lint run --fix ./...
 	go tool $(TOOL_OPTS) golangci-lint run --fix ./...
 
 .PHONY: vuln

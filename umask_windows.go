@@ -15,16 +15,18 @@ var umaskErr error
 
 func initUmask() error {
 	var startingUmask uint64 = initialUmask
+	umaskErr = nil
 	umask := strings.TrimSpace(os.Getenv("UMASK"))
 	umask = strings.TrimPrefix(strings.ToLower(umask), "0o")
 
 	if umask != "" {
-		intVal, err := strconv.ParseUint(umask, 8, 32)
-		if err != nil {
-			umaskErr = err
-		} else {
+		var intVal uint64
+		intVal, umaskErr = strconv.ParseUint(umask, 8, 32)
+		if umaskErr == nil {
+			if intVal > umaskMask {
+				umaskErr = ErrInvalidUmask
+			}
 			startingUmask = intVal & umaskMask
-			validateUmask(intVal)
 		}
 	}
 
@@ -66,15 +68,4 @@ func GetUmask() (int, error) {
 	defer umaskMutex.Unlock()
 
 	return int(savedUmask.Load()), umaskErr
-}
-
-func validateUmask(umask uint64) {
-	umaskMutex.Lock()
-	defer umaskMutex.Unlock()
-
-	if umask > umaskMask {
-		umaskErr = ErrInvalidUmask
-	} else {
-		umaskErr = nil
-	}
 }
