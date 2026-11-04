@@ -9,7 +9,7 @@ name: test-tinygo
 
 env:
   # See https://github.com/webassembly/binaryen/releases
-  BINARYEN_VERSION: '132'
+  BINARYEN_VERSION: '133'
   GODEBUG: 'toolchaintrace=1'
   GOTOOLCHAIN: local
 
@@ -23,11 +23,11 @@ jobs:
       fail-fast: false
       matrix:
         go-version:
-          - big: '1.26.x'
+          - big: '1.27.x'
             # https://github.com/tinygo-org/tinygo/releases
-            tiny: '0.41.1'
-          - big: '1.25.x'
-            tiny: '0.39.0'
+            tiny: '0.44.0'
+          - big: '1.26.x'
+            tiny: '0.41.0'
 
     steps:
       - uses: actions/checkout@v7
