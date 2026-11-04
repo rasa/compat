@@ -13,14 +13,14 @@ name: test-wasi
 
 env:
   # See https://github.com/webassembly/binaryen/releases
-  BINARYEN_VERSION: '132'
+  BINARYEN_VERSION: '133'
   GOOS: wasip1
   GOARCH: wasm
   GODEBUG: toolchaintrace=1
   GOTOOLCHAIN: local
   # https://github.com/bytecodealliance/wasmtime/releases
   # include leading 'v'
-  WASMTIME_VERSION: 'v47.0.3'
+  WASMTIME_VERSION: 'v50.0.1'
 
 jobs:
   test-wasi: # act fails if tag ends with a '1', so we aren't using test-wasip1
@@ -35,7 +35,7 @@ jobs:
       matrix:
         go-version:
           - big: '1.27.x'
-            tiny: '0.41.1'
+            tiny: '0.44.0'
           - big: '1.26.x'
             tiny: '0.41.1'
           - big: '1.25.x'

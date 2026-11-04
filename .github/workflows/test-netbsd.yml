@@ -51,6 +51,7 @@ jobs:
             left="${tries}"
             delay=1
             while true; do
+              pkg_add -u pcre2 || true
               pkg_add bash coreutils curl git gzip gtar jq || true
               if which curl git gzip gtar gsha256sum jq; then
                 echo All dependencies have been installed

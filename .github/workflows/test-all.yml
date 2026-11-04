@@ -34,11 +34,16 @@ jobs:
     secrets: inherit
     # if: success()
     # needs: test-plan9
+  test-tinygo:
+    uses: ./.github/workflows/test-tinygo.yml
+    secrets: inherit
+    # if: success()
+    # needs: test-tiny
   test-all-wasms:
     uses: ./.github/workflows/test-all-wasms.yml
     secrets: inherit
     # if: success()
-    # needs: test-tiny
+    # needs: test-tinygo
   test-all-vms:
     uses: ./.github/workflows/test-all-vms.yml
     secrets: inherit
