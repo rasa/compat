@@ -22,14 +22,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Fixed
 
-- Fixed umask related test failure on Windows
+- Fixed umask related test failure on Windows.
 
 ### Changed
 
 - Change `GetUmask()` signature to return an error. **BREAKING CHANGE**
-- Deprecate `FileInfo`. Will be removed eventually.
+- Deprecate `FileMode`. Use `os.FileInfo` instead. Will be removed eventually.
 - Deprecate `IsAct`. Will be removed eventually.
-- Update go to version 1.27.3 (tools only)
+- Update go to version 1.27.3 (tools only).
 
 ## [v0.5.7](https://github.com/rasa/compat/compare/v0.5.6...v0.5.7)
 
