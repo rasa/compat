@@ -246,13 +246,13 @@ func main() {
 
 | Function or type | Purpose |
 |---|---|
-| `Stat` | Returns extended information for a path and follows symbolic links |
-| `Lstat` | Returns extended information about a path without following its final symbolic link |
-| `Fstat` | Returns extended information for an open file where supported |
 | `FileInfo` | Extends `os.FileInfo` with portable metadata and identity methods |
+| `Fstat` | Returns extended information for an open file where supported |
+| `Lstat` | Returns extended information about a path without following its final symbolic link |
+| `PartitionType` | Reports the underlying filesystem or partition type |
 | `SameFile` | Reports whether two `compat.FileInfo` values describe the same file |
 | `SamePartition` | Reports whether two files reside on the same partition |
-| `PartitionType` | Reports the underlying filesystem or partition type |
+| `Stat` | Returns extended information for a path and follows symbolic links |
 | `SupportsATime` | Reports operating-system support for access time |
 | `SupportsATimeSetting` | Reports support for setting access time |
 | `SupportsBTime` | Reports operating-system support for birth time |
@@ -275,8 +275,8 @@ including:
 - `Nice` and `Renice`
 - `Open`, and `OpenFile`
 - `ReadDir` and `WalkDir`
-- `Rename`
 - `Remove`, and `RemoveAll`
+- `Rename`
 - `Stat`, `Fstat` and `LStat`
 - `Umask` and `GetUmask`
 - `WriteFile` and `WriteReader`
@@ -286,15 +286,15 @@ Several operations accept functional options:
 | Option | Purpose | Used by |
 |---|---|---|
 | `WithAtomicity` | Requests atomic file creation or replacement (other than Plan 9) | `WriteFile`, `WriteReader` |
-| `WithFileMode` | Sets the requested file mode | `Create`, `CreateTemp`, `MkdirTemp`, `Open`, `OpenFile`, `WriteFile`, `WriteReader` |
 | `WithDefaultFileMode` | Changes the default mode used when no explicit mode is supplied | `Create`, `CreateTemp`, `Open`, `OpenFile`, `WriteFile`, `WriteReader` |
 | `WithDeleteOnClose` | Deletes file when closed | `Create`, `CreateTemp`, `Open`, `OpenFile` |
+| `WithFileMode` | Sets the requested file mode | `Create`, `CreateTemp`, `MkdirTemp`, `Open`, `OpenFile`, `WriteFile`, `WriteReader` |
 | `WithKeepFileMode` | Preserves the mode of an existing destination | `WriteFile`, `WriteReader` |
 | `WithOpenFlags` | Adds file-open flags | `Create`, `CreateTemp`, `Open`, `OpenFile` |
 | **System specific** | |
 | `WithNonAtomicReplace` | Allows a non-atomic replacement where atomic replacement is unavailable (Plan 9 only) | `WriteFile`, `WriteReader` |
-| `WithRetryTimeout` | Retries selected operations for a bounded period (Windows/macOS only) | `Rename`, `Remove`, `RemoveAll` |
 | `WithReadOnlyMode` | Controls Windows read-only attribute handling (Windows only) | `Chmod`, `Create`, `CreateTemp`, `Fchmod`, `Open`, `OpenFile`, `WriteFile`, `WriteReader` |
+| `WithRetryTimeout` | Retries selected operations for a bounded period (Windows/macOS only) | `Rename`, `Remove`, `RemoveAll` |
 | `WithSetSymlinkOwner` | Requests ownership adjustment for symbolic links  (Windows only) | `Symlink` |
 | `WithSkipACLs` |  Skips setting ACLs (Windows only) | `Chmod`, `Fchmod` |
 
