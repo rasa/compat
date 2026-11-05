@@ -127,24 +127,24 @@ func main() {
 		log.Fatal(err)
 	}
 
-	fmt.Printf("Name:       %s\n", info.Name())
-	fmt.Printf("Size:       %d bytes\n", info.Size())
-	fmt.Printf("Mode:       0o%o (%v)\n", info.Mode(), info.Mode())
-	fmt.Printf("Modified:   %s\n", info.ModTime())
-	fmt.Printf("Accessed:   %s\n", info.ATime())
+	fmt.Printf("Name:     %s\n", info.Name())
+	fmt.Printf("Size:     %d bytes\n", info.Size())
+	fmt.Printf("Mode:     0o%o (%v)\n", info.Mode(), info.Mode())
+	fmt.Printf("Modified: %s\n", info.ModTime())
+	fmt.Printf("Accessed: %s\n", info.ATime())
 
 	if compat.SupportsBTime() {
-		fmt.Printf("Created:    %s\n", info.BTime())
+		fmt.Printf("Created:  %s\n", info.BTime())
 	}
 
 	if compat.SupportsCTime() {
-		fmt.Printf("Changed:    %s\n", info.CTime())
+		fmt.Printf("Changed:  %s\n", info.CTime())
 	}
 
-	fmt.Printf("Owner:      %s (%d)\n", info.User(), info.UID())
-	fmt.Printf("Group:      %s (%d)\n", info.Group(), info.GID())
-	fmt.Printf("Links:      %d\n", info.Links())
-	fmt.Printf("File ID:    %d:%d\n", info.PartitionID(), info.FileID())
+	fmt.Printf("Owner:    %s (%d)\n", info.User(), info.UID())
+	fmt.Printf("Group:    %s (%d)\n", info.Group(), info.GID())
+	fmt.Printf("Links:    %d\n", info.Links())
+	fmt.Printf("File ID:  %d:%d\n", info.PartitionID(), info.FileID())
 
 	// Some extended values may require an additional system call.
 	if err := info.Error(); err != nil {
