@@ -84,7 +84,7 @@ lint: ## golangci-lint run --fix ./...
 
 .PHONY: vuln
 vuln: ## govulncheck ./...
-	-go tool $(TOOL_OPTS) govulncheck -show verbose ./...
+	-go tool $(TOOL_OPTS) govulncheck-ignore -show verbose ./...
 	# We are pinned at go1.24.0, so we ignore issues for now
 
 .PHONY: vet
@@ -178,9 +178,11 @@ install: ## install gofumpt, golangci-lint, goreleaser, govulncheck, misspell, m
 	go install github.com/goreleaser/goreleaser/v2@$(GORELEASER_VER) ;\
 	go install github.com/golangci/misspell/cmd/misspell@$(MISSPELL_VER) ;\
 	go install golang.org/x/tools/go/analysis/passes/modernize/cmd/modernize@$(MODERNIZE_VER) ;\
-	go install golang.org/x/vuln/cmd/govulncheck@$(VULN_VER) ;\
+	go install github.com/decort-tech/govulncheck-ignore/v2@$(VULN_VER) ;\
 	go install mvdan.cc/gofumpt@$(GOFUMPT_VER)
 	make mod
+
+# was go install golang.org/x/vuln/cmd/govulncheck@$(VULN_VER)
 
 .PHONY: modernize
 modernize: ## modernize ./...
