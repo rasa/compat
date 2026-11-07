@@ -40,11 +40,7 @@ func SupportsNice() bool {
 	return supportsNice
 }
 
-// SupportsRelativeFstat always returns true.
-// Deprecated. Will be removed in a future version.
-func SupportsRelativeFstat() bool {
-	return supportsRelativeFstat
-}
+// SupportsRelativeFstat has been deprecated.
 
 // SupportsSymlinks returns true if the os.Symlinks() function is supported by the OS.
 // Note that the underlying filesystem may not allow symlinks.
@@ -57,7 +53,7 @@ func SupportsUmask() bool {
 	return supportsUmask
 }
 
-// UserIDSource returns the source of the user's ID: UserIDSourceIsInt,
+// UserIDSource returns the source of the user's ID: UserIDSourceIsInteger,
 // UserIDSourceIsString, or UserIDSourceIsNone.
 func UserIDSource() UserIDSourceType {
 	return userIDSource
