@@ -19,4 +19,4 @@ const (
 	supportsUmask         = true
 )
 
-const userIDSource UserIDSourceType = UserIDSourceIsInt
+const userIDSource UserIDSourceType = UserIDSourceIsInteger

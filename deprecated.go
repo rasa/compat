@@ -126,6 +126,11 @@ func WriteReaderAtomic(filename string, r io.Reader, fns ...Option) error {
 	return WriteReader(filename, r, CreatePerm, fns...)
 }
 
+// UnderlyingGoVersion returns the effective Go toolchain version string ("goX.Y")
+// for the current environment.
+// - On standard Go: returns runtime.Version() (already "go1.xx").
+// - On TinyGo: picks the highest Go version supported based on thresholds.
+//
 // Deprecated: Use GoVersion() instead.
 //
 // This function will be removed in a future release.
