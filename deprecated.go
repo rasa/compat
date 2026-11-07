@@ -64,6 +64,15 @@ func IsUnsupportedError(err error) bool {
 	return errors.Is(err, errors.ErrUnsupported)
 }
 
+// SupportsRelativeFstat always returns true.
+//
+// Deprecated: Do not use.
+//
+// This function will be removed in a future release.
+func SupportsRelativeFstat() bool {
+	return supportsRelativeFstat
+}
+
 // WithFlags sets the flag option.
 // Used by the Create, Open, OpenFile, WriteFile, and WriteReader functions.
 //
