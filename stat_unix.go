@@ -32,10 +32,10 @@ type fileStat struct {
 	group          string
 	path           string
 	followSymlinks bool
-	btimeOnce      sync.Once
 	userOnce       sync.Once
 	groupOnce      sync.Once
 	err            error
 	// unused:
-	// ctimeOnce sync.Once // unused
+	// btimeOnce sync.Once
+	// ctimeOnce sync.Once
 }

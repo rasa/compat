@@ -54,7 +54,7 @@ var fsTests = []fsTest{
 	}},
 }
 
-func testMain(m *testing.M, fsToTest, nativeFSType, fsPath string) int {
+func testMain(m *testing.M, fsToTest, nativeFSType, fsPath string) int { //nolint:funlen,gocognit
 	if tempPath != "" && !strings.HasSuffix(tempPath, "/") {
 		tempPath += "/"
 	}
@@ -65,28 +65,35 @@ func testMain(m *testing.M, fsToTest, nativeFSType, fsPath string) int {
 	workdir, err := os.MkdirTemp("", "compat-fs-*")
 	if err != nil {
 		fmt.Printf("cannot create temp workdir: %v\n", err)
+
 		return 1
 	}
 	defer removeIt(workdir)
 
 	testsToRun := 0
+
 	for _, fsTest := range fsTests {
 		supported = append(supported, fsTest.fsName)
 		fsNameUpper := strings.ToUpper(fsTest.fsName)
+
 		fsToTestUpper := strings.ToUpper(fsToTest)
 		if fsToTest != "" && fsToTestUpper != strings.ToUpper(allFS) && fsToTestUpper != fsNameUpper {
 			continue
 		}
+
 		testsToRun++
 	}
 
 	n := 0
+
 	for _, fsTest := range fsTests {
 		fsNameUpper := strings.ToUpper(fsTest.fsName)
+
 		fsToTestUpper := strings.ToUpper(fsToTest)
 		if fsToTest != "" && fsToTestUpper != strings.ToUpper(allFS) && fsToTestUpper != fsNameUpper {
 			continue
 		}
+
 		n++
 
 		fsName := fsTest.fsName
@@ -94,12 +101,14 @@ func testMain(m *testing.M, fsToTest, nativeFSType, fsPath string) int {
 			fsTest.vars.fsType = testEnv.fsType
 			fsName += " (" + nativeFSType + ")"
 		}
+
 		testEnv = fsTest.vars
 
 		if fsTest.fsName != nativeFS {
 			testEnv.fsType = fsTest.fsName
 			tempPath = getMountPoint()
 		}
+
 		if fsPath != "" {
 			tempPath = fsPath
 		}
@@ -110,33 +119,43 @@ func testMain(m *testing.M, fsToTest, nativeFSType, fsPath string) int {
 		}
 
 		fmt.Printf("%d/%d: Testing on %v filesystem mounted on %v on %v/%v\n", n, testsToRun, fsName, mountPath, runtime.GOOS, runtime.GOARCH)
+
 		if fsTest.fsName == nativeFS {
 			code = m.Run()
 			if code != 0 {
 				return code
 			}
+
 			continue
 		}
 
 		spec, ok := mkfsSpecFor(fsTest.fsName)
 		if !ok {
 			fmt.Printf("Skipping testing on %v: unsupported on macOS\n", fsTest.fsName)
+
 			code = 0
+
 			continue
 		}
+
 		missing := 0
+
 		for _, bin := range []string{"hdiutil"} {
 			if _, err := exec.LookPath(bin); err != nil {
 				fmt.Printf("Skipping testing on %v: missing tool %q\n", fsTest.fsName, bin)
+
 				missing++
 			}
 		}
+
 		if missing > 0 {
 			code = 0
+
 			continue
 		}
 
 		imgPath := filepath.Join(workdir, "img-"+strings.ToLower(fsTest.fsName)+".sparseimage")
+
 		_, err := runCapture("hdiutil", "create",
 			"-size", normalizeSize(tempSize),
 			"-type", "SPARSE",
@@ -146,20 +165,27 @@ func testMain(m *testing.M, fsToTest, nativeFSType, fsPath string) int {
 			imgPath)
 		if err != nil {
 			fmt.Printf("Skipping testing on %v: hdiutil create: %v\n", fsTest.fsName, err)
+
 			code = 0
+
 			continue
 		}
 
 		mntBase := defaultMountBase
+
 		_, err = os.Stat(mntBase)
 		if err != nil {
 			mntBase = workdir
 		}
+
 		mnt, err := os.MkdirTemp(mntBase, "mnt-*")
 		if err != nil {
 			_ = os.Remove(imgPath)
+
 			fmt.Printf("Skipping testing on %v: mkdir: %v\n", fsTest.fsName, err)
+
 			code = 0
+
 			continue
 		}
 
@@ -167,16 +193,23 @@ func testMain(m *testing.M, fsToTest, nativeFSType, fsPath string) int {
 		if err != nil {
 			_ = os.RemoveAll(mnt)
 			_ = os.Remove(imgPath)
+
 			fmt.Printf("Skipping testing on %v: hdiutil attach: %v\n", fsTest.fsName, err)
+
 			code = 0
+
 			continue
 		}
+
 		dev := parseDiskFromAttach(out)
 		if dev == "" {
 			_ = os.RemoveAll(mnt)
 			_ = os.Remove(imgPath)
+
 			fmt.Printf("Skipping testing on %v: could not parse disk node from attach output\n", fsTest.fsName)
+
 			code = 0
+
 			continue
 		}
 
@@ -198,6 +231,7 @@ func testMain(m *testing.M, fsToTest, nativeFSType, fsPath string) int {
 	if code == 0 {
 		return 0
 	}
+
 	fmt.Printf("Unsupported filesystem: %q; use one of %v\n", fsToTest, strings.Join(supported, ","))
 
 	return 1
@@ -208,6 +242,7 @@ func getMountPoint() string {
 	if _, err := os.Stat(base); err != nil {
 		base = os.TempDir()
 	}
+
 	return filepath.Join(base, "compat-fs-"+randomBase36String(8)) + "/"
 }
 
@@ -242,8 +277,10 @@ func parseDiskFromAttach(out string) string {
 			if i := strings.Index(dev, "s"); i > 0 {
 				return dev[:i]
 			}
+
 			return dev
 		}
 	}
+
 	return ""
 }
