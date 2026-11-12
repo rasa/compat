@@ -136,7 +136,7 @@ jobs:
     name: clean-logs
     runs-on: ubuntu-26.04
     steps:
-      - uses: crazy-max/ghaction-dump-context@v3.1.0
+      - uses: crazy-max/ghaction-dump-context@v3
 
       - name: Run rasa/delete-workflow-runs@main (Scheduled run)
         if: github.event_name == 'schedule'
@@ -162,9 +162,9 @@ jobs:
           delete_workflow_pattern: ${{ github.event.inputs.delete_workflow_pattern }}
           delete_workflow_by_state_pattern: ${{ github.event.inputs.delete_workflow_by_state_pattern }}
           delete_run_by_conclusion_pattern: ${{
-              startsWith(github.event.inputs.delete_run_by_conclusion_pattern, 'Unsuccessful:')
-              && 'action_required,cancelled,failure,skipped'
-              || github.event.inputs.delete_run_by_conclusion_pattern
+            startsWith(github.event.inputs.delete_run_by_conclusion_pattern, 'Unsuccessful:')
+            && 'action_required,cancelled,failure,skipped'
+            || github.event.inputs.delete_run_by_conclusion_pattern
             }}
           check_branch_existence: ${{ github.event.inputs.check_branch_existence   == 'Keep' && 'true' || null }}
           check_pullrequest_exist: ${{ github.event.inputs.check_pullrequest_exist == 'Keep' && 'true' || null }}

@@ -82,10 +82,6 @@ max_line_length = 132
 indent_size = unset
 max_line_length = 132
 
-# json files without .json extension:
-[{.ecrc,.textlintrc}]
-insert_final_newline = unset
-
 # unrooted file extensions:
 [*.{cmd.*,csv,diskpart,diff,ignore,old,patch,sqbpro,tsv,txt,wip}]
 charset = unset
@@ -126,8 +122,8 @@ trim_trailing_whitespace = unset
 [*wmic-*.txt]
 charset = unset
 
-# ignore asciichr.tcl
-[asciichr.tcl]
+# various UTF-8-SIG and UTF-16 files
+[*.{orig,reg,tcl,xml}]
 charset = unset
 
 # cspell:ignore asciichr, diskpart, ecrc, jsonlint, Makefiles, mylogin, sqbpro, Televideo

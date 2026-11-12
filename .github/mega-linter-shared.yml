@@ -21,9 +21,6 @@ ACTION_ZIZMOR_DISABLE_ERRORS: true
 # Produces too many false positives:
 COPYPASTE_JSCPD_DISABLE_ERRORS: true
 
-# go.mod requires go >= 1.22.2 (running go 1.21.10; GOTOOLCHAIN=local)
-# GO_GOLANGCI_LINT_DISABLE_ERRORS: true
-
 # Fails if schema isn't found:
 JSON_V8R_DISABLE_ERRORS: true
 
@@ -35,10 +32,6 @@ REPOSITORY_DEVSKIM_DISABLE_ERRORS: true
 
 # [0062] ERROR failed to load vulnerability db: database does not exist
 REPOSITORY_GRYPE_DISABLE_ERRORS: true
-
-# Don't require actions use SHAs:
-# Discontinued:
-# REPOSITORY_KICS_DISABLE_ERRORS: true
 
 # Can't fix:
 REPOSITORY_OSV_SCANNER_DISABLE_ERRORS: true
@@ -52,13 +45,8 @@ REPOSITORY_TRUFFLEHOG_DISABLE_ERRORS: true
 # Don't fail if a site is down, or their cert has expired:
 SPELL_LYCHEE_DISABLE_ERRORS: true
 
-# SQL files are sqlite, not TSQL.
-# Discontinued:
-# SQL_TSQLLINT_DISABLE_ERRORS: true
-
 # Could not find a schema to validate: .github/linters/*
 YAML_V8R_DISABLE_ERRORS: true
-
 
 ##### PRE_COMMANDS #####
 
@@ -158,11 +146,48 @@ ACTION_ZIZMOR_UNSECURED_ENV_VARIABLES:
 # When active, APPLY_FIXES must also be defined as environment variable (in github/workflows/mega-linter.yml or other CI)
 APPLY_FIXES: all # default: none
 
+APPLY_FIXES_EVENT: all
+
+APPLY_FIXES_MODE: pull_request
+
+DISABLE_LINTERS:
+  - ANSIBLE_ANSIBLE_LINT
+  - COFFEE_COFFEELINT
+  - COPYPASTE_JSCPD
+  - CSS_BIOME
+  - GO_REVIVE # contained in golangci-lint
+  - GRAPHQL_BIOME
+  - GRAPHQL_GRAPHQL_SCHEMA_LINTER
+  - JAVASCRIPT_BIOME
+  - JAVASCRIPT_PRETTIER
+  - JSON_BIOME
+  - JSON_NPM_PACKAGE_JSON_LINT
+  - JSX_BIOME
+  - KUBERNETES_HELM
+  - KUBERNETES_KUBECONFORM
+  - KUBERNETES_KUBESCAPE
+  - MARKDOWN_RUMDL
+  # - PYTHON_RUFF_FORMAT
+  - REPOSITORY_LS_LINT
+  - REPOSITORY_SEMGREP
+  - SALESFORCE_CODE_ANALYZER_APEX
+  - SALESFORCE_CODE_ANALYZER_APEXGURU
+  - SALESFORCE_CODE_ANALYZER_AURA
+  - SALESFORCE_CODE_ANALYZER_FLOW
+  - SALESFORCE_CODE_ANALYZER_LWC
+  - SPELL_CODESPELL
+  - SPELL_PROSELINT
+  - SWIFT_SWIFTLINT
+  - TSX_BIOME
+  - TYPESCRIPT_BIOME
+  - TYPESCRIPT_PRETTIER
+
 # Don't print logo
 PRINT_ALPACA: false # default: true
 
 # Include total elapsed time:
 SHOW_ELAPSED_TIME: true # default: false
+
 
 ###############################################################################################
 ## COMMENTED OUT ##

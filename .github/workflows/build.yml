@@ -34,7 +34,7 @@ name: build
         default: bldtest
         type: string
       runner:
-        default: ubuntu-24.04
+        default: ubuntu-26.04
         type: string
       sudo:
         default: 'yes'
@@ -68,7 +68,7 @@ name: build
         type: string
       runner:
         description: 'GitHub runner to use'
-        default: ubuntu-24.04
+        default: ubuntu-26.04
         type: choice
         options:
           - ubuntu-26.04
@@ -115,7 +115,7 @@ env:
     }}
   # GOVERSION: '1.25.x'
   MAKE_CMD: ${{ inputs.make_cmd || 'bldtest' }}
-  RUNNER: ${{ inputs.runner || 'ubuntu-24.04' }}
+  RUNNER: ${{ inputs.runner || 'ubuntu-26.04' }}
   SUDO: >-
     ${{
       inputs.sudo == 'yes' ||
@@ -127,13 +127,13 @@ env:
 
 jobs:
   build:
-    name: build-${{ inputs.runner || 'ubuntu-24.04' }}
+    name: build-${{ inputs.runner || 'ubuntu-26.04' }}
     if: >-
       inputs.enabled == 'yes' ||
       inputs.enabled == true ||
       github.event_name == 'push' ||
       github.event_name == 'pull_request'
-    runs-on: ${{ inputs.runner || 'ubuntu-24.04' }}
+    runs-on: ${{ inputs.runner || 'ubuntu-26.04' }}
     defaults:
       run:
         shell: bash
