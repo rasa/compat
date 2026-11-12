@@ -2,26 +2,28 @@
 # SPDX-FileCopyrightText: Copyright © 2025 Ross Smith II <ross@smithii.com>
 # SPDX-License-Identifier: MIT
 
-export GOMOD_VER := 1.24.0
-export GOTOOLCHAIN := go1.27.3+auto
+export GOMOD_VER ?= 1.24.0
+export GOTOOLCHAIN ?= go1.27.4+auto
 
-export GOLANGCI_LINT_VER := latest
-export GOFUMPT_VER := latest
-export GORELEASER_VER := latest
-export MISSPELL_VER := latest
-export MODERNIZE_VER := latest
-export VULN_VER := latest
+export GOFUMPT_VER ?= latest
+export GOLANGCI_LINT_VER ?= latest
+export GORELEASER_VER ?= latest
+export MISSPELL_VER ?= latest
+export MODERNIZE_VER ?= latest
+export STATICCHECK_VER ?= latest
+export VULN_VER ?= latest
 
-# export GOLANGCI_LINT_VER := v2.12.2
-# export GOFUMPT_VER := v0.11.0
-# export GORELEASER_VER := v2.13.0
-# export MISSPELL_VER := v0.8.0
-# export MODERNIZE_VER := v0.48.0
-# export VULN_VER := v1.2.0
+# export GOFUMPT_VER ?= v0.11.0
+# export GOLANGCI_LINT_VER ?= v2.12.2
+# export GORELEASER_VER ?= v2.13.0
+# export MISSPELL_VER ?= v0.8.0
+# export MODERNIZE_VER ?= v0.48.0
+# export STATICCHECK_VER ?= v0.8.2
+# export VULN_VER ?= v1.2.0
 
-export SHELL := /bin/bash
-export NO_COLOR := 1
-export TERM := dumb
+export SHELL ?= /bin/bash
+export NO_COLOR ?= 1
+export TERM ?= dumb
 
 TEST_TAGS :=$(strip $(TEST_TAGS),debug)
 
@@ -31,7 +33,7 @@ endif
 
 export TOOL_OPTS
 
-.DEFAULT_GOAL := all
+.DEFAULT_GOAL ?= all
 
 .PHONY: all
 all: ## make download gen build check test
@@ -101,15 +103,15 @@ ifneq ($(strip $(CGO_ENABLED)),1)
 RACE_OPT =
 endif
 
-GO_VERSION := $(shell go version)
+GO_VERSION ?= $(shell go version)
 # go: -race is not supported on windows/arm64
 ifeq ($(findstring windows/arm64,$(GO_VERSION)),windows/arm64)
 RACE_OPT =
 endif
 
 # cgo: C compiler "gcc" not found: exec: "gcc": executable file not found in $PATH
-CC := $(shell go env CC)
-HAS_CC := $(shell command -v $(CC) >/dev/null)
+CC ?= $(shell go env CC)
+HAS_CC ?= $(shell command -v $(CC) >/dev/null)
 ifeq ($(HAS_CC),)
 RACE_OPT =
 endif
@@ -174,12 +176,13 @@ get: ## get gofumpt, golangci-lint, goreleaser, govulncheck, misspell, modernize
 .PHONY: install
 install: ## install gofumpt, golangci-lint, goreleaser, govulncheck, misspell, modernize
 	export GOFLAGS="$(GOFLAGS) $(TOOL_OPTS)" ;\
+	go install mvdan.cc/gofumpt@$(GOFUMPT_VER) ;\
 	go install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@$(GOLANGCI_LINT_VER) ;\
 	go install github.com/goreleaser/goreleaser/v2@$(GORELEASER_VER) ;\
 	go install github.com/golangci/misspell/cmd/misspell@$(MISSPELL_VER) ;\
 	go install golang.org/x/tools/go/analysis/passes/modernize/cmd/modernize@$(MODERNIZE_VER) ;\
 	go install github.com/decort-tech/govulncheck-ignore/v2@$(VULN_VER) ;\
-	go install mvdan.cc/gofumpt@$(GOFUMPT_VER)
+	go install honnef.co/go/tools/cmd/staticcheck@$(STATICCHECK_VER)
 	make mod
 
 # was go install golang.org/x/vuln/cmd/govulncheck@$(VULN_VER)
