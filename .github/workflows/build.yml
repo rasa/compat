@@ -115,7 +115,7 @@ env:
     }}
   # GOVERSION: '1.25.x'
   MAKE_CMD: ${{ inputs.make_cmd || 'bldtest' }}
-  RUNNER: ${{ inputs.runner || 'ubuntu-26.04' }}
+  # RUNNER: ${{ inputs.runner || 'ubuntu-26.04' }}
   SUDO: >-
     ${{
       inputs.sudo == 'yes' ||
@@ -159,6 +159,7 @@ jobs:
 
       - name: Set environment variables
         run: |
+          sudo=''
           if [[ "${SUDO}" == "true" ]]; then
             if builtin command -v sudo &>/dev/null; then
               sudo='sudo -E -n'
@@ -175,12 +176,15 @@ jobs:
 
       - name: Show environment variables
         run: |
+          set +u
+          printf 'ACT            ="%s"\n' "${ACT}"
           printf 'COMPAT_DEBUG   ="%s"\n' "${COMPAT_DEBUG}"
           printf 'COMPAT_DEBUG_FS="%s"\n' "${COMPAT_DEBUG_FS}"
           printf 'ENABLED        ="%s"\n' "${ENABLED}"
           printf 'GOCACHE        ="%s"\n' "${GOCACHE}"
           printf 'GOMODCACHE     ="%s"\n' "${GOMODCACHE}"
           printf 'GOVERSION      ="%s"\n' "${GOVERSION}"
+          printf 'MAKE_CMD       ="%s"\n' "${MAKE_CMD}"
           printf 'PATH           ="%s"\n' "${PATH}"
           printf 'sudo           ="%s"\n' "${sudo}"
           printf 'SUDO           ="%s"\n' "${SUDO}"
