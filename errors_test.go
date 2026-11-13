@@ -5,6 +5,7 @@ package compat_test
 
 import (
 	"errors"
+	"fmt"
 	"os"
 	"strings"
 	"testing"
