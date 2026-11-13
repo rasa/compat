@@ -119,14 +119,7 @@ func TestErrorsWriteError(t *testing.T) {
 	}
 }
 
-func TestErrorsUnsupportedError(t *testing.T) {
-	got := compat.UnsupportedError(opStr).Error()
-
-	want := opStr + ":"
-	if !strings.HasPrefix(got, want) {
-		t.Fatalf("UnsupportedError: got %q; want %q", got, want)
-	}
-}
+// exported for testing:
 
 func TestErrorsNormalizeUnsupportedError(t *testing.T) {
 	err := compat.NormalizeUnsupportedError(errors.ErrUnsupported)
@@ -137,5 +130,33 @@ func TestErrorsNormalizeUnsupportedError(t *testing.T) {
 	err = compat.NormalizeUnsupportedError(os.ErrInvalid)
 	if errors.Is(err, errors.ErrUnsupported) {
 		t.Fatalf("normalizeUnsupportedError: got %v, want %v", err, os.ErrInvalid)
+	}
+}
+
+func TestErrorsUnexpectedNiceError(t *testing.T) {
+	nice := 999
+	got := compat.UnexpectedNiceError(nice).Error()
+
+	want := fmt.Sprintf("compat: internal error: unmapped nice value %d", nice)
+	if !strings.HasPrefix(got, want) {
+		t.Fatalf("unexpectedNiceError: got %q; want %q", got, want)
+	}
+}
+
+func TestErrorsUnimplementedError(t *testing.T) {
+	got := compat.UnimplementedError(opStr).Error()
+
+	want := opStr + ":"
+	if !strings.HasPrefix(got, want) {
+		t.Fatalf("unimplementedError: got %q; want %q", got, want)
+	}
+}
+
+func TestErrorsUnsupportedError(t *testing.T) {
+	got := compat.UnsupportedError(opStr).Error()
+
+	want := opStr + ":"
+	if !strings.HasPrefix(got, want) {
+		t.Fatalf("unsupportedError: got %q; want %q", got, want)
 	}
 }
