@@ -32,10 +32,10 @@ type fileStat struct {
 	group          string
 	path           string
 	followSymlinks bool
+	btimeOnce      sync.Once //nolint:unused Linux uses
 	userOnce       sync.Once
 	groupOnce      sync.Once
 	err            error
 	// unused:
-	// btimeOnce sync.Once
 	// ctimeOnce sync.Once
 }
