@@ -14,18 +14,20 @@ var (
 // errors.go
 
 var (
-	ChmodError       = chmodError
-	CreateError      = createError
-	CreateTempError  = createTempError
-	MkdirError       = mkdirError
-	MkdirTempError   = mkdirTempError
-	NiceError        = niceError
-	OpenError        = openError
-	RenameError      = renameError
-	StatError        = statError
-	SymlinkError     = symlinkError
-	WriteError       = writeError
-	UnsupportedError = unsupportedError
+	ChmodError          = chmodError
+	CreateError         = createError
+	CreateTempError     = createTempError
+	MkdirError          = mkdirError
+	MkdirTempError      = mkdirTempError
+	NiceError           = niceError
+	OpenError           = openError
+	RenameError         = renameError
+	StatError           = statError
+	SymlinkError        = symlinkError
+	WriteError          = writeError
+	UnexpectedNiceError = unexpectedNiceError
+	UnimplementedError  = unimplementedError
+	UnsupportedError    = unsupportedError
 )
 
 // errors_plan9.go/errors_other.go
