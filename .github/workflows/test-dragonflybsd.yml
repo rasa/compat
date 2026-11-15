@@ -43,6 +43,7 @@ jobs:
           prepare: |
             pkg update -f
             pkg install -y bash coreutils curl git gzip gtar jq
+            pkg install -y openssl
             cd /usr/local/bin && ln -sf gsha256sum sha256sum
             # pkg install -y go
           run: |
