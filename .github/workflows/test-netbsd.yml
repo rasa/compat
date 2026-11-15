@@ -51,9 +51,8 @@ jobs:
             left="${tries}"
             delay=1
             while true; do
-              pkg_add -u pcre2 || true
-              pkg_add bash coreutils curl git gzip gtar jq || true
-              if which curl git gzip gtar gsha256sum jq; then
+              pkg_add -u bash coreutils curl git gzip gtar jq pcre2 || true
+              if which bash curl git gzip gtar gsha256sum jq; then
                 echo All dependencies have been installed
                 break
               fi
@@ -68,7 +67,7 @@ jobs:
               sleep "${delay}"
               delay=$((delay * 2))
             done
-            cd /usr/pkg/bin && ln -sf gsha256sum sha256sum
+            ln -sf /usr/pkg/bin/gsha256sum /usr/pkg/bin/sha256sum
             # pkg_add go
           # if we are using: pkg_add go
           # (cd /usr/pkg/bin ; ln -sf go??? go)
