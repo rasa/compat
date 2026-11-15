@@ -42,8 +42,9 @@ jobs:
           sync: scp
           prepare: |
             # the double dashes are needed to avoid "ambiguous" warning.
+            pkg_add -u
             pkg_add bash coreutils curl git gzip gtar-- jq
-            cd /usr/local/bin && ln -sf gsha256sum sha256sum
+            ln -sf /usr/local/bin/gsha256sum /usr/local/bin/sha256sum
             # pkg_add go
           run: |
             ./download-build-test.sh
