@@ -41,10 +41,10 @@ jobs:
           usesh: true
           sync: scp
           prepare: |
-            pkg update -f
-            pkg install -y bash coreutils curl git gzip gtar jq
-            pkg install -y openssl
-            cd /usr/local/bin && ln -sf gsha256sum sha256sum
+            pkg-static update -f
+            pkg-static upgrade -y
+            pkg-static install -y bash coreutils curl git gzip gtar jq
+            ln -sf /usr/local/bin/gsha256sum /usr/local/bin/sha256sum
             # pkg install -y go
           run: |
             ./download-build-test.sh
