@@ -42,7 +42,14 @@ jobs:
           usesh: true
           sync: scp
           prepare: |
-            pkg install shell/bash web/curl developer/versioning/git compress/gzip archiver/gnu-tar util/jq
+            pkg refresh
+            pkg install --accept \
+              shell/bash \
+              web/curl \
+              developer/versioning/git \
+              compress/gzip \
+              archiver/gnu-tar \
+              util/jq
             # add developer/gcc14 for CGO
           run: |
             ./download-build-test.sh
