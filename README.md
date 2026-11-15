@@ -251,16 +251,18 @@ func main() {
 | `Lstat` | Returns extended information about a path without following its final symbolic link |
 | `PartitionType` | Reports the underlying filesystem or partition type |
 | `SameFile` | Reports whether two `compat.FileInfo` values describe the same file |
-| `SamePartition` | Reports whether two files reside on the same partition |
+| `SameFiles` | Reports whether two different filenames are really the same file |
+| `SamePartition` | Reports whether two `compat.FileInfo` values describe files residing on the same partition |
+| `SamePartitions` | Reports whether two different filenames reside on the same partition |
 | `Stat` | Returns extended information for a path and follows symbolic links |
-| `SupportsATime` | Reports operating-system support for access time |
-| `SupportsATimeSetting` | Reports support for setting access time |
-| `SupportsBTime` | Reports operating-system support for birth time |
-| `SupportsCTime` | Reports operating-system support for metadata-change time |
-| `SupportsFstat` | Reports support for `Fstat` |
-| `SupportsLinks` | Reports support for hard-link counts |
+| `SupportsATime` | Reports operating-system support for reading the last access time |
+| `SupportsATimeSetting` | Reports support for setting the last access time |
+| `SupportsBTime` | Reports operating-system support for reading the birth time |
+| `SupportsCTime` | Reports operating-system support for reading the last metadata-change time |
+| `SupportsFstat` | Reports operating-system support for `Fstat` |
+| `SupportsLinks` | Reports operating-system support for hard-link counts |
 | `SupportsSymlinks` | Reports operating-system support for symbolic links |
-| `SupportsUmask` | Reports support for `Umask` |
+| `SupportsUmask` | Reports operating-system support for `Umask` |
 | `UserIDSource` | Describes how user IDs are represented on the current platform |
 
 ### File operations
