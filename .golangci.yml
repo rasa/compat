@@ -2,12 +2,19 @@ version: "2"
 
 formatters:
   enable:
+    - gci
+    - gofmt
     - gofumpt
     - goimports
+    - golines
   settings:
     goimports:
       local-prefixes:
         - github.com/rasa/compat
+    golines:
+      # Target maximum line length.
+      # Default: 100
+      max-len: 132
   exclusions:
     generated: lax
     paths:
