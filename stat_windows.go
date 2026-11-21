@@ -237,9 +237,9 @@ func (fs *fileStat) stat() (os.FileMode, error) {
 	if found && !supported {
 		if fs.mode.IsDir() {
 			return DefaultWindowsDirPerm, nil
-		} else {
-			return DefaultWindowsFilePerm, nil
 		}
+
+		return DefaultWindowsFilePerm, nil
 	}
 
 	perm, err := acl.GetExplicitFileAccessMode(fs.path)
@@ -260,9 +260,9 @@ func (fs *fileStat) stat() (os.FileMode, error) {
 		if !supported {
 			if fs.mode.IsDir() {
 				return DefaultWindowsDirPerm, nil
-			} else {
-				return DefaultWindowsFilePerm, nil
 			}
+
+			return DefaultWindowsFilePerm, nil
 		}
 	}
 
