@@ -16,7 +16,7 @@ func unsupportedError(op string) error {
 	return fmt.Errorf("%s: %w", op, errors.ErrUnsupported)
 }
 
-func unimplementedError(op string) error { //nolint:unused
+func unimplementedError(op string) error { //nolint:unused,nolintlint // Only some builds use.
 	return fmt.Errorf(
 		"%s: unimplemented on %s/%s: %w",
 		op,
@@ -36,7 +36,7 @@ func invalidNiceError(nice int) error {
 	)
 }
 
-func unexpectedNiceError(nice int) error { //nolint:unused
+func unexpectedNiceError(nice int) error { //nolint:unused,nolintlint // Only some builds use.
 	return fmt.Errorf("compat: internal error: unmapped nice value %d", nice) //nolint:err113
 }
 
